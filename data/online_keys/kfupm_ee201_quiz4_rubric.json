@@ -1,0 +1,8 @@
+{"name": "KFUPM EE201 Quiz 4 (sample key, handwritten by the instructor)",
+ "source": "https://faculty.kfupm.edu.sa/EE/noman/ee201_exams.htm",
+ "items": [
+  {"id": "a-VA",  "points": 4, "value": "V_A",    "answer": "-4 V"},
+  {"id": "a-i1",  "points": 4, "value": "i_1",    "answer": "0.8 A"},
+  {"id": "b-i3",  "points": 4, "value": "i_3",    "answer": "0 A"},
+  {"id": "b-P4V", "points": 4, "value": "P_{4V}", "answer": "0 W"}
+ ]}

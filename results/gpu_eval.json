@@ -1,0 +1,3527 @@
+{
+ "env": {
+  "machine": "NVIDIA GeForce RTX 2080 Ti, 11.0 GB (9.9 free), compute capability 7.5, torch 2.14.1+cu126, CUDA 12.6",
+  "python": "3.13.14",
+  "torch": "2.14.1+cu126",
+  "cuda": true,
+  "transformers": "5.20.2",
+  "bitsandbytes": "0.50.2",
+  "cuda_matmul_ok": true,
+  "tflops_fp32": 7.9,
+  "tflops_fp16": 5.7,
+  "format math (Uni-MuMER)": "fp32 (2.13B parameters)",
+  "format hebrew LM (Dicta-LM)": "fp16 (1.72B parameters)",
+  "format english VLM": "4-bit + fp16 (8.77B parameters)",
+  "part_secs": 45.9
+ },
+ "math": {
+  "model": "uni-mumer-qwen3vl-2b",
+  "format": "fp32",
+  "device": "cuda",
+  "formulas": 70,
+  "mumer_exact": 47,
+  "pix2text_exact": 65,
+  "mumer_equiv": 65,
+  "pix2text_equiv": 66,
+  "secs_per_formula_mumer": 1.98,
+  "secs_per_formula_pix2text": 0.14,
+  "gpu_memory_peak_gb": 8.1,
+  "tal": [
+   {
+    "truth": "1) a^{2}+b^{2}=c^{2} | a=3, b=4",
+    "mumer": "1 ) a ^ { 2 } + b ^ { 2 } = c ^ { 2 } | a = 3 , b = 4",
+    "pix2text": "1 ) a ^ { 2 } + b ^ { 2 } = c ^ { 2 } \\vert a = 3 \\vert b = 4"
+   },
+   {
+    "truth": "c=9",
+    "mumer": "c = 9",
+    "pix2text": "c = 9"
+   },
+   {
+    "truth": "2) a^{2}+b^{2}=c^{2} | 4^{2}+2^{2}=\\sqrt{20}",
+    "mumer": "2 7 a ^ { 2 } + b ^ { 2 } = c ^ { 2 } 4 ^ { 2 } + 2 ^ { 2 } = \\sqrt { 2 0 }",
+    "pix2text": "2 \\vert a ^ { 2 } + b ^ { 2 } = c ^ { 2 } \\vert y ^ { 2 } + 2 ^ { 2 } = \\sqrt { 2 0 }"
+   },
+   {
+    "truth": "16+4",
+    "mumer": "1 6 + 1",
+    "pix2text": "\\begin{array} { c } { \\mid \\vdots } \\\\ { \\mid \\vdots } \\\\ { \\mid \\cdots } \\\\ \\end{array} \\lambda _ { n } \\in \\left\\{ \\begin{array} { l l } { \\mid } & { \\mid } \\\\ { \\mid \\mid } & { \\mid } \\\\ { \\mid \\cdots } & { \\mid } \\\\ \\end{array} \\right."
+   },
+   {
+    "truth": "3) A=\\pi r^{2} | r=5",
+    "mumer": "3 ) A = \\pi r ^ { 2 } | r = 5",
+    "pix2text": "3 ) A = \\pi ^ { 2 } r ^ { 2 } \\vert r = 5"
+   },
+   {
+    "truth": "A=78.54",
+    "mumer": "A = 7 8 . 5 4 \\approx",
+    "pix2text": "A = 7 8 . 5 4 \\pi"
+   }
+  ],
+  "rows": [
+   {
+    "file": "00.png",
+    "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "01.png",
+    "gt": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "mumer": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "pix2text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "02.png",
+    "gt": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "mumer": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "pix2text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "03.png",
+    "gt": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "mumer": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "pix2text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "04.png",
+    "gt": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "mumer": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "pix2text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "05.png",
+    "gt": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "mumer": "\\lim _ { x \\to \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "pix2text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": false,
+    "pix2text_equiv": false
+   },
+   {
+    "file": "06.png",
+    "gt": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+    "mumer": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+    "pix2text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "07.png",
+    "gt": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+    "mumer": "\\frac { 1 } { a } F ( a x + b ) + C",
+    "pix2text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "08.png",
+    "gt": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "mumer": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "pix2text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "09.png",
+    "gt": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "mumer": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "pix2text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "10.png",
+    "gt": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "mumer": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "pix2text": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "11.png",
+    "gt": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+    "mumer": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+    "pix2text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+    "mumer_exact": true,
+    "pix2text_exact": false,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "12.png",
+    "gt": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "mumer": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "pix2text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "13.png",
+    "gt": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "mumer": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "pix2text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "14.png",
+    "gt": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "mumer": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "pix2text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "15.png",
+    "gt": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "mumer": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "pix2text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "16.png",
+    "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "17.png",
+    "gt": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "mumer": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "pix2text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "18.png",
+    "gt": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "mumer": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "pix2text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "19.png",
+    "gt": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+    "mumer": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+    "pix2text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "20.png",
+    "gt": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "mumer": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "pix2text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "21.png",
+    "gt": "a + b + c + d + e",
+    "mumer": "a + b + c + d + e",
+    "pix2text": "a + b + c + d + e",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "22.png",
+    "gt": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "mumer": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "pix2text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "23.png",
+    "gt": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+    "mumer": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+    "pix2text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "24.png",
+    "gt": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "mumer": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "pix2text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "25.png",
+    "gt": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+    "mumer": "\\sin x - \\sin y - \\sin ( x - y )",
+    "pix2text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "26.png",
+    "gt": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "mumer": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "pix2text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "27.png",
+    "gt": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "mumer": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "pix2text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "28.png",
+    "gt": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "mumer": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "pix2text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "29.png",
+    "gt": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "mumer": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "pix2text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "30.png",
+    "gt": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "mumer": "\\lim _ { x \\to \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "pix2text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": false,
+    "pix2text_equiv": false
+   },
+   {
+    "file": "31.png",
+    "gt": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+    "mumer": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+    "pix2text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "32.png",
+    "gt": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+    "mumer": "\\frac { 1 } { a } F ( a x + b ) + C",
+    "pix2text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "33.png",
+    "gt": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "mumer": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "pix2text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "34.png",
+    "gt": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "mumer": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "pix2text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "35.png",
+    "gt": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "mumer": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "pix2text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "36.png",
+    "gt": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "mumer": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "pix2text": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "37.png",
+    "gt": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+    "mumer": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+    "pix2text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+    "mumer_exact": true,
+    "pix2text_exact": false,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "38.png",
+    "gt": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "mumer": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "pix2text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "39.png",
+    "gt": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "mumer": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "pix2text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "40.png",
+    "gt": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "mumer": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "pix2text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "41.png",
+    "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "42.png",
+    "gt": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "mumer": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "pix2text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "43.png",
+    "gt": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "mumer": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "pix2text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "44.png",
+    "gt": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+    "mumer": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+    "pix2text": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+    "mumer_exact": false,
+    "pix2text_exact": false,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "45.png",
+    "gt": "a + b + c + d + e",
+    "mumer": "a + b + c + d + e",
+    "pix2text": "a + b + c + d + e",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "46.png",
+    "gt": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "mumer": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "pix2text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "47.png",
+    "gt": "a + b + c + d + e",
+    "mumer": "a + b + c + d + e",
+    "pix2text": "a + b + c + d + e",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "48.png",
+    "gt": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "mumer": "x ^ { i + 2 , \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "pix2text": "x ^ { i + 2 ) \\times k ^ { 3 } - 2 \\frac { i } { i } }",
+    "mumer_exact": false,
+    "pix2text_exact": false,
+    "mumer_equiv": false,
+    "pix2text_equiv": false
+   },
+   {
+    "file": "49.png",
+    "gt": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "mumer": "l o g _ { 2 } 8 + l o g _ { 3 } 9 + l o g _ { 4 } 1 6",
+    "pix2text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": false,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "50.png",
+    "gt": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+    "mumer": "\\sin x - \\sin y - \\sin ( x - y )",
+    "pix2text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "51.png",
+    "gt": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "mumer": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "pix2text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "52.png",
+    "gt": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "mumer": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "pix2text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "53.png",
+    "gt": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "mumer": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "pix2text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "54.png",
+    "gt": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "mumer": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "pix2text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "55.png",
+    "gt": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "mumer": "\\lim _ { x \\to \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "pix2text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": false,
+    "pix2text_equiv": false
+   },
+   {
+    "file": "56.png",
+    "gt": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "mumer": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "pix2text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "57.png",
+    "gt": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+    "mumer": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+    "pix2text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "58.png",
+    "gt": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+    "mumer": "\\frac { 1 } { a } F ( a x + b ) + C",
+    "pix2text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "59.png",
+    "gt": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "mumer": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "pix2text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "60.png",
+    "gt": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "mumer": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "pix2text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "61.png",
+    "gt": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "mumer": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "pix2text": "3 0 \\times 2 9 x ^ { 2 8 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "62.png",
+    "gt": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+    "mumer": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+    "pix2text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+    "mumer_exact": true,
+    "pix2text_exact": false,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "63.png",
+    "gt": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "mumer": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "pix2text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "64.png",
+    "gt": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "mumer": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "pix2text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "65.png",
+    "gt": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "mumer": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "pix2text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "66.png",
+    "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "67.png",
+    "gt": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "mumer": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "pix2text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "68.png",
+    "gt": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+    "mumer": "\\sin x - \\sin y - \\sin ( x - y )",
+    "pix2text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+    "mumer_exact": false,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   },
+   {
+    "file": "69.png",
+    "gt": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "mumer": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "pix2text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+    "mumer_exact": true,
+    "pix2text_exact": true,
+    "mumer_equiv": true,
+    "pix2text_equiv": true
+   }
+  ],
+  "part_secs": 172.7
+ },
+ "hebrew": {
+  "lm": "dictalm-3.0-1.7b-base",
+  "format": "fp16",
+  "device": "cuda",
+  "lines": 300,
+  "CER_in_use": 0.085,
+  "CER_in_context": 0.0702,
+  "secs_per_line": 1.34,
+  "gpu_memory_peak_gb": 8.01,
+  "tal": [
+   {
+    "truth": "הי מה שלומך קלוד, איך",
+    "in_use": "המה שלומך קלוד אזר",
+    "in_context": "ה מה שלומך קלוד איר"
+   },
+   {
+    "truth": "אתה מרגיש?",
+    "in_use": "אנה מרגישב.",
+    "in_context": "אנה מרגישה."
+   },
+   {
+    "truth": "אני בודק אותך איך אתה קורא",
+    "in_use": "אני בודק אור איך אתה קורא",
+    "in_context": "אני בודק אותך איך אתה קורא"
+   },
+   {
+    "truth": "עברית.",
+    "in_use": "עברית.",
+    "in_context": "עברית."
+   },
+   {
+    "truth": "גנן גידל דגן בגן דגן גדול גדל",
+    "in_use": "תי גדל דם בגן האן גדול גדל",
+    "in_context": "ת גדל דם בגן הגן גדול גדל"
+   },
+   {
+    "truth": "בגן",
+    "in_use": "באן.",
+    "in_context": "בין."
+   },
+   {
+    "truth": "אני לא מהממהרים אני מהמהרות",
+    "in_use": "אני לי מהממהרם אני מהמקרית",
+    "in_context": "אני לי מהומהרם אני מהמקרים"
+   }
+  ],
+  "tal_CER_in_use": 0.1967,
+  "tal_CER_in_context": 0.1721,
+  "rows": [
+   {
+    "file": "000.png",
+    "truth": "רגישים לתרופות מסוימות וסובלים מתופעות לוואי בלתי",
+    "in_use": "רגישים לתרופות מסוימות וסובלים מתופעות לואי בלתי",
+    "in_context": "רגישים לתרופות מסוימות וסובלים מתופעות לוואי בלתי"
+   },
+   {
+    "file": "001.png",
+    "truth": "השולחן שלנו עולים גם יוגורט, חומוס, חריימה וגפילטע ביש.",
+    "in_use": "השולחן שלנו עולים גם יוגורט, חומוס, חריימה וגפילטע ביש.",
+    "in_context": "השולחן שלנו עולים גם יוגורט, חומוס, חריימה וגפילטע ביש."
+   },
+   {
+    "file": "002.png",
+    "truth": "יתושים הם בעלי חיים הקטלניים ביותר בעולם.",
+    "in_use": "יתושים הם בעלי החיים הקטלניים ביותר בעולם,",
+    "in_context": "יתושים הם בעלי החיים הקטלניים ביותר בעולם,"
+   },
+   {
+    "file": "003.png",
+    "truth": "על מנת להתמודד עם מחלות המועברות על ידי יתושים",
+    "in_use": "על מנת להתמודד עם מחלות המועברות על ידי יתושים",
+    "in_context": "על מנת להתמודד עם מחלות המועברות על ידי יתושים"
+   },
+   {
+    "file": "004.png",
+    "truth": "במציאות של ימינו, עתירת הטלפונים החכמים, המחשבים",
+    "in_use": "המדרוות של ימינו, מתורת הטלפונים החכמות, המחאביםם",
+    "in_context": "המצוות של ימינו, מתורת הטלפונים החכמות, המחשבים"
+   },
+   {
+    "file": "005.png",
+    "truth": "התאמת תרופה למטופל היא משימה מאתגרת:",
+    "in_use": "התאמת תרופה למטופל היא משימה מאתגרת:",
+    "in_context": "התאמת תרופה למטופל היא משימה מאתגרת:"
+   },
+   {
+    "file": "006.png",
+    "truth": "כיפה אדומה ואמא. הן סעדו יחד ואחר כך",
+    "in_use": "כיפה אדומה ואמא, הן סעדו יחד ואחר כך",
+    "in_context": "כיפה אדומה ואמא, הן סעדו יחד ואחר כך"
+   },
+   {
+    "file": "007.png",
+    "truth": "מחקר שהתפרסם גילה פרצות אבטחה שאיפשרו לוח קכים",
+    "in_use": "מחקר ישהתפכסם גולה פככות אבטחת שאג שבו לוח יקרים",
+    "in_context": "מחקר שהתפרסם גילה פרכות אבטחת שאג שבו לוח יקרים"
+   },
+   {
+    "file": "008.png",
+    "truth": "חוקי פיזיקה? האם מדובר במערכות משוואות בסגנון",
+    "in_use": "חור שתיקה? בות בדובר במעיתת שות סגנון",
+    "in_context": "חור, שתיקה? בו מדובר במעת שוות נון"
+   },
+   {
+    "file": "009.png",
+    "truth": "לשמור על טמפרטורת הגוף הקבועה שלנו כשאנו נכנסים",
+    "in_use": "לשמור על שטחלרטורת הגוף בקבורה שלבו הבאנו חסד",
+    "in_context": "לשמור על טמפרטורת הגוף הקבועה שלנו הבאנו הס"
+   },
+   {
+    "file": "010.png",
+    "truth": "הכלכי. לשם כך גובשו תכניות חובה רב שנתיות בחינוך פיננסי",
+    "in_use": "הכלה. לשם כך גובשו תכניות חובה רבשנתיותבחינוךפינש.",
+    "in_context": "הכלה. לשם כך גובשו תכניות חובה רבשנתיותבחינוךפינש."
+   },
+   {
+    "file": "011.png",
+    "truth": "מכלול הפעילות האנושית, המכוונת להשגת האמצעים",
+    "in_use": "מכלול הפעילות ה אנושית, במתכוינת להשגת האמצעים",
+    "in_context": "מכלול הפעילות האנושית, במתכוינת להשגת האמצעים"
+   },
+   {
+    "file": "012.png",
+    "truth": "ומתרפא במהירות, ללא צלקת. ניסויי מעבדה בעוברי בעלי חיים הראו",
+    "in_use": "ומתרסא במהירות ללא צלקת - נוסויי מעבדה בעוברי בעלי חיים הראו",
+    "in_context": "מתרפא במהירות ללא צלקת - ניסויי מעבדה בעוברי בעלי חיים הראו"
+   },
+   {
+    "file": "013.png",
+    "truth": "הפיננסיים ועם הסביבה התקשורתית העמוסה ולהפיכתם למבוגרים",
+    "in_use": "הפיננסיים ועם בסביבה התקשורתית העמוסה ולהפיכתם למבוגרים",
+    "in_context": "הפיננסים ועם הסביבה התקשורתית העמוסה ולהפיכתם למבוגרים"
+   },
+   {
+    "file": "014.png",
+    "truth": "למידה של מיומנות חדשה אנו ידעים כיום שיש חשיבות רכה",
+    "in_use": "למידה של מיומנות חדשה אנו ידעים כיום שיש חשיבות רכה",
+    "in_context": "למידה של מיומנות חדשה אנו ידעים כיום שיש חשיבות רכה"
+   },
+   {
+    "file": "015.png",
+    "truth": "אחראיים, ביקורתיים ובעלי מסוגלות לדאוג לביטחונם הכלכלי.",
+    "in_use": "אחראיים, ביקורתיים ובעלי מסוגלות לבאג לפיטחומם הכלכלי.",
+    "in_context": "אחראיים, ביקורתיים ובעלי מסוגלות לדאוג לביטחונם הכלכלי."
+   },
+   {
+    "file": "016.png",
+    "truth": "את הרשת - ונפשו מבקשת:",
+    "in_use": "את הרשת - ונפשו מבקשת:",
+    "in_context": "את הרשת - ונפשו מבקשת:"
+   },
+   {
+    "file": "017.png",
+    "truth": "בתשלום לפחות. ומה יקרה אם תרצו לצאת לחופשה ארוכה יותר מכמות",
+    "in_use": "בתשלום לפחות. ומה יקרה אם תרצו לצאת לחופשה אכו כח יותר מרמות",
+    "in_context": "בתשלום לפחות. ומה יקרה אם תרצו לצאת לחופשה ארוכה יותר מכמות"
+   },
+   {
+    "file": "018.png",
+    "truth": "- האם הטיסות זולות יותר כשמזמינים בדקה ה - 90?",
+    "in_use": "- האם הטיסות זולות יותר רשמזמיני בדיקה ה - סף?",
+    "in_context": "- האם הטיסות זולות יותר כשמזמינים בדקה ה - 90?"
+   },
+   {
+    "file": "019.png",
+    "truth": "שאספה על הרגלי הגלישה שלהם באתרים ואפליקציות,",
+    "in_use": "שאספה על הרגלי הגלישה שלהם באתרים ואפליקציות,",
+    "in_context": "שאספה על הרגלי הגלישה שלהם באתרים ואפליקציות,"
+   },
+   {
+    "file": "020.png",
+    "truth": "נוטלים תרופות באופן קבוע? היישום הזה, פרי פיתוח ישראלי,",
+    "in_use": "נישלים תרופות באסל הפעהשסהנה, פרי סותם ופולי,",
+    "in_context": "נישלים תרופות באסל הפעהשחהנה, פרי סותם הפלי,"
+   },
+   {
+    "file": "021.png",
+    "truth": "האצבעות בחופשיות ובטבעיות. אבל כמות האימונים",
+    "in_use": "בטתעתט בחופאת ובטבעיתתאובל כמות מתוק ים",
+    "in_context": "בטות בחופות ובטבעיתתאובל כמות מי ים"
+   },
+   {
+    "file": "022.png",
+    "truth": "מחיר סביבתי גבוה, על פי הערכות, מאז פיתוח",
+    "in_use": "מחיר סביבתי גבוה. על פי הערכות, מאז פיתוח",
+    "in_context": "מחיר סביבתי גבוה. על פי הערכות, מאז פיתוח"
+   },
+   {
+    "file": "023.png",
+    "truth": "הנגיפים והפטריות המתקיימים על גופנו ובתוכו.",
+    "in_use": "הנגיפים והפטריות התקימים על סופנו ובתוכו.",
+    "in_context": "הנגיפים והפטריות המתקימים על גופנו ובתוכו."
+   },
+   {
+    "file": "024.png",
+    "truth": "ילדיך אינם רצויים כאן, היא מפצירה בחוטב",
+    "in_use": "ילדיך אינם רוצים כאן. היא מפצירה בקוטב",
+    "in_context": "ילדיך אינם רוצים כאן. היא מפצירה בחוטב"
+   },
+   {
+    "file": "025.png",
+    "truth": "אך מהו המקור הראשון והראשי שלו?",
+    "in_use": "אך מהו המקור הראשון והראשי שלו?",
+    "in_context": "אך מהו המקור הראשון והראשי שלו?"
+   },
+   {
+    "file": "026.png",
+    "truth": "מפתיע. מי מאיתנו רוצה לקחת סיכון ולעזוב את העבודה שלו,",
+    "in_use": "מפותיפם לי מאיתנו חצה לקנות סיכן לקפה את שירה שלו",
+    "in_context": "מפותיפ לי מאותו חצה לקנות סיכן לקשה את שרה שלו"
+   },
+   {
+    "file": "027.png",
+    "truth": "ביום חורפי אחד ישבה המלכה על יד החלון, ובעודה רוקמת היא",
+    "in_use": "ביום חורפי אחד ישבה המלכה על יד החלון. ובעודה רוקמת היא",
+    "in_context": "ביום חורפי אחד ישבה המלכה על יד החלון. ובעודה רוקמת היא"
+   },
+   {
+    "file": "028.png",
+    "truth": "בתהליך שנקרא התמיינות, שמתרחש בעודם עוברים, והיא קבועה",
+    "in_use": "בתהליך שנקרא בתמיינות שמתרחש בעודם עוברים. והיא קבועה",
+    "in_context": "בתהליך שנקרא התמיינות שמתרחש בעודם עוברים. והיא קבועה"
+   },
+   {
+    "file": "029.png",
+    "truth": "כל - כך שמנה שקשה לה ללכת. בכן ומה השניה זרה",
+    "in_use": "כל - כך שמנה שכן שה לה ללכת. בבן ומה השניה זרה",
+    "in_context": "כל- כך שמנה שקשה לה ללכת. בבן ומה השניה זרה"
+   },
+   {
+    "file": "030.png",
+    "truth": "הרעבים, מכבידים עליו כל כך, עד שאינו מוצא",
+    "in_use": "הרעבים. מכבידים עליו כל כך, עד שאינו מוצא",
+    "in_context": "הרעבים מכבידים עליו כל כך, עד שאינו מוצא"
+   },
+   {
+    "file": "031.png",
+    "truth": "ארגונים שלטו באמצעות פיקוח ושכר, כיום הם",
+    "in_use": "ארגזים שלאו באמצעות פיקה ושפר, כיום הם",
+    "in_context": "ארגזים שלא באמצעות פיקה ושפר, כיום הם"
+   },
+   {
+    "file": "032.png",
+    "truth": "חיפוש העבודה בישראל הוא כשלושה חודשים",
+    "in_use": "חיפוש העבודה בישראל הוא כשלושה חודשים",
+    "in_context": "חיפוש העבודה בישראל הוא כשלושה חודשים"
+   },
+   {
+    "file": "033.png",
+    "truth": "בקומה השלישית חתולה כושית נקייה, מגונדרת. על צוואר",
+    "in_use": "בקומה השלישית חתולה כושי, נקייה, מגונדרת. על צואר",
+    "in_context": "בקומה השלישית חתולה כושי, נקייה, מגונדרת. על צואר"
+   },
+   {
+    "file": "034.png",
+    "truth": "ובראשה המוח, יש נוכחות מעטה של תאי מערכת החיסון ביחס לשאר",
+    "in_use": "וגסאפה המוחי, יש נוכחות משעלה של האי מערכת שהחיסון ביחס לבלר",
+    "in_context": "וגאלה המוחי, יש נוכחות משלה של האי מערכת החיסון ביחס לבר"
+   },
+   {
+    "file": "035.png",
+    "truth": "ארון הבגדים שלו היה כה חשוב בעיניו, שהיו לו",
+    "in_use": "ארון הבגדים שלו היה כה חשוב בעיניו, שהיו לו",
+    "in_context": "ארון הבגדים שלו היה כה חשוב בעיניו, שהיו לו"
+   },
+   {
+    "file": "036.png",
+    "truth": "וצרכנות נבונה הינם כישורי חיים קריטיים להתמודדות",
+    "in_use": "וצרכנית נבונה הינם כישורי חיים קריטיים להתמורצות",
+    "in_context": "צרכנות נבונה הינם כישורי חיים קריטיים להתמודדות"
+   },
+   {
+    "file": "037.png",
+    "truth": "כבר שנים רבות אני מנגן בפסנתר בהנאה. כמו",
+    "in_use": "כבר שנים רבות אני מנגן בפסנתר בהנאה. כמו",
+    "in_context": "כבר שנים רבות אני מנגן בפסנתר בהנאה. כמו"
+   },
+   {
+    "file": "038.png",
+    "truth": "אתם זכאים ל - 12 ימי חופשה בתשלום לפחות.",
+    "in_use": "אתם זכאים ל - גת ימי חופשה בתשלום לפחות.",
+    "in_context": "אתם זכאים ל - גם ימי חופשה בתשלום לפחות."
+   },
+   {
+    "file": "039.png",
+    "truth": "הדייג את הרשת והציץ אל תוכה, ראה דג זהב!",
+    "in_use": "הדייג את הרשת והציץ אלתוכה, ראה הג זהב:",
+    "in_context": "הדייג את הרשת והציץ אלתוכה, ראה דג זהב:"
+   },
+   {
+    "file": "040.png",
+    "truth": "באמצעות ריסוס קוטלי חרקים בקרבת בתי מגורים.",
+    "in_use": "באמצעות ריסוס קוטלי חרקים בקרבת בתי מגורים.",
+    "in_context": "באמצעות ריסוס קוטלי חרקים בקרבת בתי מגורים."
+   },
+   {
+    "file": "041.png",
+    "truth": "האינטרנט.",
+    "in_use": "האינטרנט.",
+    "in_context": "האינטרנט."
+   },
+   {
+    "file": "042.png",
+    "truth": "רצון פנימי, והתנועות שבהן מבצעים עשויות להיות חיקוי",
+    "in_use": "רצון פנימי ,והתנועות שהם מבצעים עשויות להיות חיקוי",
+    "in_context": "רצון פנימי והתנועות שהם מבצעים עשויות להיות חיקוי"
+   },
+   {
+    "file": "043.png",
+    "truth": "תופעה חברתית, ואנחנו צוחקים הרבה יותר כאשר",
+    "in_use": "תופעה חברתית, ואנחנו צוחקים הרבה יותר כאשר",
+    "in_context": "תופעה חברתית, ואנחנו צוחקים הרבה יותר כאשר"
+   },
+   {
+    "file": "044.png",
+    "truth": "לפני שנים רבות גרו בבקתה דלה, על חופו",
+    "in_use": "לפני שנים רבות גרו בבקתה דלה, על חופו",
+    "in_context": "לפני שנים רבות גרו בבקתה דלה, על חופו"
+   },
+   {
+    "file": "045.png",
+    "truth": "סוללות כבר מזמן לא רק מספקות את האנרגיה",
+    "in_use": "סוללות כבר מזמן לא רק מספקות את האנרגיה",
+    "in_context": "סוללות כבר מזמן לא רק מספקות את האנרגיה"
+   },
+   {
+    "file": "046.png",
+    "truth": "מרשם, או לחידוש מרשם שפג תוקפו.",
+    "in_use": "משש, א לחידוש מרשם שפי תיקסה",
+    "in_context": "מס, או לחידוש מרשם שפי תיקשה"
+   },
+   {
+    "file": "047.png",
+    "truth": "לרותי - בלון כחול לרון - בלון צהוב וסיגלית - בלון סגול",
+    "in_use": "לרות בלון כחול לרון - בלון צהוב וסיגלית - בלון סגול",
+    "in_context": "לפות בלון כחול לרון - בלון צהוב וסיגלית - בלון סגול"
+   },
+   {
+    "file": "048.png",
+    "truth": "פחות חמצן לשרירים ולכן השרירים יכולים לעבוד פחות טוב.",
+    "in_use": "פחות חמצן לשכיכים ולך חשריכים יכולים לעבוד פחות אב.",
+    "in_context": "פחות חמצן לשרירים ולכן השרירים יכולים לעבוד פחות טוב."
+   },
+   {
+    "file": "049.png",
+    "truth": "היא גם תחום מחקר במדעי החברה, העוסק ביחסים",
+    "in_use": "היא גם תחום מחקר במדעי החברה, העוסק ביחסים",
+    "in_context": "היא גם תחום מחקר במדעי החברה, העוסק ביחסים"
+   },
+   {
+    "file": "050.png",
+    "truth": "מערכת החסון תוקפת חיידקים, נגיפים ואיומים אחרים לגוף, היא פוגעת לעתים",
+    "in_use": "מערכת החיסון תוקפת מחדדים, נגיפים ואינמים אחרים לגוף, היאפושעת לעתים",
+    "in_context": "מערכת החיסון תוקפת מדדים, נגיפים ואיומים אחרים בגוף, היאפושעת לעתים"
+   },
+   {
+    "file": "051.png",
+    "truth": "לעצמות אדם, עצמות חיות וקונכייה אחת מעניינת במיוחד,",
+    "in_use": "לעצמות אדם, עצמות חיות וקונכייה אחת מעניינה במיוחד,",
+    "in_context": "עצמות אדם, עצמות חיות וקונכייה אחת מעניינה במיוחד,"
+   },
+   {
+    "file": "052.png",
+    "truth": "היה הייתה נסיכה יפהפייה ששיחקה בגן הארמון",
+    "in_use": "היה הייתה נסיכה יפהפייה ששיחקה בגן הארמון",
+    "in_context": "היה הייתה נסיכה יפהפייה ששיחקה בגן הארמון"
+   },
+   {
+    "file": "053.png",
+    "truth": "לזרום לנזקים - כאשר מערכת החיסון תוקפת חיידקים, נזיפים",
+    "in_use": "לזרום לנזקים - כאשר מערכת החיסון תוקפת חיידקים, נזיפים",
+    "in_context": "לזרום לנזקים כאשר מערכת החיסון תוקפת חיידקים, נגיפים"
+   },
+   {
+    "file": "054.png",
+    "truth": "המקורות. היא התברכה בחיטה, בשעורה, בתאנה, ברימון,",
+    "in_use": "המקורות. היא החברכה בחיטה, בשעורה, בתאנה, ברימון",
+    "in_context": "המקורות. היא התברכה בחיטה, בשעורה, בתאנה, ברימון"
+   },
+   {
+    "file": "055.png",
+    "truth": "לעיתים, צורת בישול מסוימת תפגע ברכיבים תזונתיים",
+    "in_use": "ועיש, זוכת בשל מסומת תפיע ברכים תזינהים",
+    "in_context": "עש, זוכת בשל מסות תפיע ברכים תאנים"
+   },
+   {
+    "file": "056.png",
+    "truth": "לפני שנים רבות, ביער השחור העבות, מחליטה אמם החורגת של עמי ותמי",
+    "in_use": "לפני שנים רבות, ביער השחור העבות, מדליטה אמם החורגת של עמי ותמי",
+    "in_context": "לפני שנים רבות, ביער השחור העבות, מחליטה אמם החורגת של עמי ותמי"
+   },
+   {
+    "file": "057.png",
+    "truth": "כאשר אתר ביגוד חולק מידע עמה לגבי היסטוריית",
+    "in_use": "נאר אתר ביגוד חולק מידע עמה לבי היסטוריית",
+    "in_context": "נאר אתר ביגוד חולק מידע עמה לבי היסטוריית"
+   },
+   {
+    "file": "058.png",
+    "truth": "מבקשת כי יוולד לה תינוק שעורו יהיה לבן כשלג שפתיו אדומות",
+    "in_use": "מקשת כי מולה לה תינוק שעות והיה לבן כשלג שנתין אפחות",
+    "in_context": "מקשת כי עולה לה תינוק שעור והיה לבן כשלג שנתין אפחות"
+   },
+   {
+    "file": "059.png",
+    "truth": "מיוצרים, מוקצים, מופצים ונצרכים.",
+    "in_use": "מיוצרים, מוקרים, מופצים ונצרכים.",
+    "in_context": "מיוצרים, מוקרים, מופצים ונצרכים."
+   },
+   {
+    "file": "060.png",
+    "truth": "היטב מסין ומאוחר יותר גם מקנדה.",
+    "in_use": "היטב מסין ומשוחריותר גם מקנדה.",
+    "in_context": "היטב מסין ומאוחר יותר גם מקנדה."
+   },
+   {
+    "file": "061.png",
+    "truth": "באגוזים ושקדים, פחינה מלאה. במקרים של צמחונות, לט",
+    "in_use": "באגוזים ושקדים, פחינה מלגוה. במקרים של צמחונות, לט",
+    "in_context": "באגוזים ושקדים, פחינה מלגוה. במקרים של צמחונות, לט"
+   },
+   {
+    "file": "062.png",
+    "truth": "משכבה מתהפכת. היא כל כך שמנה שקשה לה",
+    "in_use": "משכבה מתהפכת. היא כל כך שמנה סרפה לה",
+    "in_context": "משכבה מתהפכת. היא כל כך שמנה סופה לה"
+   },
+   {
+    "file": "063.png",
+    "truth": "שיוצאים לעבוד מתוך צורך אמיתי בכסף. אנו",
+    "in_use": "שיוצאים לעבוד מתוך צורך אמיתי בכסף אנו",
+    "in_context": "שיוצאים לעבוד מתוך צורך אמיתי בכסף אנו"
+   },
+   {
+    "file": "064.png",
+    "truth": "בכל יום היה עורך טכס חגיגי, רק כדי להתפאר בבגדיו",
+    "in_use": "בכל יום היה עורך טכס חגיגי, רק כדי להתפאר בבגדיו",
+    "in_context": "בכל יום היה עורך טכס חגיגי, רק כדי להתפאר בבגדיו"
+   },
+   {
+    "file": "065.png",
+    "truth": "לווסת את טמפרטורת הגוף שלהם. מנגנוני ויסות",
+    "in_use": "לווסת את טמפרטורת הגוף שלהם. מנגנוני ויסות",
+    "in_context": "לווסת את טמפרטורת הגוף שלהם. מנגנוני ויסות"
+   },
+   {
+    "file": "066.png",
+    "truth": "בבגדיו המגונדרים.",
+    "in_use": "בבשדיו המשונדרים.",
+    "in_context": "בבדיו המשונדרים."
+   },
+   {
+    "file": "067.png",
+    "truth": "לרמוז לצופים אלו קטעים אמורים להיות מצחיקים, וגם לתת להם",
+    "in_use": "לרמות שצופים אלו קטעים אמורים להיות מצחיקים, וגדל לתת להם",
+    "in_context": "לרמות שצופים אלו קטעים אמורים להיות מצחיקים, וגדל לתת להם"
+   },
+   {
+    "file": "068.png",
+    "truth": "המיקרוביום שלנו - מגוון החיידקים, הנגיפים והפטריות",
+    "in_use": "המיקרוביום שלנו - מגוון החיידקים, הנגיפים והפטריות",
+    "in_context": "המיקרוביום שלנו - מגוון החיידקים, הנגיפים והפטריות"
+   },
+   {
+    "file": "069.png",
+    "truth": "מעבירים קוטלות מאות אלפי בני אדם בשנה. המאמצים להיפטר",
+    "in_use": "משעבורים קושלות מאות או בתי אדם בשנה. המאמשים היפש?",
+    "in_context": "מעבורים קושלות מאות או בתי אדם בשנה. המאמצים היבש"
+   },
+   {
+    "file": "070.png",
+    "truth": "זה קורה, ומי בכל זאת מתמרדים נגד השיטה.",
+    "in_use": "זה קורה, ומי בכל זות מתמרדים נגד המיטה.",
+    "in_context": "זה קורה, ומי בכל עות מתמרדים נגד השיטה."
+   },
+   {
+    "file": "071.png",
+    "truth": "מוזיקלית, ואיתה את היכולת לזוז לפי הקצב, כאמצעי",
+    "in_use": "מוזיקלית, ואיתה את היכולת לזוז לפי הקצב, כאמצעי",
+    "in_context": "מוזיקלית, ואיתה את היכולת לזוז לפי הקצב, כאמצעי"
+   },
+   {
+    "file": "072.png",
+    "truth": "מעובדים, מיוצרים, מוקצים, מופצים ונצרכים.",
+    "in_use": "מעובדים, מיוצרים, מוקצים, מופצים ונצרכם.",
+    "in_context": "מעובדים, מיוצרים, מוקצים, מופצים ונצרכם."
+   },
+   {
+    "file": "073.png",
+    "truth": "של בני משפחה וחברים.",
+    "in_use": "של בת משפחה וחברים.",
+    "in_context": "של בת משפחה וחברים."
+   },
+   {
+    "file": "074.png",
+    "truth": "בהודעה ששלחה החברה נכתב: תודה שנרשמת לשירות השילוח המקומי",
+    "in_use": "בחובעה שלה החברה נכתב: תודה שנרשמת לשירות השמח המקומי",
+    "in_context": "בהודעה שלה החברה נכתב: תודה שנרשמת לשירות השמח המקומי"
+   },
+   {
+    "file": "075.png",
+    "truth": "עושים זאת",
+    "in_use": "עושים זאת",
+    "in_context": "עושים זאת"
+   },
+   {
+    "file": "076.png",
+    "truth": "המלך לאישה יפה וגאוותנית, שלא יכלה לסבול שמישהו יעלה ביופיו",
+    "in_use": "המלך לושה יהה וגאותנית שלא יכלה לסבול שמשהו יעלה ביופיו.",
+    "in_context": "הולך לוישה יפה וגאותנית שלא יכלה לסבול שמשהו יעלה ביופיו."
+   },
+   {
+    "file": "077.png",
+    "truth": "משוואות בסגנון מתמטי? כן ולא. זה מורכב.",
+    "in_use": "משוואות בסגנון מתמטי? כך ולא. זה מורכב.",
+    "in_context": "משוואות בסגנון מתמטי? כן ולא. זה מורכב."
+   },
+   {
+    "file": "078.png",
+    "truth": "הישראלים שיפעלו באמזון ישראל.",
+    "in_use": "הישראלים שיפעלו באותזון ישראל.",
+    "in_context": "הישראלים שיפעלו באמזון ישראל."
+   },
+   {
+    "file": "079.png",
+    "truth": "רבה גם למנוחה מהתרגול. במהלך המנוחה, ועוד יותר",
+    "in_use": "רבה גב למנוח? מהתרגיל. במלך במנוחה, ועודימתר",
+    "in_context": "רבה גם למנוח? מהתרגול. במהלך המנוחה, ועודימתר"
+   },
+   {
+    "file": "080.png",
+    "truth": "מגיל צעיר מאוד, אנשים מזיזים את גופם לפי הקצב. אם",
+    "in_use": "מגיל צעיר מאוד אנשים מכיזים את גופם לפי הקצב. אם",
+    "in_context": "מגיל צעיר מאוד אנשים מזיזים את גופם לפי הקצב. אם"
+   },
+   {
+    "file": "081.png",
+    "truth": "כיום יש דרכים רבות ואינספור אפליקציות שאמורות לעזור למצוא דילים",
+    "in_use": "כום יש דרכים רם ואנספור אפלקצת אמרת לזר לזו גילים",
+    "in_context": "כום יש דרכים רבם ושנספור אפלקצית אמרת ליר לזו גילים"
+   },
+   {
+    "file": "082.png",
+    "truth": "להם גמן לעבוד",
+    "in_use": "להם גבן לעבוים",
+    "in_context": "להם גבן לעבוד"
+   },
+   {
+    "file": "083.png",
+    "truth": "טוב, תפסידו את השווי הכספי של אתם ימים.",
+    "in_use": "טוב, תפסידו את השווי הכספי של אחם ימים.",
+    "in_context": "טוב, תפסידו את השווי הכספי של אתם ימים."
+   },
+   {
+    "file": "084.png",
+    "truth": "המגונדרים.",
+    "in_use": "המגונדרים.",
+    "in_context": "המגונדרים."
+   },
+   {
+    "file": "085.png",
+    "truth": "לכל תא בגוף יש זהות משלו, שקשורה להתמחות שלו.",
+    "in_use": "לכל תא בגוף יש זהות משלו, שקשור. לבתמחוות שלו.",
+    "in_context": "לכל תא בגוף יש זהות משלו, שקשור. להתמחות שלו."
+   },
+   {
+    "file": "086.png",
+    "truth": "אגוזים מפצחת. ובקומה החמישית גר מר עכבר.",
+    "in_use": "אגוזים מפצחת. ובקומה החמישי, שיר מר עכבר.",
+    "in_context": "אגונים מפצחת. ובקומה החמישי, שיר מר עכבר."
+   },
+   {
+    "file": "087.png",
+    "truth": "הרגלי הגלישה שלהם באתרים ואפליקציות, ולמחוק אותו.",
+    "in_use": "הרגלי הגלה שלהם אחרים ואפליקציות, ולמחוק אותו.",
+    "in_context": "הרגלי הגלישה שלהם בוחרים ואפליקציות, ולמחוק אותו."
+   },
+   {
+    "file": "088.png",
+    "truth": "דינוזאורים",
+    "in_use": "דינו אורים",
+    "in_context": "דינו אורים"
+   },
+   {
+    "file": "089.png",
+    "truth": "קניין ולחלוקתו. חוקרים המתמחים בכלכלה עוסקים באופן",
+    "in_use": "קניין וחלוקתו. חוקרים המתמחים בכלכלה עוסקים באופן",
+    "in_context": "קניין וחלוקתו. חוקרים המתמחים בכלכלה עוסקים באופן"
+   },
+   {
+    "file": "090.png",
+    "truth": "למנגנון במוח שאחראי לכך.",
+    "in_use": "למנגניו במוח שאחראי לכך.",
+    "in_context": "למנגנון במוח שאחראי לכך."
+   },
+   {
+    "file": "091.png",
+    "truth": "השנה הבאה.",
+    "in_use": "הנה הבאה.",
+    "in_context": "הענה הבאה."
+   },
+   {
+    "file": "092.png",
+    "truth": "חוזר כל קופה תחויב לפרסם את יעדי ההמתנה לא",
+    "in_use": "חוזר כל קופה תחויב לפרסם את ועני ההמתנה לא",
+    "in_context": "חוזר כל קופה תחויב לפרסם את יעני ההמתנה לא"
+   },
+   {
+    "file": "093.png",
+    "truth": "את הזמן החוטשי שלום גם בעבודה. עבודה כזו",
+    "in_use": "את הזמן החוטשי שלום גם בעבודה. עבודה הזו",
+    "in_context": "את הזמן החופשי שלום גם בעבודה, עבודה הזו"
+   },
+   {
+    "file": "094.png",
+    "truth": "גם בתאי הגוף עצמם, ופגיעה בתאי מוח עלולה להיות חמורה במיוחד. אך בשנים",
+    "in_use": "גם בתאי האף עצמם, ופריעה בתאי מנה עלולה לחיות חמוכב במינסד. אך בשנים",
+    "in_context": "גם בתאי האף עצמם, ופריעה בתאי מנה עלולה להיות חמורה במיוחד. אך בשנים"
+   },
+   {
+    "file": "095.png",
+    "truth": "לסבול שמישהו יעלה עליה ביופי",
+    "in_use": "לסבול שמישהו ועלה עליה גייפ.",
+    "in_context": "לסבול שמישהו יעלה עליה מייד."
+   },
+   {
+    "file": "096.png",
+    "truth": "בחומרים דוחי יתושים ודילול אוכלוסיית היתושים",
+    "in_use": "בחומרים דוחי יתושים ודילול אוכלוסיית היתושים",
+    "in_context": "בחומרים דוחי יתושים ודילול אוכלוסיית היתושים"
+   },
+   {
+    "file": "097.png",
+    "truth": "מה המקור של חוקי הכלכלה? האם הם אובייקטיביים ומוחלטים כמו",
+    "in_use": "מה המקור של חו ככללה? האם הם אוביקטיבים וממלטים כמו",
+    "in_context": "מה המקור של חוק הכללה? האם הם אוביקטיבים ומוטים בו"
+   },
+   {
+    "file": "098.png",
+    "truth": "סכום מקסימלי לכל סוג של הוצאה בחודש ( סכום להוצאה על",
+    "in_use": "הרום מקסימלי לכלםסוג של הוראה בחודשצרום להוצאשה על",
+    "in_context": "הרום מקסימלי לכל סוג של הוצאה בחוד שפרום להוצאה על"
+   },
+   {
+    "file": "099.png",
+    "truth": "פעם אחת, לפני הרבה שנים, חי מלך שאהב מאוד בגדים יפים.",
+    "in_use": "פעם אחת. לפני הרבה שנים, חי מלך שאבה מאוד בגדים יפים.",
+    "in_context": "פעם אחת, לפני הרבה שנים, חי מלך שאהה מאוד בגדים יפים."
+   },
+   {
+    "file": "100.png",
+    "truth": "משתנים לטובת חלופות חדשות ומעניינות.",
+    "in_use": "משתנים לטובת המסות חדשות ומתינות.",
+    "in_context": "מתנים לטובת המסות חדשות ומענינות."
+   },
+   {
+    "file": "101.png",
+    "truth": "חודש סכום קבוע. החיסכון יאפשר לכם לרכוש מוצר יקר כמו החלפת",
+    "in_use": "חודש סצום קבע. החיסרון יאפשר לכם רכוש מצה יקר כמו החלפת",
+    "in_context": "חודש סכום קבוע. החיסכון יאפשר לכם לרכוש ממצה יקר כמו החלפת"
+   },
+   {
+    "file": "102.png",
+    "truth": "שלהם. בהודעה ששלחה החברה נכתב: תודה שנרשמת",
+    "in_use": "שלהם. בהודעה ששלחה החברה נכתב. תודה שנרשמת",
+    "in_context": "שלהם. בהודעה ששלחה החברה נכתב. תודה שנרשמת"
+   },
+   {
+    "file": "103.png",
+    "truth": "גזי החממה הגדולים בהיסטוריה. הם מציעים",
+    "in_use": "גזיה חממה הגדולים בהיסטוריה. הם מציעים",
+    "in_context": "גניה חממה הגדולים בהיסטוריה. הם מציעים"
+   },
+   {
+    "file": "104.png",
+    "truth": "במקרים של צמחונות, לפעמים שוכחים למצוא תחליפים לבשר",
+    "in_use": "במים שלצמחונותת,כלפקמים שוכחים למצוא לצלופים לפשר",
+    "in_context": "קודים של צמחונות,ולפקוים שנחים למצוא הכלים לפר"
+   },
+   {
+    "file": "105.png",
+    "truth": "הכלכלה עוסקת בהקצאת משאבים וחלוקת העושר בין בני",
+    "in_use": "הכלכלה עוסקת בהקצאת משאבים וחלוקת העושר בין בני",
+    "in_context": "הכלכלה עוסקת בהקצאת משאבים וחלוקת העושר בין בני"
+   },
+   {
+    "file": "106.png",
+    "truth": "בישראל הם אנשים עובדים. ובינינו, זה די הגיוני ולא מאוד",
+    "in_use": "בשמו הב אנשים עובדים. ובניו, נה די היוני לא מאה",
+    "in_context": "בישו הם אנשים עובדים. ובנינו, זה די הגיוני לא מאד"
+   },
+   {
+    "file": "107.png",
+    "truth": "בעין קשיש שליד יוקנעם, סמוך לנחל הקישון.",
+    "in_use": "בעין קשיש שליד יוקנעם, סמוך לנחל הקישון.",
+    "in_context": "בעין קשיש שליד יוקנעם, סמוך לנחל הקישון."
+   },
+   {
+    "file": "108.png",
+    "truth": "ביום חורפי אחד ישבה המלכה על יד החלון, ובעודה רוקמת היא",
+    "in_use": "ביום חורפי אחד ישבה המלכה על יד החלון, מעודה רוקמת היא",
+    "in_context": "ביום חורפי אחד ישבה המלכה על יד החלון, בעודה רוקמת היא"
+   },
+   {
+    "file": "109.png",
+    "truth": "ולכן השרירים יכולים לעבוד פחות טוב.",
+    "in_use": "ולם השרירים יכולים לעבוד פחות טוד.",
+    "in_context": "אולם השרירים יכולים לעבוד פחות טוב."
+   },
+   {
+    "file": "110.png",
+    "truth": "לפני שנים רבות, ביער השחור העבות, מחליטה אמם החורגת של עמי ותמי",
+    "in_use": "לפני שנים רבות ביער השחור העבות, מחליטה עולם החורגת של עמי ותמי",
+    "in_context": "לפני שנים רבות ביער השחור העבות, מחליטה עמם החורגת של עמי ותמי"
+   },
+   {
+    "file": "111.png",
+    "truth": "מחקר חדש של מדענים מישראל וממדינות נוספות ניסה",
+    "in_use": "מחקר חדששלמדענים מושראלוממדינות נוספות ניסה",
+    "in_context": "מחקר חדששלמדענים מישראל וממדינות נוספות ניסה"
+   },
+   {
+    "file": "112.png",
+    "truth": "מסודרת לסופר ולא להתפתות לקנות מה שלא כתוב בה למשל,",
+    "in_use": "מסודרת לסופר ולא להתפתות לקנות מה שלא כתוב בה למשל,",
+    "in_context": "מסודרת לסופר ולא להתפתות לקנות מה שלא כתוב בה למשל,"
+   },
+   {
+    "file": "113.png",
+    "truth": "נוצר מצב בו היום אפשר למצוא מכונית חדשה לא רק",
+    "in_use": "יצר מצג בו הים אפשר למצוא מכונית חדשה לא רק",
+    "in_context": "יצר מצב בו היה אפשר למצוא מכונית חדשה לא רק"
+   },
+   {
+    "file": "114.png",
+    "truth": "כמעט ריק החברות כמעט ולעולם לא מפחיתות מחירים לפני מועד",
+    "in_use": "כעס כך החברות כמעט ולל. לו מפחיתת מחירים לבי נוער",
+    "in_context": "מע כך ההברות כמעט ולל. לו מפחיתת מחירים לבני נוע"
+   },
+   {
+    "file": "115.png",
+    "truth": "שמישהו יעלה עליה ביופיו.",
+    "in_use": "שמישהו יעלה עליה ביופיו.",
+    "in_context": "שמישהו יעלה עליה ביופיו."
+   },
+   {
+    "file": "116.png",
+    "truth": "המשתמש, כ \" פעילות לא - בפייסבוק \". המידע",
+    "in_use": "המשתמש, כי פעילות לא בסייסבוקיי המידע",
+    "in_context": "המשתמש, כי פעילות לא בפייסבוק המידע"
+   },
+   {
+    "file": "117.png",
+    "truth": "למצב של אנמיה מחוסר ברזל. כשחסר ברזל, מגיע פחות חמצן לשרירים",
+    "in_use": "למצב של אנמיה מחוסר ברזל. כשחפר ברזל, מגיע פחות חמצן לשרירים",
+    "in_context": "למצב של אנמיה מחוסר ברזל. כשחסר ברזל, מגיע פחות חמצן לשרירים"
+   },
+   {
+    "file": "118.png",
+    "truth": "את הברזל נמצא בבשר, עוף ודגים.",
+    "in_use": "את הברזל מצא בבשר, עוף ודגים.",
+    "in_context": "את הברזל מצא בבשר, עוף ודגים."
+   },
+   {
+    "file": "119.png",
+    "truth": "מתאר אתר פתוח שכזה בען קשיש שליד יקנעם, סמוך",
+    "in_use": "מתאר אתר פתוח שכזה בען קשיש שליד יוקנעם, המון",
+    "in_context": "מתאר אתר פתוח שכזה בען קשיש שליד יוקנעם, המון"
+   },
+   {
+    "file": "120.png",
+    "truth": "טוב נסתדר ביחד",
+    "in_use": "טוב נסתדר ביחד",
+    "in_context": "טוב נסתדר ביחד"
+   },
+   {
+    "file": "121.png",
+    "truth": "בכל יום היה עורך טכס חגיגי, רק כדי להתפאר",
+    "in_use": "בכל יים תהיה עורך טפס חגיגי, רק כדי לה באר",
+    "in_context": "בכל יום היה עורך טכס חגיגי, רק כדי לה באר"
+   },
+   {
+    "file": "122.png",
+    "truth": "ברזל, מגיע פחות חמצן לשרירים ולכן השרירים יכולים",
+    "in_use": "ברזל, מגון לחות תמצן לשרידים לכם השכורים עולם",
+    "in_context": "ברזל, מגון לחות חמצן לשנים ולכם השכרם עולם"
+   },
+   {
+    "file": "123.png",
+    "truth": "לווסת את טמפרטורת הגוף שלהם. מנגנוני ויסות",
+    "in_use": "לווסת את טמפרטית הגוף שלהב. מנגנוני ויסות",
+    "in_context": "לווסת את טמפרטת הגוף שלהם. מנגנוני ויסות"
+   },
+   {
+    "file": "124.png",
+    "truth": "צוהר למנגנון במוח שאחראי לכך.",
+    "in_use": "צוהר למנגנון במוח שאחראי לכך.",
+    "in_context": "צוהר למנגנון במוח שאחראי לכך."
+   },
+   {
+    "file": "125.png",
+    "truth": "שלנו ואפילו מהפיזיולוגיה שלנו בני האדם.",
+    "in_use": "שוני ואפילו מהפה מהפיזיולוגה שלנו בני האדם.",
+    "in_context": "שוני ואפילו מהפה מהפיזיולוגיה שלנו בני האדם."
+   },
+   {
+    "file": "126.png",
+    "truth": "הפלסטיק על כל צורותיו הוא אחד החומרים המצלחים",
+    "in_use": "הפלסטיק על כל צורותיו הוא אחד החומשים המוצלחים",
+    "in_context": "הפלסטיק על כל צורותיו הוא אחד החומשים המוצלחים"
+   },
+   {
+    "file": "127.png",
+    "truth": "חלקנו רגישים לתרופות מסוימות וסובלים מתופעות",
+    "in_use": "חלקנו רגישים לתרופות מסויימות וסובלים מתופעות",
+    "in_context": "חלקנו רגישים לתרופות מסויימות וסובלים מתופעות"
+   },
+   {
+    "file": "128.png",
+    "truth": "בעזרת מפרש המנצל את רוח השמש.",
+    "in_use": "ברכת מפרט כמנט את חלת השמש.",
+    "in_context": "בתכת מפרש כמנט את חלת האש."
+   },
+   {
+    "file": "129.png",
+    "truth": "כשמגיע הזמן לתרופה, האפליקציה תזכיר לכם, ולא תרפה עד שתעדכנו אותה",
+    "in_use": "שמניע הזמן לארופה, אפליקציה תזכיכלכם, ולא תרסה עד שתעדכנו אותך",
+    "in_context": "שמיע הזמן לארופה, האפליקציה תזכיר לכם, ולא תרפה עד שתעדכנו אותך"
+   },
+   {
+    "file": "130.png",
+    "truth": "הוסיפו בועת הוראות: לחצו על כדור הזהב.",
+    "in_use": "הוסיפו בועת הוראות: לחצו על כדור הזהב.",
+    "in_context": "הוסיפו בועת הוראות: לחצו על כדור הזהב."
+   },
+   {
+    "file": "131.png",
+    "truth": "שאספה על הרגלי הגלישה שלהם באתרים ואפליקציות,",
+    "in_use": "שאספה על הרגלי הגלישה שלהם באתרים ואפליקציות,",
+    "in_context": "אספה על הרגלי הגלישה שלהם באתרים ואפליקציות,"
+   },
+   {
+    "file": "132.png",
+    "truth": "ובראשה המוח, יש נוכות מועטה של תאי מערכת החיסון ביחס לשאר",
+    "in_use": "ובראשה המוח, ישנוכת מועטה של תאי מערכת החיסון ביחס לשאר",
+    "in_context": "בראשה המוח, ישנוכת מועטה של תאי מערכת החיסון ביחס לשאר"
+   },
+   {
+    "file": "133.png",
+    "truth": "למצוא דילים לכרטיסי טיסה, ועדיין השאלה העיקרית",
+    "in_use": "למצוא דילים לכרטיסי טיסה, ועדיין השאלה העיקרית",
+    "in_context": "למצוא דילים לכרטיסי טיסה, ועדיין השאלה העיקרית"
+   },
+   {
+    "file": "134.png",
+    "truth": "חיים, חלק מבני הנוער כיום, יש רבים אחרים שיוצאים לעבוד מתוך",
+    "in_use": "חיים, חלק מבני הנוער כיום, יש רבים אחר שאצאים לעבוד מתוך",
+    "in_context": "חיים, חלק מבני הנוער כיום, יש רבים אחרים שאצאים לעבוד מתוך"
+   },
+   {
+    "file": "135.png",
+    "truth": "אדירות. אבל ההצלחה העצומה גבתה, וממשיכה לגבות,",
+    "in_use": "אבירות. אבל ההצלחה העצוותה גבתה, וממשיכה לגבות,",
+    "in_context": "אבירות. אבל ההצלחה העצומה גבתה, וממשיכה לגבות,"
+   },
+   {
+    "file": "136.png",
+    "truth": "לייצור קניין ולחלוקתו.",
+    "in_use": "לייצור תיו ולחלוקתו.",
+    "in_context": "לייצורתיו ולחלוקתו."
+   },
+   {
+    "file": "137.png",
+    "truth": "ויש יד מכוונת שדואגת לכך. אם בעבר ארגונים שלטו באמצעות",
+    "in_use": "ישיה מכוונת שהיאגת לכך. אם בעבר ארגונים שלטו באמצעות",
+    "in_context": "ישים מכוונת שדואגת לכך. אם בעבר ארגונים שלטו באמצעות"
+   },
+   {
+    "file": "138.png",
+    "truth": "קומות ומי גר במגדל?",
+    "in_use": "קומות ומי גר במגדל?",
+    "in_context": "קומות ומי גר במגדל?"
+   },
+   {
+    "file": "139.png",
+    "truth": "את דלת הכניסה, המקום המבוצר ביותר בביתנו,",
+    "in_use": "את דלת הכניסה, המקום המבוצר ביותר בביתנו,",
+    "in_context": "את דלת הכניסה, המקום המבוצר ביותר בביתנו,"
+   },
+   {
+    "file": "140.png",
+    "truth": "אדירות. אבל ההצלחה העצומה גבתה, וממשיכה לגבות,",
+    "in_use": "אדירות. אבל ההצלחה העצומה גבתה, וממשיכה לגבות,",
+    "in_context": "אדירות. אבל ההצלחה העצומה גבתה, וממשיכה לגבות,"
+   },
+   {
+    "file": "141.png",
+    "truth": "כלכלית נכונה ולמוסר עבודה.",
+    "in_use": "כלא נשנה לשר עמדה.",
+    "in_context": "לס נשנה למר עמדה."
+   },
+   {
+    "file": "142.png",
+    "truth": "החומריים הדרושים לקיומם של האדם והחברה. כלכלה",
+    "in_use": "החומריים הצרושים לקיומם של האדם והחברה. כלכלה",
+    "in_context": "החומריים הדרושים לקיומם של האדם והחברה. כלכלה"
+   },
+   {
+    "file": "143.png",
+    "truth": "לתרופות מסוימות וסובלים מתופעות לוואי בלתי נעיםות",
+    "in_use": "ל תרופות מסוימות וסובלים מתופעות לוואי בלתינעיםו",
+    "in_context": "לתרופות מסוימות וסובלים מתופעות לוואי בלתינעיםו"
+   },
+   {
+    "file": "144.png",
+    "truth": "התגלה כי מעורב כאן גורם נוסף: המיקרוביום שלנו - מגוון החיידקים, הנגיפים",
+    "in_use": "התגלה כי מערב כאן גורם נוף: העיקתבאם שלנו - ותגוין התיידהים, הנגיפים",
+    "in_context": "התגלה כי מעורב כאן גורם נוף: הבאם שלנו - גון החיידקים, הנגיפים"
+   },
+   {
+    "file": "145.png",
+    "truth": "הגילים, המגדרים והמוצאים האתניים, אולם מתבגרות ונשים צעירות נמצאות בסיכון",
+    "in_use": "הטילים המשדרים והמוצאים האתנים, אולם מתבדרות ונשים צריכות נמצאות בסיכון",
+    "in_context": "הולים המגדרים והמוצאים האתנים, אולם מתבגרות ונשים צריכות נמצאות בסיכון"
+   },
+   {
+    "file": "146.png",
+    "truth": "כ \" פעילות לא - בפייסבוק \".",
+    "in_use": "כייפעילות לא - בפייסבוק",
+    "in_context": "כפעילות לא - בפייסבוק"
+   },
+   {
+    "file": "147.png",
+    "truth": "איננה כל הסיפור. לא רק בנגינה, אלא בכל למידה של",
+    "in_use": "שויננ: כל הסיקור לא נגינה אלא בכל למידרף",
+    "in_context": "שינו: כל הסידור לא בנגינה אלא בכל למידה"
+   },
+   {
+    "file": "148.png",
+    "truth": "נוספים, לרבות ובעיקר בחברות הליסינג.",
+    "in_use": "לושסים, לרבות ובעיקר בחברות הליסינג.",
+    "in_context": "לולים, לרבות ובעיקר בחברות הליסינג."
+   },
+   {
+    "file": "149.png",
+    "truth": "העוסק ביחסים שקשורים בהשגת אמצעים",
+    "in_use": "העוס ביחסים שקשורים בהשגת אמצעים,",
+    "in_context": "העוסק ביחסים שקשורים בהשגת אמצעים,"
+   },
+   {
+    "file": "150.png",
+    "truth": "המקומי בהצעות המכירה שלהם.",
+    "in_use": "המקומי בהצעות המכירה שלהם",
+    "in_context": "המקומי בהצעות המכירה שלהם"
+   },
+   {
+    "file": "151.png",
+    "truth": "הקוגניטיביים והנפשיים.",
+    "in_use": "בקוגניטיריים והנפשים.",
+    "in_context": "בקוגניטיביים והנפשיים."
+   },
+   {
+    "file": "152.png",
+    "truth": "הבריאות, הנחיות אלו ייכנסו לתוקף בתחילת",
+    "in_use": "הבריאות, הנחיות אלו ייכנסו לתוקף בתחילת",
+    "in_context": "הבריאות, הנחיות אלו ייכנסו לתוקף בתחילת"
+   },
+   {
+    "file": "153.png",
+    "truth": "מסננים את הדם, תאי דם אדומים נושאים חמצן ופחמן דו - חמצני, תאי עצב מעבורים",
+    "in_use": "מסננים את קדם, תאי דם אדומים נרסאם חמצן ופחמן דהחחצני, תאי עצב מעבורים",
+    "in_context": "מסננים את הדם, תאי דם אדומים נושאים חמצן ופחמן דהחחצני, תאי עצב מעבירים"
+   },
+   {
+    "file": "154.png",
+    "truth": "החברה מגדירה את המידע, למשל כאשר אתר ביגוד חולק מידע עמה לגבי",
+    "in_use": "החברה מגדיר את המידע, למשל פאשר אתר בגום הולה מידע עלה לגבי",
+    "in_context": "החברה מגדירה את המידע, למשל כאשר אתר בגום הולה מידע על לגבי"
+   },
+   {
+    "file": "155.png",
+    "truth": "רצון פנימי, והתנועות שהם מבצעים עשויות להיות חיקוי של",
+    "in_use": "רצון פנימי, והתנועות שהם מבצעים עשויות שהיו חיקוי שלי",
+    "in_context": "רצון פנימי, והתנועות שהם מבצעים עשויות להיות חיקוי של"
+   },
+   {
+    "file": "156.png",
+    "truth": "אנחנו לא מסוגלים להפסיק לעבוד, ויש לכך סיבה.",
+    "in_use": "אנחנו לא מסוגלים להפסיק לעבוד, ויש לכך סיבה.",
+    "in_context": "אנחנו לא מסוגלים להפסיק לעבוד, ויש לכך סיבה."
+   },
+   {
+    "file": "157.png",
+    "truth": "והשימושיים ביותר שהאדם הצליח לייצר באופן מלאכותי.",
+    "in_use": "והשימושים ביותר שהאבם הצליח שייצר באופן מלאכותי.",
+    "in_context": "ו השימושיים ביותר שהאדם הצליח לייצר באופן מלאכותי."
+   },
+   {
+    "file": "158.png",
+    "truth": "רבות נכתב על המלחמה נגד שינוי האקלים, אך מה",
+    "in_use": "רבות נכתב על המלחמה נגד שינוי ה אקלים. אך מה",
+    "in_context": "רבות נכתב על המלחמה נגד שינוי האקלים, אך מה"
+   },
+   {
+    "file": "159.png",
+    "truth": "לכל תא בגוף יש זהות משלו, שקשורה להתמחות שלו. תא כליה, לדוגמה,",
+    "in_use": "לכל הא בגוף ישזקות משלו, שקשורה להתברות שלו, תא כליה, להומה.",
+    "in_context": "לכל הא בגוף ישזקות משלו, שקשורה להתברות שלו, הא כליה, להבמה."
+   },
+   {
+    "file": "160.png",
+    "truth": "על הילדים הרעבים, מכבידים עלין כל כך, עד שאינו",
+    "in_use": "של הילדים הרעבים, מכבידים עלין כול כך, גד שאינו",
+    "in_context": "של הילדים הרעבים, מכבידים עליו כל כך, עד שאינו"
+   },
+   {
+    "file": "161.png",
+    "truth": "יש דברים נוספים שאפשר לעשות כדי לבלוט. בגוגל פרסמו",
+    "in_use": "ים צברים נוספים שאפשר לעשות כדי לבלוט. בגוגל פרסמו",
+    "in_context": "ים דברים נוספים שאפשר לעשות כדי לבלוט. בגוגל פרסמו"
+   },
+   {
+    "file": "162.png",
+    "truth": "החולים עומדת לעבור מהעולם? משרד הבריאות שיגר",
+    "in_use": "החולים עומצת לעבור מהעולם? משרד הבריאות שיגר",
+    "in_context": "החולים עומדת לעבור מהעולם? משרד הבריאות שיגר"
+   },
+   {
+    "file": "163.png",
+    "truth": "כתבה הבוקר. למוכרים שכדאי להם להפעיל את אופציית השירות",
+    "in_use": "כתבה הבוקר. למוכרים צבאי להם להפעיל את אופציית השירות",
+    "in_context": "כתבה הבוקר למוכרים שכדאי להם להפעיל את אופציית השירות"
+   },
+   {
+    "file": "164.png",
+    "truth": "יכולתם של צמחים לחוש את סביבתם ולהגיב בהתאם היא הכרחית",
+    "in_use": "יכולתם של צמחים לחש עת סביבתם ולהמיב בהתאם היא הכרחית",
+    "in_context": "יכולתם של צמחים לחוש את סביבתם ולהגיב בהתאם היא הכרחית"
+   },
+   {
+    "file": "165.png",
+    "truth": "במסגרת מערכת החינוך הממלכתית בישראל, הורים נדרשים",
+    "in_use": "במסגרות מערכת החינוך הממלכתיות בישראל, הורים נצרוים",
+    "in_context": "במסגרת מערכת החינוך הממלכתית בישראל, הורים נצרכים"
+   },
+   {
+    "file": "166.png",
+    "truth": "לגבי היסטוריית הגלישה של המשתמש, כ\"פעילות לא - בפייסבוק\".",
+    "in_use": "לרבי היסטוריית הגלישה של המם תמש, כי פעולות לא - בפויסבוקיי.",
+    "in_context": "לגבי היסטוריית הגלישה של המשתמש, כי פעולות לא - בפויסבוקיי."
+   },
+   {
+    "file": "167.png",
+    "truth": "סוללות כבר מזמן לא רק מספקות את האנרגיה שדרושה לנו כדי להעביר",
+    "in_use": "סוללות כבר מזמן לא רק מסקות את האנרגיה שדרושה לנו כדי להעביר",
+    "in_context": "סוללות כבר מזמן לא רק מספקות את האנרגיה שדרושה לנו כדי להעביר"
+   },
+   {
+    "file": "168.png",
+    "truth": "היא מהלכת, עושה ביקורים, כי בניה גרים",
+    "in_use": "היא מהלכת, עשה בילדים, כי בניה גרים",
+    "in_context": "היא מהלכת, עשה בילדים, כי בניה גרים"
+   },
+   {
+    "file": "169.png",
+    "truth": "שלושה כשלי אבטחה, שכאשר שולבו ביחד איפשרו להפוך",
+    "in_use": "שלושה בשל אבלות, שכאשר שולבו ביחד איפשרו להפוך",
+    "in_context": "שלשה בשלי אבלוה, שכאשר שולבו ביחד איפשרו להפוך"
+   },
+   {
+    "file": "170.png",
+    "truth": "הנתונים מראים שרוב בני הנוער מבינים שכדאי להם למלא את הזמן החופשי",
+    "in_use": "לנתונים מראים שרוב בני הנוער מבינים שכדאי להם לבל א את הזמן החופשי",
+    "in_context": "לנתונים מראים שרוב בני הנוער מבינים שכדאי להם למל א את הזמן החופשי"
+   },
+   {
+    "file": "171.png",
+    "truth": "בתוכו את הכח להתנגד לאישה.",
+    "in_use": "בתוכו את הכחלהתנגדלאישה.",
+    "in_context": "בתוכו את הכחל התנגד לאישה."
+   },
+   {
+    "file": "172.png",
+    "truth": "סדר עדיפויות של מה חשוב יותר ומה חשוב פחות ולחסוך כל חודש",
+    "in_use": "הדר עדיפויות של מהתשוביותרימה חשוב פחות ולחסוך כל חודש",
+    "in_context": "דר עדיפויות של מהחשוב יותר ומה חשוב פחות ולחסוך כל חודש"
+   },
+   {
+    "file": "173.png",
+    "truth": "חוקרים המתמחים בכלכלה עוסקים באופן שבו משאבים",
+    "in_use": "חוקרים המתמחים בכלכלה עוסקים באופן שבו משאבים",
+    "in_context": "חוקרים המתמחים בכלכלה עוסקים באופן שבו משאבים"
+   },
+   {
+    "file": "174.png",
+    "truth": "המקורות. היא התברכה בחיטה, בשעורה, בתאנה, ברימון, בזית",
+    "in_use": "המקורות. היא התברכה בחיטה, בשעורה, בתאנה, ברימון, בזית",
+    "in_context": "המקורות. היא התברכה בחיטה, בשעורה, בתאנה, ברימון, בזית"
+   },
+   {
+    "file": "175.png",
+    "truth": "דייג עני עם אשתו הענייה. כל בוקר היה הדייג יורד אל חוף הים,",
+    "in_use": "דייג עני עם אשתו העברית. כל בוקר היה חדייג יורד אל חוץ -ב",
+    "in_context": "דייג עני עם אשתו הענייה. כל בוקר היה הדייג יורד אל חוף -ב"
+   },
+   {
+    "file": "176.png",
+    "truth": "נאמנות ושייכות ומגייסים את הנפש. מומחים מסבירים איך",
+    "in_use": "נאמנות ושייכות ומשייסים את הנפש. מומחים מסבירים איך",
+    "in_context": "נאמנות ושייכות ומגייסים את הנפש. מומחים מסבירים איך"
+   },
+   {
+    "file": "177.png",
+    "truth": "בעולם השפע בו חיים חלק מבני הנוער כיום, יש רבים אחרים",
+    "in_use": "בעולם. השפע בו חיים חלק מבני הנער כיום. ושרבים אחרים",
+    "in_context": "בעולם השפע בו חיים חלק מבני הנוער כיום. ורבים אחרים"
+   },
+   {
+    "file": "178.png",
+    "truth": "אנחנו לא מסוגלים להפסיק לעבוד, ויש לכך סיבה.",
+    "in_use": "אנחנו לא מסוגלים להפסיק לעבוד, ויש לכך סיבה.",
+    "in_context": "אנחנו לא מסוגלים להפסיק לעבוד, ויש לכך סיבה."
+   },
+   {
+    "file": "179.png",
+    "truth": "והראו שמערכת החיסון פעילה בהחלט גם במוח.",
+    "in_use": "והרטו מערכת החיסון פעילה בהחלט גם במוח.",
+    "in_context": "הראו שמערכת החיסון פעילה בהחלט גם במוח."
+   },
+   {
+    "file": "180.png",
+    "truth": "אלפי השנים האחרונות.",
+    "in_use": "אלפי השנים האחרונות.",
+    "in_context": "אלפי השנים האחרונות."
+   },
+   {
+    "file": "181.png",
+    "truth": "בסוף חשים אשמה - כך נראית קריירה בעידן ישלנו,",
+    "in_use": "בסוף חשים אשמה - כך נראית קרייכהבעיצו שלנו.",
+    "in_context": "בסוף חשים אשמה - כך נראית קרייכהבעיצו שלנו"
+   },
+   {
+    "file": "182.png",
+    "truth": "להתייחס אליו כאל שחקן אקלימי משמעותי,",
+    "in_use": "ל התייחס אליו כשל שחקן אקלימי משמעותי.",
+    "in_context": "ל התייחס אליו כאל שחקן אקלימי משמעותי."
+   },
+   {
+    "file": "183.png",
+    "truth": "מהפסיכולוגיה שלנו ואפילו מהפיזיולוגיה שלנו בני האדם.",
+    "in_use": "מהפסיכטלוגיה שלנו ואפילו מהפיתיולוגיה שלנו בני האדם.",
+    "in_context": "מהפסיכולוגיה שלנו ואפילו מהפיזיולוגיה שלנו בני האדם."
+   },
+   {
+    "file": "184.png",
+    "truth": "לשנת חלום מחקר חדש שנערך באוניברסיטת ברן פותח",
+    "in_use": "לשנת חלכך. מחקר חדש שנעכך באנניברסיזת ברן פותח",
+    "in_context": "לשנת חלב. מחקר חדש שנערך באוניברסיטת ברן פותח"
+   },
+   {
+    "file": "185.png",
+    "truth": "כליה, לדוגמה, מסננים את הדם, תאי דם אדומים נושאים חמצן",
+    "in_use": "כליה לדוגמה מסננים את הדם, תאי דם אדומים נושאים חמדן",
+    "in_context": "כליה לדוגמה מסננים את הדם, תאי דם אדומים נושאים חמצן"
+   },
+   {
+    "file": "186.png",
+    "truth": "על מנת להתמודד עם מחלות המועברות על ידי יתושים נהוג לשלב כמה",
+    "in_use": "על מים להתמבד עם מחלות המועברות על ידי יתושים נהוג לשלב סה",
+    "in_context": "על מנת להמבד עם מחלות המועברות על ידי יתושים נהוג לשלב סאה"
+   },
+   {
+    "file": "187.png",
+    "truth": "אך פעמים רבות הדרכים שבהן הם גוברים על המכשולים",
+    "in_use": "אך בסמים רבות הברכים בבן הם גיברים על המרשלים",
+    "in_context": "אך בסמים רבות הדרכים בהן הם גוברים על המרשלים"
+   },
+   {
+    "file": "188.png",
+    "truth": "שהתקבצו מכל העולם לצד המטבח הערבי יצרו כאן בלילה יחידה",
+    "in_use": "שהתקדזו מכל העלים לצה המטבח הערבי יצרו כאן בלילה חבר",
+    "in_context": "שהתקדזו מכל הגלים לצד המטבח הערבי יצרו כאן בוילה חדר"
+   },
+   {
+    "file": "189.png",
+    "truth": "מעבר ארוך והארנב הלבן עדיין היה בטווח ראייתה, נחפז",
+    "in_use": "מעבר ארוךיהארנבהלהן עדיין היה בשרוחבאייתה, נחפצ",
+    "in_context": "מעבר ארוך,הארנב הלבן עדיין היה באוחבאייתה, נחפז"
+   },
+   {
+    "file": "190.png",
+    "truth": "חכמות של בתים. החוקרים מצאו שלושה כשלי אבטחה, שכאשר",
+    "in_use": "חכמות של בתיש. החוקרים מצאו שלשה כשלי אבטחה, שכאשר",
+    "in_context": "הזיות של בתים. החוקרים מצאו שלשה כשלי אבטחה, שכאשר"
+   },
+   {
+    "file": "191.png",
+    "truth": "הדייז את הרשת והריץ אל תוכה, ראה דז גהב!",
+    "in_use": "בדייז את הרשת ודריץ אל תודה, -זיאד שהצ!",
+    "in_context": "בדייז את הרשת ודרי אל תודה, -זיאד שהד!"
+   },
+   {
+    "file": "192.png",
+    "truth": "הילדים הרעבים מכבידים עליו כל כך, עד שאינו",
+    "in_use": "הילדים הרעבים מכבידים עליו כל כך, עד שאינו",
+    "in_context": "הילדים הרעבים מכבידים עליו כל כך, עד שאינו"
+   },
+   {
+    "file": "193.png",
+    "truth": "במקומות וערוצים נוספים, לרבות ובעיקר בחברות",
+    "in_use": "במקומות וערוצים נוספים, לרבות ובעיקר בחברות",
+    "in_context": "במקומות וערוצים נוספים, לרבות ובעיקר בחברות"
+   },
+   {
+    "file": "194.png",
+    "truth": "שני הבנים יכלו להמשיך מייד בעבודתם.",
+    "in_use": "שני הבנים יכלו להמשיך מרד בעבודתם.",
+    "in_context": "שני הבנים יכלו להמשיך מיד בעבודתם."
+   },
+   {
+    "file": "195.png",
+    "truth": "מחיר סביבתי גבוה. על פי הערכות, מאז פיתוח הפלסטיק",
+    "in_use": "מחיר סבובתי גבוה. על פי הערכות, מאז פיתוח הפףסשיק",
+    "in_context": "מחיר סביבתי גבוה. על פי הערכות, מאז פיתוח הפלשים"
+   },
+   {
+    "file": "196.png",
+    "truth": "תאי כליה, לדוגמה, מסננים את הדם, תאי דם אדומים",
+    "in_use": "תאי כלים, לדוגמה, מסננים את הדם, תאי דם אדומים",
+    "in_context": "תאי כליה, לדוגמה, מסננים את הדם, תאי דם אדומים"
+   },
+   {
+    "file": "197.png",
+    "truth": "בשבוע, והוותק שלכם בחברה נמוך משש שנים,",
+    "in_use": "בשבוע, והווחק שלכם בחברה נמוך משש שנים,",
+    "in_context": "בשבוע, והוותק שלכם בחברה נמוך משש שנים,"
+   },
+   {
+    "file": "198.png",
+    "truth": "הוסיפו בועת הוראות : לחצו על כדור הזהב",
+    "in_use": "בוסיפו בועת הוראות, לחצו על כדור הזחב",
+    "in_context": "הוסיפו בועת הוראות, לחצו על כדור הזהב"
+   },
+   {
+    "file": "199.png",
+    "truth": "וגבעות חיה סבתא של הילדה מדי שזה סבתא סרגה ברדס אדום רך, שאבון",
+    "in_use": "וגבעות חים סבתעושלהילקה מדו שלב סבתא סריטבברדסאדום רך, שאתו",
+    "in_context": "גברות חים סבתעושלהילקה מדו שנה סבתא סרבברדסאדום רך, שאתו"
+   },
+   {
+    "file": "200.png",
+    "truth": "חלה מהקהל ולשודד אתם לצחוק בעצמם. צחוק הוא",
+    "in_use": "חלה מהקהל ולשודד אתם לצחוק בעצמ. צחוק הוא",
+    "in_context": "חלה מהקהל ולשודד אתם לצחוק בעצמ. צחוק הוא"
+   },
+   {
+    "file": "201.png",
+    "truth": "עור מגינים על הגוף מפולשים. את הגהות הזאת התאים מקבלים",
+    "in_use": "עור מגינים על הגוף מפולשים. את הגהות העאת התאים מקבלים",
+    "in_context": "עור מגינים על הגוף מפולשים, את הגהות הזאת התאים מקבלים"
+   },
+   {
+    "file": "202.png",
+    "truth": "ומכירת מכוניות.",
+    "in_use": "ומכות משני.",
+    "in_context": "מכות משנים."
+   },
+   {
+    "file": "203.png",
+    "truth": "כאשר העלה הדייג את הרשת והציץ אל",
+    "in_use": "כאשר העלה הדייג את הרשת והציץ אל",
+    "in_context": "כאשר העלה הדייג את הרשת והציץ אל"
+   },
+   {
+    "file": "204.png",
+    "truth": "יפ וגאוותני, שלא יכל לסבול שמישהו יעלה עליה ביופיו.",
+    "in_use": "יה וגאוותני שלא יכל לסבול שמישהו יעלה עליה ביופיו.",
+    "in_context": "יה וגאוותני שלא יכל לסבול שמישהו יעלה עליה ביופיו."
+   },
+   {
+    "file": "205.png",
+    "truth": "הרגשה שהם חלק מהקהל ולעודד אותם לצחוק בעצמם. צחוק הוא",
+    "in_use": "הרגשה שהם הלק מהקהל ועודד אותם לצחוק בעצמם. צחוק היא",
+    "in_context": "הרגשה שהם חלק מהקהל ולעודד אותם לצחוק בעצמם. צחוק היא"
+   },
+   {
+    "file": "206.png",
+    "truth": "עני עם אשתו הענייה. כלבוקר היה הדייג יורד אל חוף הים פורש את",
+    "in_use": "עני עם אשתו הענייה. כלבוקר היה הדייג יורד אל חוש הים פורש את",
+    "in_context": "עני עם אשתו הענייה. כל בוקר היה הדייג יורד אל חוף הים פורש את"
+   },
+   {
+    "file": "207.png",
+    "truth": "את הרשת והציץ אל תוכה, ראה דג זהב.",
+    "in_use": "את הרשת יהציץ של תוכם, ראה דגזהם.",
+    "in_context": "את הרשת והציץ אל תוכם, ראה דגזהם."
+   },
+   {
+    "file": "208.png",
+    "truth": "גופנו ובתוכו.",
+    "in_use": "גופנו ובחופו.",
+    "in_context": "גופו ובחופו."
+   },
+   {
+    "file": "209.png",
+    "truth": "כשהטוחן מת, הוא השאיר את הטחנה לבנו הבכור ואת",
+    "in_use": "כשתטוחו מתג היא השאיר את הטחנה לבנו הבכור ואת",
+    "in_context": "כשבטוחו מת היא השאיר את הטחנה לבנו הבכור ואת"
+   },
+   {
+    "file": "210.png",
+    "truth": "ההנחה היא שחברות התעופה ירצו למלא כסאות ריקים",
+    "in_use": "ההנחה היא שחברות התעופה ירצו למלא האות ריקים",
+    "in_context": "ההנחה היא שחברות התעופה ירצו למלא כסאות ריקים"
+   },
+   {
+    "file": "211.png",
+    "truth": "זרימ בקינים אחרים. בקומה השלישית חתולה",
+    "in_use": "זרימ בקינים אחרים. בקומה השלישית חתולה",
+    "in_context": "זרי בקינים אחרים. בקומה השלישית חתולה"
+   },
+   {
+    "file": "212.png",
+    "truth": "אתם עובדים במשך 5 ימים בשבוע, והוותק שלכם בחברה נמוך",
+    "in_use": "אותם עובדים במשך ל ימים בשבוע, וחותם שלכם בחברה נמין",
+    "in_context": "אתם עובדים במשך ל ימים בשבוע, וחותם שלכם בחברה נין"
+   },
+   {
+    "file": "213.png",
+    "truth": "ברדיו. כך מנסות התכניות לרמוז לצופים אלו קטעים",
+    "in_use": "ברדיו. מנסות התכניות לרמוע לצופים אלו לטעום",
+    "in_context": "ברדיו. מאות התכניות לרמוע לצופים אלו לטעום"
+   },
+   {
+    "file": "214.png",
+    "truth": "ולעיתים, דווקא תשפר את זמינות",
+    "in_use": "ולעיתים, דווקא תשפר את זמינות",
+    "in_context": "ולעיתים, דווקא תשפר את זמינות"
+   },
+   {
+    "file": "215.png",
+    "truth": "במוח.",
+    "in_use": "במוח.",
+    "in_context": "במות."
+   },
+   {
+    "file": "216.png",
+    "truth": "אחרי הלחיצה, לפתע, יציץ מן האגם ראשו של",
+    "in_use": "אחרי הלחיצה, לפתע, יציץ מן האגם ראשו של",
+    "in_context": "אחרי הלחיצה, לפתע, יציץ מן האגם ראשו של"
+   },
+   {
+    "file": "217.png",
+    "truth": "ואף מסוכנות, ועל אחרים תרופות מסוימות פשוט",
+    "in_use": "ואף מסוכנות, ועל אחרים תרופותמסוימותעשוט",
+    "in_context": "ואף מסוכנות, ועל אחרים תרופות סוימותזשוט"
+   },
+   {
+    "file": "218.png",
+    "truth": "עד שהיא בוקעת מן האצבעות בחופשיות ובטבעיות. אבל",
+    "in_use": "עד שהיא בוהעת מן האצבעות בחופשיות ובטבעיות. אבל",
+    "in_context": "עד שהיא בוקעת מן האצבעות בחופשיות ובטבעיות. אבל"
+   },
+   {
+    "file": "219.png",
+    "truth": "במשך שנים רבות, מדענים האמינו שבמערכת העצבים המרכזית, ובראשה המוח,",
+    "in_use": "במשך שנים רבות, מדענים האמנו שהמערכת העצבים המרכזית, ובהושה היו.",
+    "in_context": "במשך שנים רבות, מדענים האמינו שבמערכת העצבים המרכזית, ובהווה היו."
+   },
+   {
+    "file": "220.png",
+    "truth": "הפתעה גדולה בהתחשב בכך שהעופות",
+    "in_use": "הפתעה גדולה בהתחשב מכם העונות",
+    "in_context": "הפתעה גדולה בהתחשב בכל העונות"
+   },
+   {
+    "file": "221.png",
+    "truth": "של פרח נר בלילה עולה כאשר הוא \"שומע\" דבורה מתקרבת.",
+    "in_use": "של פרח נר בלילה עולה כאשר האא שומע דבורה מתקרת.",
+    "in_context": "של פרח נר הלילה עולה כאשר הוא שומע דבורה מתקרבת."
+   },
+   {
+    "file": "222.png",
+    "truth": "זמינים בכל שעה, עונים על מיילים גם בחופשה ואיכשהו",
+    "in_use": "זמינים בכל שעה עונים על מילים גם בחופשה ואיכשהו",
+    "in_context": "זמינים בכל שעה עונים על מילים גם בחופשה ואיכשהו"
+   },
+   {
+    "file": "223.png",
+    "truth": "של פסולת פלסטיק",
+    "in_use": "של פסולת פלסטיק",
+    "in_context": "של פסולת פלסטיק"
+   },
+   {
+    "file": "224.png",
+    "truth": "והראשי שלו?",
+    "in_use": "והראשי שעל",
+    "in_context": "הראשי של"
+   },
+   {
+    "file": "225.png",
+    "truth": "צוהר למנגנון במוח שאחראי לכך.",
+    "in_use": "צוהר למנגנון המוח שאחראי לבך.",
+    "in_context": "צוהר למנגנון המוח שאחראי לכך."
+   },
+   {
+    "file": "226.png",
+    "truth": "הטיסה",
+    "in_use": "הטיסה",
+    "in_context": "הטיסה"
+   },
+   {
+    "file": "227.png",
+    "truth": "כמות הקלוריות שהם צורכים ופעילות גופנית מופרזת. בהפרעה לוקים אנשים בכל",
+    "in_use": "כמות בבלוריות שהם צורכים ופעילות בופנית מופרזת. בהפרעה לוקים אנשים בכל",
+    "in_context": "כמות בקלוריות שהם צורכים ופעילות גופנית מופרזת. בהפרעה לוקים אנשים בכל"
+   },
+   {
+    "file": "228.png",
+    "truth": "שלהם גם בעבודה. עבודה כזו מחזקת את הביטחון העצמי ומחדדת את ההיכרות",
+    "in_use": "שלים גם בעבודה עבודה כזו מחוזקת את הבטחון העצמי ומחפצת את ההיכרות",
+    "in_context": "שלים גם בעבודה עבודה כזו מחזקת את הבטחון העצמי ומחפצת את ההיכרות"
+   },
+   {
+    "file": "229.png",
+    "truth": "להקצות סכום מקסימלי לכל סוג של הוצצה בחודש ( סכום להוצאה",
+    "in_use": "להקצות סכום מקסימלי לכל סוג של הוצצה בחודשנסכוב להוצאה",
+    "in_context": "להקצות סכום מקסימלי לכל סוג של הוצדה בחודשנסכום להוצאה"
+   },
+   {
+    "file": "230.png",
+    "truth": "שלנו - מגוון חיידקים, הנגיפים והפטריות המתקיימים על",
+    "in_use": "שלנו - מגוון החיידקים, הגיפים והפטריות המתקיימים על",
+    "in_context": "שלנו - מגוון החיידקים, הגופים והפטריות המתקיימים על"
+   },
+   {
+    "file": "231.png",
+    "truth": "שאינו מוצא בתוכו את הכח להתנגד לאישה.",
+    "in_use": "שאינו מוצא בחופו את הכח להתנגד לאישה.",
+    "in_context": "שאינו מוצא בחובו את הכח להתנגד לאישה"
+   },
+   {
+    "file": "232.png",
+    "truth": "כאן, היא מפצירה בחוט העצים, אין די אוכל לכולם ואם",
+    "in_use": "כאן היא מבציר בחיש העצים, אין די אוכל לכולם שם",
+    "in_context": "כאן היא מבציר בחיט העצים, אין די אוכל לכולם שם"
+   },
+   {
+    "file": "233.png",
+    "truth": "הטמפרטורה - הזעה, רעד, התנשפות - אינם מצליחים",
+    "in_use": "ה טמפרטורה - הזעה, רעד, התנשפות - אינם מצליחים",
+    "in_context": "ה טמפרטורה - הזעה, רעד, התנשפות - אינם מצליחים"
+   },
+   {
+    "file": "234.png",
+    "truth": "שקשורים בהשגת אמצעים חומריים ובחוקים הנוגעים",
+    "in_use": "שקשורים בהשגת אמצעים חומרים ובחוקרים הנוגעים",
+    "in_context": "שקשורים בהשגת אמצעים חומריים ובחוקרים הנוגעים"
+   },
+   {
+    "file": "235.png",
+    "truth": "ומגרמניה, הראו כי לפחות כמה ממיני הדינוזאורים התהדרו בנוצות.",
+    "in_use": "ומגרמניה, הראו כי לפחות כמה מין הדינוזאורים התהדרו תנודות.",
+    "in_context": "מגרמניה, הראו כי לפחות כמה מין הדינוזאורים התהדרו בנוצות."
+   },
+   {
+    "file": "236.png",
+    "truth": "המידע נאסף בעיקר בעזרת כפתורי הלייק שלה,",
+    "in_use": "המידע נאסף בעיקר בעזרת נדתורר הליק ולה,",
+    "in_context": "המידע נאסף בעיקר בעזרת נפתורר הליק ולה,"
+   },
+   {
+    "file": "237.png",
+    "truth": "נמצא בבשר, עוף ודגים. בקטניות - שעועית לבנה/אדומה, עדשים",
+    "in_use": "במפה בשר -ול ופים, בקטנית - שועית לפו מיה, הים",
+    "in_context": "במת בשר -ול ופים, בקטניות - שעועית לפו מיה, הים"
+   },
+   {
+    "file": "238.png",
+    "truth": "הוא התגלגל היישר לתוך האגם שבצד הגן",
+    "in_use": "הוא התגלגל היישר לתוך האגם שבצד הגן",
+    "in_context": "הוא התגלגל היישר לתוך האגם שבצד הגן"
+   },
+   {
+    "file": "239.png",
+    "truth": "ילדיך אינם רצויים כאן, היא מפצירה בחוטב העצים,",
+    "in_use": "ילדיך אינם כצויים כאן, היא מפציכה בחוטב העצים,",
+    "in_context": "ילדיך אינם רצויים כאן, היא מפצירה בחוטב העצים,"
+   },
+   {
+    "file": "240.png",
+    "truth": "כרדינוזאורים התהדרו בנוצות. אולי אין בכך",
+    "in_use": "כרדינוזאורים התהדרו בנוצות אוליו בר",
+    "in_context": "הדינוזאורים התהדרו בנוצות אולי בכ"
+   },
+   {
+    "file": "241.png",
+    "truth": "חייבים לוודא שכל המסמכים שאתם מעבירים אליהם חפים",
+    "in_use": "חייבים לוודא שכל נסמכיב שאתם מעבירים אליה חופים",
+    "in_context": "חייבים לוודא שכל מסמכים שאתם מעבירים אליה חפים"
+   },
+   {
+    "file": "242.png",
+    "truth": "קוקיה, כל היום היא מהלכת, עושה ביקורים, כי בניה גרים בקינים",
+    "in_use": "חוקיה, כל ביום היא מהלכת, עושה זיקודים, כ בניה גרים בקיום",
+    "in_context": "חוקיה, כל היום היא מהלכת, עושה זיקים, כ בניה גרים בקיום"
+   },
+   {
+    "file": "243.png",
+    "truth": "שני הבנים יכלו להמשיך מייד בעבודתם.",
+    "in_use": "שני הבנים יכלו להמשים מייד בעבודתם.",
+    "in_context": "שני הבנים יכלו להמשיך מייד בעבודתם."
+   },
+   {
+    "file": "244.png",
+    "truth": "כדם ושיערו שחור כעץ שבמסגרת החלון. משאלתה התגשה, אך",
+    "in_use": "כם, ושיערו שחור כעץ שממסגרה בחלון. משאלת התגשב, אך",
+    "in_context": "כם, ושיערו שחור כעץ שממסגרה בחלון. משאלת התגשם, אך"
+   },
+   {
+    "file": "245.png",
+    "truth": "הרעבים, מכבידים עליו כל כך, עד שאינו מוצא בתוכו את",
+    "in_use": "הרעבים, מכבידים עליו כל כך, עד שאינו מוצא בתוכו את",
+    "in_context": "הרעבים, מכבידים עליו כל כך, עד שאינו מוצא בתוכו את"
+   },
+   {
+    "file": "246.png",
+    "truth": "להן משנה חשיבות.",
+    "in_use": "להן משנה חשיבות.",
+    "in_context": "להן משנה חשיבות."
+   },
+   {
+    "file": "247.png",
+    "truth": "מבושלים או טריים, באופן אינטואיטיבי רובנו נגיד שעדיף",
+    "in_use": "שבשלם או לכים, באופן אינטואוליבי רבנו נגיד שעדיף",
+    "in_context": "שבשים או שרים, באן איטואוליבי רבנו נגיד שדי"
+   },
+   {
+    "file": "248.png",
+    "truth": "מתה בעת הלידה. שנה לאחר מכן נישא המלך",
+    "in_use": "מחה בעת הלידה. שנה לאחר מכן נישא המלך",
+    "in_context": "מחה בעת הלידה. שנה לאחר מכן נישא המלך"
+   },
+   {
+    "file": "249.png",
+    "truth": "היה מסלול מעבר ארוך והארנב הלבן עדיין היה בטווח",
+    "in_use": "בים מסלול מעבר ארוך והארנב הלבן עדיין הית בשנות",
+    "in_context": "הים מסלול מעבר ארוך והארנב הלבן עדיין הית בשרות"
+   },
+   {
+    "file": "250.png",
+    "truth": "אפשר לנהל באמצעות האפליקציה גם את מלאי התרופות",
+    "in_use": "אפ לנפל באמצעות האפליקציה גם את מלא התרפים",
+    "in_context": "אפ לנהל באמצעות האפליקציה גם את מלא התרפים"
+   },
+   {
+    "file": "251.png",
+    "truth": "השפעתן של תרופות על אנשים שונים נובעים מהשוני הגנטי",
+    "in_use": "השעעתו של תרופות על אנשים שונים נובעים מהשוניהגנטי",
+    "in_context": "השעתן של תרופות על אנשים שונים נובעים מהשוניהגנטי"
+   },
+   {
+    "file": "252.png",
+    "truth": "צמחים ידועים ביכולתם לשרוד בתנאי קיצון ולפלס את דרכם",
+    "in_use": "צמחים ידועים ביכולתם לשרוד בתנאי קיצון ולפלס את דרכם",
+    "in_context": "צמחים ידועים ביכולתם לשרוד בתנאי קיצון ולפלס את דרכם"
+   },
+   {
+    "file": "253.png",
+    "truth": "הנתונים מראים שרוב בני הנוער מבינים שכדאי להם",
+    "in_use": "הנחונים מראים שרוב בני הנוער מבינים שכדאי להם",
+    "in_context": "החונים מראים שרוב בני הנוער מבינים שכדאי להם"
+   },
+   {
+    "file": "254.png",
+    "truth": "לכולם ואם ילכו, יהיה לנו יותר אוכל. חוטב העצים מנסה להתנגד אך כוחותיו",
+    "in_use": "לכולם ואם חלכק יהיה לנו יותר אהל. חוטב העצים מנסה להתנגד אך כוחותיי",
+    "in_context": "לכולם ואם חכה יהיה לנו יותר אכל. חוטב העצים מנסה להתנגד אך כוחותיו"
+   },
+   {
+    "file": "255.png",
+    "truth": "אם נשאל את השאלה, מה עדיף לאכול פירות וירקות",
+    "in_use": "אם נשאל את השאלה, מס קדיש לאכול פירות ועקות",
+    "in_context": "אם נשאל את השאלה, מה קדוש לאכול פירות וקות"
+   },
+   {
+    "file": "256.png",
+    "truth": "לי יום חז ואצליח לדוז סוף סוף דז.",
+    "in_use": "לי יום חזמאצלים לבוז סוף סוף פז.",
+    "in_context": "לי יום חז מאצלים לבוז סוף סוף פז."
+   },
+   {
+    "file": "257.png",
+    "truth": "כזו מחזקת את הביטחון העצמי ומחדדת את",
+    "in_use": "כזו מחזקת את הביטחון העצמי ומחדדת את",
+    "in_context": "כזו מחזקת את הביטחון העצמי ומחדדת את"
+   },
+   {
+    "file": "258.png",
+    "truth": "וגאוותנית, שלא יכלה לסביל שמישהו יעלה עליה ביופיו.",
+    "in_use": "אוחות, שלא יצלה לסביל שמישהו ועלה עליה ביופיו.",
+    "in_context": "אותות, שלא יכלה לסבול שמישהו ועלה עליה ביופיו."
+   },
+   {
+    "file": "259.png",
+    "truth": "לוואי בלתי נעימות ואף מסוכנות, ועל אחרים",
+    "in_use": "לוואי בלתי נעימות ואף מסוכנות, ועל אחרים",
+    "in_context": "לוואי בלתי נעימות ואף מסוכנות, ועל אחרים"
+   },
+   {
+    "file": "260.png",
+    "truth": "כושית נקייה, מזונדנת. על צוואר יש לה סרט. בקומה",
+    "in_use": "כושית נקייה, מזונדנת. על צוואר יש לה סרט. בקומה",
+    "in_context": "כושית נקייה, מזונדנת. על צוואר יש לה סרט. בקומה"
+   },
+   {
+    "file": "261.png",
+    "truth": "במהלך שנת הלילה, הזכרונות שלנו מהאימון",
+    "in_use": "במחלק אות בלילה, הזרהקנותל שלנו מחלימון",
+    "in_context": "במהלך אות הלילה, הזרקות ל אנו מחלימו"
+   },
+   {
+    "file": "262.png",
+    "truth": "מכלול הפעילות האנושית, המכוונת להשגת האמצעים",
+    "in_use": "מכלול הפעילות האנושית, המכוונת להשגת האמצעים",
+    "in_context": "מכלול הפעילות האנושית, המכוונת להשגת האמצעים"
+   },
+   {
+    "file": "263.png",
+    "truth": "לפני עשרות אלפי שנים, ומראים שהאתר שימש במגוון",
+    "in_use": "לפני עשרות אלפי שנים, ומראים שהאתר שימש למגוון",
+    "in_context": "לפני עשרות אלפי שנים, ומראים שהאתר שימש למגוון"
+   },
+   {
+    "file": "264.png",
+    "truth": "בזית ובדבש, ועל השולחן שלנו עולים גם יושורט, חומוס,",
+    "in_use": "בזית ובדבש, ועל השילן שלנו עולים שים יושורש, חומוס.",
+    "in_context": "בזית ובדבש, ועל השולחן שלנו עולים שם יוגורט, חומוס."
+   },
+   {
+    "file": "265.png",
+    "truth": "מה קשים הם חיי הדייג; יום ולילה קק ידאג מי ייתן ויגרח לי יום חג",
+    "in_use": "מה קשים המחיי הדייג יום ולילה קקודאגמיייתו ויגרח לי יום וב",
+    "in_context": "מה קשים המחיי הפיג: יום ולילה קקודאג מיייתו ויגרח לי יום יום"
+   },
+   {
+    "file": "266.png",
+    "truth": "הניידים ואין ספור טכנולוגיות ניידות אחרות, איננו יכולים",
+    "in_use": "הניידים ואין ספור טכנולוגיות ניידות אחרות, איננו יכולים",
+    "in_context": "הניידים ואין ספור טכנולוגיות ניידות אחרות, איננו יכולים"
+   },
+   {
+    "file": "267.png",
+    "truth": "ובעודה רוקמת היא נדקרה במחט ומאצבעה נשרו",
+    "in_use": "ובעודה רוקמת היא נדקרה במחט ומאצבעה נשרו",
+    "in_context": "ו בעודה רוקמת היא נדקרה במחט ומאצבעה נשרו"
+   },
+   {
+    "file": "268.png",
+    "truth": "החולים ביעדים שהן יציבו. לפי התוכנית של משרד",
+    "in_use": "החולים בעצים שהן יציבו. לפי התוכנית על מורד",
+    "in_context": "החולים בעצים שהן יציבו. לפי התוכנית של מורד"
+   },
+   {
+    "file": "269.png",
+    "truth": "הלוקים בהפרעה נוקטים בדרכים שונות לירידה במשקל, כגון הגבלה קיצונית של",
+    "in_use": "חלוקים בה פרעה נוקטים בדרכים שונות לירידה במשדל, בגון השכלה בצונות של",
+    "in_context": "חלוקים בהפרעה נוקטים בדרכים שונות לירידה במשקל, בגון האכלה בצונות של"
+   },
+   {
+    "file": "270.png",
+    "truth": "שלו. תאי י כליה, לדוגמה, מסננים את הדם, תאי",
+    "in_use": "שלו. תאי כליה, לדוגמה, מסננים את הדם, תאי",
+    "in_context": "שלו. תאי כליה, לדוגמה, מסננים את הדם, תאי"
+   },
+   {
+    "file": "271.png",
+    "truth": "ריהוט או נסיעה משפחתית לחו\"ל.",
+    "in_use": "ריהוט או נסיעה משפחתית לחול.",
+    "in_context": "ריהוט או נסיעה משפחתית לחול."
+   },
+   {
+    "file": "272.png",
+    "truth": "המלווה את הבדיחות גורם לנו לחשוב שהן באמת",
+    "in_use": "המלווה את הבדיחות גור לנו לחשוב שהן באמת",
+    "in_context": "המלוה את הבדיחות גור לנו לחשוב שהן באמת"
+   },
+   {
+    "file": "273.png",
+    "truth": "ומקורות של אנרגיה מתחדשת לעולמנו מוסיפה",
+    "in_use": "ומקורות של אנרגיה מתחדשת ללולמנו מוסיפה",
+    "in_context": "מקורות של אנרגיה מתחדשת לעולמנו מוסיפה"
+   },
+   {
+    "file": "274.png",
+    "truth": "שוק הרכב משתנה למול עינינו, ערוצי המכירה המסורתיים",
+    "in_use": "שוק הרב משקלה, מול עינינו, ערוצי הכירה המסורתש",
+    "in_context": "שוק הרב משקלה, מול עינינו, ערוצי הזירה המסורת"
+   },
+   {
+    "file": "275.png",
+    "truth": "שבמסגרת החלון. משאלתה התגשמה, אך היא",
+    "in_use": "שבמסגרת החלון. משאלתה התגשמה, אך היא",
+    "in_context": "שבמסגרת החלון. משאלתה התגשמה, אך היא"
+   },
+   {
+    "file": "276.png",
+    "truth": "משאבים נגישים ( שמצויים במחסור, על פי ההנחה",
+    "in_use": "משאבים נגישים (שמצויים במחסור, על פי ההנחה",
+    "in_context": "משאבים נגישים (שמצויים במחסור, על פי ההנחה"
+   },
+   {
+    "file": "277.png",
+    "truth": "אותו תוכלו לראות באתר משרד החינוך.",
+    "in_use": "אותו תוכלו לראות באתר משרד החינוך.",
+    "in_context": "אותו תוכלו לראות באתר משרד החינוך."
+   },
+   {
+    "file": "278.png",
+    "truth": "אנשים מסביבנו צוחקים גם הם. אבל האם הצחוק",
+    "in_use": "אנשים מסביבנו צוחקים גם הם. אבל האם הצחוק",
+    "in_context": "אנשים מסביבנו צוחקים גם הם. אבל האם הצחוק"
+   },
+   {
+    "file": "279.png",
+    "truth": "לייצור קניין ולחלוקתו.",
+    "in_use": "לייצור קניין ולחלוקתו.",
+    "in_context": "לייצור קניין ולחלוקתו."
+   },
+   {
+    "file": "280.png",
+    "truth": "מחקר שהתפרסם גילה פרצות אבטחה שאיפשרו לחוקרים לפתוח בקלות דלתות",
+    "in_use": "מחקר שהתשרם שילה פרצות שאיפשר לתוקפים לפתה בקלות דתי",
+    "in_context": "מחקר שהפרם שלה פרצות שאפשר לתוקפים לפתה בקלות דתם"
+   },
+   {
+    "file": "281.png",
+    "truth": "כשהטוחן מת, הוא השאיר את הטחנה לבנו הבכור ואת החמור",
+    "in_use": "כשהאחו מת, היא השאיר את הטרינה לבנו הבכור ואת החמור",
+    "in_context": "כשהאח מת, הוא השאיר את הטרינה לבנו הבכור ואת החמור"
+   },
+   {
+    "file": "282.png",
+    "truth": "לפני שנים רבות, ביער השחור העבות,",
+    "in_use": "לפני שנים רבות ביער השחור העבות.",
+    "in_context": "לפני שנים רבות ביער השחור העבות."
+   },
+   {
+    "file": "283.png",
+    "truth": "ולמחוק אותו. החברה מגדירה את המידע, למשל",
+    "in_use": "ולמחוק אותו. החברה מגדירה את המוצע, למשל",
+    "in_context": "ולמחוק אותו. החברה מגדירה את המידע, למשל"
+   },
+   {
+    "file": "284.png",
+    "truth": "צעיר מאוד, אנשים מזיזים את גופם לפי הקצב. הם עושים",
+    "in_use": "צער מאוד, אנשים מזיזים את גופם לפי הקצב הם עושים",
+    "in_context": "צער מאוד, אנשים מזיזים את גופם לפי הקצב. הם עושים"
+   },
+   {
+    "file": "285.png",
+    "truth": "הפלסטיק על כל צורותיו הוא אחד החומרים המוצלחים והשימושיים ביותר",
+    "in_use": "הפלסטיק על כל צורותיו הוא אחד בחומרים תמוצלחים והשימושיים ביותר",
+    "in_context": "הפלסטיק על כל צורותיו הוא אחד החומרים המוצלחים והשימושיים ביותר"
+   },
+   {
+    "file": "286.png",
+    "truth": "עוסקת בהקצאת משאבים וחלוקת העושר בין בני אדם.",
+    "in_use": "עוסקת בהקצאת משאבים וחלוקת העושר בין בני אדם.",
+    "in_context": "עוסקת בהקצאת משאבים וחלוקת העושר בין בני אדם."
+   },
+   {
+    "file": "287.png",
+    "truth": "לשלוט במכ שיכים באבצעות הסבארטפון זה נוח באוד, אבל",
+    "in_use": "לשלו בשכשיכים בארדעות השאכטפון זה נוח מאוד, אבל",
+    "in_context": "לשלוט במכשירים באמצעות השאכטפון זה נוח מאוד, אבל"
+   },
+   {
+    "file": "288.png",
+    "truth": "ביצוע גבוהה, אין תחליף להשקעה רבה באימון ובתרגול.",
+    "in_use": "ביצוע גבוהה, אין תחליך להשתעה רבה באימון ובחרגול.",
+    "in_context": "ביצוע גבוהה, אין תחליך להשקעה רבה באימון ובתרגול."
+   },
+   {
+    "file": "289.png",
+    "truth": "נאמנות ושייכות ומגייסים את הנפש. מומחים מסבירים איך זה",
+    "in_use": "לשינו שיכות ומומים את הנפשי ממחים מסבירים און מה",
+    "in_context": "שינו שיחות ומומים את הנפש מומחים מסבירים אין מה"
+   },
+   {
+    "file": "290.png",
+    "truth": "הטמפרטורה - הזעה, רעד, התנשפות - אינם מצליחים לשמור",
+    "in_use": "הטמפרטורה - הנעה, רעד, התנשפות - אינם מצליחים לשמור",
+    "in_context": "הטמפרטורה - הנעה, רעד, התנשפות - אינם מצליחים לשמור"
+   },
+   {
+    "file": "291.png",
+    "truth": "לא כשהיו, מותה של אשתו הראשונה וצערו על הילדים",
+    "in_use": "לא כשהיו. מותה של אשתו הראשונה וצערו על הילדים",
+    "in_context": "לא כשהיו מותה של אשתו הראשונה וצערו על הילדים"
+   },
+   {
+    "file": "292.png",
+    "truth": "משפחתית לחו\"ל",
+    "in_use": "משפחתית לחול",
+    "in_context": "משפחתית לחול"
+   },
+   {
+    "file": "293.png",
+    "truth": "במסלול סביב כדור הארץ ותעניק, אם המשימה",
+    "in_use": "במסלול סביב כדור הארץ ותענית, אם המשימה",
+    "in_context": "במסלול סביב כדור הארץ ותענית, אם המשימה"
+   },
+   {
+    "file": "294.png",
+    "truth": "תפגע ברכיבים תזונתיים ולעיתים, דווקא תשפר את זמינות רכיבים אלו.",
+    "in_use": "תפור ברכיבים תזונחים ולעיתים, דווד השפר את זמינות רכיבים ולו.",
+    "in_context": "תפר ברכיבים תזונתיים ולעיתים, דווקא השפר את זמינות רכיבים אלו."
+   },
+   {
+    "file": "295.png",
+    "truth": "לשמור על טמפרטורת הגוף הקבועה שלנו כשאנו נכנסים",
+    "in_use": "לשמור על טמפרטורת הגוף הקבועה שלנו השאנו נכנסים",
+    "in_context": "לשמור על טמפרטורת הגוף הקבועה שלנו כשאנו נכנסים"
+   },
+   {
+    "file": "296.png",
+    "truth": "של צמחונות, לפעמים שוכחים למצוא תחליפים לבשר ולדגים, ומגיעים",
+    "in_use": "של צמחונות, לפעמים שוכחים למצוא תחליפים לקשרולדגים, ומגיעים",
+    "in_context": "של צמחונות, לפעמים שוכחים למצוא תחליפים לקשרולדגים, ומגיעים"
+   },
+   {
+    "file": "297.png",
+    "truth": "אנמיה מחוסר ברזל. כשחסר ברזל, מגיע פחות",
+    "in_use": "אנמיה מחוסר ברזל. כשחסר ברזל, מגיע פחות",
+    "in_context": "אנמיה מחוסר ברזל. כשחסר ברזל מגיע פחות"
+   },
+   {
+    "file": "298.png",
+    "truth": "באופן מלאכותי. האנושות התאהבה בפולימר הזה",
+    "in_use": "באופן מלאכותי. האנישות התאהבה בפולימר הזה",
+    "in_context": "באופן מלאכותי. האנושות התאהבה בפולימר הזה"
+   },
+   {
+    "file": "299.png",
+    "truth": "לערוך סדר עדיפויות של מה חשוב יותר ומה חשוב פחות ולחסוך כל",
+    "in_use": "לערוך סדר עדיפוית של מה חשוב יותר ומהחטוההחותולחסוך כל",
+    "in_context": "לערוך סדר עדיפויות של מה חשוב יותר ומהחטובהחותולחסוך כל"
+   }
+  ],
+  "part_secs": 411.4
+ },
+ "english": {
+  "model": "qwen3-vl-8b",
+  "quantized_4bit": true,
+  "format": "fp16",
+  "parts_on_cpu": 0,
+  "lines": 150,
+  "CER": 0.0394,
+  "secs_per_line": 0.56,
+  "gpu_memory_peak_gb": 8.1,
+  "CER_trocr_small_same_lines": 0.0694,
+  "CER_trocr_base_same_lines": 0.0452,
+  "tal": [
+   {
+    "truth": "hi there cladue, how",
+    "read": "hi there claudia, row"
+   },
+   {
+    "truth": "are you i want to test",
+    "read": "are you want to test"
+   },
+   {
+    "truth": "the text recongnition",
+    "read": "the text recognition"
+   }
+  ],
+  "rows": [
+   {
+    "ref": "Finally, being so obviously on their own,",
+    "hyp": "Finally, being so obviously on their own,",
+    "cer": 0.0
+   },
+   {
+    "ref": "Sally and of course Mrs Septimus, for surely",
+    "hyp": "Sally and of course Mrs Septimus, for surely",
+    "cer": 0.0
+   },
+   {
+    "ref": "beginning. It is \" the stone, which the builders",
+    "hyp": "beginning. It is \"the stone, which the builders",
+    "cer": 0.0208
+   },
+   {
+    "ref": "touch, the same unfailing sense of",
+    "hyp": "touch, the same unfailing sense of",
+    "cer": 0.0
+   },
+   {
+    "ref": "fault. \"",
+    "hyp": "fault.\"",
+    "cer": 0.125
+   },
+   {
+    "ref": "left, Milan. The directional angle of the",
+    "hyp": "left, Milan. The directional angle of the",
+    "cer": 0.0
+   },
+   {
+    "ref": "which had grown up during the Moon's",
+    "hyp": "which had grown up during the Morn's",
+    "cer": 0.0278
+   },
+   {
+    "ref": "nal funds, they were usually granted an",
+    "hyp": "not founds, they wen mainly granted an",
+    "cer": 0.2564
+   },
+   {
+    "ref": "the creatures participating in them. For Lily-yo, Flor",
+    "hyp": "the creatures participating in them. For Lily-yo, Flor",
+    "cer": 0.0
+   },
+   {
+    "ref": "and Fletcher that Byron would have wished his",
+    "hyp": "and Fletcher that Byron would have wished but",
+    "cer": 0.0667
+   },
+   {
+    "ref": "disposed towards each other.",
+    "hyp": "disposed towards one another.",
+    "cer": 0.2143
+   },
+   {
+    "ref": "And, if certain dishes and modes of food have",
+    "hyp": "And, if certain dishes and modes of food have",
+    "cer": 0.0
+   },
+   {
+    "ref": "For the time being Beryl was content to let",
+    "hyp": "For the time being Beryl was content to let",
+    "cer": 0.0
+   },
+   {
+    "ref": "texts to support the thesis of R. Joshua b. Levi.",
+    "hyp": "texts to support the thesis of R. Joshuab. Lebi.",
+    "cer": 0.0408
+   },
+   {
+    "ref": "an elusive foe, and, afraid to return home without",
+    "hyp": "an elusive foe, and, afraid to return home without",
+    "cer": 0.0
+   },
+   {
+    "ref": "known comment on the verse; quoted by",
+    "hyp": "known comment on the verse; quoted by",
+    "cer": 0.0
+   },
+   {
+    "ref": "Because of the plan That God, Who",
+    "hyp": "Because of the plan That god, who",
+    "cer": 0.0606
+   },
+   {
+    "ref": "outbuilding where the grave digger kept his spades",
+    "hyp": "on building where the grave digger kept his spades",
+    "cer": 0.04
+   },
+   {
+    "ref": "over with flour, you will find a stack",
+    "hyp": "over with flour, you will find a stack",
+    "cer": 0.0
+   },
+   {
+    "ref": "And then she received a jolt. Old Hubert, standing",
+    "hyp": "And then she received a jolt. Old Hubert, standing",
+    "cer": 0.0
+   },
+   {
+    "ref": "Sandra too deeply to ruin her",
+    "hyp": "Sandra too no deeply to ruin her",
+    "cer": 0.1034
+   },
+   {
+    "ref": "Dead. Shuffled out of the deck. Blasted",
+    "hyp": "Dead. Shuffled out of the deck. Blasted",
+    "cer": 0.0
+   },
+   {
+    "ref": "become so well known that it was",
+    "hyp": "become so well known that it was",
+    "cer": 0.0
+   },
+   {
+    "ref": "adult was altered to read' over sixteen',",
+    "hyp": "adult was altered to read'over sixteen',",
+    "cer": 0.0244
+   },
+   {
+    "ref": "which causes them to wake feeling worse",
+    "hyp": "which causes them to wake feeling worse",
+    "cer": 0.0
+   },
+   {
+    "ref": "Book was issued in 1604 but the Puritans",
+    "hyp": "Book was issued in 1604 but the Puritans",
+    "cer": 0.0
+   },
+   {
+    "ref": "then regarded the ring which he retrieved",
+    "hyp": "Xthen regarded the ring wich he retrieved",
+    "cer": 0.0488
+   },
+   {
+    "ref": "mix 100 stone of bread in 12 hours, and Kate served in the",
+    "hyp": "mix 100 stone of bread in 12 hours, and Kate served in the",
+    "cer": 0.0
+   },
+   {
+    "ref": "' Before she can enjoy, Lily-yo and her companion",
+    "hyp": "Before she can enjoy, Lily-yo and her companion",
+    "cer": 0.0408
+   },
+   {
+    "ref": "than her usual cordiality and flashed a warning",
+    "hyp": "than her usual cordiality and flashed a warning",
+    "cer": 0.0
+   },
+   {
+    "ref": "The mind tires first and conveys the impression",
+    "hyp": "The mind first and contrys the impetion",
+    "cer": 0.234
+   },
+   {
+    "ref": "Chairman of the local War Pensions Committee. This",
+    "hyp": "Chairman of the local War Pensions Committee. This",
+    "cer": 0.0
+   },
+   {
+    "ref": "did not visualise the awful truth - that",
+    "hyp": "did not visualise the awful truth - that",
+    "cer": 0.0
+   },
+   {
+    "ref": "carrying it into effect, and a subordinate",
+    "hyp": "carrying it into effect, and a subordinate",
+    "cer": 0.0
+   },
+   {
+    "ref": "miles it led into a small canyon which",
+    "hyp": "miles it led into a small canyon which",
+    "cer": 0.0
+   },
+   {
+    "ref": "loved her, was already flirting with a girl",
+    "hyp": "loved her, was already flirting with a girl",
+    "cer": 0.0
+   },
+   {
+    "ref": "reports were being gathered about all traffic over",
+    "hyp": "reports were being gathered about all traffic over",
+    "cer": 0.0
+   },
+   {
+    "ref": "few moments later the yawl was upside",
+    "hyp": "few moments later the gawd was upside",
+    "cer": 0.0541
+   },
+   {
+    "ref": "that they learned to fly properly. The pains associated",
+    "hyp": "that they learned to fly properly. The pains associated",
+    "cer": 0.0
+   },
+   {
+    "ref": "looked down at the fast-disappearing",
+    "hyp": "looked down at the fast-disappearing",
+    "cer": 0.0
+   },
+   {
+    "ref": "flamingoes our first morning on the island. \"",
+    "hyp": "Hemingway's our first morning on the island.\"",
+    "cer": 0.1778
+   },
+   {
+    "ref": "typically French.",
+    "hyp": "typically French.",
+    "cer": 0.0
+   },
+   {
+    "ref": "We eat it. We accept it, to show we have self-control",
+    "hyp": "We eat it. We accept it. to show we have self-control",
+    "cer": 0.0189
+   },
+   {
+    "ref": "surprised if we broke all",
+    "hyp": "Surprised if we broke all",
+    "cer": 0.04
+   },
+   {
+    "ref": "and who is now being pluckily convivial",
+    "hyp": "and who it now being pluckily convivial",
+    "cer": 0.0256
+   },
+   {
+    "ref": "the way to face life. To see all the latent",
+    "hyp": "the way to face life. To see all the latent",
+    "cer": 0.0
+   },
+   {
+    "ref": "wives, romanced about him in his absence. \" Lester was a",
+    "hyp": "wives, romanced about him in his absence. \"Lester was a",
+    "cer": 0.0179
+   },
+   {
+    "ref": "a grey superimposition of respectability over",
+    "hyp": "a grey superimposition of respectability over",
+    "cer": 0.0
+   },
+   {
+    "ref": "liked during his off-duty periods",
+    "hyp": "liked to go where during his off-duty periods",
+    "cer": 0.3636
+   },
+   {
+    "ref": "as the dawn was breaking, and",
+    "hyp": "as the dawn was breaking, and",
+    "cer": 0.0
+   },
+   {
+    "ref": "Tolch, as he is known in Tin Pan Alley, likes songs with a month in the title. He wrote",
+    "hyp": "Tolch, as he is unknown in Tin Pan Alley, lines songs with a month in the title. He wrote",
+    "cer": 0.0345
+   },
+   {
+    "ref": "Here in a dried-up creek-bed we found",
+    "hyp": "there in a dried-up creek-bed we found",
+    "cer": 0.0541
+   },
+   {
+    "ref": "thought he could recognise the route of N12,",
+    "hyp": "hought he could recognise the rank of N12,",
+    "cer": 0.1136
+   },
+   {
+    "ref": "on West Street, where a successful Sunday",
+    "hyp": "on West Street, where a successful Sunday",
+    "cer": 0.0
+   },
+   {
+    "ref": "of fruits.",
+    "hyp": "of fruits.",
+    "cer": 0.0
+   },
+   {
+    "ref": "- rouse itself and, in reply to two or",
+    "hyp": "-cause itselfd and, in reply to two ar",
+    "cer": 0.1316
+   },
+   {
+    "ref": "should she lie? Besides, it wasn't just",
+    "hyp": "Should she lie? Beside, it wasn't just",
+    "cer": 0.0513
+   },
+   {
+    "ref": "so are we deficient without spiritual knowledge, and to",
+    "hyp": "so are we deficient without spiritual knowledge, and to",
+    "cer": 0.0
+   },
+   {
+    "ref": "through tunnels would be an equally",
+    "hyp": "through tunnels would be an equally",
+    "cer": 0.0
+   },
+   {
+    "ref": "Commander, \" he said. \" Now what about that",
+    "hyp": "Commander,\" he said. \"Now what about that",
+    "cer": 0.0465
+   },
+   {
+    "ref": "banquets of later days, when the table",
+    "hyp": "banquets of later days, when the table",
+    "cer": 0.0
+   },
+   {
+    "ref": "from lifted urns.",
+    "hyp": "from gifted cons.",
+    "cer": 0.1765
+   },
+   {
+    "ref": "This can either mean that both sugyas are",
+    "hyp": "This can either mean that both sugars are",
+    "cer": 0.0488
+   },
+   {
+    "ref": "of wet canvas, Bill cleared the",
+    "hyp": "of wet canvas, Bill cleared the",
+    "cer": 0.0
+   },
+   {
+    "ref": "the windows. Little to be seen, only a",
+    "hyp": "the windows. Little to be seen, only a",
+    "cer": 0.0
+   },
+   {
+    "ref": "which occur less frequently than",
+    "hyp": "which occurs less frequently than",
+    "cer": 0.0312
+   },
+   {
+    "ref": "important Prayer Books in the Anglican",
+    "hyp": "Important Prayer Books in the Anglican",
+    "cer": 0.0263
+   },
+   {
+    "ref": "or in flagging warmer ones. At the time of its movement",
+    "hyp": "or in flagging warmer ones. At the time of its movement",
+    "cer": 0.0
+   },
+   {
+    "ref": "on his taking her out in the jeep -",
+    "hyp": "on has taking her out in the jeep-",
+    "cer": 0.0571
+   },
+   {
+    "ref": "pitch changed as the nose of the aircraft",
+    "hyp": "pitch changed as the nose of the aircraft",
+    "cer": 0.0
+   },
+   {
+    "ref": "physical illness. There is, nevertheless, a",
+    "hyp": "physical illness. That is, nevertheless, a",
+    "cer": 0.0698
+   },
+   {
+    "ref": "means of that' staple' system which ensured that",
+    "hyp": "means of that \"staple\" system which ensured that",
+    "cer": 0.0625
+   },
+   {
+    "ref": "over Bueno Buck reached into the foot",
+    "hyp": "over Bueno Buck reached into the foot",
+    "cer": 0.0
+   },
+   {
+    "ref": "those in authority to find some simple",
+    "hyp": "those in authority to find some simple",
+    "cer": 0.0
+   },
+   {
+    "ref": "What his story will be. I reckon",
+    "hyp": "What his story will be. I reckon",
+    "cer": 0.0
+   },
+   {
+    "ref": "which it engenders. But I am not arguing",
+    "hyp": "which it engenders. But I am not arguing",
+    "cer": 0.0
+   },
+   {
+    "ref": "mine seems to know how to do",
+    "hyp": "minute seems to know how to do",
+    "cer": 0.0714
+   },
+   {
+    "ref": "sing to the miners, and sang for other organisations such",
+    "hyp": "to the miners, and sang for other organisations such",
+    "cer": 0.0877
+   },
+   {
+    "ref": "weather side of that pier! He'll wreck! \"",
+    "hyp": "weathes side of that pie! He'll streak!\"",
+    "cer": 0.1463
+   },
+   {
+    "ref": "It was the battered and broken body of a woman.",
+    "hyp": "It was the battered and bruised body of a woman.",
+    "cer": 0.0851
+   },
+   {
+    "ref": "tried to surprise him. \" Dead? \" he said. \" Yes.",
+    "hyp": "tried to surprise him. \"Dead?\" he said. \"Yes.",
+    "cer": 0.0625
+   },
+   {
+    "ref": "found Bueno Buck, now on the",
+    "hyp": "famed Vienna Puck, now on the",
+    "cer": 0.2857
+   },
+   {
+    "ref": "lying in pairs alongside the jetty at Fort Blockhouse.",
+    "hyp": "lying in pairs alongside the jetty at Ford Blackhouse.",
+    "cer": 0.037
+   },
+   {
+    "ref": "without a large-scale and concentrated invasion.",
+    "hyp": "without a large-scale and concentrated invasion.",
+    "cer": 0.0
+   },
+   {
+    "ref": "Llangrwl, and his dear Morfydd quietly",
+    "hyp": "Hlangnul, and his dear Morfydd quietly",
+    "cer": 0.0789
+   },
+   {
+    "ref": "impression that nothing nasty ever",
+    "hyp": "impressions that nothing nasty ever",
+    "cer": 0.0294
+   },
+   {
+    "ref": "near me. \" Yes, \" I said. \" It'll be here to-",
+    "hyp": "near me. \"Yes,\" I said. \"It'll be here to-",
+    "cer": 0.0667
+   },
+   {
+    "ref": "impatience pending an awaited",
+    "hyp": "impatience pending an awaited",
+    "cer": 0.0
+   },
+   {
+    "ref": "three times the rate would produce 66,000.",
+    "hyp": "three times the rate would produce 66,000.",
+    "cer": 0.0
+   },
+   {
+    "ref": "right? \" \" Who told you? \" \" Little bird.",
+    "hyp": "right?\" \"Who told you?\" \"Little bird.",
+    "cer": 0.0976
+   },
+   {
+    "ref": "of the ancient world was the fact that they did not",
+    "hyp": "of the ancient world was the fact that they did not",
+    "cer": 0.0
+   },
+   {
+    "ref": "Peasants' Revolt of 1381.",
+    "hyp": "Peasants' Revolt of 1381.",
+    "cer": 0.0
+   },
+   {
+    "ref": "money. All the while the police were casting about",
+    "hyp": "money. All the while the police were casting about",
+    "cer": 0.0
+   },
+   {
+    "ref": "pestle had been of no assistance. The killer must",
+    "hyp": "pestle had been of no assistance. The Killer must",
+    "cer": 0.0204
+   },
+   {
+    "ref": "The porter at the station bore out this",
+    "hyp": "The porter at the station bore out this",
+    "cer": 0.0
+   },
+   {
+    "ref": "in it the reservoir... and I made both the",
+    "hyp": "in if the caravan... and made both the",
+    "cer": 0.2619
+   },
+   {
+    "ref": "out, \" If you come any closer, I'll sure blow",
+    "hyp": "and, if you come any closer, I'll sure blow",
+    "cer": 0.1333
+   },
+   {
+    "ref": "Gay read the rest of the letter then put",
+    "hyp": "Gay read the rest of the letter put",
+    "cer": 0.125
+   },
+   {
+    "ref": "feeding, the same subtle delicacy of",
+    "hyp": "feeding, the same subtle delicacy of",
+    "cer": 0.0
+   },
+   {
+    "ref": "for those negligible events that seemed so large to",
+    "hyp": "for those negligible event that seemed so large to",
+    "cer": 0.0196
+   },
+   {
+    "ref": "the literal meaning of Pesach which",
+    "hyp": "the literal meaning of Pesach which",
+    "cer": 0.0
+   },
+   {
+    "ref": "to some extent against it. To keep a child",
+    "hyp": "to some extent against it. To keep a child",
+    "cer": 0.0
+   },
+   {
+    "ref": "Though Diana knew the name of every",
+    "hyp": "Though Diana knew the name of every",
+    "cer": 0.0
+   },
+   {
+    "ref": "notice in the entrance saying which",
+    "hyp": "Notice in the entrance saying which",
+    "cer": 0.0286
+   },
+   {
+    "ref": "saying here is obvious, it follows naturally",
+    "hyp": "saying here is obvious, it follows naturally",
+    "cer": 0.0
+   },
+   {
+    "ref": "Such a Shamir possesses the real acid",
+    "hyp": "Such a Shamir possesses the real acid",
+    "cer": 0.0
+   },
+   {
+    "ref": "before. Bacon was at work and Milton was",
+    "hyp": "before. Bacon was at work and Hilton was",
+    "cer": 0.025
+   },
+   {
+    "ref": "what they were saying. Sandra",
+    "hyp": "what they were saying. Sandra",
+    "cer": 0.0
+   },
+   {
+    "ref": "black eyes showing any emotion. With a",
+    "hyp": "black eyes showing any emotion. With a",
+    "cer": 0.0
+   },
+   {
+    "ref": "out of his sight. \" Mine, \" Nigel Lester had",
+    "hyp": "out of his sight. \"Mine,\" Nigel Lester had",
+    "cer": 0.0455
+   },
+   {
+    "ref": "Hostettler",
+    "hyp": "Hostetler",
+    "cer": 0.1
+   },
+   {
+    "ref": "\" What they can bring off! I'll admit that.",
+    "hyp": "What they can bring off? I'll admit that.",
+    "cer": 0.0698
+   },
+   {
+    "ref": "Dante Gabriel Rossetti had simple tastes in food. At one",
+    "hyp": "Dante Gabriel Rossetti had simple tastes in food. At one",
+    "cer": 0.0
+   },
+   {
+    "ref": "A bully like that respects anyone who",
+    "hyp": "A bully like that expects anyone who",
+    "cer": 0.0541
+   },
+   {
+    "ref": "lifted urns",
+    "hyp": "lifted urns",
+    "cer": 0.0
+   },
+   {
+    "ref": "homely and protecting flame.",
+    "hyp": "Romely and protecting flame.",
+    "cer": 0.0357
+   },
+   {
+    "ref": "joking, Nigel. \" \" You shouldn't joke",
+    "hyp": "faking, Nuzed\" \"You shouldn't joke",
+    "cer": 0.2162
+   },
+   {
+    "ref": "Turton noticed its existence as they sat in silence over",
+    "hyp": "Turton noticed its existence as they sat in silence over",
+    "cer": 0.0
+   },
+   {
+    "ref": "would be inopportune; and with the idea came",
+    "hyp": "would be inopportun; and with the idea came",
+    "cer": 0.0227
+   },
+   {
+    "ref": "\" Tell me who the little bird was. \" \" Can't",
+    "hyp": "\"Tell me who the little bird was.\" \"Can't",
+    "cer": 0.0682
+   },
+   {
+    "ref": "turbot and to have been much more interested in the",
+    "hyp": "turbot and to have been much more interested in the",
+    "cer": 0.0
+   },
+   {
+    "ref": "about a verse or two of Cwm Rhondda? \"",
+    "hyp": "about a verse or two of Cwm Rhondda?\"",
+    "cer": 0.0263
+   },
+   {
+    "ref": "on the bridge over the Po, barely forty miles to port.",
+    "hyp": "on the bridge over the Po, barely forty miles to port.",
+    "cer": 0.0
+   },
+   {
+    "ref": "she felt happier. Gay loved them for their warm sympathy,",
+    "hyp": "felt happier. Gay loved them For their warm sympathy,",
+    "cer": 0.0877
+   },
+   {
+    "ref": "Gavin although he had told her that he",
+    "hyp": "gavin although he had told us that he",
+    "cer": 0.1053
+   },
+   {
+    "ref": "I knew he was responsible for",
+    "hyp": "I knew hez was responsible for",
+    "cer": 0.0345
+   },
+   {
+    "ref": "and Sir Frederick Stoven, but with their perfect con-",
+    "hyp": "and Sir Frederik Stoven, but with their perfect con-",
+    "cer": 0.0189
+   },
+   {
+    "ref": "the Jesuit, Fisher. But anyone who was friendly",
+    "hyp": "the Jesuit, Fisher. But anyone who was friendly",
+    "cer": 0.0
+   },
+   {
+    "ref": "hindered by compression, infarction or inter-",
+    "hyp": "hindered by compression, infarction or inter-",
+    "cer": 0.0
+   },
+   {
+    "ref": "a' double' life without ever deliberately",
+    "hyp": "a'double' life without ever deliberately",
+    "cer": 0.0244
+   },
+   {
+    "ref": "image and the ground itself. Ahead lay the",
+    "hyp": "image and the ground itself. Ahead lay the",
+    "cer": 0.0
+   },
+   {
+    "ref": "\" Ever been to Fleet Street? \" asked Bawley.",
+    "hyp": "\"Ever been to Fleet Street?\" asked Bawley.",
+    "cer": 0.0455
+   },
+   {
+    "ref": "He was writing something in his",
+    "hyp": "He was writing something in his",
+    "cer": 0.0
+   },
+   {
+    "ref": "with the Bible, which he had",
+    "hyp": "with the Bible, which he had",
+    "cer": 0.0
+   },
+   {
+    "ref": "yet so strange were the circumstances that it was",
+    "hyp": "yet so strange were the circumstances that it was",
+    "cer": 0.0
+   },
+   {
+    "ref": "By delicate application of odours and richly-distilled",
+    "hyp": "By delicate application of odours and richly-distilled",
+    "cer": 0.0
+   },
+   {
+    "ref": "There is a whole group of theories which attempt to explain the problems of the",
+    "hyp": "there is a whole group of theories which attempt to explain the problems of the",
+    "cer": 0.0127
+   },
+   {
+    "ref": "breakfast and supper consisted of a piece of coarse bread",
+    "hyp": "breakfast and supper consisted of a piece of coarse bread",
+    "cer": 0.0
+   },
+   {
+    "ref": "planning to do so or in fact being conscious",
+    "hyp": "planning todo so or in fact being conscious",
+    "cer": 0.0227
+   },
+   {
+    "ref": "origin of her recent illness. His notes",
+    "hyp": "origin of her recent illness. His notes",
+    "cer": 0.0
+   },
+   {
+    "ref": "programme of entertainment almost",
+    "hyp": "programme of entertainment almost",
+    "cer": 0.0
+   },
+   {
+    "ref": "them out. Just what these orders will be, we don't",
+    "hyp": "them out. just what these orders will be, we don't",
+    "cer": 0.02
+   },
+   {
+    "ref": "almost a mile on every tide at the Smith's",
+    "hyp": "almost a mile on every tide at the Smith's",
+    "cer": 0.0
+   },
+   {
+    "ref": "Dinas Motor Omnibus Co. to ask what had happened to their",
+    "hyp": "Denis Motor Omnibus Co. to ask what had happened to their",
+    "cer": 0.0351
+   },
+   {
+    "ref": "and that God dwells within us.",
+    "hyp": "and that God dwells within us.",
+    "cer": 0.0
+   },
+   {
+    "ref": "latter part of the verse by Rami bar Rabh",
+    "hyp": "latter part of the verse by Rumi or Rabi",
+    "cer": 0.0976
+   },
+   {
+    "ref": "He needed her. She would find",
+    "hyp": "He needed her. She would find",
+    "cer": 0.0
+   },
+   {
+    "ref": "persisted down the ages, the motive that preserved",
+    "hyp": "persisted down the ages, the notion that preserved",
+    "cer": 0.06
+   },
+   {
+    "ref": "language. The Shamir is the \" seventh \" and",
+    "hyp": "languge. The Shanyr is the \"seventh\" and",
+    "cer": 0.1163
+   },
+   {
+    "ref": "found him curiously stimulating. \" You're a",
+    "hyp": "found him curiously stimulating.\" You're a",
+    "cer": 0.0233
+   }
+  ],
+  "part_secs": 105.4
+ },
+ "page": {
+  "secs": 69.9,
+  "heavy_readers": [
+   "hebrew in context",
+   "Uni-MuMER",
+   "English VLM"
+  ],
+  "score": {
+   "pieces": 25,
+   "pieces_flagged_for_review": 17,
+   "hebrew": {
+    "words_right": 16,
+    "words": 29,
+    "missed": [
+     "איך",
+     "אתה",
+     "בגן",
+     "גידל",
+     "גנן",
+     "דגן",
+     "דגן",
+     "הי",
+     "לא",
+     "מהמהרות",
+     "מהממהרים",
+     "מרגיש",
+     "תוצאה"
+    ],
+    "extra": [
+     "א",
+     "איר",
+     "אנה",
+     "ב",
+     "בין",
+     "גדל",
+     "דם",
+     "ה",
+     "ה",
+     "הגן",
+     "זון",
+     "חוסה",
+     "לי",
+     "מהומהרם",
+     "מהמקרים",
+     "מרגישה",
+     "ס",
+     "של",
+     "ת"
+    ]
+   },
+   "english": {
+    "words_right": 7,
+    "words": 13,
+    "missed": [
+     "are",
+     "cladue",
+     "hi",
+     "how",
+     "recongnition",
+     "you"
+    ],
+    "extra": [
+     "a",
+     "clause",
+     "now",
+     "recognition"
+    ]
+   },
+   "math": {
+    "formulas_right": 7,
+    "formulas": 10,
+    "missed": [
+     "4^{2}+2^{2}=\\sqrt{20}",
+     "16+4",
+     "r=5"
+    ]
+   }
+  },
+  "formulas_right_pix2text": "7/10",
+  "formulas_right_mumer": "8/10",
+  "formulas_right_both_weighed": "7/10",
+  "checks": [
+   {
+    "problem": 1,
+    "verdict": "wrong",
+    "text": "a²+b²=c² with a=3, b=4: c = 5, but written c=9: wrong",
+    "confidence": 0.513,
+    "sure": false
+   },
+   {
+    "problem": 2,
+    "verdict": "right value, wrong equality",
+    "text": "'4²+2² = √20': the left side is 20, not 4.472; 20 is c² - so c = √20 is right, but the equality as written is not (y taken as 4, as another reading of that piece has it)",
+    "confidence": 0.5,
+    "sure": false
+   },
+   {
+    "problem": 3,
+    "verdict": "right",
+    "text": "A=πr² with r=5 (r=5 read from a piece taken for text): A = 78.54 - written A=78.54: right",
+    "confidence": 0.478,
+    "sure": false
+   }
+  ],
+  "text": [
+   "page 1: {'ink_threshold': 170, 'top_cut': 26, 'margin_line_columns': 0, 'punch_holes': 0, 'answer_boxes': []}, 17 lines, 0 figure(s) not read as text",
+   "line 1: [hebrew 50%] ה מה שלומך קלוד איר (78%)",
+   "line 2: [hebrew 89%] אנה מרגישה. (95%)",
+   "line 3: [hebrew 50%] אני בודק אותך איך אתה קורא (94%)",
+   "line 4: [hebrew 86%] עברית. (98%)",
+   "line 5: [hebrew 92%] ת גדל דם בגן הגן גדול גדל (75%)",
+   "line 6: [hebrew 97%] בין. (58%)",
+   "line 7: [hebrew 99%] אני לי מהומהרם אני מהמקרים (73%)",
+   "line 8: [english 50%] there clause, now (52%)  |  [math 50%] $h^{\\i}$ / 2nd reader: $hi$ (43%)",
+   "line 9: [hebrew 50%] . (78%)  |  [english 50%] I want to test (69%)  |  [hebrew 50%] ס של (93%)",
+   "line 10: [english 50%] the text recognition (80%)",
+   "line 11: [math 53%] $\\vert\\verta^{2}+b^{2}=c^{2}\\verta=3\\vertb=4$ / 2nd reader: $1)a^{2}+b^{2}=c^{2}|a=3,b=4$ (40%)",
+   "line 12: [hebrew 88%] תוצאה (98%)  |  [math 62%] $c=9$ (95%)",
+   "line 13: [math 79%] $2\\verta^{2}+b^{2}=c^{2}\\verty^{2}+2^{2}=\\sqrt{20}$ / 2nd reader: $27a^{2}+b^{2}=c^{2}4^{2}+2^{2}=\\sqrt{20}$ (78%)",
+   "line 14: [hebrew 50%] א (63%)  |  [english 50%] 16 a (72%)",
+   "line 15: [hebrew 50%] זון (48%)  |  [math 50%] $A=πr^{2}$ (99%)  |  [hebrew 91%] ה (99%)",
+   "line 16: [hebrew 72%] חוסה ב (98%)  |  [math 100%] $A=78.54$ (92%)",
+   "line 17: [math 60%] $\\imath$ / 2nd reader: $,$ (92%)",
+   "derivation checks (no key - the student's own formula and data): 3",
+   "  problem 1: WRONG - a²+b²=c² with a=3, b=4: c = 5, but written c=9: wrong (reading 51%, unsure: a human should look)",
+   "  problem 2: RIGHT VALUE, WRONG EQUALITY - '4²+2² = √20': the left side is 20, not 4.472; 20 is c² - so c = √20 is right, but the equality as written is not (y taken as 4, as another reading of that piece has it) (reading 50%, unsure: a human should look)",
+   "  problem 3: RIGHT - A=πr² with r=5 (r=5 read from a piece taken for text): A = 78.54 - written A=78.54: right (reading 48%, unsure: a human should look)"
+  ],
+  "gpu_memory_peak_gb": 8.1,
+  "part_secs": 70.3
+ }
+}

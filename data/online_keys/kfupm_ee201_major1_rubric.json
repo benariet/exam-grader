@@ -1,0 +1,15 @@
+{"name": "KFUPM EE201 Major Exam 1 (sample key, handwritten by the instructor)",
+ "source": "https://faculty.kfupm.edu.sa/EE/noman/ee201_exams.htm",
+ "items": [
+  {"id": "1a-Rab",  "points": 5, "value": "R_{ab}",  "answer": "15 ohm"},
+  {"id": "1b-Vs",   "points": 2, "value": "V_s",     "answer": "24 V"},
+  {"id": "1b-I",    "points": 1, "value": "I",       "answer": "2.4 A"},
+  {"id": "2b-vx",   "points": 2, "value": "v_x",     "answer": "-26.67 V"},
+  {"id": "2b-ix",   "points": 1, "value": "i_x",     "answer": "13.34 A"},
+  {"id": "3a-I3",   "points": 5, "value": "I_3",     "answer": "-2.72 A"},
+  {"id": "3b-V",    "points": 1, "value": "V",       "answer": "-8 V"},
+  {"id": "3b-P2A",  "points": 1, "value": "P_{2A}",  "answer": "-16 W"},
+  {"id": "3b-P10V", "points": 1, "value": "P_{10V}", "answer": "-47.2 W"},
+  {"id": "4a-v",    "points": 4, "value": "v",       "answer": "60.8 V"},
+  {"id": "4b-i",    "points": 2, "value": "i",       "answer": "-139.73 A"}
+ ]}

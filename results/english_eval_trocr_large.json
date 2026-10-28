@@ -1,0 +1,311 @@
+{
+ "summary": {
+  "lines": 60,
+  "CER_large": 0.0373,
+  "secs_per_line": 10.0,
+  "CER_small_same_lines": 0.0647,
+  "CER_base_same_lines": 0.0447
+ },
+ "rows": [
+  {
+   "ref": "Finally, being so obviously on their own,",
+   "hyp": "Finally, being so obviously on their own,",
+   "cer": 0.0
+  },
+  {
+   "ref": "Sally and of course Mrs Septimus, for surely",
+   "hyp": "sally and of course Mrs Septimus, for surely",
+   "cer": 0.022727272727272728
+  },
+  {
+   "ref": "beginning. It is \" the stone, which the builders",
+   "hyp": "beginning. It is \" the stume, which the builders",
+   "cer": 0.041666666666666664
+  },
+  {
+   "ref": "touch, the same unfailing sense of",
+   "hyp": "touch, the same unfailing sense of",
+   "cer": 0.0
+  },
+  {
+   "ref": "fault. \"",
+   "hyp": "fault. \"",
+   "cer": 0.0
+  },
+  {
+   "ref": "left, Milan. The directional angle of the",
+   "hyp": "left, Mikan. The directional angle of the",
+   "cer": 0.024390243902439025
+  },
+  {
+   "ref": "which had grown up during the Moon's",
+   "hyp": "which had grown up during the Moun's",
+   "cer": 0.027777777777777776
+  },
+  {
+   "ref": "nal funds, they were usually granted an",
+   "hyp": "nal faunds, they were usually pranted an",
+   "cer": 0.05128205128205128
+  },
+  {
+   "ref": "the creatures participating in them. For Lily-yo, Flor",
+   "hyp": "the creatures participating in them. For Lily -yo, Flor",
+   "cer": 0.018518518518518517
+  },
+  {
+   "ref": "and Fletcher that Byron would have wished his",
+   "hyp": "and Fletcher that Byron would have wished his",
+   "cer": 0.0
+  },
+  {
+   "ref": "disposed towards each other.",
+   "hyp": "disposed towards one another.",
+   "cer": 0.21428571428571427
+  },
+  {
+   "ref": "And, if certain dishes and modes of food have",
+   "hyp": "And, if certain dishes and modes of food have",
+   "cer": 0.0
+  },
+  {
+   "ref": "For the time being Beryl was content to let",
+   "hyp": "For the time being Barry ) was content to let",
+   "cer": 0.09302325581395349
+  },
+  {
+   "ref": "texts to support the thesis of R. Joshua b. Levi.",
+   "hyp": "tests to support the thesis of R. Joshua b. Letri.",
+   "cer": 0.061224489795918366
+  },
+  {
+   "ref": "an elusive foe, and, afraid to return home without",
+   "hyp": "an elusive foe, and, afraid to return home without",
+   "cer": 0.0
+  },
+  {
+   "ref": "known comment on the verse; quoted by",
+   "hyp": "known comment on the verse; quoted by",
+   "cer": 0.0
+  },
+  {
+   "ref": "Because of the plan That God, Who",
+   "hyp": "Because of the plan That God, who",
+   "cer": 0.030303030303030304
+  },
+  {
+   "ref": "outbuilding where the grave digger kept his spades",
+   "hyp": "outbuilding where the grave digger kept his spades",
+   "cer": 0.0
+  },
+  {
+   "ref": "over with flour, you will find a stack",
+   "hyp": "over with flour, you will find a stack",
+   "cer": 0.0
+  },
+  {
+   "ref": "And then she received a jolt. Old Hubert, standing",
+   "hyp": "and then she received a jalt. Old Hubert, standing",
+   "cer": 0.04
+  },
+  {
+   "ref": "Sandra too deeply to ruin her",
+   "hyp": "Sandra too # deeply to ruin her",
+   "cer": 0.06896551724137931
+  },
+  {
+   "ref": "Dead. Shuffled out of the deck. Blasted",
+   "hyp": "Dead. Smuffled out of the cheek. Blessed",
+   "cer": 0.15384615384615385
+  },
+  {
+   "ref": "become so well known that it was",
+   "hyp": "become so well known that it was",
+   "cer": 0.0
+  },
+  {
+   "ref": "adult was altered to read' over sixteen',",
+   "hyp": "adult was altered to read' over sixteen',",
+   "cer": 0.0
+  },
+  {
+   "ref": "which causes them to wake feeling worse",
+   "hyp": "which causes them to make feeling worse",
+   "cer": 0.02564102564102564
+  },
+  {
+   "ref": "Book was issued in 1604 but the Puritans",
+   "hyp": "Boste was issued in 1604 but the Puritans",
+   "cer": 0.075
+  },
+  {
+   "ref": "then regarded the ring which he retrieved",
+   "hyp": "When regarded the ring which he retrieved",
+   "cer": 0.024390243902439025
+  },
+  {
+   "ref": "mix 100 stone of bread in 12 hours, and Kate served in the",
+   "hyp": "mix too stone of bread in R'Hours, and Kate settled in the",
+   "cer": 0.1724137931034483
+  },
+  {
+   "ref": "' Before she can enjoy, Lily-yo and her companion",
+   "hyp": "' Before she can enjoy, Lily-yo and her companion",
+   "cer": 0.0
+  },
+  {
+   "ref": "than her usual cordiality and flashed a warning",
+   "hyp": "than her usual cordiality and flashed a warning",
+   "cer": 0.0
+  },
+  {
+   "ref": "The mind tires first and conveys the impression",
+   "hyp": "The mind lives first and convoys the impression",
+   "cer": 0.06382978723404255
+  },
+  {
+   "ref": "Chairman of the local War Pensions Committee. This",
+   "hyp": "Chairman of the local War Pensions Committee. This",
+   "cer": 0.0
+  },
+  {
+   "ref": "did not visualise the awful truth - that",
+   "hyp": "did not visualise the awful truth - that",
+   "cer": 0.0
+  },
+  {
+   "ref": "carrying it into effect, and a subordinate",
+   "hyp": "corging it into effect, and a subordinate",
+   "cer": 0.07142857142857142
+  },
+  {
+   "ref": "miles it led into a small canyon which",
+   "hyp": "miles it led into a small canyon which",
+   "cer": 0.0
+  },
+  {
+   "ref": "loved her, was already flirting with a girl",
+   "hyp": "loved her, was already fighting with a girl",
+   "cer": 0.06976744186046512
+  },
+  {
+   "ref": "reports were being gathered about all traffic over",
+   "hyp": "reports were being gathered about all traffic over",
+   "cer": 0.0
+  },
+  {
+   "ref": "few moments later the yawl was upside",
+   "hyp": "few moments later the youth was upside",
+   "cer": 0.10810810810810811
+  },
+  {
+   "ref": "that they learned to fly properly. The pains associated",
+   "hyp": "that they learned to fly properly. The pains associated",
+   "cer": 0.0
+  },
+  {
+   "ref": "looked down at the fast-disappearing",
+   "hyp": "looked down at the fast-disappearing",
+   "cer": 0.0
+  },
+  {
+   "ref": "flamingoes our first morning on the island. \"",
+   "hyp": "fhemingoes our first morning on the island. \"",
+   "cer": 0.044444444444444446
+  },
+  {
+   "ref": "typically French.",
+   "hyp": "typically French.",
+   "cer": 0.0
+  },
+  {
+   "ref": "We eat it. We accept it, to show we have self-control",
+   "hyp": "We eat it. We accept it, to show we have self-control",
+   "cer": 0.0
+  },
+  {
+   "ref": "surprised if we broke all",
+   "hyp": "surprised if we broke all",
+   "cer": 0.0
+  },
+  {
+   "ref": "and who is now being pluckily convivial",
+   "hyp": "and who is now being quickly carnival",
+   "cer": 0.20512820512820512
+  },
+  {
+   "ref": "the way to face life. To see all the latent",
+   "hyp": "the way to face life. To see all the latest",
+   "cer": 0.023255813953488372
+  },
+  {
+   "ref": "wives, romanced about him in his absence. \" Lester was a",
+   "hyp": "wives, romenced about him in his absence. \" Lester was a",
+   "cer": 0.017857142857142856
+  },
+  {
+   "ref": "a grey superimposition of respectability over",
+   "hyp": "a grey superimposition of respectability over",
+   "cer": 0.0
+  },
+  {
+   "ref": "liked during his off-duty periods",
+   "hyp": "libed during his off-duty periods",
+   "cer": 0.030303030303030304
+  },
+  {
+   "ref": "as the dawn was breaking, and",
+   "hyp": "as the dawn was breaking, and",
+   "cer": 0.0
+  },
+  {
+   "ref": "Tolch, as he is known in Tin Pan Alley, likes songs with a month in the title. He wrote",
+   "hyp": "Tolch, as he is known in Tin Pan Alley, lives songs with a month in the title. He wrote",
+   "cer": 0.011494252873563218
+  },
+  {
+   "ref": "Here in a dried-up creek-bed we found",
+   "hyp": "Here in a dried-up crochet we found",
+   "cer": 0.16216216216216217
+  },
+  {
+   "ref": "thought he could recognise the route of N12,",
+   "hyp": "thought he could recognise the rank of N12type",
+   "cer": 0.18181818181818182
+  },
+  {
+   "ref": "on West Street, where a successful Sunday",
+   "hyp": "on West Street, where a successful Sunday",
+   "cer": 0.0
+  },
+  {
+   "ref": "of fruits.",
+   "hyp": "of fruits.",
+   "cer": 0.0
+  },
+  {
+   "ref": "- rouse itself and, in reply to two or",
+   "hyp": "- mouse itself d and, in reply to two or",
+   "cer": 0.07894736842105263
+  },
+  {
+   "ref": "should she lie? Besides, it wasn't just",
+   "hyp": "should she lie? Beside, it wasn't just",
+   "cer": 0.02564102564102564
+  },
+  {
+   "ref": "so are we deficient without spiritual knowledge, and to",
+   "hyp": "so are we deficient without spiritual knowledge, and to",
+   "cer": 0.0
+  },
+  {
+   "ref": "through tunnels would be an equally",
+   "hyp": "through tunnels would be an equally",
+   "cer": 0.0
+  },
+  {
+   "ref": "Commander, \" he said. \" Now what about that",
+   "hyp": "Commander, \" he said. \" Now what about that",
+   "cer": 0.0
+  }
+ ]
+}

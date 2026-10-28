@@ -1,0 +1,3216 @@
+{
+ "summary": {
+  "reader": "/home/claude/models_extra/trocr-base-handwritten-q",
+  "students": 20,
+  "answers": 400,
+  "found": 0.6725,
+  "right_of_all": 0.4425,
+  "right_of_found": 0.6579925650557621,
+  "secs": 1399.6760244369507,
+  "accuracy_most_confident_25%": 0.8656716417910447,
+  "accuracy_most_confident_50%": 0.8134328358208955,
+  "accuracy_most_confident_75%": 0.7263681592039801
+ },
+ "rows": [
+  {
+   "student": "Student_1",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1. B.",
+   "conf": 0.1202015845899795
+  },
+  {
+   "student": "Student_1",
+   "q": 2,
+   "truth": "C",
+   "read": "C",
+   "text": "2. C.",
+   "conf": 0.4256998277252231
+  },
+  {
+   "student": "Student_1",
+   "q": 3,
+   "truth": "B",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.2432796120049914
+  },
+  {
+   "student": "Student_1",
+   "q": 4,
+   "truth": "A",
+   "read": "B",
+   "text": "4, B.",
+   "conf": 0.12396976304567724
+  },
+  {
+   "student": "Student_1",
+   "q": 5,
+   "truth": "B",
+   "read": "B",
+   "text": "5. B.",
+   "conf": 0.12767092528010732
+  },
+  {
+   "student": "Student_1",
+   "q": 6,
+   "truth": "B",
+   "read": "B",
+   "text": "6. B.",
+   "conf": 0.2393314259671257
+  },
+  {
+   "student": "Student_1",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7, B.",
+   "conf": 0.05182131236202433
+  },
+  {
+   "student": "Student_1",
+   "q": 8,
+   "truth": "D",
+   "read": "B",
+   "text": "8. B.",
+   "conf": 0.2550374247958665
+  },
+  {
+   "student": "Student_1",
+   "q": 9,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 10,
+   "truth": "D",
+   "read": "B",
+   "text": "10, B.",
+   "conf": 0.09880018407550296
+  },
+  {
+   "student": "Student_1",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 15,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 17,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 19,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_1",
+   "q": 20,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_2",
+   "q": 1,
+   "truth": "A",
+   "read": "B",
+   "text": "1 ) B.",
+   "conf": 0.16395461559422556
+  },
+  {
+   "student": "Student_2",
+   "q": 2,
+   "truth": "A",
+   "read": "A",
+   "text": "2 A",
+   "conf": 0.5157597982547556
+  },
+  {
+   "student": "Student_2",
+   "q": 3,
+   "truth": "A",
+   "read": "A",
+   "text": "3 A",
+   "conf": 0.7421248357825114
+  },
+  {
+   "student": "Student_2",
+   "q": 4,
+   "truth": "A",
+   "read": "D",
+   "text": "4 . D.",
+   "conf": 0.0966960365510472
+  },
+  {
+   "student": "Student_2",
+   "q": 5,
+   "truth": "B",
+   "read": "B",
+   "text": "5. B.",
+   "conf": 0.5634139178352557
+  },
+  {
+   "student": "Student_2",
+   "q": 6,
+   "truth": "C",
+   "read": "B",
+   "text": "6.B.",
+   "conf": 0.11866423462610466
+  },
+  {
+   "student": "Student_2",
+   "q": 7,
+   "truth": "A",
+   "read": "D",
+   "text": "7. D.",
+   "conf": 0.01273567953529749
+  },
+  {
+   "student": "Student_2",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8.C.",
+   "conf": 0.7259212897813307
+  },
+  {
+   "student": "Student_2",
+   "q": 9,
+   "truth": "C",
+   "read": "C",
+   "text": "9, c.",
+   "conf": 0.48118702029647853
+  },
+  {
+   "student": "Student_2",
+   "q": 10,
+   "truth": "B",
+   "read": "D",
+   "text": "10 . D.",
+   "conf": 0.03863881498324927
+  },
+  {
+   "student": "Student_2",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11. b.",
+   "conf": 0.35329401875431404
+  },
+  {
+   "student": "Student_2",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12 , C.",
+   "conf": 0.5291505801554593
+  },
+  {
+   "student": "Student_2",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_2",
+   "q": 14,
+   "truth": "C",
+   "read": "B",
+   "text": "14. B.",
+   "conf": 0.14779858287343053
+  },
+  {
+   "student": "Student_2",
+   "q": 15,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_2",
+   "q": 16,
+   "truth": "C",
+   "read": "C",
+   "text": "16. c.",
+   "conf": 0.09400915861635295
+  },
+  {
+   "student": "Student_2",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_2",
+   "q": 18,
+   "truth": "C",
+   "read": "C",
+   "text": "18.C.",
+   "conf": 0.2137214218278862
+  },
+  {
+   "student": "Student_2",
+   "q": 19,
+   "truth": "B",
+   "read": "B",
+   "text": "19. B.",
+   "conf": 0.8801582558262268
+  },
+  {
+   "student": "Student_2",
+   "q": 20,
+   "truth": "C",
+   "read": "A",
+   "text": "20- A.",
+   "conf": 0.04354774093558943
+  },
+  {
+   "student": "Student_3",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1. B.",
+   "conf": 0.08308889639702347
+  },
+  {
+   "student": "Student_3",
+   "q": 2,
+   "truth": "A",
+   "read": "A",
+   "text": "2. A",
+   "conf": 0.5833682756545032
+  },
+  {
+   "student": "Student_3",
+   "q": 3,
+   "truth": "D",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.4797562415962312
+  },
+  {
+   "student": "Student_3",
+   "q": 4,
+   "truth": "C",
+   "read": "C",
+   "text": "4,C.",
+   "conf": 0.24407915364440697
+  },
+  {
+   "student": "Student_3",
+   "q": 5,
+   "truth": "B",
+   "read": "B",
+   "text": "5. B.",
+   "conf": 0.8028343739433457
+  },
+  {
+   "student": "Student_3",
+   "q": 6,
+   "truth": "D",
+   "read": "B",
+   "text": "6. B.",
+   "conf": 0.2658150887925829
+  },
+  {
+   "student": "Student_3",
+   "q": 7,
+   "truth": "A",
+   "read": "A",
+   "text": "7.A",
+   "conf": 0.267264004599293
+  },
+  {
+   "student": "Student_3",
+   "q": 8,
+   "truth": "A",
+   "read": "A",
+   "text": "8. A",
+   "conf": 0.268310388385123
+  },
+  {
+   "student": "Student_3",
+   "q": 9,
+   "truth": "C",
+   "read": "C",
+   "text": "9. C.",
+   "conf": 0.8069967712460182
+  },
+  {
+   "student": "Student_3",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.3978468927840577
+  },
+  {
+   "student": "Student_3",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11. B.",
+   "conf": 0.7456707212534399
+  },
+  {
+   "student": "Student_3",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_3",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13. B.",
+   "conf": 0.3337108930100471
+  },
+  {
+   "student": "Student_3",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_3",
+   "q": 15,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_3",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_3",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_3",
+   "q": 18,
+   "truth": "C",
+   "read": "C",
+   "text": "18. c.",
+   "conf": 0.39636174943934893
+  },
+  {
+   "student": "Student_3",
+   "q": 19,
+   "truth": "A",
+   "read": "A",
+   "text": "19. A",
+   "conf": 0.760506801615032
+  },
+  {
+   "student": "Student_3",
+   "q": 20,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 1,
+   "truth": "B",
+   "read": "B",
+   "text": "1. B.",
+   "conf": 0.5840883503585292
+  },
+  {
+   "student": "Student_4",
+   "q": 2,
+   "truth": "A",
+   "read": "A",
+   "text": "2. A",
+   "conf": 0.49696672710576617
+  },
+  {
+   "student": "Student_4",
+   "q": 3,
+   "truth": "A",
+   "read": "A",
+   "text": "3 .A",
+   "conf": 0.776126075562867
+  },
+  {
+   "student": "Student_4",
+   "q": 4,
+   "truth": "A",
+   "read": "A",
+   "text": "4,A.",
+   "conf": 0.00035422437614870267
+  },
+  {
+   "student": "Student_4",
+   "q": 5,
+   "truth": "B",
+   "read": "B",
+   "text": "5 . b.",
+   "conf": 0.09172349779556549
+  },
+  {
+   "student": "Student_4",
+   "q": 6,
+   "truth": "C",
+   "read": "C",
+   "text": "6, C.",
+   "conf": 0.41049488128453426
+  },
+  {
+   "student": "Student_4",
+   "q": 7,
+   "truth": "A",
+   "read": "A",
+   "text": "7. A",
+   "conf": 0.1374321963304477
+  },
+  {
+   "student": "Student_4",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8.C.",
+   "conf": 0.39798163978199835
+  },
+  {
+   "student": "Student_4",
+   "q": 9,
+   "truth": "A",
+   "read": "A",
+   "text": "9 a",
+   "conf": 0.2543062474342384
+  },
+  {
+   "student": "Student_4",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.8096260341139567
+  },
+  {
+   "student": "Student_4",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13. B.",
+   "conf": 0.644604883116345
+  },
+  {
+   "student": "Student_4",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 15,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_4",
+   "q": 19,
+   "truth": "B",
+   "read": "B",
+   "text": "19. B.",
+   "conf": 0.6065284762644417
+  },
+  {
+   "student": "Student_4",
+   "q": 20,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 1,
+   "truth": "A",
+   "read": "B",
+   "text": "1, B.",
+   "conf": 0.8524408112978533
+  },
+  {
+   "student": "Student_5",
+   "q": 2,
+   "truth": "D",
+   "read": "C",
+   "text": "2. C.",
+   "conf": 0.5085942418042585
+  },
+  {
+   "student": "Student_5",
+   "q": 3,
+   "truth": "A",
+   "read": "B",
+   "text": "3, B.",
+   "conf": 0.8524055411349399
+  },
+  {
+   "student": "Student_5",
+   "q": 4,
+   "truth": "C",
+   "read": "C",
+   "text": "4, C.",
+   "conf": 0.7459217189111564
+  },
+  {
+   "student": "Student_5",
+   "q": 5,
+   "truth": "C",
+   "read": "C",
+   "text": "5, C.",
+   "conf": 0.47001593001301567
+  },
+  {
+   "student": "Student_5",
+   "q": 6,
+   "truth": "B",
+   "read": "C",
+   "text": "6.C",
+   "conf": 0.3119616518207877
+  },
+  {
+   "student": "Student_5",
+   "q": 7,
+   "truth": "B",
+   "read": "D",
+   "text": "7. D",
+   "conf": 0.4364366257377376
+  },
+  {
+   "student": "Student_5",
+   "q": 8,
+   "truth": "C",
+   "read": "A",
+   "text": "8 . A.",
+   "conf": 0.004765664485209793
+  },
+  {
+   "student": "Student_5",
+   "q": 9,
+   "truth": "C",
+   "read": "B",
+   "text": "9. B.",
+   "conf": 0.8314000740164478
+  },
+  {
+   "student": "Student_5",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10 - B.",
+   "conf": 0.040538590686458126
+  },
+  {
+   "student": "Student_5",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 15,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 19,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_5",
+   "q": 20,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_6",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1, B.",
+   "conf": 0.1348697581791658
+  },
+  {
+   "student": "Student_6",
+   "q": 2,
+   "truth": "C",
+   "read": "C",
+   "text": "2 .c.",
+   "conf": 0.3932742174445726
+  },
+  {
+   "student": "Student_6",
+   "q": 3,
+   "truth": "C",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.1454540765124178
+  },
+  {
+   "student": "Student_6",
+   "q": 4,
+   "truth": "C",
+   "read": "B",
+   "text": "4 B.",
+   "conf": 0.03639551423181804
+  },
+  {
+   "student": "Student_6",
+   "q": 5,
+   "truth": "B",
+   "read": "B",
+   "text": "5 , B.",
+   "conf": 0.49291786515750796
+  },
+  {
+   "student": "Student_6",
+   "q": 6,
+   "truth": "B",
+   "read": "B",
+   "text": "6, B.",
+   "conf": 0.6500095035547132
+  },
+  {
+   "student": "Student_6",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7, B.",
+   "conf": 0.27436331303615974
+  },
+  {
+   "student": "Student_6",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8. C.",
+   "conf": 0.655459715098068
+  },
+  {
+   "student": "Student_6",
+   "q": 9,
+   "truth": "A",
+   "read": "A",
+   "text": "9, A",
+   "conf": 0.3797573628119302
+  },
+  {
+   "student": "Student_6",
+   "q": 10,
+   "truth": "B",
+   "read": "D",
+   "text": "10, D.",
+   "conf": 0.5390449062701219
+  },
+  {
+   "student": "Student_6",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11. B.",
+   "conf": 0.16083863969539058
+  },
+  {
+   "student": "Student_6",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12 ) c",
+   "conf": 0.6452980127584999
+  },
+  {
+   "student": "Student_6",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13 ) B.",
+   "conf": 0.41072209838491575
+  },
+  {
+   "student": "Student_6",
+   "q": 14,
+   "truth": "C",
+   "read": "B",
+   "text": "14, B.",
+   "conf": 0.14778703977437802
+  },
+  {
+   "student": "Student_6",
+   "q": 15,
+   "truth": "B",
+   "read": "B",
+   "text": "15. B.",
+   "conf": 0.05905529757487663
+  },
+  {
+   "student": "Student_6",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_6",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_6",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_6",
+   "q": 19,
+   "truth": "B",
+   "read": "C",
+   "text": "19. C.",
+   "conf": 0.024457017499034662
+  },
+  {
+   "student": "Student_6",
+   "q": 20,
+   "truth": "C",
+   "read": "C",
+   "text": "20 C.",
+   "conf": 0.6324564751973226
+  },
+  {
+   "student": "Student_7",
+   "q": 1,
+   "truth": "D",
+   "read": "D",
+   "text": "1. D",
+   "conf": 0.7667144926574363
+  },
+  {
+   "student": "Student_7",
+   "q": 2,
+   "truth": "B",
+   "read": "B",
+   "text": "2-B.",
+   "conf": 0.7319967501753053
+  },
+  {
+   "student": "Student_7",
+   "q": 3,
+   "truth": "D",
+   "read": "D",
+   "text": "3- D.",
+   "conf": 0.5589333008196133
+  },
+  {
+   "student": "Student_7",
+   "q": 4,
+   "truth": "B",
+   "read": "A",
+   "text": "4.A.",
+   "conf": 0.02322839515364729
+  },
+  {
+   "student": "Student_7",
+   "q": 5,
+   "truth": "A",
+   "read": "A",
+   "text": "5-A",
+   "conf": 0.05255954086049913
+  },
+  {
+   "student": "Student_7",
+   "q": 6,
+   "truth": "B",
+   "read": "B",
+   "text": "6-B.",
+   "conf": 0.21743506348028568
+  },
+  {
+   "student": "Student_7",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.9244453752921054
+  },
+  {
+   "student": "Student_7",
+   "q": 8,
+   "truth": "A",
+   "read": "A",
+   "text": "8 - A",
+   "conf": 0.20705018213302587
+  },
+  {
+   "student": "Student_7",
+   "q": 9,
+   "truth": "C",
+   "read": "C",
+   "text": "9. C.",
+   "conf": 0.8722760185816548
+  },
+  {
+   "student": "Student_7",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.8636478293899758
+  },
+  {
+   "student": "Student_7",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11 - B.",
+   "conf": 0.5402863084735609
+  },
+  {
+   "student": "Student_7",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12 - C.",
+   "conf": 0.4607680763174011
+  },
+  {
+   "student": "Student_7",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13 - B.",
+   "conf": 0.52799809009897
+  },
+  {
+   "student": "Student_7",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_7",
+   "q": 15,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_7",
+   "q": 16,
+   "truth": "C",
+   "read": "C",
+   "text": "16. C",
+   "conf": 0.8610329445513432
+  },
+  {
+   "student": "Student_7",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_7",
+   "q": 18,
+   "truth": "D",
+   "read": "B",
+   "text": "18. B.",
+   "conf": 0.1239983246397909
+  },
+  {
+   "student": "Student_7",
+   "q": 19,
+   "truth": "A",
+   "read": "A",
+   "text": "19. A",
+   "conf": 0.4189979050277532
+  },
+  {
+   "student": "Student_7",
+   "q": 20,
+   "truth": "B",
+   "read": "B",
+   "text": "20. B.",
+   "conf": 0.8930767449836831
+  },
+  {
+   "student": "Student_8",
+   "q": 1,
+   "truth": "D",
+   "read": "D",
+   "text": "1. D.",
+   "conf": 0.1306795799756596
+  },
+  {
+   "student": "Student_8",
+   "q": 2,
+   "truth": "A",
+   "read": "A",
+   "text": "2 ) A",
+   "conf": 0.17117093933717342
+  },
+  {
+   "student": "Student_8",
+   "q": 3,
+   "truth": "B",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.19995077733691716
+  },
+  {
+   "student": "Student_8",
+   "q": 4,
+   "truth": "C",
+   "read": "C",
+   "text": "4.C.",
+   "conf": 0.11845342835862299
+  },
+  {
+   "student": "Student_8",
+   "q": 5,
+   "truth": "C",
+   "read": "C",
+   "text": "5.C.",
+   "conf": 0.019255646770824763
+  },
+  {
+   "student": "Student_8",
+   "q": 6,
+   "truth": "A",
+   "read": "B",
+   "text": "6. B.",
+   "conf": 0.059775984763118795
+  },
+  {
+   "student": "Student_8",
+   "q": 7,
+   "truth": "A",
+   "read": "C",
+   "text": "7 ) C",
+   "conf": 0.46944130956934604
+  },
+  {
+   "student": "Student_8",
+   "q": 8,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_8",
+   "q": 9,
+   "truth": "C",
+   "read": "C",
+   "text": "9.C.",
+   "conf": 0.10433641619150416
+  },
+  {
+   "student": "Student_8",
+   "q": 10,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_8",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11 ) B.",
+   "conf": 0.270104035711493
+  },
+  {
+   "student": "Student_8",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12 ) C.",
+   "conf": 0.6797385975732297
+  },
+  {
+   "student": "Student_8",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13 ) B.",
+   "conf": 0.8601511698199262
+  },
+  {
+   "student": "Student_8",
+   "q": 14,
+   "truth": "C",
+   "read": "C",
+   "text": "14.C.",
+   "conf": 0.15971849685556444
+  },
+  {
+   "student": "Student_8",
+   "q": 15,
+   "truth": "C",
+   "read": "B",
+   "text": "15. B.",
+   "conf": 0.14073530332125753
+  },
+  {
+   "student": "Student_8",
+   "q": 16,
+   "truth": "C",
+   "read": "B",
+   "text": "16 ) B.",
+   "conf": 0.5851842923774752
+  },
+  {
+   "student": "Student_8",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_8",
+   "q": 18,
+   "truth": "C",
+   "read": "B",
+   "text": "18. B.",
+   "conf": 0.08268288174187273
+  },
+  {
+   "student": "Student_8",
+   "q": 19,
+   "truth": "B",
+   "read": "B",
+   "text": "19 ) B.",
+   "conf": 0.8293619031605315
+  },
+  {
+   "student": "Student_8",
+   "q": 20,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 1,
+   "truth": "D",
+   "read": "A",
+   "text": "1 . A.",
+   "conf": 0.02388746243536206
+  },
+  {
+   "student": "Student_9",
+   "q": 2,
+   "truth": "B",
+   "read": "B",
+   "text": "2, B.",
+   "conf": 0.1677082231659284
+  },
+  {
+   "student": "Student_9",
+   "q": 3,
+   "truth": "D",
+   "read": "D",
+   "text": "3. D.",
+   "conf": 0.09383252430792051
+  },
+  {
+   "student": "Student_9",
+   "q": 4,
+   "truth": "B",
+   "read": "B",
+   "text": "4. B.",
+   "conf": 0.02388892679988237
+  },
+  {
+   "student": "Student_9",
+   "q": 5,
+   "truth": "A",
+   "read": "A",
+   "text": "5, A.",
+   "conf": 0.06098322303455922
+  },
+  {
+   "student": "Student_9",
+   "q": 6,
+   "truth": "A",
+   "read": "A",
+   "text": "6, A.",
+   "conf": 0.0837932874237857
+  },
+  {
+   "student": "Student_9",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7, B.",
+   "conf": 0.07379807196578839
+  },
+  {
+   "student": "Student_9",
+   "q": 8,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 9,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 10,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 11,
+   "truth": "B",
+   "read": "C",
+   "text": "11, C.",
+   "conf": 0.09190272810139823
+  },
+  {
+   "student": "Student_9",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12, C.",
+   "conf": 0.1220228339351957
+  },
+  {
+   "student": "Student_9",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13. B.",
+   "conf": 0.1339665480021451
+  },
+  {
+   "student": "Student_9",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 15,
+   "truth": "B",
+   "read": "B",
+   "text": "15, B.",
+   "conf": 0.07491167152101239
+  },
+  {
+   "student": "Student_9",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_9",
+   "q": 18,
+   "truth": "D",
+   "read": "B",
+   "text": "18.B.",
+   "conf": 0.0005911866867248212
+  },
+  {
+   "student": "Student_9",
+   "q": 19,
+   "truth": "A",
+   "read": "D",
+   "text": "19. D.",
+   "conf": 0.07353680150930136
+  },
+  {
+   "student": "Student_9",
+   "q": 20,
+   "truth": "C",
+   "read": "B",
+   "text": "20, B.",
+   "conf": 0.01624303797528688
+  },
+  {
+   "student": "Student_10",
+   "q": 1,
+   "truth": "C",
+   "read": "C",
+   "text": "1. C.",
+   "conf": 0.7239017507210177
+  },
+  {
+   "student": "Student_10",
+   "q": 2,
+   "truth": "A",
+   "read": "B",
+   "text": "2. B.",
+   "conf": 0.3053398598511214
+  },
+  {
+   "student": "Student_10",
+   "q": 3,
+   "truth": "D",
+   "read": "D",
+   "text": "3- D.",
+   "conf": 0.5029861406300371
+  },
+  {
+   "student": "Student_10",
+   "q": 4,
+   "truth": "D",
+   "read": "C",
+   "text": "4.C.",
+   "conf": 0.07886724836340242
+  },
+  {
+   "student": "Student_10",
+   "q": 5,
+   "truth": "A",
+   "read": "B",
+   "text": "5. B.",
+   "conf": 0.23056676103786994
+  },
+  {
+   "student": "Student_10",
+   "q": 6,
+   "truth": "B",
+   "read": "B",
+   "text": "6. B.",
+   "conf": 0.2908379070938598
+  },
+  {
+   "student": "Student_10",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.4139912350580819
+  },
+  {
+   "student": "Student_10",
+   "q": 8,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_10",
+   "q": 9,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_10",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10 . B.",
+   "conf": 0.6293433007015947
+  },
+  {
+   "student": "Student_10",
+   "q": 11,
+   "truth": "C",
+   "read": "C",
+   "text": "11 - C.",
+   "conf": 0.4800323038758509
+  },
+  {
+   "student": "Student_10",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12. C.",
+   "conf": 0.5854815490413365
+  },
+  {
+   "student": "Student_10",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13. B.",
+   "conf": 0.9579227621275022
+  },
+  {
+   "student": "Student_10",
+   "q": 14,
+   "truth": "C",
+   "read": "B",
+   "text": "14. B.",
+   "conf": 0.49203517955777154
+  },
+  {
+   "student": "Student_10",
+   "q": 15,
+   "truth": "C",
+   "read": "C",
+   "text": "15. C.",
+   "conf": 0.8146464765506838
+  },
+  {
+   "student": "Student_10",
+   "q": 16,
+   "truth": "C",
+   "read": "C",
+   "text": "16. C.",
+   "conf": 0.7093684148660915
+  },
+  {
+   "student": "Student_10",
+   "q": 17,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_10",
+   "q": 18,
+   "truth": "C",
+   "read": "C",
+   "text": "18. C",
+   "conf": 0.914766798492385
+  },
+  {
+   "student": "Student_10",
+   "q": 19,
+   "truth": "B",
+   "read": "B",
+   "text": "19. B.",
+   "conf": 0.7823031658979078
+  },
+  {
+   "student": "Student_10",
+   "q": 20,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_11",
+   "q": 1,
+   "truth": "C",
+   "read": "C",
+   "text": "1.C.",
+   "conf": 0.4620422378204887
+  },
+  {
+   "student": "Student_11",
+   "q": 2,
+   "truth": "C",
+   "read": "C",
+   "text": "2.C",
+   "conf": 0.6740264657330258
+  },
+  {
+   "student": "Student_11",
+   "q": 3,
+   "truth": "D",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.33485082921473414
+  },
+  {
+   "student": "Student_11",
+   "q": 4,
+   "truth": "D",
+   "read": "A",
+   "text": "4 A.",
+   "conf": 0.031037915586099946
+  },
+  {
+   "student": "Student_11",
+   "q": 5,
+   "truth": "A",
+   "read": "A",
+   "text": "5. A",
+   "conf": 0.09863261789171708
+  },
+  {
+   "student": "Student_11",
+   "q": 6,
+   "truth": "B",
+   "read": "B",
+   "text": "6. B.",
+   "conf": 0.581824956907842
+  },
+  {
+   "student": "Student_11",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.5956375629114368
+  },
+  {
+   "student": "Student_11",
+   "q": 8,
+   "truth": "D",
+   "read": "C",
+   "text": "8.C.",
+   "conf": 0.669122768135355
+  },
+  {
+   "student": "Student_11",
+   "q": 9,
+   "truth": "D",
+   "read": "D",
+   "text": "9, D",
+   "conf": 0.18910216409179784
+  },
+  {
+   "student": "Student_11",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.3423758154899466
+  },
+  {
+   "student": "Student_11",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_11",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12. C.",
+   "conf": 0.381039712621304
+  },
+  {
+   "student": "Student_11",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13. B.",
+   "conf": 0.44299038763992327
+  },
+  {
+   "student": "Student_11",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_11",
+   "q": 15,
+   "truth": "B",
+   "read": "B",
+   "text": "15. B.",
+   "conf": 0.30630537660168544
+  },
+  {
+   "student": "Student_11",
+   "q": 16,
+   "truth": "B",
+   "read": "B",
+   "text": "16. B.",
+   "conf": 0.38038682377361904
+  },
+  {
+   "student": "Student_11",
+   "q": 17,
+   "truth": "B",
+   "read": "B",
+   "text": "17. B.",
+   "conf": 0.7209638482982332
+  },
+  {
+   "student": "Student_11",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_11",
+   "q": 19,
+   "truth": "A",
+   "read": "A",
+   "text": "19. A",
+   "conf": 0.9304085982217455
+  },
+  {
+   "student": "Student_11",
+   "q": 20,
+   "truth": "B",
+   "read": "B",
+   "text": "20. B.",
+   "conf": 0.9294188536367565
+  },
+  {
+   "student": "Student_12",
+   "q": 1,
+   "truth": "B",
+   "read": "B",
+   "text": "1. B.",
+   "conf": 0.9577082014542894
+  },
+  {
+   "student": "Student_12",
+   "q": 2,
+   "truth": "D",
+   "read": "C",
+   "text": "2.C.",
+   "conf": 0.8040949421010384
+  },
+  {
+   "student": "Student_12",
+   "q": 3,
+   "truth": "D",
+   "read": "D",
+   "text": "3. D",
+   "conf": 0.5906091789497798
+  },
+  {
+   "student": "Student_12",
+   "q": 4,
+   "truth": "C",
+   "read": "C",
+   "text": "4.C",
+   "conf": 0.5502885363827469
+  },
+  {
+   "student": "Student_12",
+   "q": 5,
+   "truth": "A",
+   "read": "B",
+   "text": "5. B.",
+   "conf": 0.4207602367324978
+  },
+  {
+   "student": "Student_12",
+   "q": 6,
+   "truth": "B",
+   "read": "C",
+   "text": "6. C.",
+   "conf": 0.7717520507737506
+  },
+  {
+   "student": "Student_12",
+   "q": 7,
+   "truth": "A",
+   "read": "A",
+   "text": "7. A",
+   "conf": 0.6591111794095746
+  },
+  {
+   "student": "Student_12",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8. C",
+   "conf": 0.764024918435196
+  },
+  {
+   "student": "Student_12",
+   "q": 9,
+   "truth": "D",
+   "read": "A",
+   "text": "9. A",
+   "conf": 0.7293231534204216
+  },
+  {
+   "student": "Student_12",
+   "q": 10,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_12",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11. B.",
+   "conf": 0.6901976879823428
+  },
+  {
+   "student": "Student_12",
+   "q": 12,
+   "truth": "C",
+   "read": "D",
+   "text": "12d.",
+   "conf": 0.0005116774418185086
+  },
+  {
+   "student": "Student_12",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13. B.",
+   "conf": 0.7880419464259941
+  },
+  {
+   "student": "Student_12",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_12",
+   "q": 15,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_12",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_12",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_12",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_12",
+   "q": 19,
+   "truth": "A",
+   "read": "D",
+   "text": "19, D.",
+   "conf": 0.003429289975154434
+  },
+  {
+   "student": "Student_12",
+   "q": 20,
+   "truth": "B",
+   "read": "B",
+   "text": "20. B.",
+   "conf": 0.9581391545777275
+  },
+  {
+   "student": "Student_13",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1 , B.",
+   "conf": 0.3189985180571714
+  },
+  {
+   "student": "Student_13",
+   "q": 2,
+   "truth": "C",
+   "read": "C",
+   "text": "2,C.",
+   "conf": 0.2260248448447167
+  },
+  {
+   "student": "Student_13",
+   "q": 3,
+   "truth": "A",
+   "read": "B",
+   "text": "3, B.",
+   "conf": 0.34763561205441135
+  },
+  {
+   "student": "Student_13",
+   "q": 4,
+   "truth": "C",
+   "read": "A",
+   "text": "4, A.",
+   "conf": 0.21004991232107295
+  },
+  {
+   "student": "Student_13",
+   "q": 5,
+   "truth": "B",
+   "read": "B",
+   "text": "5, b.",
+   "conf": 0.12556657797040224
+  },
+  {
+   "student": "Student_13",
+   "q": 6,
+   "truth": "A",
+   "read": "B",
+   "text": "6. B.",
+   "conf": 0.08610812373996946
+  },
+  {
+   "student": "Student_13",
+   "q": 7,
+   "truth": "A",
+   "read": "A",
+   "text": "7. A.",
+   "conf": 0.24769089974225802
+  },
+  {
+   "student": "Student_13",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8. C.",
+   "conf": 0.017533518027686355
+  },
+  {
+   "student": "Student_13",
+   "q": 9,
+   "truth": "D",
+   "read": "A",
+   "text": "9A.",
+   "conf": 0.00045860459901993916
+  },
+  {
+   "student": "Student_13",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10 . B.",
+   "conf": 0.18660464535395685
+  },
+  {
+   "student": "Student_13",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_13",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_13",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_13",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_13",
+   "q": 15,
+   "truth": "B",
+   "read": "B",
+   "text": "15B.",
+   "conf": 0.0008176428855213695
+  },
+  {
+   "student": "Student_13",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_13",
+   "q": 17,
+   "truth": "B",
+   "read": "B",
+   "text": "17. B.",
+   "conf": 0.109118550512887
+  },
+  {
+   "student": "Student_13",
+   "q": 18,
+   "truth": "C",
+   "read": "C",
+   "text": "18. C.",
+   "conf": 0.051263477118731055
+  },
+  {
+   "student": "Student_13",
+   "q": 19,
+   "truth": "B",
+   "read": "B",
+   "text": "19. B.",
+   "conf": 0.12253835894176722
+  },
+  {
+   "student": "Student_13",
+   "q": 20,
+   "truth": "B",
+   "read": "B",
+   "text": "20. B.",
+   "conf": 0.0325238862011999
+  },
+  {
+   "student": "Student_14",
+   "q": 1,
+   "truth": "C",
+   "read": "C",
+   "text": "1 ) C",
+   "conf": 0.4457882276952648
+  },
+  {
+   "student": "Student_14",
+   "q": 2,
+   "truth": "D",
+   "read": "D",
+   "text": "2, D.",
+   "conf": 0.17605083108669292
+  },
+  {
+   "student": "Student_14",
+   "q": 3,
+   "truth": "D",
+   "read": "B",
+   "text": "3 . B.",
+   "conf": 0.19005215662303593
+  },
+  {
+   "student": "Student_14",
+   "q": 4,
+   "truth": "C",
+   "read": "C",
+   "text": "4,C.",
+   "conf": 0.16638987520362167
+  },
+  {
+   "student": "Student_14",
+   "q": 5,
+   "truth": "A",
+   "read": "B",
+   "text": "5, B.",
+   "conf": 0.1483036357526085
+  },
+  {
+   "student": "Student_14",
+   "q": 6,
+   "truth": "C",
+   "read": "A",
+   "text": "6 - A.",
+   "conf": 0.005386357290645355
+  },
+  {
+   "student": "Student_14",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7, B.",
+   "conf": 0.3208241998490459
+  },
+  {
+   "student": "Student_14",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8 )C.",
+   "conf": 0.349590219353007
+  },
+  {
+   "student": "Student_14",
+   "q": 9,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_14",
+   "q": 10,
+   "truth": "B",
+   "read": "D",
+   "text": "10, D",
+   "conf": 0.25100052608939827
+  },
+  {
+   "student": "Student_14",
+   "q": 11,
+   "truth": "B",
+   "read": "B",
+   "text": "11 ) B.",
+   "conf": 0.23809555338512203
+  },
+  {
+   "student": "Student_14",
+   "q": 12,
+   "truth": "C",
+   "read": "C",
+   "text": "12 ) C.",
+   "conf": 0.3477637835259584
+  },
+  {
+   "student": "Student_14",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_14",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_14",
+   "q": 15,
+   "truth": "D",
+   "read": "D",
+   "text": "15, D.",
+   "conf": 0.2171772055700691
+  },
+  {
+   "student": "Student_14",
+   "q": 16,
+   "truth": "C",
+   "read": "C",
+   "text": "16 ) c.",
+   "conf": 0.4729090366599758
+  },
+  {
+   "student": "Student_14",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_14",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_14",
+   "q": 19,
+   "truth": "B",
+   "read": "C",
+   "text": "19. c.",
+   "conf": 0.10953261413635422
+  },
+  {
+   "student": "Student_14",
+   "q": 20,
+   "truth": "C",
+   "read": "D",
+   "text": "20, D.",
+   "conf": 0.0851026065491863
+  },
+  {
+   "student": "Student_15",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1. B.",
+   "conf": 0.16437879666105862
+  },
+  {
+   "student": "Student_15",
+   "q": 2,
+   "truth": "A",
+   "read": "B",
+   "text": "2. B.",
+   "conf": 0.2797761245029855
+  },
+  {
+   "student": "Student_15",
+   "q": 3,
+   "truth": "D",
+   "read": "B",
+   "text": "3 . B.",
+   "conf": 0.46161329935359835
+  },
+  {
+   "student": "Student_15",
+   "q": 4,
+   "truth": "A",
+   "read": "B",
+   "text": "4 . B.",
+   "conf": 0.009358327892256876
+  },
+  {
+   "student": "Student_15",
+   "q": 5,
+   "truth": "D",
+   "read": "D",
+   "text": "5 . D",
+   "conf": 0.32730164783973803
+  },
+  {
+   "student": "Student_15",
+   "q": 6,
+   "truth": "C",
+   "read": "C",
+   "text": "6.C.",
+   "conf": 0.30401033548778944
+  },
+  {
+   "student": "Student_15",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.38189715210750774
+  },
+  {
+   "student": "Student_15",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8.C",
+   "conf": 0.7205536149273477
+  },
+  {
+   "student": "Student_15",
+   "q": 9,
+   "truth": "D",
+   "read": "D",
+   "text": "9. D",
+   "conf": 0.26137021460324283
+  },
+  {
+   "student": "Student_15",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.9024611574192747
+  },
+  {
+   "student": "Student_15",
+   "q": 11,
+   "truth": "A",
+   "read": "B",
+   "text": "11 - B.",
+   "conf": 0.2657795520791121
+  },
+  {
+   "student": "Student_15",
+   "q": 12,
+   "truth": "B",
+   "read": "B",
+   "text": "12. B.",
+   "conf": 0.5016463819504329
+  },
+  {
+   "student": "Student_15",
+   "q": 13,
+   "truth": "C",
+   "read": "C",
+   "text": "13 - C.",
+   "conf": 0.6332929379015053
+  },
+  {
+   "student": "Student_15",
+   "q": 14,
+   "truth": "C",
+   "read": "C",
+   "text": "14. C",
+   "conf": 0.7872821054317598
+  },
+  {
+   "student": "Student_15",
+   "q": 15,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_15",
+   "q": 16,
+   "truth": "B",
+   "read": "B",
+   "text": "16. B.",
+   "conf": 0.661258702594516
+  },
+  {
+   "student": "Student_15",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_15",
+   "q": 18,
+   "truth": "D",
+   "read": "D",
+   "text": "18. D.",
+   "conf": 0.39284211656063184
+  },
+  {
+   "student": "Student_15",
+   "q": 19,
+   "truth": "A",
+   "read": "B",
+   "text": "19. B.",
+   "conf": 0.43216357840936803
+  },
+  {
+   "student": "Student_15",
+   "q": 20,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 1,
+   "truth": "C",
+   "read": "C",
+   "text": "1.C.",
+   "conf": 0.013561242680642863
+  },
+  {
+   "student": "Student_16",
+   "q": 2,
+   "truth": "A",
+   "read": "B",
+   "text": "2 . B.",
+   "conf": 0.2908583747879733
+  },
+  {
+   "student": "Student_16",
+   "q": 3,
+   "truth": "C",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.5104838305217735
+  },
+  {
+   "student": "Student_16",
+   "q": 4,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 5,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 6,
+   "truth": "B",
+   "read": "C",
+   "text": "6 ) C.",
+   "conf": 0.20013415734851647
+  },
+  {
+   "student": "Student_16",
+   "q": 7,
+   "truth": "A",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.19297954795648295
+  },
+  {
+   "student": "Student_16",
+   "q": 8,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 9,
+   "truth": "D",
+   "read": "B",
+   "text": "9, B.",
+   "conf": 0.5289356146398219
+  },
+  {
+   "student": "Student_16",
+   "q": 10,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 15,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 18,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_16",
+   "q": 19,
+   "truth": "C",
+   "read": "D",
+   "text": "19. D.",
+   "conf": 0.323175109765969
+  },
+  {
+   "student": "Student_16",
+   "q": 20,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1 , B.",
+   "conf": 0.28357151010520615
+  },
+  {
+   "student": "Student_17",
+   "q": 2,
+   "truth": "C",
+   "read": "C",
+   "text": "2C.",
+   "conf": 0.6459173093036172
+  },
+  {
+   "student": "Student_17",
+   "q": 3,
+   "truth": "A",
+   "read": "A",
+   "text": "3a.",
+   "conf": 0.0003464460898062245
+  },
+  {
+   "student": "Student_17",
+   "q": 4,
+   "truth": "A",
+   "read": "B",
+   "text": "4, B.",
+   "conf": 0.20637544758529677
+  },
+  {
+   "student": "Student_17",
+   "q": 5,
+   "truth": "B",
+   "read": "C",
+   "text": "5,c.",
+   "conf": 0.016383658129972497
+  },
+  {
+   "student": "Student_17",
+   "q": 6,
+   "truth": "C",
+   "read": "D",
+   "text": "6.d.",
+   "conf": 0.03835482594447779
+  },
+  {
+   "student": "Student_17",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.45677579457009515
+  },
+  {
+   "student": "Student_17",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8, C.",
+   "conf": 0.41130508566611956
+  },
+  {
+   "student": "Student_17",
+   "q": 9,
+   "truth": "C",
+   "read": "B",
+   "text": "9, B.",
+   "conf": 0.7214084642788219
+  },
+  {
+   "student": "Student_17",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10 - B.",
+   "conf": 0.028619651012585692
+  },
+  {
+   "student": "Student_17",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 15,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 16,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 17,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 18,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_17",
+   "q": 19,
+   "truth": "B",
+   "read": "C",
+   "text": "19.c.",
+   "conf": 0.22421132453843565
+  },
+  {
+   "student": "Student_17",
+   "q": 20,
+   "truth": "C",
+   "read": "B",
+   "text": "20, B.",
+   "conf": 0.011988319429173461
+  },
+  {
+   "student": "Student_18",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1, B.",
+   "conf": 0.438480720149285
+  },
+  {
+   "student": "Student_18",
+   "q": 2,
+   "truth": "D",
+   "read": "D",
+   "text": "2D.",
+   "conf": 0.16401909940710804
+  },
+  {
+   "student": "Student_18",
+   "q": 3,
+   "truth": "B",
+   "read": "B",
+   "text": "3. B.",
+   "conf": 0.30249405148394265
+  },
+  {
+   "student": "Student_18",
+   "q": 4,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 5,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 6,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 7,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 8,
+   "truth": "A",
+   "read": "A",
+   "text": "8 .A",
+   "conf": 0.5531764973200716
+  },
+  {
+   "student": "Student_18",
+   "q": 9,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.5972711030141373
+  },
+  {
+   "student": "Student_18",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 13,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 15,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 18,
+   "truth": "-",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 19,
+   "truth": "-",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_18",
+   "q": 20,
+   "truth": "C",
+   "read": "C",
+   "text": "20. c",
+   "conf": 0.4403868242226495
+  },
+  {
+   "student": "Student_19",
+   "q": 1,
+   "truth": "D",
+   "read": "B",
+   "text": "1. B.",
+   "conf": 0.1296724009121999
+  },
+  {
+   "student": "Student_19",
+   "q": 2,
+   "truth": "C",
+   "read": "B",
+   "text": "2. B.",
+   "conf": 0.07638722992391803
+  },
+  {
+   "student": "Student_19",
+   "q": 3,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 4,
+   "truth": "A",
+   "read": "B",
+   "text": "4. B.",
+   "conf": 0.1613251150458922
+  },
+  {
+   "student": "Student_19",
+   "q": 5,
+   "truth": "A",
+   "read": "A",
+   "text": "5.A.",
+   "conf": 0.005626148528202019
+  },
+  {
+   "student": "Student_19",
+   "q": 6,
+   "truth": "D",
+   "read": "C",
+   "text": "6. c.",
+   "conf": 0.34188373472445754
+  },
+  {
+   "student": "Student_19",
+   "q": 7,
+   "truth": "A",
+   "read": "A",
+   "text": "7, A.",
+   "conf": 0.008888859792575981
+  },
+  {
+   "student": "Student_19",
+   "q": 8,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 9,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10. B.",
+   "conf": 0.07488400917838989
+  },
+  {
+   "student": "Student_19",
+   "q": 11,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 12,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 13,
+   "truth": "B",
+   "read": "B",
+   "text": "13 . B.",
+   "conf": 0.1986750101541309
+  },
+  {
+   "student": "Student_19",
+   "q": 14,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 15,
+   "truth": "B",
+   "read": "B",
+   "text": "15. B.",
+   "conf": 0.05589051296348838
+  },
+  {
+   "student": "Student_19",
+   "q": 16,
+   "truth": "C",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 17,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 18,
+   "truth": "A",
+   "read": "D",
+   "text": "18 ) D.",
+   "conf": 0.19340999320867985
+  },
+  {
+   "student": "Student_19",
+   "q": 19,
+   "truth": "-",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_19",
+   "q": 20,
+   "truth": "-",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 1,
+   "truth": "D",
+   "read": "D",
+   "text": "1. D.",
+   "conf": 0.20314677759202895
+  },
+  {
+   "student": "Student_20",
+   "q": 2,
+   "truth": "C",
+   "read": "C",
+   "text": "2 - C",
+   "conf": 0.6697237802494198
+  },
+  {
+   "student": "Student_20",
+   "q": 3,
+   "truth": "D",
+   "read": "C",
+   "text": "3-c.",
+   "conf": 0.09535149621778591
+  },
+  {
+   "student": "Student_20",
+   "q": 4,
+   "truth": "C",
+   "read": "C",
+   "text": "4.C",
+   "conf": 0.5083227907401296
+  },
+  {
+   "student": "Student_20",
+   "q": 5,
+   "truth": "C",
+   "read": "C",
+   "text": "5,C",
+   "conf": 0.42031378561444327
+  },
+  {
+   "student": "Student_20",
+   "q": 6,
+   "truth": "A",
+   "read": "C",
+   "text": "6. C.",
+   "conf": 0.3142641153751398
+  },
+  {
+   "student": "Student_20",
+   "q": 7,
+   "truth": "B",
+   "read": "B",
+   "text": "7. B.",
+   "conf": 0.9180619268999083
+  },
+  {
+   "student": "Student_20",
+   "q": 8,
+   "truth": "C",
+   "read": "C",
+   "text": "8.C",
+   "conf": 0.738890471460315
+  },
+  {
+   "student": "Student_20",
+   "q": 9,
+   "truth": "C",
+   "read": "C",
+   "text": "9.C.",
+   "conf": 0.7537751161101329
+  },
+  {
+   "student": "Student_20",
+   "q": 10,
+   "truth": "B",
+   "read": "B",
+   "text": "10 . B.",
+   "conf": 0.6482651996748372
+  },
+  {
+   "student": "Student_20",
+   "q": 11,
+   "truth": "D",
+   "read": "A",
+   "text": "11 . A.",
+   "conf": 0.013413558468140406
+  },
+  {
+   "student": "Student_20",
+   "q": 12,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 13,
+   "truth": "D",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 14,
+   "truth": "C",
+   "read": "C",
+   "text": "14. C.",
+   "conf": 0.5193694142526278
+  },
+  {
+   "student": "Student_20",
+   "q": 15,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 16,
+   "truth": "D",
+   "read": "D",
+   "text": "16. D.",
+   "conf": 0.582882850112996
+  },
+  {
+   "student": "Student_20",
+   "q": 17,
+   "truth": "TRUE",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 18,
+   "truth": "A",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 19,
+   "truth": "B",
+   "read": "",
+   "text": "",
+   "conf": 0.0
+  },
+  {
+   "student": "Student_20",
+   "q": 20,
+   "truth": "C",
+   "read": "A",
+   "text": "20, A.",
+   "conf": 0.003957317249505964
+  }
+ ]
+}

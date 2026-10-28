@@ -1,0 +1,12 @@
+בוחן 4 - חוקי קירכהוף (E4)
+ID: 472508936  (check digit OK), confidence 100%
+
+   q1    ? / 20   read '5.71'   to a human: 5% of the reading looks unreadable or crossed out, tool's guess 20
+   q2  15 / 15   read '1.43'   auto (100%)
+   q3  15 / 15   read '2.14'   auto (99%)
+   q4  20 / 20   read '-0.714'   auto (100%)
+   q5  15 / 15   read '4.3'   auto (100%)
+   q6  15 / 15   read '3'   auto (100%)
+
+graded by the tool: 80 of 80
+for a human: 20 points

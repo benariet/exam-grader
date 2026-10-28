@@ -1,0 +1,16 @@
+page 1: {'ink_threshold': 176, 'top_cut': 25, 'margin_line_columns': 0}, 13 lines, 2 figure(s) not read as text
+figure at x=684-835, y=1010-1193: not read as text
+figure at x=531-683, y=1018-1193: not read as text
+line 1: [hebrew 50%] שמה, שהו (36%)
+line 2: [hebrew 50%] י באבלה עם (44%)  |  [english 99%] Action (84%)
+line 3: [hebrew 97%] המלר מתרדע (36%)  |  [english 96%] , login (72%)  |  [hebrew 99%] דרך לפות (63%)
+line 4: [hebrew 50%] אימחודרב (37%)  |  [english 50%] logger - as (50%)  |  [hebrew 99%] בים, (50%)
+line 5: [hebrew 72%] צריך לבדים הקוד אם אם (72%)  |  [math 57%] $\l_{ag}$ (87%)
+line 6: [hebrew 98%] שאומר אם וכנסת גו וכנסת (55%)
+line 7: [hebrew 69%] בשם של משתוול אחר. (51%)
+line 8: [hebrew 82%] הריצוה של הפרבולה היא (46%)
+line 9: [hebrew 50%] לשם (76%)  |  [math 50%] $\frac{x^{2}+y^{2}+4}{12}$ (97%)
+line 10: [hebrew 96%] כתבתי שטויות לבדיקה. (93%)
+line 11: [hebrew 92%] ינא תן עציון (38%)
+line 12: [hebrew 50%] לסז? (37%)  |  [english 50%] income ( ) (29%)  |  [hebrew 50%] זואי (77%)
+line 13: [math 50%] [unreadable] (47%)

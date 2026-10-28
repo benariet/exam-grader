@@ -1,0 +1,8 @@
+10/120 lines, 16.9 s/line: base: CER 6.90%, 0.25: CER 6.90%, 0.5: CER 6.90%, 0.75: CER 7.32%, 1.0: CER 7.53%
+20/120 lines, 17.5 s/line: base: CER 4.77%, 0.25: CER 4.89%, 0.5: CER 4.55%, 0.75: CER 5.00%, 1.0: CER 5.23%
+30/120 lines, 22.6 s/line: base: CER 6.05%, 0.25: CER 6.05%, 0.5: CER 5.18%, 0.75: CER 5.54%, 1.0: CER 5.69%
+40/120 lines, 23.4 s/line: base: CER 6.39%, 0.25: CER 6.39%, 0.5: CER 5.57%, 0.75: CER 6.12%, 1.0: CER 5.95%
+50/120 lines, 23.0 s/line: base: CER 6.80%, 0.25: CER 6.63%, 0.5: CER 5.74%, 0.75: CER 6.27%, 1.0: CER 6.14%
+60/120 lines, 23.1 s/line: base: CER 6.54%, 0.25: CER 6.32%, 0.5: CER 5.67%, 0.75: CER 6.10%, 1.0: CER 5.96%
+70/120 lines, 22.4 s/line: base: CER 6.55%, 0.25: CER 6.36%, 0.5: CER 5.73%, 0.75: CER 6.11%, 1.0: CER 6.01%
+80/120 lines, 21.7 s/line: base: CER 6.38%, 0.25: CER 6.16%, 0.5: CER 5.50%, 0.75: CER 5.86%, 1.0: CER 5.86%

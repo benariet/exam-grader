@@ -1,0 +1,9 @@
+{"name": "KFUPM EE201 Quiz 2 (sample key, handwritten by the instructor)",
+ "source": "https://faculty.kfupm.edu.sa/EE/noman/ee201_exams.htm",
+ "items": [
+  {"id": "a-i",   "points": 4, "value": "i",      "answer": "-4 A"},
+  {"id": "a-v1",  "points": 4, "value": "V_1",    "answer": "15 V"},
+  {"id": "b-P3A", "points": 4, "value": "P_{3A}", "answer": "-45 W"},
+  {"id": "b-P9V", "points": 4, "value": "P_{9V}", "answer": "-36 W"},
+  {"id": "b-P2A", "points": 4, "value": "P_{2A}", "answer": "-26 W"}
+ ]}

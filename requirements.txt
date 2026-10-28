@@ -1,0 +1,31 @@
+# torch + torchvision are installed by setup.ps1 from the matching PyTorch index (CUDA or CPU).
+
+# grading core
+sympy
+math-verify
+pint
+
+# recognizers
+numpy
+pillow
+onnxruntime
+tokenizers
+transformers>=5.20,<6
+accelerate
+peft
+
+# data / eval / downloads
+huggingface_hub[hf_xet]
+pandas
+pyarrow
+rapidfuzz
+scikit-image
+pytest
+pypdfium2        # read_page.py: PDF scans
+wordfreq         # English word list: is a Latin-script chunk English words or a formula?
+
+# answer-box exam forms (forms/, grade_form.py)
+opencv-python-headless   # corner markers, straightening, QR codes
+qrcode                   # make_exam.py: the page QR codes
+schemdraw                # make_exam.py: circuit diagrams
+playwright               # make_exam.py: HTML -> PDF (then once: python -m playwright install chromium)

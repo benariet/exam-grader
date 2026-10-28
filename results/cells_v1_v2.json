@@ -1,0 +1,82 @@
+[
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader",
+  "n": 2000,
+  "acc": 0.965,
+  "sure_share": 0.837,
+  "sure_error": 0.002986857825567503
+ },
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 0.975,
+  "sure_share": 0.885,
+  "sure_error": 0.003389830508474576
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader",
+  "n": 1593,
+  "acc": 0.8662900188323918,
+  "sure_share": 0.549278091650973,
+  "sure_error": 0.011428571428571429
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader-v2/main",
+  "n": 1593,
+  "acc": 0.8976773383553045,
+  "sure_share": 0.5731324544883867,
+  "sure_error": 0.00547645125958379
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader",
+  "n": 2000,
+  "acc": 0.9975,
+  "sure_share": 0.9375,
+  "sure_error": 0.0
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 1.0,
+  "sure_share": 0.9835,
+  "sure_error": 0.0
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader",
+  "n": 2000,
+  "acc": 0.898,
+  "sure_share": 0.629,
+  "sure_error": 0.018282988871224166
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 0.953,
+  "sure_share": 0.78,
+  "sure_error": 0.005128205128205128
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader",
+  "n": 2000,
+  "acc": 0.9875,
+  "sure_share": 0.9155,
+  "sure_error": 0.0
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 0.992,
+  "sure_share": 0.9385,
+  "sure_error": 0.0005327650506126798
+ }
+]

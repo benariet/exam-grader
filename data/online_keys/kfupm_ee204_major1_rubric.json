@@ -1,0 +1,10 @@
+{"name": "KFUPM EE204 Major Exam 1 (sample key, handwritten by the instructor)",
+ "source": "https://faculty.kfupm.edu.sa/EE/noman/ee204_exams.htm",
+ "items": [
+  {"id": "1a-i",   "points": 3, "page": 1, "value": "i",      "answer": "-4 A"},
+  {"id": "1b-V1",  "points": 3, "page": 1, "value": "V_1",    "answer": "15 V"},
+  {"id": "2a-i",   "points": 3, "page": 2, "value": "i",      "answer": "-2.5 A"},
+  {"id": "2b-P9A", "points": 3, "page": 2, "value": "P_{9A}", "answer": "-58.5 W"},
+  {"id": "3-V",    "points": 3, "page": 3, "value": "V",      "answer": "-3 V"},
+  {"id": "3-R",    "points": 3, "page": 3, "value": "R",      "answer": "2 ohm"}
+ ]}

@@ -1,0 +1,11 @@
+{
+ "height": 48,
+ "max_width": 1600,
+ "charset": " אבגדהוזחטיכךלמםנןסעפףצץקרשת0123456789.,-?:\"()!;/'%",
+ "blank": 0,
+ "time_stride": 4,
+ "order": "visual (use recog.hebrew_text.to_logical)",
+ "val_cer": 0.1119,
+ "epoch": 3,
+ "train_lines": 9196
+}

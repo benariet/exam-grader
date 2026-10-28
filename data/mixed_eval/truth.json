@@ -1,0 +1,2574 @@
+[
+ {
+  "file": "000.png",
+  "writer": "w207",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "d=2.9n^{2}a_{0}",
+    "x": [
+     316,
+     433
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "הראשון והראשי",
+    "x": [
+     48,
+     283
+    ]
+   }
+  ]
+ },
+ {
+  "file": "001.png",
+  "writer": "w276",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "שחברות",
+    "x": [
+     402,
+     537
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "x=5+\\frac{14}{x}",
+    "x": [
+     266,
+     364
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "התעופה ירצו",
+    "x": [
+     62,
+     228
+    ]
+   }
+  ]
+ },
+ {
+  "file": "002.png",
+  "writer": "w4",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "המתקיימים",
+    "x": [
+     375,
+     517
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "2=10^{0.301}",
+    "x": [
+     147,
+     335
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "על",
+    "x": [
+     55,
+     114
+    ]
+   }
+  ]
+ },
+ {
+  "file": "003.png",
+  "writer": "w37",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "זה",
+    "x": [
+     438,
+     483
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "F_{0}=XZ-Y^{2}",
+    "x": [
+     201,
+     405
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "קורה,",
+    "x": [
+     51,
+     160
+    ]
+   }
+  ]
+ },
+ {
+  "file": "004.png",
+  "writer": "w4",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "Pc=E_{c}",
+    "x": [
+     509,
+     635
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "מתה בעת הלידה.",
+    "x": [
+     53,
+     467
+    ]
+   }
+  ]
+ },
+ {
+  "file": "005.png",
+  "writer": "w64",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הוא",
+    "x": [
+     156,
+     225
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "S=\\int Ldx_{3}",
+    "x": [
+     57,
+     119
+    ]
+   }
+  ]
+ },
+ {
+  "file": "006.png",
+  "writer": "w218",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "שלהם.",
+    "x": [
+     393,
+     497
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "j=\\beta O_{K}",
+    "x": [
+     281,
+     359
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "מנגנוני",
+    "x": [
+     55,
+     239
+    ]
+   }
+  ]
+ },
+ {
+  "file": "007.png",
+  "writer": "w8",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הגלישה",
+    "x": [
+     131,
+     296
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "c=\\frac{d}{t}",
+    "x": [
+     50,
+     93
+    ]
+   }
+  ]
+ },
+ {
+  "file": "008.png",
+  "writer": "w303",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "שכל",
+    "x": [
+     440,
+     519
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "A=\\underline{m}",
+    "x": [
+     217,
+     398
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "המסמכים",
+    "x": [
+     51,
+     188
+    ]
+   }
+  ]
+ },
+ {
+  "file": "009.png",
+  "writer": "w570",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\tilde{d}=1",
+    "x": [
+     226,
+     329
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שלכם",
+    "x": [
+     49,
+     187
+    ]
+   }
+  ]
+ },
+ {
+  "file": "010.png",
+  "writer": "w569",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "אשתו",
+    "x": [
+     311,
+     373
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "f^{\\mu}=x^{\\mu}L",
+    "x": [
+     206,
+     281
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "הענייה.",
+    "x": [
+     64,
+     167
+    ]
+   }
+  ]
+ },
+ {
+  "file": "011.png",
+  "writer": "w8",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "שלנו",
+    "x": [
+     191,
+     288
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "A=-27q",
+    "x": [
+     54,
+     152
+    ]
+   }
+  ]
+ },
+ {
+  "file": "012.png",
+  "writer": "w2",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "אלו",
+    "x": [
+     213,
+     261
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "FT^{t}=M^{t}F",
+    "x": [
+     49,
+     177
+    ]
+   }
+  ]
+ },
+ {
+  "file": "013.png",
+  "writer": "w426",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "E=\\oplus E_{i}.",
+    "x": [
+     569,
+     725
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "בועת הוראות: לחצו",
+    "x": [
+     53,
+     530
+    ]
+   }
+  ]
+ },
+ {
+  "file": "014.png",
+  "writer": "w136",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "H=\\int\\rho hdV",
+    "x": [
+     463,
+     558
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "לכרטיסי טיסה, ועדיין",
+    "x": [
+     50,
+     420
+    ]
+   }
+  ]
+ },
+ {
+  "file": "015.png",
+  "writer": "w569",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "את",
+    "x": [
+     355,
+     421
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "F_{X}=0.5",
+    "x": [
+     210,
+     322
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "הרשת",
+    "x": [
+     56,
+     170
+    ]
+   }
+  ]
+ },
+ {
+  "file": "016.png",
+  "writer": "w570",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "פחות חמצן",
+    "x": [
+     261,
+     429
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "D_{\\mu}J^{\\mu}=0",
+    "x": [
+     59,
+     224
+    ]
+   }
+  ]
+ },
+ {
+  "file": "017.png",
+  "writer": "w8",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "אתר",
+    "x": [
+     311,
+     400
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "C_{X}^{-1}=0",
+    "x": [
+     214,
+     271
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "ביגוד",
+    "x": [
+     54,
+     174
+    ]
+   }
+  ]
+ },
+ {
+  "file": "018.png",
+  "writer": "w520",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הגהות",
+    "x": [
+     210,
+     404
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "0+0=1+1=0",
+    "x": [
+     60,
+     180
+    ]
+   }
+  ]
+ },
+ {
+  "file": "019.png",
+  "writer": "w261",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "פחינה מלאה. במקרים",
+    "x": [
+     132,
+     566
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dx}{dt}=c",
+    "x": [
+     49,
+     104
+    ]
+   }
+  ]
+ },
+ {
+  "file": "020.png",
+  "writer": "w557",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "תא בגוף יש",
+    "x": [
+     326,
+     563
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "A_{1}=B_{1}=0",
+    "x": [
+     64,
+     287
+    ]
+   }
+  ]
+ },
+ {
+  "file": "021.png",
+  "writer": "w376",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "להם",
+    "x": [
+     178,
+     284
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "E\\{\\hat{x}-x\\}=0",
+    "x": [
+     51,
+     148
+    ]
+   }
+  ]
+ },
+ {
+  "file": "022.png",
+  "writer": "w4",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "s=\\int ds",
+    "x": [
+     212,
+     285
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "בתשלום לפחות.",
+    "x": [
+     49,
+     180
+    ]
+   }
+  ]
+ },
+ {
+  "file": "023.png",
+  "writer": "w278",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "חז ואצליח",
+    "x": [
+     180,
+     470
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "u=1+l^{2}+m^{2}",
+    "x": [
+     55,
+     147
+    ]
+   }
+  ]
+ },
+ {
+  "file": "024.png",
+  "writer": "w19",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "D=N-K+1",
+    "x": [
+     362,
+     520
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "אוכל. חוטב העצים",
+    "x": [
+     54,
+     329
+    ]
+   }
+  ]
+ },
+ {
+  "file": "025.png",
+  "writer": "w2",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "w=\\sqrt{KW-UV}",
+    "x": [
+     137,
+     299
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שלא",
+    "x": [
+     51,
+     98
+    ]
+   }
+  ]
+ },
+ {
+  "file": "026.png",
+  "writer": "w4",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מוצא",
+    "x": [
+     434,
+     535
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "u\\oplus v=u+v-uv",
+    "x": [
+     58,
+     405
+    ]
+   }
+  ]
+ },
+ {
+  "file": "027.png",
+  "writer": "w4",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "W=\\int VdP",
+    "x": [
+     209,
+     280
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "כשחסר",
+    "x": [
+     55,
+     172
+    ]
+   }
+  ]
+ },
+ {
+  "file": "028.png",
+  "writer": "w351",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מן",
+    "x": [
+     466,
+     631
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "H=\\frac{1}{N}+NV",
+    "x": [
+     245,
+     433
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "האצבעות",
+    "x": [
+     48,
+     217
+    ]
+   }
+  ]
+ },
+ {
+  "file": "029.png",
+  "writer": "w205",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "( סכום",
+    "x": [
+     404,
+     787
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "grR=gr\\hat{R}",
+    "x": [
+     272,
+     371
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "להוצאה",
+    "x": [
+     60,
+     229
+    ]
+   }
+  ]
+ },
+ {
+  "file": "030.png",
+  "writer": "w218",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\int dy=y",
+    "x": [
+     171,
+     211
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "צוהר",
+    "x": [
+     62,
+     141
+    ]
+   }
+  ]
+ },
+ {
+  "file": "031.png",
+  "writer": "w570",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מרשם, או לחידוש",
+    "x": [
+     209,
+     414
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "C=C_{2}-C_{1}",
+    "x": [
+     64,
+     171
+    ]
+   }
+  ]
+ },
+ {
+  "file": "032.png",
+  "writer": "w37",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "קניין",
+    "x": [
+     180,
+     237
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "A=\\underline{m}",
+    "x": [
+     50,
+     152
+    ]
+   }
+  ]
+ },
+ {
+  "file": "033.png",
+  "writer": "w383",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "זה נוח באוד,",
+    "x": [
+     163,
+     442
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\tilde{I}=I",
+    "x": [
+     63,
+     131
+    ]
+   }
+  ]
+ },
+ {
+  "file": "034.png",
+  "writer": "w102",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הפעילות האנושית,",
+    "x": [
+     184,
+     550
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\int_{V}JdV=0",
+    "x": [
+     56,
+     145
+    ]
+   }
+  ]
+ },
+ {
+  "file": "035.png",
+  "writer": "w570",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "P=P_{0}+\\int vdt",
+    "x": [
+     143,
+     329
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "הערבי",
+    "x": [
+     56,
+     111
+    ]
+   }
+  ]
+ },
+ {
+  "file": "036.png",
+  "writer": "w238",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "ביער",
+    "x": [
+     739,
+     761
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "v=D\\int idt",
+    "x": [
+     597,
+     701
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "השחור העבות,",
+    "x": [
+     49,
+     558
+    ]
+   }
+  ]
+ },
+ {
+  "file": "037.png",
+  "writer": "w567",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\int dy=y",
+    "x": [
+     180,
+     244
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "והמוצאים",
+    "x": [
+     53,
+     140
+    ]
+   }
+  ]
+ },
+ {
+  "file": "038.png",
+  "writer": "w58",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "לעצמות",
+    "x": [
+     401,
+     512
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "S=\\int_{M}BF",
+    "x": [
+     263,
+     359
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "אדם,",
+    "x": [
+     51,
+     219
+    ]
+   }
+  ]
+ },
+ {
+  "file": "039.png",
+  "writer": "w567",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "לוקים",
+    "x": [
+     397,
+     458
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "L_{X}f=i_{X}df",
+    "x": [
+     184,
+     361
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "אנשים",
+    "x": [
+     59,
+     144
+    ]
+   }
+  ]
+ },
+ {
+  "file": "040.png",
+  "writer": "w58",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "V_{C}=CH_{w}+D",
+    "x": [
+     616,
+     784
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "תרופה למטופל היא",
+    "x": [
+     53,
+     581
+    ]
+   }
+  ]
+ },
+ {
+  "file": "041.png",
+  "writer": "w278",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "תוכה, ראה",
+    "x": [
+     310,
+     551
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dM}{dx}=V",
+    "x": [
+     200,
+     273
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "דז",
+    "x": [
+     48,
+     162
+    ]
+   }
+  ]
+ },
+ {
+  "file": "042.png",
+  "writer": "w441",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "זמינים בכל",
+    "x": [
+     347,
+     529
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "V_{Y0}t=h",
+    "x": [
+     179,
+     306
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שעה,",
+    "x": [
+     59,
+     135
+    ]
+   }
+  ]
+ },
+ {
+  "file": "043.png",
+  "writer": "w65",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "בהקצאת",
+    "x": [
+     171,
+     304
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "BI=j_{1}F_{L}",
+    "x": [
+     48,
+     142
+    ]
+   }
+  ]
+ },
+ {
+  "file": "044.png",
+  "writer": "w102",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "לייצור",
+    "x": [
+     629,
+     757
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\overline{Q}=0",
+    "x": [
+     468,
+     588
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "קניין ולחלוקתו.",
+    "x": [
+     52,
+     431
+    ]
+   }
+  ]
+ },
+ {
+  "file": "045.png",
+  "writer": "w34",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "יש",
+    "x": [
+     137,
+     170
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dV}{dh}=0",
+    "x": [
+     48,
+     105
+    ]
+   }
+  ]
+ },
+ {
+  "file": "046.png",
+  "writer": "w338",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "היתושים",
+    "x": [
+     151,
+     275
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "M_{R}=e^{M_{B}}",
+    "x": [
+     56,
+     119
+    ]
+   }
+  ]
+ },
+ {
+  "file": "047.png",
+  "writer": "w40",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "ובקומה",
+    "x": [
+     464,
+     613
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\int dx=0",
+    "x": [
+     311,
+     422
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "החמישית",
+    "x": [
+     63,
+     267
+    ]
+   }
+  ]
+ },
+ {
+  "file": "048.png",
+  "writer": "w279",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מכבידים",
+    "x": [
+     167,
+     330
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "f=2^{\\sqrt{lgn}}",
+    "x": [
+     60,
+     139
+    ]
+   }
+  ]
+ },
+ {
+  "file": "049.png",
+  "writer": "w25",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "ביקורתיים",
+    "x": [
+     139,
+     313
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dM}{dx}=V",
+    "x": [
+     52,
+     105
+    ]
+   }
+  ]
+ },
+ {
+  "file": "050.png",
+  "writer": "w58",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "רגישים",
+    "x": [
+     533,
+     685
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "P=0.5CV^{2}f",
+    "x": [
+     360,
+     489
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "לתרופות",
+    "x": [
+     50,
+     323
+    ]
+   }
+  ]
+ },
+ {
+  "file": "051.png",
+  "writer": "w406",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "ייתן",
+    "x": [
+     308,
+     317
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\overline{S}=V",
+    "x": [
+     213,
+     268
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "ויגרח",
+    "x": [
+     62,
+     172
+    ]
+   }
+  ]
+ },
+ {
+  "file": "052.png",
+  "writer": "w562",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "C=\\sqrt{2\\pi}",
+    "x": [
+     211,
+     335
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "בכל",
+    "x": [
+     49,
+     176
+    ]
+   }
+  ]
+ },
+ {
+  "file": "053.png",
+  "writer": "w2",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "את",
+    "x": [
+     158,
+     206
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "S=\\int ds",
+    "x": [
+     61,
+     122
+    ]
+   }
+  ]
+ },
+ {
+  "file": "054.png",
+  "writer": "w4",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "בישראל הוא כשלושה",
+    "x": [
+     208,
+     654
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\sum_{x}a=ax+C",
+    "x": [
+     48,
+     164
+    ]
+   }
+  ]
+ },
+ {
+  "file": "055.png",
+  "writer": "w84",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "צוואר",
+    "x": [
+     195,
+     300
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "a=-\\omega^{2}r",
+    "x": [
+     54,
+     157
+    ]
+   }
+  ]
+ },
+ {
+  "file": "056.png",
+  "writer": "w523",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "המנצל",
+    "x": [
+     285,
+     363
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "F_{2}=XW-YZ",
+    "x": [
+     168,
+     242
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "את",
+    "x": [
+     48,
+     124
+    ]
+   }
+  ]
+ },
+ {
+  "file": "057.png",
+  "writer": "w24",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dR}{dP}=0",
+    "x": [
+     225,
+     278
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "העצומה",
+    "x": [
+     60,
+     191
+    ]
+   }
+  ]
+ },
+ {
+  "file": "058.png",
+  "writer": "w2",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "לעשות כדי לבלוט.",
+    "x": [
+     162,
+     457
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "B=b-\\frac{a}{RT}",
+    "x": [
+     48,
+     133
+    ]
+   }
+  ]
+ },
+ {
+  "file": "059.png",
+  "writer": "w320",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dx}{dt}=3",
+    "x": [
+     230,
+     316
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "הפתעה",
+    "x": [
+     48,
+     198
+    ]
+   }
+  ]
+ },
+ {
+  "file": "060.png",
+  "writer": "w570",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "לעיתים,",
+    "x": [
+     190,
+     294
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "B=b-\\frac{a}{RT}",
+    "x": [
+     50,
+     161
+    ]
+   }
+  ]
+ },
+ {
+  "file": "061.png",
+  "writer": "w385",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "המתקיימים על",
+    "x": [
+     372,
+     588
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "F_{x}v=m\\dot{v}v",
+    "x": [
+     188,
+     341
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "גופנו",
+    "x": [
+     54,
+     153
+    ]
+   }
+  ]
+ },
+ {
+  "file": "062.png",
+  "writer": "w320",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "C^{++}=C^{oo}=C",
+    "x": [
+     361,
+     535
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "כרדינוזאורים",
+    "x": [
+     51,
+     318
+    ]
+   }
+  ]
+ },
+ {
+  "file": "063.png",
+  "writer": "w4",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dE}{dx}=0",
+    "x": [
+     216,
+     277
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שיוצאים",
+    "x": [
+     58,
+     178
+    ]
+   }
+  ]
+ },
+ {
+  "file": "064.png",
+  "writer": "w4",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "2\\times2=2+2",
+    "x": [
+     373,
+     483
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "משנה חשיבות.",
+    "x": [
+     59,
+     344
+    ]
+   }
+  ]
+ },
+ {
+  "file": "065.png",
+  "writer": "w272",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "נכתב:",
+    "x": [
+     382,
+     538
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "X^{t=n+1}",
+    "x": [
+     235,
+     341
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "תודה",
+    "x": [
+     61,
+     207
+    ]
+   }
+  ]
+ },
+ {
+  "file": "066.png",
+  "writer": "w2",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "במסגרת",
+    "x": [
+     521,
+     664
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "T=\\dot{m}V_{w}",
+    "x": [
+     380,
+     491
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "מערכת החינוך",
+    "x": [
+     53,
+     343
+    ]
+   }
+  ]
+ },
+ {
+  "file": "067.png",
+  "writer": "w533",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "כמעט ריק",
+    "x": [
+     203,
+     326
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "2^{n}=2^{2^{k}}",
+    "x": [
+     59,
+     175
+    ]
+   }
+  ]
+ },
+ {
+  "file": "068.png",
+  "writer": "w64",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dt}{dU}=0",
+    "x": [
+     279,
+     344
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שנים רבות,",
+    "x": [
+     64,
+     240
+    ]
+   }
+  ]
+ },
+ {
+  "file": "069.png",
+  "writer": "w562",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "במהלך המנוחה,",
+    "x": [
+     221,
+     466
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dx}{ds}=a",
+    "x": [
+     63,
+     186
+    ]
+   }
+  ]
+ },
+ {
+  "file": "070.png",
+  "writer": "w570",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dy}{ds}=1",
+    "x": [
+     147,
+     219
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "לנהל",
+    "x": [
+     58,
+     116
+    ]
+   }
+  ]
+ },
+ {
+  "file": "071.png",
+  "writer": "w569",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "היא",
+    "x": [
+     449,
+     505
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "M_{2}=M_{1}+C+I",
+    "x": [
+     233,
+     408
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "מפצירה",
+    "x": [
+     59,
+     205
+    ]
+   }
+  ]
+ },
+ {
+  "file": "072.png",
+  "writer": "w64",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "=C_{c}",
+    "x": [
+     207,
+     265
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "המלכה",
+    "x": [
+     62,
+     172
+    ]
+   }
+  ]
+ },
+ {
+  "file": "073.png",
+  "writer": "w59",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הרגשה",
+    "x": [
+     455,
+     546
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "c=\\sqrt{n}",
+    "x": [
+     331,
+     413
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שהם חלק",
+    "x": [
+     53,
+     293
+    ]
+   }
+  ]
+ },
+ {
+  "file": "074.png",
+  "writer": "w569",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "כדי",
+    "x": [
+     300,
+     344
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\hat{p}=1",
+    "x": [
+     229,
+     268
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "להתפאר",
+    "x": [
+     62,
+     191
+    ]
+   }
+  ]
+ },
+ {
+  "file": "075.png",
+  "writer": "w24",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dt}{dU}=0",
+    "x": [
+     473,
+     539
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "המקומי בהצעות המכירה",
+    "x": [
+     52,
+     441
+    ]
+   }
+  ]
+ },
+ {
+  "file": "076.png",
+  "writer": "w40",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "האדם.",
+    "x": [
+     220,
+     442
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "f=x^{2}-y^{2}-1",
+    "x": [
+     58,
+     185
+    ]
+   }
+  ]
+ },
+ {
+  "file": "077.png",
+  "writer": "w4",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מסוימות",
+    "x": [
+     143,
+     263
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{du}{dx}=6",
+    "x": [
+     54,
+     112
+    ]
+   }
+  ]
+ },
+ {
+  "file": "078.png",
+  "writer": "w330",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הטיסות",
+    "x": [
+     515,
+     688
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "T+ATT=1+E",
+    "x": [
+     257,
+     474
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "זולות",
+    "x": [
+     54,
+     221
+    ]
+   }
+  ]
+ },
+ {
+  "file": "079.png",
+  "writer": "w570",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "S=\\int ds",
+    "x": [
+     153,
+     255
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "משתנים",
+    "x": [
+     48,
+     124
+    ]
+   }
+  ]
+ },
+ {
+  "file": "080.png",
+  "writer": "w58",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "trH=a+d",
+    "x": [
+     410,
+     564
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "אתר פתוח שכזה",
+    "x": [
+     52,
+     382
+    ]
+   }
+  ]
+ },
+ {
+  "file": "081.png",
+  "writer": "w443",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "S=\\int Ldt",
+    "x": [
+     342,
+     450
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "שאחראי לכך.",
+    "x": [
+     55,
+     301
+    ]
+   }
+  ]
+ },
+ {
+  "file": "082.png",
+  "writer": "w53",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "K=+1",
+    "x": [
+     389,
+     495
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "בלילה עולה כאשר",
+    "x": [
+     58,
+     348
+    ]
+   }
+  ]
+ },
+ {
+  "file": "083.png",
+  "writer": "w423",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\frac{dG}{dr}=0",
+    "x": [
+     260,
+     330
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "חורפי אחד",
+    "x": [
+     56,
+     227
+    ]
+   }
+  ]
+ },
+ {
+  "file": "084.png",
+  "writer": "w2",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "חולק",
+    "x": [
+     389,
+     462
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "A^{2}=1+\\xi^{2}",
+    "x": [
+     203,
+     351
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "מידע",
+    "x": [
+     60,
+     175
+    ]
+   }
+  ]
+ },
+ {
+  "file": "085.png",
+  "writer": "w570",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "שוק הרכב",
+    "x": [
+     175,
+     309
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\hat{y}=y",
+    "x": [
+     64,
+     141
+    ]
+   }
+  ]
+ },
+ {
+  "file": "086.png",
+  "writer": "w2",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "ולמחוק",
+    "x": [
+     458,
+     563
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "C=\\sqrt{2\\pi}",
+    "x": [
+     218,
+     415
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "אותו.",
+    "x": [
+     48,
+     174
+    ]
+   }
+  ]
+ },
+ {
+  "file": "087.png",
+  "writer": "w557",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "W=\\int Fdx",
+    "x": [
+     314,
+     444
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "תאי דם אדומים",
+    "x": [
+     54,
+     272
+    ]
+   }
+  ]
+ },
+ {
+  "file": "088.png",
+  "writer": "w443",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "חלום מחקר",
+    "x": [
+     331,
+     628
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "n=\\int fd^{3}p",
+    "x": [
+     217,
+     302
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "חדש",
+    "x": [
+     56,
+     181
+    ]
+   }
+  ]
+ },
+ {
+  "file": "089.png",
+  "writer": "w2",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "jk=i\\sqrt{-1}",
+    "x": [
+     326,
+     410
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "פעילה בהחלט",
+    "x": [
+     59,
+     285
+    ]
+   }
+  ]
+ },
+ {
+  "file": "090.png",
+  "writer": "w186",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "ספור טכנולוגיות",
+    "x": [
+     368,
+     717
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "=-q^{9}",
+    "x": [
+     242,
+     324
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "ניידות",
+    "x": [
+     60,
+     207
+    ]
+   }
+  ]
+ },
+ {
+  "file": "091.png",
+  "writer": "w34",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מחוסר",
+    "x": [
+     280,
+     364
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dc}{dt}=1",
+    "x": [
+     173,
+     237
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "ברזל.",
+    "x": [
+     52,
+     138
+    ]
+   }
+  ]
+ },
+ {
+  "file": "092.png",
+  "writer": "w562",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "אבל",
+    "x": [
+     276,
+     344
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\sum_{i=1}^{n}i",
+    "x": [
+     183,
+     233
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "כמות",
+    "x": [
+     55,
+     144
+    ]
+   }
+  ]
+ },
+ {
+  "file": "093.png",
+  "writer": "w570",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "\\int dx=0",
+    "x": [
+     254,
+     342
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "ולמוסר עבודה.",
+    "x": [
+     63,
+     221
+    ]
+   }
+  ]
+ },
+ {
+  "file": "094.png",
+  "writer": "w4",
+  "position": "start",
+  "segments": [
+   {
+    "kind": "math",
+    "text": "f=a+bx+cp",
+    "x": [
+     154,
+     325
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "אל",
+    "x": [
+     57,
+     119
+    ]
+   }
+  ]
+ },
+ {
+  "file": "095.png",
+  "writer": "w2",
+  "position": "middle",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מוקצים,",
+    "x": [
+     484,
+     611
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "u^{2}-u+k=0",
+    "x": [
+     233,
+     452
+    ]
+   },
+   {
+    "kind": "hebrew",
+    "text": "מופצים",
+    "x": [
+     60,
+     196
+    ]
+   }
+  ]
+ },
+ {
+  "file": "096.png",
+  "writer": "w4",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "מראים",
+    "x": [
+     206,
+     321
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "T=\\dot{m}V_{w}",
+    "x": [
+     59,
+     162
+    ]
+   }
+  ]
+ },
+ {
+  "file": "097.png",
+  "writer": "w443",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "הקבועה שלנו כשאנו",
+    "x": [
+     200,
+     610
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "X=R-\\{0\\}",
+    "x": [
+     57,
+     170
+    ]
+   }
+  ]
+ },
+ {
+  "file": "098.png",
+  "writer": "w292",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "פעמים רבות",
+    "x": [
+     136,
+     371
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "\\frac{dy}{ds}=1",
+    "x": [
+     59,
+     94
+    ]
+   }
+  ]
+ },
+ {
+  "file": "099.png",
+  "writer": "w65",
+  "position": "end",
+  "segments": [
+   {
+    "kind": "hebrew",
+    "text": "בסגנון",
+    "x": [
+     214,
+     295
+    ]
+   },
+   {
+    "kind": "math",
+    "text": "P=P_{0}+\\int vdt",
+    "x": [
+     54,
+     177
+    ]
+   }
+  ]
+ }
+]

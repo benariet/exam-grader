@@ -1,0 +1,41 @@
+circuit_train started 2026-10-26 17:01:32
+[17:01:32] disk: 253 GB free
+[17:01:32] === base model (RT-DETRv2-R18)
+-> rtdetr-v2-r18  (PekingU/rtdetr_v2_r18vd, 0.08 GB base of the circuit detector (RT-DETRv2, Apache-2.0; tools/train_circuit_detector.py))  into C:\Users\benariet\IdeaProjects\exam-grader\models\rtdetr-v2-r18
+done
+[17:01:37] === base model (RT-DETRv2-R18) -> exit 0
+[17:01:37] === download + convert the circuit collections
+downloading CGHD (Hugging Face lowercaseonly/cghd, ~5 GB) ...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+downloading Digitize-HCD (Mendeley Data, 2.1 GB) ...
+Traceback (most recent call last):
+  File "C:\Users\benariet\IdeaProjects\exam-grader\tools\circuit_data.py", line 190, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\benariet\IdeaProjects\exam-grader\tools\circuit_data.py", line 144, in main
+    cghd, dhcd = (a.cghd, a.dhcd) if a.cghd and a.dhcd else download(a.raw)
+                                                            ~~~~~~~~^^^^^^^
+  File "C:\Users\benariet\IdeaProjects\exam-grader\tools\circuit_data.py", line 67, in download
+    urllib.request.urlretrieve(url, z + ".part")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 214, in urlretrieve
+    with contextlib.closing(urlopen(url, data)) as fp:
+                            ~~~~~~~^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 495, in open
+    response = meth(req, response)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 604, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 533, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 466, in _call_chain
+    result = func(*args)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\urllib\request.py", line 613, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 403: Forbidden
+[17:20:52] === download + convert the circuit collections -> exit 1
+[17:20:52] ERROR: data preparation failed - see above

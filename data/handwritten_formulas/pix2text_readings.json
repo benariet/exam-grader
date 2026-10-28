@@ -1,0 +1,1195 @@
+{
+"source": "Pix2Text MFR (ONNX, CPU) 3-best readings of data/handwritten_formulas, from eval_real.py (27.10)",
+"readings": {
+"00.png": [
+{
+"text": "\\sqrt { b ^ { 2 } - 4 a c }",
+"logp": -0.0016,
+"min_token_p": 0.9987
+},
+{
+"text": "\\sqrt { b ^ { 2 } - 4 a C }",
+"logp": -6.855,
+"min_token_p": 0.0011
+},
+{
+"text": "\\sqrt { b ^ { 2 } \\! - \\! 4 a c }",
+"logp": -8.5939,
+"min_token_p": 0.0002
+}
+],
+"01.png": [
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+"logp": -0.0015,
+"min_token_p": 0.9993
+},
+{
+"text": "\\sqrt { x - y ^ { - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } } }",
+"logp": -8.6906,
+"min_token_p": 0.0002
+},
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z }",
+"logp": -7.2953,
+"min_token_p": 0.0007
+}
+],
+"02.png": [
+{
+"text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+"logp": -0.006,
+"min_token_p": 0.9941
+},
+{
+"text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 3 } \\alpha }",
+"logp": -5.1359,
+"min_token_p": 0.0059
+},
+{
+"text": "\\frac { 2 \\tan \\alpha } { 1 - \\sin ^ { 2 } \\alpha }",
+"logp": -11.1895,
+"min_token_p": 0.0
+}
+],
+"03.png": [
+{
+"text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -0.0065,
+"min_token_p": 0.9958
+},
+{
+"text": "\\tan _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -5.7758,
+"min_token_p": 0.0032
+},
+{
+"text": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -6.2117,
+"min_token_p": 0.002
+}
+],
+"04.png": [
+{
+"text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+"logp": -0.1393,
+"min_token_p": 0.8729
+},
+{
+"text": "1 + \\frac { 1 } { 1 1 } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+"logp": -2.0729,
+"min_token_p": 0.1271
+},
+{
+"text": "1 + \\frac 1 { 1 ! } + \\frac 1 { 2 ! } + \\frac 1 { 3 ! } + \\frac 1 { 4 ! }",
+"logp": -5.9269,
+"min_token_p": 0.003
+}
+],
+"05.png": [
+{
+"text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+"logp": -0.0101,
+"min_token_p": 0.994
+},
+{
+"text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+"logp": -6.1078,
+"min_token_p": 0.0051
+},
+{
+"text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\lim x = - \\infty",
+"logp": -5.9022,
+"min_token_p": 0.0051
+}
+],
+"06.png": [
+{
+"text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+"logp": -0.0011,
+"min_token_p": 0.9992
+},
+{
+"text": "\\int \\left( 2 ^ { X } - 3 e ^ { x } \\right) d x",
+"logp": -7.1906,
+"min_token_p": 0.0008
+},
+{
+"text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d X",
+"logp": -9.4738,
+"min_token_p": 0.0001
+}
+],
+"07.png": [
+{
+"text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+"logp": -0.001,
+"min_token_p": 0.9996
+},
+{
+"text": "\\frac { i } { a } F \\left( a x + b \\right) + C",
+"logp": -7.7835,
+"min_token_p": 0.0004
+},
+{
+"text": "\\frac { 1 } { a } F \\left( a x + b \\right) + c",
+"logp": -9.0352,
+"min_token_p": 0.0001
+}
+],
+"08.png": [
+{
+"text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+"logp": -0.0093,
+"min_token_p": 0.9921
+},
+{
+"text": "\\frac { \\sin B + \\sin C } { \\cos B t \\cos C }",
+"logp": -4.8441,
+"min_token_p": 0.0079
+},
+{
+"text": "\\frac { \\sin B + \\cos C } { \\cos B + \\cos C }",
+"logp": -7.0829,
+"min_token_p": 0.0008
+}
+],
+"09.png": [
+{
+"text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+"logp": -0.0693,
+"min_token_p": 0.9355
+},
+{
+"text": "\\alpha _ { n + 1 } \\cdot 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+"logp": -3.0887,
+"min_token_p": 0.0642
+},
+{
+"text": "\\alpha _ { n + 1 } \\rightarrow \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+"logp": -4.544,
+"min_token_p": 0.0642
+}
+],
+"10.png": [
+{
+"text": "3 0 \\times 2 9 x ^ { 2 8 }",
+"logp": -0.0,
+"min_token_p": 1.0
+},
+{
+"text": "3 0 \\times 2 9 \\, x ^ { 2 8 }",
+"logp": -10.5149,
+"min_token_p": 0.0
+},
+{
+"text": "3 0 \\times 2 7 x ^ { 2 8 }",
+"logp": -11.9302,
+"min_token_p": 0.0
+}
+],
+"11.png": [
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+"logp": -0.2479,
+"min_token_p": 0.781
+},
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+"logp": -1.5195,
+"min_token_p": 0.219
+},
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } } \\;",
+"logp": -8.8182,
+"min_token_p": 0.0002
+}
+],
+"12.png": [
+{
+"text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+"logp": -0.0005,
+"min_token_p": 0.9996
+},
+{
+"text": "\\frac { \\sin \\theta + \\log \\theta + \\tan \\theta } { x + y + z }",
+"logp": -7.9455,
+"min_token_p": 0.0004
+},
+{
+"text": "\\frac { \\tan \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+"logp": -10.3897,
+"min_token_p": 0.0
+}
+],
+"13.png": [
+{
+"text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+"logp": -0.006,
+"min_token_p": 0.9971
+},
+{
+"text": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+"logp": -5.8452,
+"min_token_p": 0.0029
+},
+{
+"text": "\\lim _ { x \\rightarrow \\frac 1 4 } \\frac { 1 - 4 ^ { x - \\frac 1 4 } } { 1 - 4 x }",
+"logp": -6.0144,
+"min_token_p": 0.0025
+}
+],
+"14.png": [
+{
+"text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+"logp": -0.0013,
+"min_token_p": 0.9988
+},
+{
+"text": "x _ { 1 } + x _ { 2 } = X _ { 3 }",
+"logp": -6.7647,
+"min_token_p": 0.0012
+},
+{
+"text": "x 1 + x _ { 2 } = x _ { 3 }",
+"logp": -9.9963,
+"min_token_p": 0.0
+}
+],
+"15.png": [
+{
+"text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+"logp": -0.0003,
+"min_token_p": 0.9998
+},
+{
+"text": "x _ { i } - x _ { i + 1 } + X _ { i + 2 }",
+"logp": -8.6333,
+"min_token_p": 0.0002
+},
+{
+"text": "x _ { i } - X _ { i + 1 } + x _ { i + 2 }",
+"logp": -10.688,
+"min_token_p": 0.0
+}
+],
+"16.png": [
+{
+"text": "\\sqrt { b ^ { 2 } - 4 a c }",
+"logp": -0.0001,
+"min_token_p": 0.9999
+},
+{
+"text": "\\sqrt { b _ { } ^ { 2 } - 4 a c }",
+"logp": -9.5146,
+"min_token_p": 0.0001
+},
+{
+"text": "\\sqrt { b ^ { 2 } \\! - \\! 4 a c }",
+"logp": -11.2603,
+"min_token_p": 0.0
+}
+],
+"17.png": [
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+"logp": -0.0002,
+"min_token_p": 0.9998
+},
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { z } + z ^ { 2 } }",
+"logp": -8.8329,
+"min_token_p": 0.0001
+},
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } } \\nonumber",
+"logp": -11.9197,
+"min_token_p": 0.0
+}
+],
+"18.png": [
+{
+"text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+"logp": -0.0291,
+"min_token_p": 0.9875
+},
+{
+"text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\log } { x + y + z }",
+"logp": -4.9426,
+"min_token_p": 0.0073
+},
+{
+"text": "\\frac { \\sin Q + \\cos Q + \\tan Q } { x + y + z }",
+"logp": -4.5694,
+"min_token_p": 0.0112
+}
+],
+"19.png": [
+{
+"text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+"logp": -0.0005,
+"min_token_p": 0.9998
+},
+{
+"text": "\\left( x ^ { 2 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+"logp": -8.9718,
+"min_token_p": 0.0001
+},
+{
+"text": "\\left( x ^ { 3 } - x ^ { z } - x \\right) \\left( 2 x - 7 \\right)",
+"logp": -9.1136,
+"min_token_p": 0.0001
+}
+],
+"20.png": [
+{
+"text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+"logp": -0.0006,
+"min_token_p": 0.9999
+},
+{
+"text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 } \\cdot",
+"logp": -10.0317,
+"min_token_p": 0.0001
+},
+{
+"text": "x _ { 1 } - x _ { z } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+"logp": -9.5114,
+"min_token_p": 0.0001
+}
+],
+"21.png": [
+{
+"text": "a + b + c + d + e",
+"logp": -0.0,
+"min_token_p": 1.0
+},
+{
+"text": "a + b + a + d + e",
+"logp": -13.4896,
+"min_token_p": 0.0
+},
+{
+"text": "a + b + c + d + c",
+"logp": -13.5276,
+"min_token_p": 0.0
+}
+],
+"22.png": [
+{
+"text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+"logp": -0.001,
+"min_token_p": 0.9998
+},
+{
+"text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 { \\frac { j } { i } } }",
+"logp": -8.6476,
+"min_token_p": 0.0002
+},
+{
+"text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { j } }",
+"logp": -8.3482,
+"min_token_p": 0.0002
+}
+],
+"23.png": [
+{
+"text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+"logp": -0.0006,
+"min_token_p": 0.9998
+},
+{
+"text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right) \\left( 2 x - 7 \\right)",
+"logp": -9.1328,
+"min_token_p": 0.0001
+},
+{
+"text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 1 \\right)",
+"logp": -10.106,
+"min_token_p": 0.0
+}
+],
+"24.png": [
+{
+"text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+"logp": -0.0101,
+"min_token_p": 0.991
+},
+{
+"text": "\\log _ { 2 } 8 + 2 \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+"logp": -6.1473,
+"min_token_p": 0.004
+},
+{
+"text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 3 } 1 6",
+"logp": -7.6136,
+"min_token_p": 0.0005
+}
+],
+"25.png": [
+{
+"text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+"logp": -0.0004,
+"min_token_p": 0.9998
+},
+{
+"text": "\\sin x - \\cos y - \\sin \\left( x - y \\right)",
+"logp": -8.6974,
+"min_token_p": 0.0002
+},
+{
+"text": "\\sin x - \\sin y - \\sin \\left( x - y \\right) \\cdot",
+"logp": -11.4102,
+"min_token_p": 0.0
+}
+],
+"26.png": [
+{
+"text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -0.0011,
+"min_token_p": 0.9994
+},
+{
+"text": "\\frac { \\tan \\beta - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -7.4242,
+"min_token_p": 0.0006
+},
+{
+"text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\beta \\tan \\beta }",
+"logp": -8.7075,
+"min_token_p": 0.0002
+}
+],
+"27.png": [
+{
+"text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+"logp": -0.0047,
+"min_token_p": 0.9956
+},
+{
+"text": "\\frac 2 \\tan \\alpha 1 - \\tan ^ { 2 } \\alpha",
+"logp": -5.4341,
+"min_token_p": 0.0044
+},
+{
+"text": "\\frac { 2 \\tan \\alpha } { 1 + \\tan ^ { 2 } \\alpha }",
+"logp": -8.6266,
+"min_token_p": 0.0002
+}
+],
+"28.png": [
+{
+"text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -0.0049,
+"min_token_p": 0.9967
+},
+{
+"text": "\\tan _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -6.737,
+"min_token_p": 0.0013
+},
+{
+"text": "\\min _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -6.7537,
+"min_token_p": 0.0012
+}
+],
+"29.png": [
+{
+"text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+"logp": -0.0123,
+"min_token_p": 0.9886
+},
+{
+"text": "1 + \\frac 1 { 1 ! } + \\frac 1 { 2 ! } + \\frac 1 { 3 ! } + \\frac 1 { 4 ! }",
+"logp": -4.4859,
+"min_token_p": 0.0114
+},
+{
+"text": "l + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+"logp": -8.3727,
+"min_token_p": 0.0002
+}
+],
+"30.png": [
+{
+"text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+"logp": -0.0129,
+"min_token_p": 0.9909
+},
+{
+"text": "\\tan _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+"logp": -4.7276,
+"min_token_p": 0.0089
+},
+{
+"text": "\\lim _ { x \\rightarrow \\frac { \\pi } 2 + 0 } \\tan x = - \\infty",
+"logp": -6.3961,
+"min_token_p": 0.0017
+}
+],
+"31.png": [
+{
+"text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+"logp": -0.0032,
+"min_token_p": 0.9982
+},
+{
+"text": "\\int \\left( 2 ^ { x } - 3 \\mathrm { e } ^ { x } \\right) d x",
+"logp": -7.5901,
+"min_token_p": 0.0017
+},
+{
+"text": "\\int \\left( 2 ^ { x } - 3 \\theta ^ { x } \\right) d x",
+"logp": -7.1091,
+"min_token_p": 0.0017
+}
+],
+"32.png": [
+{
+"text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+"logp": -0.2152,
+"min_token_p": 0.8081
+},
+{
+"text": "\\frac { 1 } { a } F + ( a x + b ) + C",
+"logp": -2.2143,
+"min_token_p": 0.1308
+},
+{
+"text": "\\frac { 1 } { a } F _ { + } \\left( a x + b \\right) + C",
+"logp": -3.6778,
+"min_token_p": 0.0592
+}
+],
+"33.png": [
+{
+"text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+"logp": -0.0004,
+"min_token_p": 0.9998
+},
+{
+"text": "\\frac { \\sin B + \\cos C } { \\cos B + \\cos C }",
+"logp": -9.1051,
+"min_token_p": 0.0001
+},
+{
+"text": "\\frac { \\sin B \\tan C } { \\cos B + \\cos C }",
+"logp": -9.7513,
+"min_token_p": 0.0001
+}
+],
+"34.png": [
+{
+"text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+"logp": -0.0011,
+"min_token_p": 0.9992
+},
+{
+"text": "x _ { 1 } - x _ { 2 } + y _ { 1 } ^ { } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+"logp": -8.3283,
+"min_token_p": 0.0005
+},
+{
+"text": "x _ { 1 } - x _ { 2 } + y _ { 1 } = y _ { 2 } + z _ { 1 } - z _ { 2 }",
+"logp": -8.23,
+"min_token_p": 0.0003
+}
+],
+"35.png": [
+{
+"text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+"logp": -0.0878,
+"min_token_p": 0.9509
+},
+{
+"text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta ^ { - 3 } \\beta",
+"logp": -3.1456,
+"min_token_p": 0.0447
+},
+{
+"text": "\\alpha _ { n + 1 } - \\beta \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+"logp": -3.6962,
+"min_token_p": 0.0303
+}
+],
+"36.png": [
+{
+"text": "3 0 \\times 2 9 x ^ { 2 8 }",
+"logp": -0.0003,
+"min_token_p": 0.9998
+},
+{
+"text": "3 0 \\underbrace { \\times 2 9 } x ^ { 2 8 }",
+"logp": -9.9437,
+"min_token_p": 0.0001
+},
+{
+"text": "3 0 \\times 2 9 \\, x ^ { 2 8 }",
+"logp": -9.2574,
+"min_token_p": 0.0001
+}
+],
+"37.png": [
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+"logp": -0.1583,
+"min_token_p": 0.8552
+},
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+"logp": -1.9346,
+"min_token_p": 0.1448
+},
+{
+"text": "\\sqrt { 1 + \\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } } }",
+"logp": -6.654,
+"min_token_p": 0.0016
+}
+],
+"38.png": [
+{
+"text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+"logp": -0.0059,
+"min_token_p": 0.9943
+},
+{
+"text": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+"logp": -5.1734,
+"min_token_p": 0.0057
+},
+{
+"text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 + 4 x }",
+"logp": -10.2063,
+"min_token_p": 0.0
+}
+],
+"39.png": [
+{
+"text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+"logp": -0.0098,
+"min_token_p": 0.9935
+},
+{
+"text": "x _ { 1 } + x _ { 2 } = X _ { 3 }",
+"logp": -5.0456,
+"min_token_p": 0.0065
+},
+{
+"text": "x _ { 1 } + x _ { 2 } - x _ { 3 }",
+"logp": -5.8591,
+"min_token_p": 0.0029
+}
+],
+"40.png": [
+{
+"text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+"logp": -0.0008,
+"min_token_p": 0.9997
+},
+{
+"text": "X _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+"logp": -8.502,
+"min_token_p": 0.0002
+},
+{
+"text": "x _ { i } - x _ { i + i } + x _ { i + 2 }",
+"logp": -9.2494,
+"min_token_p": 0.0001
+}
+],
+"41.png": [
+{
+"text": "\\sqrt { b ^ { 2 } - 4 a c }",
+"logp": -0.0001,
+"min_token_p": 1.0
+},
+{
+"text": "\\sqrt { b _ { } ^ { 2 } - 4 a c }",
+"logp": -10.7909,
+"min_token_p": 0.0
+},
+{
+"text": "\\sqrt { b ^ { 2 } - 4 \\, a c }",
+"logp": -11.1199,
+"min_token_p": 0.0
+}
+],
+"42.png": [
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+"logp": -0.2543,
+"min_token_p": 0.784
+},
+{
+"text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 3 } + z ^ { 2 } }",
+"logp": -1.5464,
+"min_token_p": 0.2154
+},
+{
+"text": "\\fbox { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+"logp": -5.269,
+"min_token_p": 0.0068
+}
+],
+"43.png": [
+{
+"text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+"logp": -0.283,
+"min_token_p": 0.8657
+},
+{
+"text": "\\frac { \\sin \\beta + \\cos \\beta + \\tan \\beta } { x + y + z }",
+"logp": -2.4701,
+"min_token_p": 0.1095
+},
+{
+"text": "\\frac { \\sin B + \\cos B + \\tan B } { x + y + z }",
+"logp": -2.9403,
+"min_token_p": 0.0694
+}
+],
+"44.png": [
+{
+"text": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+"logp": -0.5018,
+"min_token_p": 0.6347
+},
+{
+"text": "( x ^ { 3 } - x ^ { 2 } - x ) \\left( 2 x - 7 \\right)",
+"logp": -1.8987,
+"min_token_p": 0.3602
+},
+{
+"text": "( x ^ { 3 } - x ^ { 2 } - x ) \\cdot 2 x - 7 )",
+"logp": -2.9644,
+"min_token_p": 0.2238
+}
+],
+"45.png": [
+{
+"text": "a + b + c + d + e",
+"logp": -0.001,
+"min_token_p": 0.9994
+},
+{
+"text": "a + b + C + d + e",
+"logp": -7.9736,
+"min_token_p": 0.0003
+},
+{
+"text": "a + b + c + d + c",
+"logp": -7.9815,
+"min_token_p": 0.0003
+}
+],
+"46.png": [
+{
+"text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+"logp": -0.0036,
+"min_token_p": 0.9991
+},
+{
+"text": "x _ { 1 } ^ { } - x _ { 2 } ^ { } + y _ { 1 } ^ { } - y _ { 2 } ^ { } + z _ { 1 } ^ { } - z _ { 2 } ^ { }",
+"logp": -9.8638,
+"min_token_p": 0.0007
+},
+{
+"text": "x _ { 1 } ^ { } - x _ { 2 } ^ { } + y _ { 1 } ^ { } - y _ { 2 } ^ { } + z _ { 1 } ^ { } - z _ { 2 }",
+"logp": -9.9082,
+"min_token_p": 0.0007
+}
+],
+"47.png": [
+{
+"text": "a + b + c + d + e",
+"logp": -0.0567,
+"min_token_p": 0.9492
+},
+{
+"text": "a + b + c + d + c",
+"logp": -2.9885,
+"min_token_p": 0.0506
+},
+{
+"text": "a + b + C + d + e",
+"logp": -5.4708,
+"min_token_p": 0.0045
+}
+],
+"48.png": [
+{
+"text": "x ^ { i + 2 ) \\times k ^ { 3 } - 2 \\frac { i } { i } }",
+"logp": -0.3343,
+"min_token_p": 0.7682
+},
+{
+"text": "x ^ { i + 2 ) \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+"logp": -1.5521,
+"min_token_p": 0.2273
+},
+{
+"text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+"logp": -3.9721,
+"min_token_p": 0.0219
+}
+],
+"49.png": [
+{
+"text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+"logp": -0.5661,
+"min_token_p": 0.6851
+},
+{
+"text": "\\log 3 8 + \\log 3 9 + \\log _ { 4 } 1 6",
+"logp": -2.3562,
+"min_token_p": 0.1467
+},
+{
+"text": "\\log 2 8 + \\log 3 9 + \\log _ { 4 } 1 6",
+"logp": -2.3701,
+"min_token_p": 0.1389
+}
+],
+"50.png": [
+{
+"text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+"logp": -0.0042,
+"min_token_p": 0.997
+},
+{
+"text": "\\sin x - \\sin z - \\sin \\left( x - y \\right)",
+"logp": -7.2779,
+"min_token_p": 0.0007
+},
+{
+"text": "\\sin x - \\sin y - \\sin ( x - y )",
+"logp": -6.1456,
+"min_token_p": 0.0021
+}
+],
+"51.png": [
+{
+"text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -0.0011,
+"min_token_p": 0.9995
+},
+{
+"text": "\\frac { \\tan \\alpha + \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -7.6114,
+"min_token_p": 0.0005
+},
+{
+"text": "\\frac { \\tan \\beta - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -8.3816,
+"min_token_p": 0.0002
+}
+],
+"52.png": [
+{
+"text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+"logp": -0.0004,
+"min_token_p": 0.9999
+},
+{
+"text": "\\begin{matrix} { 2 \\tan \\alpha } \\\\ { 1 - \\tan ^ { 2 } \\alpha } \\\\ \\end{matrix}",
+"logp": -9.4195,
+"min_token_p": 0.0001
+},
+{
+"text": "\\frac { 2 \\sin \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+"logp": -9.5659,
+"min_token_p": 0.0001
+}
+],
+"53.png": [
+{
+"text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -0.0422,
+"min_token_p": 0.9794
+},
+{
+"text": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -4.2285,
+"min_token_p": 0.015
+},
+{
+"text": "\\tan _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+"logp": -4.3072,
+"min_token_p": 0.0153
+}
+],
+"54.png": [
+{
+"text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+"logp": -0.0675,
+"min_token_p": 0.9484
+},
+{
+"text": "1 + \\frac 1 { 1 ! } + \\frac 1 { 2 ! } + \\frac 1 { 3 ! } + \\frac 1 { 4 ! }",
+"logp": -2.9776,
+"min_token_p": 0.0515
+},
+{
+"text": "1 + \\frac { 1 } { 2 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+"logp": -5.1358,
+"min_token_p": 0.0062
+}
+],
+"55.png": [
+{
+"text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+"logp": -1.1361,
+"min_token_p": 0.3233
+},
+{
+"text": "\\tan x \\rightarrow \\frac { \\pi } { 2 } + 0 \\tan x = - \\infty",
+"logp": -1.2842,
+"min_token_p": 0.2922
+},
+{
+"text": "\\cos x \\rightarrow \\frac { \\pi } { 2 } + 0 \\tan x = - \\infty",
+"logp": -1.757,
+"min_token_p": 0.1828
+}
+],
+"56.png": [
+{
+"text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+"logp": -0.0007,
+"min_token_p": 0.9997
+},
+{
+"text": "x ^ { i + 2 j \\times K ^ { 3 } - 2 \\frac { j } { i } }",
+"logp": -8.4387,
+"min_token_p": 0.0002
+},
+{
+"text": "x ^ { i + 2 j \\times 1 ^ { 3 } - 2 \\frac { j } { i } }",
+"logp": -9.3445,
+"min_token_p": 0.0001
+}
+],
+"57.png": [
+{
+"text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+"logp": -0.6149,
+"min_token_p": 0.6283
+},
+{
+"text": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+"logp": -1.1595,
+"min_token_p": 0.3717
+},
+{
+"text": "\\int \\left( 2 ^ { x } - 3 e ^ { y } \\right) d x",
+"logp": -2.7495,
+"min_token_p": 0.1018
+}
+],
+"58.png": [
+{
+"text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+"logp": -0.0369,
+"min_token_p": 0.976
+},
+{
+"text": "\\frac { 1 } { a } F ( a x + b ) + C",
+"logp": -3.7393,
+"min_token_p": 0.024
+},
+{
+"text": "\\frac 1 a F \\left( a x + b \\right) + C",
+"logp": -5.5316,
+"min_token_p": 0.0047
+}
+],
+"59.png": [
+{
+"text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+"logp": -0.0008,
+"min_token_p": 0.9997
+},
+{
+"text": "\\frac { \\sin B \\, + \\sin C } { \\cos B + \\cos C }",
+"logp": -9.2155,
+"min_token_p": 0.0002
+},
+{
+"text": "\\frac { \\sin B + \\sin C } { \\sin B + \\cos C }",
+"logp": -10.0118,
+"min_token_p": 0.0
+}
+],
+"60.png": [
+{
+"text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+"logp": -0.0221,
+"min_token_p": 0.9927
+},
+{
+"text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { 1 } + \\beta - 3 \\beta",
+"logp": -4.9477,
+"min_token_p": 0.0072
+},
+{
+"text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n + \\beta } - 3 \\beta",
+"logp": -6.6698,
+"min_token_p": 0.0025
+}
+],
+"61.png": [
+{
+"text": "3 0 \\times 2 9 x ^ { 2 8 }",
+"logp": -0.0401,
+"min_token_p": 0.9611
+},
+{
+"text": "3 0 \\times 2 9 x ^ { 2 }",
+"logp": -3.8062,
+"min_token_p": 0.0222
+},
+{
+"text": "3 0 \\times 2 9 x ^ { 2 6 }",
+"logp": -5.188,
+"min_token_p": 0.0056
+}
+],
+"62.png": [
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+"logp": -0.296,
+"min_token_p": 0.7441
+},
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+"logp": -1.3636,
+"min_token_p": 0.2559
+},
+{
+"text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } } .",
+"logp": -9.3192,
+"min_token_p": 0.0001
+}
+],
+"63.png": [
+{
+"text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+"logp": -0.0425,
+"min_token_p": 0.9702
+},
+{
+"text": "\\lim _ { x \\rightarrow \\frac 1 4 } \\frac { 1 - 4 ^ { x - \\frac 1 4 } } { 1 - 4 x }",
+"logp": -3.5262,
+"min_token_p": 0.0298
+},
+{
+"text": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+"logp": -4.4911,
+"min_token_p": 0.0114
+}
+],
+"64.png": [
+{
+"text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+"logp": -0.0003,
+"min_token_p": 0.9998
+},
+{
+"text": "x _ { 1 } + x _ { 2 } + x _ { 3 }",
+"logp": -9.226,
+"min_token_p": 0.0001
+},
+{
+"text": "x _ { 1 } + x _ { 2 } - x _ { 3 }",
+"logp": -9.7736,
+"min_token_p": 0.0001
+}
+],
+"65.png": [
+{
+"text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+"logp": -0.0001,
+"min_token_p": 1.0
+},
+{
+"text": "x _ { i } - x _ { i + 1 } + x _ { i + 1 }",
+"logp": -11.5839,
+"min_token_p": 0.0
+},
+{
+"text": "x i - x _ { i + 1 } + x _ { i + 2 }",
+"logp": -10.2374,
+"min_token_p": 0.0
+}
+],
+"66.png": [
+{
+"text": "\\sqrt { b ^ { 2 } - 4 a c }",
+"logp": -0.0002,
+"min_token_p": 0.9999
+},
+{
+"text": "\\sqrt { b _ { b } ^ { 2 } - 4 a c }",
+"logp": -9.916,
+"min_token_p": 0.0001
+},
+{
+"text": "\\sqrt { b _ { } ^ { 2 } - 4 a c }",
+"logp": -9.8673,
+"min_token_p": 0.0001
+}
+],
+"67.png": [
+{
+"text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+"logp": -0.0034,
+"min_token_p": 0.9981
+},
+{
+"text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 7 6",
+"logp": -6.4274,
+"min_token_p": 0.0016
+},
+{
+"text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + 2 \\log _ { 4 } 1 6",
+"logp": -7.4089,
+"min_token_p": 0.001
+}
+],
+"68.png": [
+{
+"text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+"logp": -0.0073,
+"min_token_p": 0.9963
+},
+{
+"text": "\\sin x - \\sin y ^ { - } \\sin \\left( x - y \\right)",
+"logp": -6.512,
+"min_token_p": 0.0015
+},
+{
+"text": "\\sin X - \\sin y - \\sin \\left( x - y \\right)",
+"logp": -5.9715,
+"min_token_p": 0.0026
+}
+],
+"69.png": [
+{
+"text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -0.0007,
+"min_token_p": 0.9998
+},
+{
+"text": "\\frac { \\tan \\alpha + \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+"logp": -9.0518,
+"min_token_p": 0.0001
+},
+{
+"text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\cos \\alpha \\tan \\beta }",
+"logp": -9.0827,
+"min_token_p": 0.0001
+}
+]
+}
+}

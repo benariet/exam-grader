@@ -1,0 +1,32 @@
+{
+ "classes": [
+  "hebrew",
+  "math"
+ ],
+ "norm_height": 40,
+ "canvas_width": 200,
+ "val_acc": 0.947,
+ "val_confusion": [
+  [
+   1427,
+   73
+  ],
+  [
+   86,
+   1414
+  ]
+ ],
+ "epoch": 4,
+ "excluded_from_training": [
+  "I=\\frac{1}{R}V",
+  "V=5V",
+  "V=I\\cdot R"
+ ],
+ "crop_mode": "tight",
+ "platt_a": 0.662201893471381,
+ "platt_b": -0.6295093656883913,
+ "calib_chunks": 5106,
+ "calib_acc_raw": 0.8443,
+ "calib_acc_calibrated": 0.8803,
+ "calibration": "Platt on run-time-like chunks; writers of data/mixed_eval excluded"
+}

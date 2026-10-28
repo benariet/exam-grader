@@ -1,0 +1,25 @@
+{
+ "classes": [
+  "hebrew",
+  "english"
+ ],
+ "norm_height": 40,
+ "canvas_width": 200,
+ "crop_mode": "band",
+ "val_acc_raw": 0.9032,
+ "val_acc_calibrated": 0.9042,
+ "val_confusion_raw": [
+  [
+   3484,
+   387
+  ],
+  [
+   323,
+   3144
+  ]
+ ],
+ "epoch": 6,
+ "platt_a": 1.1803678541557974,
+ "platt_b": 0.09387721040123659,
+ "calibration": "Platt on val chunks: Hebrew test-split writers (minus eval_mixed's), IAM validation"
+}

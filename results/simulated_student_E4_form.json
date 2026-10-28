@@ -1,0 +1,215 @@
+{
+ "exam": "E4",
+ "title": "בוחן 4 - חוקי קירכהוף",
+ "student_id": {
+  "id": "472508936",
+  "confidence": 1.0,
+  "valid": true,
+  "p": 0.8927,
+  "top_reading": "472508936"
+ },
+ "problems": [],
+ "pages_read": [
+  1,
+  2,
+  3
+ ],
+ "pages_expected": 3,
+ "items": [
+  {
+   "id": "q1",
+   "kind": "number",
+   "points": 20.0,
+   "route": "review",
+   "score": 20.0,
+   "read": "5.71",
+   "confidence": 0.911,
+   "reason": "5% of the reading looks unreadable or crossed out",
+   "readings": [
+    [
+     "5.71",
+     0.9105
+    ],
+    [
+     "8.71",
+     0.0416
+    ],
+    [
+     "?.71",
+     0.0293
+    ],
+    [
+     "5.31",
+     0.0009
+    ],
+    [
+     "5.77",
+     0.0006
+    ]
+   ],
+   "truth_note": ""
+  },
+  {
+   "id": "q2",
+   "kind": "number",
+   "points": 15.0,
+   "route": "auto",
+   "score": 15.0,
+   "read": "1.43",
+   "confidence": 0.996,
+   "reason": "confidence 100%",
+   "readings": [
+    [
+     "1.43",
+     0.9953
+    ],
+    [
+     "7.43",
+     0.0007
+    ],
+    [
+     "1.43___.",
+     0.0002
+    ],
+    [
+     "4.43",
+     0.0002
+    ],
+    [
+     "1.43___0",
+     0.0001
+    ]
+   ],
+   "truth_note": ""
+  },
+  {
+   "id": "q3",
+   "kind": "number",
+   "points": 15.0,
+   "route": "auto",
+   "score": 15.0,
+   "read": "2.14",
+   "confidence": 0.994,
+   "reason": "confidence 99%",
+   "readings": [
+    [
+     "2.14",
+     0.9936
+    ],
+    [
+     "2.19",
+     0.0022
+    ],
+    [
+     "8.14",
+     0.0002
+    ],
+    [
+     "2.15",
+     0.0002
+    ],
+    [
+     "?.14",
+     0.0001
+    ]
+   ],
+   "truth_note": ""
+  },
+  {
+   "id": "q4",
+   "kind": "number",
+   "points": 20.0,
+   "route": "auto",
+   "score": 20.0,
+   "read": "-0.714",
+   "confidence": 0.997,
+   "reason": "confidence 100%",
+   "readings": [
+    [
+     "-0.714",
+     0.9967
+    ],
+    [
+     "-0.71?",
+     0.0003
+    ],
+    [
+     "-0.714_.",
+     0.0002
+    ],
+    [
+     "-0.774",
+     0.0001
+    ],
+    [
+     "-0.704",
+     0.0001
+    ]
+   ],
+   "truth_note": ""
+  },
+  {
+   "id": "q5",
+   "kind": "number",
+   "points": 15.0,
+   "route": "auto",
+   "score": 15.0,
+   "read": "4.3",
+   "confidence": 0.995,
+   "reason": "confidence 99%",
+   "readings": [
+    [
+     "4.3",
+     0.9947
+    ],
+    [
+     "4.5",
+     0.0009
+    ],
+    [
+     "4.3__.",
+     0.0003
+    ],
+    [
+     "4.3__7",
+     0.0002
+    ],
+    [
+     "4.3___.",
+     0.0001
+    ]
+   ],
+   "truth_note": ""
+  },
+  {
+   "id": "q6",
+   "kind": "choice",
+   "points": 15.0,
+   "route": "auto",
+   "score": 15.0,
+   "read": "3",
+   "confidence": 1.0,
+   "reason": "confidence 100%",
+   "readings": [
+    [
+     "3",
+     0.9992
+    ],
+    [
+     "8",
+     0.0004
+    ],
+    [
+     ".",
+     0.0002
+    ]
+   ],
+   "truth_note": ""
+  }
+ ],
+ "auto_points": 80.0,
+ "auto_max": 80.0,
+ "review_points": 20.0,
+ "max_points": 100.0,
+ "complete": false
+}

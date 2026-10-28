@@ -1,0 +1,76 @@
+{
+ "A": {
+  "hebrew_writer": "w4",
+  "lines": [
+   [
+    {
+     "kind": "hebrew",
+     "text": "כאשר"
+    },
+    {
+     "kind": "math",
+     "text": "V=I\\cdot R"
+    }
+   ],
+   [
+    {
+     "kind": "hebrew",
+     "text": "ולכן"
+    },
+    {
+     "kind": "math",
+     "text": "V=5V"
+    }
+   ],
+   [
+    {
+     "kind": "hebrew",
+     "text": "זה"
+    },
+    {
+     "kind": "hebrew",
+     "text": "ערך"
+    },
+    {
+     "kind": "hebrew",
+     "text": "נמוך"
+    }
+   ]
+  ]
+ },
+ "B": {
+  "hebrew_writer": "w569",
+  "lines": [
+   [
+    {
+     "kind": "hebrew",
+     "text": "כאשר"
+    },
+    {
+     "kind": "math",
+     "text": "I=\\frac{1}{R}V"
+    }
+   ],
+   [
+    {
+     "kind": "hebrew",
+     "text": "ולכן"
+    },
+    {
+     "kind": "math",
+     "text": "V=5V"
+    }
+   ],
+   [
+    {
+     "kind": "hebrew",
+     "text": "זה"
+    },
+    {
+     "kind": "hebrew",
+     "text": "גבוה"
+    }
+   ]
+  ]
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "height": 48,
+ "max_width": 1600,
+ "charset": " אבגדהוזחטיכךלמםנןסעפףצץקרשת0123456789.,-?:\"()!;/'%",
+ "blank": 0,
+ "time_stride": 4,
+ "order": "visual (use recog.hebrew_text.to_logical)",
+ "val_cer": 0.1674,
+ "epoch": 5,
+ "train_lines": 9196,
+ "note": "fallback trained on 2 CPU cores for 5 epochs (stopped by time limit); setup.cmd trains the full model into models/hebrew-crnn",
+ "test_cer_300_unseen_writers": 0.1477
+}

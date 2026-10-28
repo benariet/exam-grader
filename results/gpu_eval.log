@@ -1,0 +1,513 @@
+gpu_eval started 2026-10-26 15:28:44
+[15:28:44] === system info
+machine : ASUS System Product Name
+RAM     : 94 GB
+CPU     : AMD Ryzen 9 9900X 12-Core Processor (12 cores / 24 threads)
+GPU     : AMD Radeon(TM) Graphics  (driver 32.0.13036.4)
+GPU     : NVIDIA GeForce RTX 2080 Ti  (driver 32.0.15.6094)
+disk    : 284 GB free on C:
+shell   : PowerShell 7.6.8
+[15:28:46] === system info -> exit 0
+Mon Oct 26 15:28:46 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.94                 Driver Version: 560.94         CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                  Driver-Model | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 2080 Ti   WDDM  |   00000000:01:00.0  On |                  N/A |
+| 30%   45C    P0             51W /  250W |    5434MiB /  11264MiB |      6%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A      4348    C+G   C:\Windows\System32\ShellHost.exe           N/A      |
+|    0   N/A  N/A      8476    C+G   ...cw5n1h2txyewy\CrossDeviceResume.exe      N/A      |
+|    0   N/A  N/A     10108    C+G   ...nr4m\radeonsoftware\AMDRSSrcExt.exe      N/A      |
+|    0   N/A  N/A     10576    C+G   ..._x64__8wekyb3d8bbwe\M365Copilot.exe      N/A      |
+|    0   N/A  N/A     14108    C+G   ...s\TechSmith\Snagit\SnagitEditor.exe      N/A      |
+|    0   N/A  N/A     16520    C+G   ...21.0_x64__zpdnekdrzrea0\Spotify.exe      N/A      |
+|    0   N/A  N/A     17856    C+G   ...oogle\Chrome\Application\chrome.exe      N/A      |
+|    0   N/A  N/A     18580    C+G   ...oogle\Chrome\Application\chrome.exe      N/A      |
+|    0   N/A  N/A     19208    C+G   ...ns\Software\Current\LogiOverlay.exe      N/A      |
+|    0   N/A  N/A     19672    C+G   ...2txyewy\StartMenuExperienceHost.exe      N/A      |
+|    0   N/A  N/A     19696    C+G   ...nt.CBS_cw5n1h2txyewy\SearchHost.exe      N/A      |
+|    0   N/A  N/A     19856    C+G   ...64__cv1g1gvanyjgm\WhatsApp.Root.exe      N/A      |
+|    0   N/A  N/A     20908    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     21292    C+G   ...5n1h2txyewy\ShellExperienceHost.exe      N/A      |
+|    0   N/A  N/A     21508    C+G   ...werToys\PowerToys.ColorPickerUI.exe      N/A      |
+|    0   N/A  N/A     22304    C+G   ...werToys\PowerToys.PowerLauncher.exe      N/A      |
+|    0   N/A  N/A     23376    C+G   ...t.LockApp_cw5n1h2txyewy\LockApp.exe      N/A      |
+|    0   N/A  N/A     23396    C+G   ...\PowerToys\PowerToys.FancyZones.exe      N/A      |
+|    0   N/A  N/A     24148    C+G   ...ekyb3d8bbwe\Microsoft.CmdPal.UI.exe      N/A      |
+|    0   N/A  N/A     24628    C+G   ...ys\WinUI3Apps\PowerToys.Peek.UI.exe      N/A      |
+|    0   N/A  N/A     27608    C+G   ...ekyb3d8bbwe\PhoneExperienceHost.exe      N/A      |
+|    0   N/A  N/A     28112    C+G   ...ft Office\root\Office16\OUTLOOK.EXE      N/A      |
+|    0   N/A  N/A     30460    C+G   ...ems\FX\SubAgent\AlienFXSubAgent.exe      N/A      |
+|    0   N/A  N/A     31468    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     34020    C+G   ...shampoo\Ashampoo Snap 17\snap17.exe      N/A      |
+|    0   N/A  N/A     34916    C+G   C:\Windows\explorer.exe                     N/A      |
+|    0   N/A  N/A     36652    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     37676    C+G   ...0_x64__pzs8sxrjxfjjc\app\claude.exe      N/A      |
+|    0   N/A  N/A     38444    C+G   ...oogle\Chrome\Application\chrome.exe      N/A      |
+|    0   N/A  N/A     39328    C+G   ...tionsPlus\logioptionsplus_agent.exe      N/A      |
+|    0   N/A  N/A     39688    C+G   ...0_x64__pzs8sxrjxfjjc\app\claude.exe      N/A      |
+|    0   N/A  N/A     41924    C+G   ...2nqsd0c76g0\app\ChatGPT Classic.exe      N/A      |
+|    0   N/A  N/A     42520    C+G   C:\Windows\explorer.exe                     N/A      |
+|    0   N/A  N/A     44240    C+G   ...049_x64__8wekyb3d8bbwe\ms-teams.exe      N/A      |
+|    0   N/A  N/A     45260    C+G   ...m Files (x86)\TickTick\TickTick.exe      N/A      |
+|    0   N/A  N/A     45480    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     50160    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     51304    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     53400    C+G   ...Programs\Microsoft VS Code\Code.exe      N/A      |
+|    0   N/A  N/A     57012    C+G   C:\Windows\explorer.exe                     N/A      |
+|    0   N/A  N/A     58616    C+G   ...s\System32\ApplicationFrameHost.exe      N/A      |
+|    0   N/A  N/A     63272    C+G   ...\TechSmith\Snagit\SnagitCapture.exe      N/A      |
+|    0   N/A  N/A     65772    C+G   ...64__mtcwf2zmmt10c\PSExpressCore.exe      N/A      |
+|    0   N/A  N/A     66628    C+G   ...siveControlPanel\SystemSettings.exe      N/A      |
+|    0   N/A  N/A     68736    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     71476    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     71972    C+G   ...CBS_cw5n1h2txyewy\TextInputHost.exe      N/A      |
+|    0   N/A  N/A     72560    C+G   ...01.0_x64__8wekyb3d8bbwe\XboxIdp.exe      N/A      |
+|    0   N/A  N/A     74840    C+G   ...soft Office\root\Office16\EXCEL.EXE      N/A      |
+|    0   N/A  N/A     75228    C+G   C:\Windows\explorer.exe                     N/A      |
+|    0   N/A  N/A     75340    C+G   ...011.0_x86__8wekyb3d8bbwe\Jigsaw.exe      N/A      |
+|    0   N/A  N/A     79340    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     82888    C+G   ...on\155.0.4283.62\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     85700    C+G   ...__8wekyb3d8bbwe\WindowsTerminal.exe      N/A      |
+|    0   N/A  N/A     91132    C+G   C:\Windows\explorer.exe                     N/A      |
++-----------------------------------------------------------------------------------------+
+
+[15:28:46] driver CUDA level: 126  ->  torch build: cu126
+[15:28:47] base python: py -3.13
+[15:28:47] === create .venv
+[15:28:56] === create .venv -> exit 0
+[15:28:56] === venv python
+3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]
+Windows-11-10.0.26100-SP0
+[15:28:57] === venv python -> exit 0
+[15:28:57] === pip upgrade
+[15:29:06] === pip upgrade -> exit 0
+[15:29:07] === torch + torchvision (cu126)
+Looking in indexes: https://download.pytorch.org/whl/cu126
+Collecting torch==2.14.1+cu126
+  Downloading torch-2.14.1%2Bcu126-cp313-cp313-win_amd64.whl.metadata (37 kB)
+Collecting torchvision==0.29.1+cu126
+  Downloading torchvision-0.29.1%2Bcu126-cp313-cp313-win_amd64.whl.metadata (5.8 kB)
+Collecting filelock (from torch==2.14.1+cu126)
+  Downloading filelock-3.32.3-py3-none-any.whl.metadata (2.0 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.14.1+cu126)
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting setuptools>=77.0.3 (from torch==2.14.1+cu126)
+  Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch==2.14.1+cu126)
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx>=2.5.1 (from torch==2.14.1+cu126)
+  Downloading networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)
+Collecting jinja2 (from torch==2.14.1+cu126)
+  Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec>=0.8.5 (from torch==2.14.1+cu126)
+  Downloading fsspec-2026.7.0-py3-none-any.whl.metadata (10 kB)
+Collecting numpy (from torchvision==0.29.1+cu126)
+  Downloading numpy-2.5.2-cp313-cp313-win_amd64.whl.metadata (6.6 kB)
+Collecting pillow!=8.3.*,>=5.3.0 (from torchvision==0.29.1+cu126)
+  Using cached pillow-12.3.0-cp313-cp313-win_amd64.whl.metadata (9.3 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.14.1+cu126)
+  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch==2.14.1+cu126)
+  Downloading markupsafe-3.0.3-cp313-cp313-win_amd64.whl.metadata (2.8 kB)
+Downloading torch-2.14.1%2Bcu126-cp313-cp313-win_amd64.whl (2602.8 MB)
+Downloading torchvision-0.29.1%2Bcu126-cp313-cp313-win_amd64.whl (6.1 MB)
+Downloading fsspec-2026.7.0-py3-none-any.whl (206 kB)
+Downloading networkx-3.6.1-py3-none-any.whl (2.1 MB)
+Using cached pillow-12.3.0-cp313-cp313-win_amd64.whl (7.2 MB)
+Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading filelock-3.32.3-py3-none-any.whl (98 kB)
+Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+Downloading markupsafe-3.0.3-cp313-cp313-win_amd64.whl (15 kB)
+Downloading numpy-2.5.2-cp313-cp313-win_amd64.whl (12.5 MB)
+Installing collected packages: mpmath, typing-extensions, sympy, setuptools, pillow, numpy, networkx, MarkupSafe, fsspec, filelock, jinja2, torch, torchvision
+Successfully installed MarkupSafe-3.0.3 filelock-3.32.3 fsspec-2026.7.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.6.1 numpy-2.5.2 pillow-12.3.0 setuptools-78.1.0 sympy-1.14.0 torch-2.14.1+cu126 torchvision-0.29.1+cu126 typing-extensions-4.16.0
+[15:32:03] === torch + torchvision (cu126) -> exit 0
+[15:32:03] === requirements
+[15:34:38] === requirements -> exit 0
+[15:34:38] === bitsandbytes (4-bit loading of the 8B English reader)
+[15:34:45] === bitsandbytes (4-bit loading of the 8B English reader) -> exit 0
+[15:34:45] === torch / CUDA check
+torch 2.14.1+cu126 | cuda: True
+NVIDIA GeForce RTX 2080 Ti | capability (7, 5) | matmul ok: True
+[15:34:58] === torch / CUDA check -> exit 0
+[15:34:58] background download: qwen3-vl-8b (17 GB) -> results\gpu_download_vlm.log
+[15:34:58] === download the math reader and the Hebrew language model (7.7 GB)
+-> uni-mumer-qwen3vl-2b  (phxember/Uni-MuMER-Qwen3-VL-2B, 4.3 GB  handwritten-formula reader (Qwen3-VL-2B fine-tuned, CROHME 2014 83 % exact; GPU advised))  into C:\Users\benariet\IdeaProjects\exam-grader\models\uni-mumer-qwen3vl-2b
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+-> dictalm-3.0-1.7b-base  (dicta-il/DictaLM-3.0-1.7B-Base, 3.4 GB  Hebrew language model: Hebrew text read in context (EXAM_GRADER_HEBREW_CONTEXT=1))  into C:\Users\benariet\IdeaProjects\exam-grader\models\dictalm-3.0-1.7b-base
+done
+[15:38:26] === download the math reader and the Hebrew language model (7.7 GB) -> exit 0
+[15:38:26] network access for the models is now OFF (HF_HUB_OFFLINE=1); the background download keeps its own
+[15:38:26] === GPU eval: machine, math (Uni-MuMER vs Pix2Text), Hebrew in context
+[15:38:27] ===== env
+W1026 15:39:07.973000 70428 .venv\Lib\site-packages\torch\utils\flop_counter.py:113] triton not found; flop counting will not work for triton kernels
+[15:39:13] {
+ "machine": "NVIDIA GeForce RTX 2080 Ti, 11.0 GB (9.9 free), compute capability 7.5, torch 2.14.1+cu126, CUDA 12.6",
+ "python": "3.13.14",
+ "torch": "2.14.1+cu126",
+ "cuda": true,
+ "transformers": "5.20.2",
+ "bitsandbytes": "0.50.2",
+ "cuda_matmul_ok": true,
+ "tflops_fp32": 7.9,
+ "tflops_fp16": 5.7,
+ "format math (Uni-MuMER)": "fp32 (2.13B parameters)",
+ "format hebrew LM (Dicta-LM)": "fp16 (1.72B parameters)",
+ "format english VLM": "4-bit + fp16 (8.77B parameters)",
+ "part_secs": 45.9
+}
+[15:39:13] ===== math
+[15:39:34] Uni-MuMER loaded in 18 s, fp32 on cuda
+Traceback (most recent call last):
+  File "C:\Users\benariet\IdeaProjects\exam-grader\grader\symbolic.py", line 122, in compare_formula
+    raise ValueError("reference did not parse")
+ValueError: reference did not parse
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+[15:39:36] part math FAILED: ValueError: bad reference formula '\\sqrt { b ^ { 2 } - 4 a c }': reference did not parse
+  File "C:\Users\benariet\IdeaProjects\exam-grader\tools\gpu_eval.py", line 316, in <module>
+    res = PARTS[name]()
+  File "C:\Users\benariet\IdeaProjects\exam-grader\tools\gpu_eval.py", line 154, in part_math
+    "pix2text_exact": norm(p) == norm(gt), "mumer_equiv": eq(m), "pix2text_equiv": eq(p)})
+                                                          ~~^^^
+  File "C:\Users\benariet\IdeaProjects\exam-grader\tools\gpu_eval.py", line 152, in <lambda>
+    eq = lambda x: compare_formula(x, gt).status == "equivalent"  # noqa: E731
+                   ~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\benariet\IdeaProjects\exam-grader\grader\symbolic.py", line 124, in compare_formula
+    raise ValueError(f"bad reference formula {reference!r}: {e}") from e
+ValueError: bad reference formula '\\sqrt { b ^ { 2 } - 4 a c }': reference did not parse
+[15:39:36] ===== hebrew
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    from multiprocessing.spawn import spawn_main; spawn_main(parent_pid=70428, pipe_handle=1976)
+                                                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\spawn.py", line 113, in spawn_main
+    new_handle = reduction.duplicate(pipe_handle,
+                                     source_process=source_process)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\multiprocessing\reduction.py", line 79, in duplicate
+    return _winapi.DuplicateHandle(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        source_process, handle, target_process,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        0, inheritable, _winapi.DUPLICATE_SAME_ACCESS)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [WinError 6] The handle is invalid
+[15:39:41] Hebrew LM loaded in 5 s, fp16 on cuda
+[15:40:13]   25 lines: CER in use 11.78%, in context 8.68%, 1.28 s/line
+[15:40:40]   50 lines: CER in use 9.61%, in context 7.46%, 1.17 s/line
+[15:41:09]   75 lines: CER in use 8.76%, in context 7.30%, 1.17 s/line
+[15:41:35]   100 lines: CER in use 8.95%, in context 7.22%, 1.14 s/line
+[15:42:03]   125 lines: CER in use 9.03%, in context 7.37%, 1.14 s/line
+[15:42:31]   150 lines: CER in use 9.15%, in context 7.54%, 1.13 s/line
+[15:43:13]   175 lines: CER in use 8.78%, in context 7.02%, 1.21 s/line
+[15:43:51]   200 lines: CER in use 8.83%, in context 7.03%, 1.25 s/line
+[15:44:25]   225 lines: CER in use 8.62%, in context 6.95%, 1.26 s/line
+[15:45:06]   250 lines: CER in use 8.71%, in context 7.12%, 1.3 s/line
+[15:45:48]   275 lines: CER in use 8.61%, in context 7.14%, 1.33 s/line
+[15:46:24]   300 lines: CER in use 8.50%, in context 7.02%, 1.34 s/line
+[15:46:28] {
+ "lm": "dictalm-3.0-1.7b-base",
+ "format": "fp16",
+ "device": "cuda",
+ "lines": 300,
+ "CER_in_use": 0.085,
+ "CER_in_context": 0.0702,
+ "secs_per_line": 1.34,
+ "gpu_memory_peak_gb": 8.01,
+ "tal": [
+  {
+   "truth": "הי מה שלומך קלוד, איך",
+   "in_use": "המה שלומך קלוד אזר",
+   "in_context": "ה מה שלומך קלוד איר"
+  },
+  {
+   "truth": "אתה מרגיש?",
+   "in_use": "אנה מרגישב.",
+   "in_context": "אנה מרגישה."
+  },
+  {
+   "truth": "אני בודק אותך איך אתה קורא",
+   "in_use": "אני בודק אור איך אתה קורא",
+   "in_context": "אני בודק אותך איך אתה קורא"
+  },
+  {
+   "truth": "עברית.",
+   "in_use": "עברית.",
+   "in_context": "עברית."
+  },
+  {
+   "truth": "גנן גידל דגן בגן דגן גדול גדל",
+   "in_use": "תי גדל דם בגן האן גדול גדל",
+   "in_context": "ת גדל דם בגן הגן גדול גדל"
+  },
+  {
+   "truth": "בגן",
+   "in_use": "באן.",
+   "in_context": "בין."
+  },
+  {
+   "truth": "אני לא מהממהרים אני מהמהרות",
+   "in_use": "אני לי מהממהרם אני מהמקרית",
+   "in_context": "אני לי מהומהרם אני מהמקרים"
+  }
+ ],
+ "tal_CER_in_use": 0.1967,
+ "tal_CER_in_context": 0.1721,
+ "part_secs": 411.4
+}
+[15:46:28] report: results\gpu_eval.json
+[15:46:29] === GPU eval: machine, math (Uni-MuMER vs Pix2Text), Hebrew in context -> exit 0
+[15:46:29] waiting for the background download of qwen3-vl-8b ...
+-> qwen3-vl-8b  (Qwen/Qwen3-VL-8B-Instruct, 17 GB   bigger VLM)  into C:\Users\benariet\IdeaProjects\exam-grader\models\qwen3-vl-8b
+done
+[15:46:29] background download finished (exit 0)
+[15:46:29] === GPU eval: English (Qwen3-VL-8B vs TrOCR), Tal's page end to end
+[15:46:30] running again the parts that failed before: math
+[15:46:30] ===== math
+[15:46:42] Uni-MuMER loaded in 10 s, fp32 on cuda
+Timeout is disabled as parsing_timeout is None or <= 0, you must provide                         the logic for timeout interuption yourself to prevent code getting stuck.
+[15:47:07]   10 formulas: Uni-MuMER 9/10, Pix2Text 9/10 equivalent
+[15:47:27]   20 formulas: Uni-MuMER 19/20, Pix2Text 19/20 equivalent
+[15:47:50]   30 formulas: Uni-MuMER 29/30, Pix2Text 29/30 equivalent
+[15:48:12]   40 formulas: Uni-MuMER 38/40, Pix2Text 38/40 equivalent
+[15:48:31]   50 formulas: Uni-MuMER 46/50, Pix2Text 47/50 equivalent
+[15:48:52]   60 formulas: Uni-MuMER 55/60, Pix2Text 56/60 equivalent
+[15:49:12]   70 formulas: Uni-MuMER 65/70, Pix2Text 66/70 equivalent
+[15:49:22] {
+ "model": "uni-mumer-qwen3vl-2b",
+ "format": "fp32",
+ "device": "cuda",
+ "formulas": 70,
+ "mumer_exact": 47,
+ "pix2text_exact": 65,
+ "mumer_equiv": 65,
+ "pix2text_equiv": 66,
+ "secs_per_formula_mumer": 1.98,
+ "secs_per_formula_pix2text": 0.14,
+ "gpu_memory_peak_gb": 8.1,
+ "tal": [
+  {
+   "truth": "1) a^{2}+b^{2}=c^{2} | a=3, b=4",
+   "mumer": "1 ) a ^ { 2 } + b ^ { 2 } = c ^ { 2 } | a = 3 , b = 4",
+   "pix2text": "1 ) a ^ { 2 } + b ^ { 2 } = c ^ { 2 } \\vert a = 3 \\vert b = 4"
+  },
+  {
+   "truth": "c=9",
+   "mumer": "c = 9",
+   "pix2text": "c = 9"
+  },
+  {
+   "truth": "2) a^{2}+b^{2}=c^{2} | 4^{2}+2^{2}=\\sqrt{20}",
+   "mumer": "2 7 a ^ { 2 } + b ^ { 2 } = c ^ { 2 } 4 ^ { 2 } + 2 ^ { 2 } = \\sqrt { 2 0 }",
+   "pix2text": "2 \\vert a ^ { 2 } + b ^ { 2 } = c ^ { 2 } \\vert y ^ { 2 } + 2 ^ { 2 } = \\sqrt { 2 0 }"
+  },
+  {
+   "truth": "16+4",
+   "mumer": "1 6 + 1",
+   "pix2text": "\\begin{array} { c } { \\mid \\vdots } \\\\ { \\mid \\vdots } \\\\ { \\mid \\cdots } \\\\ \\end{array} \\lambda _ { n } \\in \\left\\{ \\begin{array} { l l } { \\mid } & { \\mid } \\\\ { \\mid \\mid } & { \\mid } \\\\ { \\mid \\cdots } & { \\mid } \\\\ \\end{array} \\right."
+  },
+  {
+   "truth": "3) A=\\pi r^{2} | r=5",
+   "mumer": "3 ) A = \\pi r ^ { 2 } | r = 5",
+   "pix2text": "3 ) A = \\pi ^ { 2 } r ^ { 2 } \\vert r = 5"
+  },
+  {
+   "truth": "A=78.54",
+   "mumer": "A = 7 8 . 5 4 \\approx",
+   "pix2text": "A = 7 8 . 5 4 \\pi"
+  }
+ ],
+ "part_secs": 172.7
+}
+[15:49:22] ===== english
+W1026 15:49:26.799000 24524 .venv\Lib\site-packages\torch\utils\flop_counter.py:113] triton not found; flop counting will not work for triton kernels
+[15:49:41] English VLM loaded in 15 s: 4-bit + fp16 on cuda
+[15:49:55]   25 lines: CER 3.92%, 0.54 s/line
+[15:50:10]   50 lines: CER 4.00%, 0.55 s/line
+[15:50:23]   75 lines: CER 3.87%, 0.55 s/line
+[15:50:39]   100 lines: CER 4.51%, 0.57 s/line
+[15:50:52]   125 lines: CER 4.32%, 0.56 s/line
+[15:51:06]   150 lines: CER 3.94%, 0.56 s/line
+[15:51:08] {
+ "model": "qwen3-vl-8b",
+ "quantized_4bit": true,
+ "format": "fp16",
+ "parts_on_cpu": 0,
+ "lines": 150,
+ "CER": 0.0394,
+ "secs_per_line": 0.56,
+ "gpu_memory_peak_gb": 8.1,
+ "CER_trocr_small_same_lines": 0.0694,
+ "CER_trocr_base_same_lines": 0.0452,
+ "tal": [
+  {
+   "truth": "hi there cladue, how",
+   "read": "hi there claudia, row"
+  },
+  {
+   "truth": "are you i want to test",
+   "read": "are you want to test"
+  },
+  {
+   "truth": "the text recongnition",
+   "read": "the text recognition"
+  }
+ ],
+ "part_secs": 105.4
+}
+[15:51:08] ===== page
+[15:52:18] {
+ "secs": 69.9,
+ "heavy_readers": [
+  "hebrew in context",
+  "Uni-MuMER",
+  "English VLM"
+ ],
+ "score": {
+  "pieces": 25,
+  "pieces_flagged_for_review": 17,
+  "hebrew": {
+   "words_right": 16,
+   "words": 29,
+   "missed": [
+    "איך",
+    "אתה",
+    "בגן",
+    "גידל",
+    "גנן",
+    "דגן",
+    "דגן",
+    "הי",
+    "לא",
+    "מהמהרות",
+    "מהממהרים",
+    "מרגיש",
+    "תוצאה"
+   ],
+   "extra": [
+    "א",
+    "איר",
+    "אנה",
+    "ב",
+    "בין",
+    "גדל",
+    "דם",
+    "ה",
+    "ה",
+    "הגן",
+    "זון",
+    "חוסה",
+    "לי",
+    "מהומהרם",
+    "מהמקרים",
+    "מרגישה",
+    "ס",
+    "של",
+    "ת"
+   ]
+  },
+  "english": {
+   "words_right": 7,
+   "words": 13,
+   "missed": [
+    "are",
+    "cladue",
+    "hi",
+    "how",
+    "recongnition",
+    "you"
+   ],
+   "extra": [
+    "a",
+    "clause",
+    "now",
+    "recognition"
+   ]
+  },
+  "math": {
+   "formulas_right": 7,
+   "formulas": 10,
+   "missed": [
+    "4^{2}+2^{2}=\\sqrt{20}",
+    "16+4",
+    "r=5"
+   ]
+  }
+ },
+ "formulas_right_pix2text": "7/10",
+ "formulas_right_mumer": "8/10",
+ "formulas_right_both_weighed": "7/10",
+ "checks": [
+  {
+   "problem": 1,
+   "verdict": "wrong",
+   "text": "a²+b²=c² with a=3, b=4: c = 5, but written c=9: wrong",
+   "confidence": 0.513,
+   "sure": false
+  },
+  {
+   "problem": 2,
+   "verdict": "right value, wrong equality",
+   "text": "'4²+2² = √20': the left side is 20, not 4.472; 20 is c² - so c = √20 is right, but the equality as written is not (y taken as 4, as another reading of that piece has it)",
+   "confidence": 0.5,
+   "sure": false
+  },
+  {
+   "problem": 3,
+   "verdict": "right",
+   "text": "A=πr² with r=5 (r=5 read from a piece taken for text): A = 78.54 - written A=78.54: right",
+   "confidence": 0.478,
+   "sure": false
+  }
+ ],
+ "gpu_memory_peak_gb": 8.1,
+ "part_secs": 70.3
+}
+page 1: {'ink_threshold': 170, 'top_cut': 26, 'margin_line_columns': 0, 'punch_holes': 0, 'answer_boxes': []}, 17 lines, 0 figure(s) not read as text
+line 1: [hebrew 50%] ה מה שלומך קלוד איר (78%)
+line 2: [hebrew 89%] אנה מרגישה. (95%)
+line 3: [hebrew 50%] אני בודק אותך איך אתה קורא (94%)
+line 4: [hebrew 86%] עברית. (98%)
+line 5: [hebrew 92%] ת גדל דם בגן הגן גדול גדל (75%)
+line 6: [hebrew 97%] בין. (58%)
+line 7: [hebrew 99%] אני לי מהומהרם אני מהמקרים (73%)
+line 8: [english 50%] there clause, now (52%)  |  [math 50%] $h^{\i}$ / 2nd reader: $hi$ (43%)
+line 9: [hebrew 50%] . (78%)  |  [english 50%] I want to test (69%)  |  [hebrew 50%] ס של (93%)
+line 10: [english 50%] the text recognition (80%)
+line 11: [math 53%] $\vert\verta^{2}+b^{2}=c^{2}\verta=3\vertb=4$ / 2nd reader: $1)a^{2}+b^{2}=c^{2}|a=3,b=4$ (40%)
+line 12: [hebrew 88%] תוצאה (98%)  |  [math 62%] $c=9$ (95%)
+line 13: [math 79%] $2\verta^{2}+b^{2}=c^{2}\verty^{2}+2^{2}=\sqrt{20}$ / 2nd reader: $27a^{2}+b^{2}=c^{2}4^{2}+2^{2}=\sqrt{20}$ (78%)
+line 14: [hebrew 50%] א (63%)  |  [english 50%] 16 a (72%)
+line 15: [hebrew 50%] זון (48%)  |  [math 50%] $A=πr^{2}$ (99%)  |  [hebrew 91%] ה (99%)
+line 16: [hebrew 72%] חוסה ב (98%)  |  [math 100%] $A=78.54$ (92%)
+line 17: [math 60%] $\imath$ / 2nd reader: $,$ (92%)
+derivation checks (no key - the student's own formula and data): 3
+  problem 1: WRONG - a²+b²=c² with a=3, b=4: c = 5, but written c=9: wrong (reading 51%, unsure: a human should look)
+  problem 2: RIGHT VALUE, WRONG EQUALITY - '4²+2² = √20': the left side is 20, not 4.472; 20 is c² - so c = √20 is right, but the equality as written is not (y taken as 4, as another reading of that piece has it) (reading 50%, unsure: a human should look)
+  problem 3: RIGHT - A=πr² with r=5 (r=5 read from a piece taken for text): A = 78.54 - written A=78.54: right (reading 48%, unsure: a human should look)
+[15:52:18] report: results\gpu_eval.json
+[15:52:21] === GPU eval: English (Qwen3-VL-8B vs TrOCR), Tal's page end to end -> exit 0
+[15:52:21] === summary
+math    : Uni-MuMER 65 / 70   Pix2Text 66 / 70 
+hebrew  : CER in use 0.085 -> in context 0.0702 
+english : CER 0.0394   TrOCR-small same lines 0.0694 
+page    : {"hebrew": 16, "english": 7} 7/10 
+[15:52:21] === summary -> exit 0
+[15:52:21] ALL DONE - results\gpu_eval.json, results\tal_notebook_gpu_p1_read.png

@@ -1,0 +1,38 @@
+{
+ "people": 16,
+ "held_out_people": [
+  "sheets_batch1#3",
+  "sheets_batch1#4",
+  "sheets_batch2#4"
+ ],
+ "held_out_cells": 520,
+ "readers": {
+  "in use (main + b)": {
+   "cells": 520,
+   "right": 0.9653846153846154,
+   "sure": 0.9019230769230769,
+   "sure_wrong": 4,
+   "digits_right": 0.9312977099236641
+  },
+  "fine-tuned": {
+   "cells": 520,
+   "right": 0.9711538461538461,
+   "sure": 0.8942307692307693,
+   "sure_wrong": 2,
+   "digits_right": 0.9427480916030534
+  },
+  "fine-tuned + b": {
+   "cells": 520,
+   "right": 0.9692307692307692,
+   "sure": 0.8980769230769231,
+   "sure_wrong": 2,
+   "digits_right": 0.9389312977099237
+  }
+ },
+ "better": true,
+ "best": "fine-tuned",
+ "installed": [
+  "mine"
+ ],
+ "minutes": 16.2
+}

@@ -1,0 +1,4638 @@
+{
+ "summary": {
+  "data": "mixed_eval2",
+  "lines": 100,
+  "layout_correct": 0.72,
+  "layout_correct_old_box_rule": 0.64,
+  "layout_correct_by_position": {
+   "start": 0.692,
+   "middle": 0.68,
+   "end": 0.778
+  },
+  "hebrew_CER": 0.4146,
+  "math_exact": 0.139,
+  "math_exact_or_equivalent": 0.194,
+  "flagged_for_review": 0.47,
+  "layout_wrong_and_NOT_flagged": 0.09,
+  "layout_right_but_flagged": 0.28,
+  "secs_per_line": 1.5
+ },
+ "rows": [
+  {
+   "file": "000.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     203,
+     294
+    ],
+    [
+     87,
+     161
+    ],
+    [
+     66,
+     77
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.76,
+     ""
+    ],
+    [
+     "math",
+     0.61,
+     ""
+    ],
+    [
+     "hebrew",
+     0.65,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "001.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     325,
+     419
+    ],
+    [
+     60,
+     282
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.6,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "dS=\\frac{dQ}{T}",
+     "hyp": "O S = \\frac { \\sqrt { 2 } } { T }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "שלו היה כה",
+     "hyp": "שלו היה כה",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "002.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     475,
+     513
+    ],
+    [
+     308,
+     428
+    ],
+    [
+     50,
+     240
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.9,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.92,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "גילה",
+     "hyp": "שלה",
+     "cer": 0.5
+    },
+    {
+     "kind": "math",
+     "ref": "\\overline{w}=0",
+     "hyp": "\\overline { { w } } = 0",
+     "exact": false,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "פרצות אבטחה",
+     "hyp": "סיבי שמשום",
+     "cer": 0.9090909090909091
+    }
+   ]
+  },
+  {
+   "file": "003.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     50,
+     463
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "004.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     157,
+     211
+    ],
+    [
+     75,
+     118
+    ],
+    [
+     64,
+     67
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.85,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.83,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "005.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     458,
+     578
+    ],
+    [
+     62,
+     409
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.57,
+     ""
+    ],
+    [
+     "hebrew",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "cos^{2}z-1=0",
+     "hyp": "m ^ { 2 } y ^ { - 1 } = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "של אנרגיה מתחדשת",
+     "hyp": "על אנרגיה מתחדשת",
+     "cer": 0.0625
+    }
+   ]
+  },
+  {
+   "file": "006.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     358,
+     438
+    ],
+    [
+     55,
+     343
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.74,
+     ""
+    ],
+    [
+     "hebrew",
+     0.85,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "007.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     54,
+     319
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.81,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "008.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     419,
+     579
+    ],
+    [
+     57,
+     370
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.85,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "f=a+bx+cp",
+     "hyp": "f = a \\star b x \\star c p",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מיוצרים,",
+     "hyp": "ומיוצרים, מוקצים,",
+     "cer": 1.125
+    }
+   ]
+  },
+  {
+   "file": "009.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     148,
+     271
+    ],
+    [
+     66,
+     106
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.97,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "ומה יקרה",
+     "hyp": "ומה יקרה",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\frac{dy}{ds}=1",
+     "hyp": "\\aleph ^ { - \\iota }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "010.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     431,
+     641
+    ],
+    [
+     315,
+     383
+    ],
+    [
+     62,
+     245
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.65,
+     ""
+    ],
+    [
+     "math",
+     0.67,
+     ""
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "העצומה",
+     "hyp": "ההצלחה",
+     "cer": 0.5
+    },
+    {
+     "kind": "math",
+     "ref": "\\tilde{f}=f+h",
+     "hyp": "\\widetilde { f } \\cdot f - h",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "גבתה,",
+     "hyp": "העצומה",
+     "cer": 1.2
+    }
+   ]
+  },
+  {
+   "file": "011.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     57,
+     408
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "formula reader: = 6 0 0 0 m"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "012.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     186,
+     271
+    ],
+    [
+     56,
+     140
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.78,
+     ""
+    ],
+    [
+     "math",
+     0.96,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "חיקוי",
+     "hyp": "חיקוי",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\overline{Y}=X",
+     "hyp": "\\overline { { Y } } = \\mathbf { X }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "013.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     264,
+     320
+    ],
+    [
+     62,
+     215
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.93,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "k=\\prod t_{i}",
+     "hyp": "k - \\pi _ { \\infty }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מסוימות וסובלים",
+     "hyp": "תרופות",
+     "cer": 0.8
+    }
+   ]
+  },
+  {
+   "file": "014.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     758,
+     805
+    ],
+    [
+     545,
+     702
+    ],
+    [
+     50,
+     484
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "015.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     224,
+     310
+    ],
+    [
+     178,
+     189
+    ],
+    [
+     103,
+     172
+    ],
+    [
+     62,
+     91
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew reader: א"
+    ],
+    [
+     "math",
+     0.62,
+     ""
+    ],
+    [
+     "hebrew",
+     0.71,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "formula reader: ="
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "016.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     244,
+     372
+    ],
+    [
+     181,
+     211
+    ],
+    [
+     59,
+     122
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.94,
+     ""
+    ],
+    [
+     "math",
+     0.72,
+     ""
+    ],
+    [
+     "hebrew",
+     0.81,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "והשימושיים",
+     "hyp": "והשימושיים",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\frac{dx}{dt}=c",
+     "hyp": "{ \\bf \\omega }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ביותר",
+     "hyp": "ביותר",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "017.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     220,
+     318
+    ],
+    [
+     65,
+     181
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.93,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "P_{A}V=n_{A}RT",
+     "hyp": "P _ { A } ^ { \\cdot V } \\! = \\! n _ { \\star } \\bar { R } T",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מזיזים",
+     "hyp": "מזיזים",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "018.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     623,
+     690
+    ],
+    [
+     59,
+     580
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "t=\\frac{d}{dx}",
+     "hyp": "\\ddagger = \\frac { d } { d x }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "חומריים ובחוקים הנוגעים",
+     "hyp": "חומרים ובחוקרים הנוגעים",
+     "cer": 0.08695652173913043
+    }
+   ]
+  },
+  {
+   "file": "019.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     387,
+     493
+    ],
+    [
+     239,
+     343
+    ],
+    [
+     124,
+     174
+    ],
+    [
+     55,
+     110
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.82,
+     ""
+    ],
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.64,
+     ""
+    ],
+    [
+     "math",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "020.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     188,
+     281
+    ],
+    [
+     62,
+     155
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.97,
+     ""
+    ],
+    [
+     "hebrew",
+     0.91,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\overline{A}=X",
+     "hyp": "\\mathbb { A } = \\textbf { X }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ולהגיב",
+     "hyp": "ולהמים",
+     "cer": 0.3333333333333333
+    }
+   ]
+  },
+  {
+   "file": "021.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     490,
+     584
+    ],
+    [
+     400,
+     443
+    ],
+    [
+     56,
+     352
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.91,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.67,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "נסיעה",
+     "hyp": "נסיעה",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\prod_{k=1}^{n}k",
+     "hyp": "\\hat { \\Pi } ^ { \\ k }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "משפחתית לחו\"ל.",
+     "hyp": "משפחתית לחול.",
+     "cer": 0.07142857142857142
+    }
+   ]
+  },
+  {
+   "file": "022.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     462,
+     757
+    ],
+    [
+     295,
+     419
+    ],
+    [
+     51,
+     206
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "החלון. משאלתה",
+     "hyp": "החלון. משולתה",
+     "cer": 0.07692307692307693
+    },
+    {
+     "kind": "math",
+     "ref": "V_{Y0}t=h",
+     "hyp": "\\log _ { r _ { 0 } } t = h",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "התגשמה,",
+     "hyp": "התגשמה,",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "023.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     248,
+     336
+    ],
+    [
+     58,
+     206
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.83,
+     ""
+    ],
+    [
+     "hebrew",
+     0.96,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\hat{y}=-37+5.1x",
+     "hyp": "\\hat { y } = - 3 \\hat { z } + 5 . 3 x",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "בדרכים שונות",
+     "hyp": "בדרכים שונות",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "024.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     463,
+     658
+    ],
+    [
+     52,
+     418
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.66,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\sum_{x}a=ax+C",
+     "hyp": "\\sum _ { x } a = a x + C",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "יוקנעם, סמוך לנחל",
+     "hyp": "יוקנעם, סמוך למל",
+     "cer": 0.11764705882352941
+    }
+   ]
+  },
+  {
+   "file": "025.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     261,
+     324
+    ],
+    [
+     57,
+     223
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.61,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שלנו",
+     "hyp": "שלנו",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "I=log_{2}2=1",
+     "hyp": "[ = \\log _ { 2 } 2 = 1",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "026.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     226,
+     450
+    ],
+    [
+     52,
+     185
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.94,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "נאמנות ושייכות",
+     "hyp": "ושם. שימת",
+     "cer": 0.7142857142857143
+    },
+    {
+     "kind": "math",
+     "ref": "g=\\int Gdz",
+     "hyp": "g = \\int G d z",
+     "exact": true,
+     "equivalent": true
+    }
+   ]
+  },
+  {
+   "file": "027.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     257,
+     507
+    ],
+    [
+     75,
+     210
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.66,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "u_{t}-u_{xx}=0",
+     "hyp": "a _ { t } - a _ { x x } = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "במקומות",
+     "hyp": "במקומות",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "028.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     349,
+     488
+    ],
+    [
+     63,
+     306
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.62,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "u=y^{1-3}=y^{-2}",
+     "hyp": "u = y ^ { 1 - 3 } = y ^ { - 2 }",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "פעילות",
+     "hyp": "כי פעיל",
+     "cer": 0.8333333333333334
+    }
+   ]
+  },
+  {
+   "file": "029.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     150,
+     596
+    ],
+    [
+     51,
+     134
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.78,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "030.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     335,
+     490
+    ],
+    [
+     139,
+     299
+    ],
+    [
+     57,
+     80
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.96,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.93,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "(",
+     "hyp": "נשמצנוי",
+     "cer": 7.0
+    },
+    {
+     "kind": "math",
+     "ref": "L=10\\cdot0.5=5",
+     "hyp": "L = 1 0 0 0 . 5 = 5",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "שמצויים",
+     "hyp": "ם",
+     "cer": 0.8571428571428571
+    }
+   ]
+  },
+  {
+   "file": "031.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     442,
+     495
+    ],
+    [
+     266,
+     389
+    ],
+    [
+     57,
+     219
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.82,
+     ""
+    ],
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.89,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "לכם",
+     "hyp": "שפם",
+     "cer": 0.6666666666666666
+    },
+    {
+     "kind": "math",
+     "ref": "\\Omega_{t}=R^{n}",
+     "hyp": "\\Omega t = R ^ { n }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "לרכוש מוצר",
+     "hyp": "שרכוש מצה",
+     "cer": 0.3
+    }
+   ]
+  },
+  {
+   "file": "032.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     569,
+     624
+    ],
+    [
+     445,
+     520
+    ],
+    [
+     50,
+     392
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     0.64,
+     ""
+    ],
+    [
+     "hebrew",
+     0.98,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "סכום",
+     "hyp": "צדה",
+     "cer": 1.0
+    },
+    {
+     "kind": "math",
+     "ref": "t=\\frac{d}{dx}",
+     "hyp": "t = \\frac { d } { d y }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "להוצאה",
+     "hyp": "בחודסנסכםלהוצאה",
+     "cer": 1.5
+    }
+   ]
+  },
+  {
+   "file": "033.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     187,
+     491
+    ],
+    [
+     64,
+     138
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.97,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "קטעים אמורים להיות",
+     "hyp": "קטעים אמורים להיות",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "y=\\sqrt{x}",
+     "hyp": "y = \\sqrt { X }",
+     "exact": false,
+     "equivalent": true
+    }
+   ]
+  },
+  {
+   "file": "034.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     53,
+     579
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "formula reader: \\nabla F = 0"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "035.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     334,
+     365
+    ],
+    [
+     177,
+     296
+    ],
+    [
+     54,
+     96
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.93,
+     ""
+    ],
+    [
+     "math",
+     0.83,
+     ""
+    ],
+    [
+     "hebrew",
+     0.86,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "בין",
+     "hyp": "בין",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "V=\\sqrt{2.67x}",
+     "hyp": "V = \\sqrt { t . 1 7 4 }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "בני",
+     "hyp": "בני",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "036.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     150,
+     324
+    ],
+    [
+     56,
+     106
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.94,
+     ""
+    ],
+    [
+     "math",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "למבוגרים",
+     "hyp": "למבוגרים",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\int_{C}=0",
+     "hyp": "x _ { 2 } = 0",
+     "exact": false,
+     "equivalent": true
+    }
+   ]
+  },
+  {
+   "file": "037.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     257,
+     292
+    ],
+    [
+     63,
+     214
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "ידי",
+     "hyp": "ידי",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "P=Clocktick",
+     "hyp": "P = Q _ { \\sigma e } h t i c h",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "038.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     234,
+     502
+    ],
+    [
+     65,
+     194
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "אשתו הראשונה וצערו",
+     "hyp": "של אשתו הראשונה",
+     "cer": 0.5
+    },
+    {
+     "kind": "math",
+     "ref": "gA=\\cap_{i}q_{i}",
+     "hyp": "g A \\! = \\! \\cap _ { i } \\, \\mathbf { q } _ { i }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "039.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     205,
+     324
+    ],
+    [
+     56,
+     160
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.9,
+     ""
+    ],
+    [
+     "math",
+     0.98,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "גם בתאי",
+     "hyp": "מהאיתאד",
+     "cer": 0.7142857142857143
+    },
+    {
+     "kind": "math",
+     "ref": "R_{+}M=M",
+     "hyp": "R _ { 1 } M = M",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "040.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     54,
+     335
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.52,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "041.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     284,
+     369
+    ],
+    [
+     63,
+     238
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.91,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "Y=\\sqrt{1-T^{2}}",
+     "hyp": "Y = \\sqrt { 1 - T ^ { 2 } }",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "כישורי חיים",
+     "hyp": "כישורי חיים",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "042.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     400,
+     452
+    ],
+    [
+     190,
+     354
+    ],
+    [
+     53,
+     123
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "math",
+     0.58,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שמישהו",
+     "hyp": "יעלה",
+     "cer": 0.8333333333333334
+    },
+    {
+     "kind": "math",
+     "ref": "Q=U-W=H_{0}",
+     "hyp": "Q = V - V = H _ { \\circ }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "יעלה",
+     "hyp": "ביופיו",
+     "cer": 1.25
+    }
+   ]
+  },
+  {
+   "file": "043.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     248,
+     339
+    ],
+    [
+     60,
+     215
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.8,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "E=H=T+V",
+     "hyp": "E = H = T + V",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מחזקת את הביטחון",
+     "hyp": "מחזקת את",
+     "cer": 0.5
+    }
+   ]
+  },
+  {
+   "file": "044.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     284,
+     350
+    ],
+    [
+     59,
+     241
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.96,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\frac{dX}{dt}=AX",
+     "hyp": "y = 4 x",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "באמצעות",
+     "hyp": "באמצעות",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "045.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     297,
+     767
+    ],
+    [
+     63,
+     248
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.95,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "המקורות. היא התברכה",
+     "hyp": "המקורות. היא הברכה",
+     "cer": 0.05263157894736842
+    },
+    {
+     "kind": "math",
+     "ref": "E_{n}=aP+bH",
+     "hyp": "E _ { 2 } = a P + b H",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "046.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     221,
+     345
+    ],
+    [
+     57,
+     175
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.79,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "N=10^{a-bM}",
+     "hyp": "N = 1 0 ^ { a - b M }",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ימים.",
+     "hyp": "ימים.",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "047.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     207,
+     277
+    ],
+    [
+     64,
+     166
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "ובעיקר",
+     "hyp": "ועיקר",
+     "cer": 0.16666666666666666
+    },
+    {
+     "kind": "math",
+     "ref": "C=\\overline{A}",
+     "hyp": "C = \\overline { { A } }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "048.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     436,
+     502
+    ],
+    [
+     277,
+     397
+    ],
+    [
+     50,
+     219
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.82,
+     ""
+    ],
+    [
+     "math",
+     0.53,
+     ""
+    ],
+    [
+     "hebrew",
+     0.78,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "כדם",
+     "hyp": "כם.",
+     "cer": 0.6666666666666666
+    },
+    {
+     "kind": "math",
+     "ref": "=c+v+s",
+     "hyp": "= c + v + S",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ושיערו שחור",
+     "hyp": "וב ערו שחור",
+     "cer": 0.18181818181818182
+    }
+   ]
+  },
+  {
+   "file": "049.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     51,
+     478
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.51,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "050.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     226,
+     281
+    ],
+    [
+     58,
+     182
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.83,
+     ""
+    ],
+    [
+     "math",
+     0.86,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "כל כך",
+     "hyp": "היא",
+     "cer": 1.0
+    },
+    {
+     "kind": "math",
+     "ref": "u^{2}-u+k=0",
+     "hyp": "b ^ { 2 } - b + b = 0",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "051.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     235,
+     296
+    ],
+    [
+     65,
+     191
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.95,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "v=\\frac{dr}{dt}",
+     "hyp": "v = \\frac { 4 0 } { 4 0 }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "לסבול",
+     "hyp": "לסבול",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "052.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     56,
+     344
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.52,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "053.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     226,
+     421
+    ],
+    [
+     59,
+     187
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "פסולת פלסטיק",
+     "hyp": "פסולת פלסטיק",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "B=b-\\frac{a}{RT}",
+     "hyp": "B = b - \\frac { a } { R T }",
+     "exact": true,
+     "equivalent": true
+    }
+   ]
+  },
+  {
+   "file": "054.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     63,
+     251
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.84,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "055.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     377,
+     435
+    ],
+    [
+     55,
+     342
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\frac{du}{ds}=0",
+     "hyp": "\\frac { \\tan } { a s } = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "אינם רצויים כאן,",
+     "hyp": "אינם רוצים כאן",
+     "cer": 0.1875
+    }
+   ]
+  },
+  {
+   "file": "056.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     148,
+     191
+    ],
+    [
+     57,
+     110
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.67,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "i=C\\frac{du}{dt}",
+     "hyp": "\\mathrm { ` ` e x }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "את",
+     "hyp": "את",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "057.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     53,
+     511
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.74,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "058.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     220,
+     442
+    ],
+    [
+     59,
+     180
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.84,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "אל חוף הים",
+     "hyp": "אל חוף הים",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "u_{t}-u_{xx}=0",
+     "hyp": "u _ { t } - u _ { x x } = 0",
+     "exact": true,
+     "equivalent": true
+    }
+   ]
+  },
+  {
+   "file": "059.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     52,
+     251
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.55,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "060.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     55,
+     650
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.86,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "061.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     51,
+     255
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.73,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "062.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     219,
+     650
+    ],
+    [
+     52,
+     169
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.72,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "מהעולם? משרד הבריאות",
+     "hyp": "מהעולם? משרד הבריאות",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\frac{dM}{dx}=V",
+     "hyp": "\\frac { 2 m } { \\partial x } = V",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "063.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     221,
+     281
+    ],
+    [
+     52,
+     173
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.57,
+     ""
+    ],
+    [
+     "hebrew",
+     0.96,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "p_{o}=p_{o+}",
+     "hyp": "^ { \\mu } +",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "אינם",
+     "hyp": "אינם",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "064.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     410,
+     437
+    ],
+    [
+     308,
+     373
+    ],
+    [
+     57,
+     299
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     0.92,
+     ""
+    ],
+    [
+     "hebrew",
+     0.55,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "065.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     634,
+     681
+    ],
+    [
+     413,
+     593
+    ],
+    [
+     57,
+     328
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.91,
+     ""
+    ],
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "אני",
+     "hyp": "אני",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "G=KAN.",
+     "hyp": "G \\! = \\! \\mathrm { K A N } .",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מנגן בפסנתר",
+     "hyp": "מנגן בפסנתר",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "066.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     65,
+     530
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.73,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "067.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     177,
+     328
+    ],
+    [
+     50,
+     136
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.9,
+     ""
+    ],
+    [
+     "hebrew",
+     0.59,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "W=\\int PdV",
+     "hyp": "x = \\int 1 2 V",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "לפני",
+     "hyp": "לפני",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "068.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     138,
+     269
+    ],
+    [
+     60,
+     104
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.91,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "המיקרוביום",
+     "hyp": "המיקרוב",
+     "cer": 0.3
+    },
+    {
+     "kind": "math",
+     "ref": "\\hat{=}",
+     "hyp": "\\underbar { = }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "069.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     442,
+     573
+    ],
+    [
+     227,
+     407
+    ],
+    [
+     55,
+     155
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.87,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "בתהליך",
+     "hyp": "בתהליך",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "Q\\otimes_{Z}G=0",
+     "hyp": "Q \\otimes _ { 2 } G = 0",
+     "exact": false,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "שנקרא",
+     "hyp": "שנקרא",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "070.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     350,
+     562
+    ],
+    [
+     195,
+     316
+    ],
+    [
+     63,
+     142
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שהאדם",
+     "hyp": "שהאדם הצליח",
+     "cer": 1.2
+    },
+    {
+     "kind": "math",
+     "ref": "P_{f}-U=0",
+     "hyp": "P _ { y } - v = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "הצליח",
+     "hyp": "שייצר",
+     "cer": 1.0
+    }
+   ]
+  },
+  {
+   "file": "071.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     214,
+     430
+    ],
+    [
+     55,
+     166
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.83,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "של מדענים",
+     "hyp": "מישראל וממ",
+     "cer": 1.1111111111111112
+    },
+    {
+     "kind": "math",
+     "ref": "\\tilde{f}=f+h",
+     "hyp": "\\widetilde { f } = f \\cdot h",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "072.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     190,
+     263
+    ],
+    [
+     64,
+     150
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.85,
+     ""
+    ],
+    [
+     "math",
+     0.95,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "משש",
+     "hyp": "משש",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "S=\\int_{M}BF",
+     "hyp": "S = \\int _ { M } B F",
+     "exact": true,
+     "equivalent": true
+    }
+   ]
+  },
+  {
+   "file": "073.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     448,
+     605
+    ],
+    [
+     52,
+     402
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.6,
+     ""
+    ],
+    [
+     "hebrew",
+     0.98,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "u=1+l^{2}+m^{2}",
+     "hyp": "a = 1 + a ^ { 2 } + m ^ { 2 }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "גם תחום מחקר",
+     "hyp": "גם תחום מחקר",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "074.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     279,
+     293
+    ],
+    [
+     149,
+     259
+    ],
+    [
+     53,
+     108
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.97,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "formula pieces joined: \\bar { Z } ="
+    ],
+    [
+     "hebrew",
+     0.56,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "075.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     204,
+     626
+    ],
+    [
+     60,
+     160
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.97,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "השלישית חתולה כושית",
+     "hyp": "השלישית חתולה כושי,",
+     "cer": 0.05263157894736842
+    },
+    {
+     "kind": "math",
+     "ref": "A=\\pi-A^{\\prime}",
+     "hyp": "A = \\pi - A ^ { ' }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "076.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     285,
+     366
+    ],
+    [
+     166,
+     242
+    ],
+    [
+     69,
+     117
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.69,
+     ""
+    ],
+    [
+     "math",
+     0.97,
+     ""
+    ],
+    [
+     "hebrew",
+     0.57,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "השאיר",
+     "hyp": "השאיר",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "E_{e}^{-}=X",
+     "hyp": "\\mathsf { E } _ { c } ^ { - } = \\mathbf { x }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "את",
+     "hyp": "את",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "077.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     137,
+     315
+    ],
+    [
+     62,
+     90
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.83,
+     ""
+    ],
+    [
+     "math",
+     0.9,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "רבות ואינספור",
+     "hyp": "רבת ואנספור",
+     "cer": 0.15384615384615385
+    },
+    {
+     "kind": "math",
+     "ref": "\\frac{ds}{dt}=0",
+     "hyp": "\\unitlength . 4 5 e m \\linetharpoondown",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "078.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     251,
+     280
+    ],
+    [
+     62,
+     212
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.81,
+     ""
+    ],
+    [
+     "hebrew",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\prod_{i=1}^{n}",
+     "hyp": "\\mathrm { f r } ,",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ביחסים",
+     "hyp": "שקשורים",
+     "cer": 0.8333333333333334
+    }
+   ]
+  },
+  {
+   "file": "079.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     207,
+     314
+    ],
+    [
+     55,
+     157
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "formula pieces joined: P = - \\frac { \\alpha E } { 2 + }"
+    ],
+    [
+     "hebrew",
+     0.8,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "P=-\\frac{dE}{dt}",
+     "hyp": "P = - \\frac { \\alpha E } { 2 + }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "במגוון",
+     "hyp": "למגוון",
+     "cer": 0.16666666666666666
+    }
+   ]
+  },
+  {
+   "file": "080.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     189,
+     319
+    ],
+    [
+     59,
+     155
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.76,
+     ""
+    ],
+    [
+     "math",
+     0.96,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "על הרגלי",
+     "hyp": "על הרגל",
+     "cer": 0.125
+    },
+    {
+     "kind": "math",
+     "ref": "E=E_{0}-\\int PdV",
+     "hyp": "E = E _ { 0 } - \\left\\{ P Q V \\right.",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "081.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     395,
+     495
+    ],
+    [
+     189,
+     348
+    ],
+    [
+     55,
+     146
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.83,
+     ""
+    ],
+    [
+     "math",
+     0.9,
+     ""
+    ],
+    [
+     "hebrew",
+     0.68,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "צמחונות,",
+     "hyp": "לחוש",
+     "cer": 0.75
+    },
+    {
+     "kind": "math",
+     "ref": "R_{+}M=M",
+     "hyp": "R _ { \\star } M = M",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "לפעמים",
+     "hyp": "החלום",
+     "cer": 0.8333333333333334
+    }
+   ]
+  },
+  {
+   "file": "082.png",
+   "position": "middle",
+   "layout_ok": true,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     427,
+     527
+    ],
+    [
+     338,
+     389
+    ],
+    [
+     53,
+     252
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.69,
+     ""
+    ],
+    [
+     "math",
+     0.76,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "טוב",
+     "hyp": "טוב",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\frac{dV}{dh}=0",
+     "hyp": "\\frac { \\lambda _ { 1 } ^ { 1 } } { \\Lambda ^ { 1 } } = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "נסתדר",
+     "hyp": "נסתדר",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "083.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     281,
+     325
+    ],
+    [
+     61,
+     236
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.94,
+     ""
+    ],
+    [
+     "math",
+     0.72,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "קניין",
+     "hyp": "קניו",
+     "cer": 0.4
+    },
+    {
+     "kind": "math",
+     "ref": "n=2^{8}-1=255",
+     "hyp": "n - 2 ^ { 6 } - 1 = 2 5 5",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "084.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     65,
+     338
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "085.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     151,
+     218
+    ],
+    [
+     61,
+     109
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.89,
+     ""
+    ],
+    [
+     "math",
+     0.61,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "הם",
+     "hyp": "הם",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\delta\\int ds=0",
+     "hyp": "^ { \\mathrm { i j k - l } }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "086.png",
+   "position": "middle",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     62,
+     395
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.93,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "087.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     254,
+     611
+    ],
+    [
+     67,
+     209
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.78,
+     ""
+    ],
+    [
+     "math",
+     0.8,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "כי בניה",
+     "hyp": "ביזדים,כיימניהסגהי",
+     "cer": 1.8571428571428572
+    },
+    {
+     "kind": "math",
+     "ref": "p+2q+r=1",
+     "hyp": "P ^ { + 2 } q ^ { + } r = 1",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "088.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     195,
+     268
+    ],
+    [
+     54,
+     156
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.86,
+     ""
+    ],
+    [
+     "hebrew",
+     0.89,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\frac{dh}{dt}=0",
+     "hyp": "\\frac { a _ { n } } { a _ { n } } = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ודגים. בקטניות",
+     "hyp": "ולחפים.",
+     "cer": 0.7857142857142857
+    }
+   ]
+  },
+  {
+   "file": "089.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     53,
+     259
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.95,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "090.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     239,
+     382
+    ],
+    [
+     58,
+     199
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.95,
+     ""
+    ],
+    [
+     "hebrew",
+     0.78,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "V=\\sqrt{2.67x}",
+     "hyp": "v = \\sqrt { 2 . 6 7 x }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ותעניק,",
+     "hyp": "ותענית.",
+     "cer": 0.2857142857142857
+    }
+   ]
+  },
+  {
+   "file": "091.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     191,
+     341
+    ],
+    [
+     63,
+     143
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.98,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "התאהבה",
+     "hyp": "התאהבה",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "A_{t}+F_{t}=0",
+     "hyp": "\\mathbf { A } + \\mathbf { F } _ { 4 } = 0",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "092.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     182,
+     332
+    ],
+    [
+     63,
+     144
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "עדיין היה",
+     "hyp": "היה בשווה",
+     "cer": 0.8888888888888888
+    },
+    {
+     "kind": "math",
+     "ref": "i=-\\frac{dq}{dt}",
+     "hyp": "L = \\frac { a q } { a ^ { 2 } }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "093.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     158,
+     235
+    ],
+    [
+     64,
+     112
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.85,
+     ""
+    ],
+    [
+     "math",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "חגיגי,",
+     "hyp": "חגיגי,",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\dot{V}=r\\dot{r}",
+     "hyp": "\\mathbf { \\dot { v } } = \\mathbf { r } ^ { \\mathsf { h } }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "094.png",
+   "position": "end",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     173,
+     267
+    ],
+    [
+     54,
+     128
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.92,
+     ""
+    ],
+    [
+     "math",
+     0.9,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "לפי",
+     "hyp": "גופם",
+     "cer": 1.0
+    },
+    {
+     "kind": "math",
+     "ref": "f=x^{2}-y^{2}-1",
+     "hyp": "\\left\\{ \\begin{matrix} x ^ { 2 } - y ^ { 2 } - 1 \\end{matrix} \\right.",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "095.png",
+   "position": "end",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     256,
+     418
+    ],
+    [
+     128,
+     209
+    ],
+    [
+     66,
+     114
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.92,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "formula reader: = i \\sqrt { - 1 }"
+    ],
+    [
+     "hebrew",
+     0.98,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "096.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     309,
+     455
+    ],
+    [
+     50,
+     274
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.92,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "G=KA_{+}U",
+     "hyp": "G = K A _ { 4 } U",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "הכלכלה? האם הם",
+     "hyp": "כלולה? האמ הם",
+     "cer": 0.21428571428571427
+    }
+   ]
+  },
+  {
+   "file": "097.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     55,
+     219
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "formula reader: \\hat { l } ^ { 1 / 3 }"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "098.png",
+   "position": "start",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     349,
+     520
+    ],
+    [
+     56,
+     316
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "1+t=625t^{2}",
+     "hyp": "1 + t = 6 2 5 t ^ { 2 }",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "המרכזית, ובראשה המוח,",
+     "hyp": "המרכזית, ובבושה היות.",
+     "cer": 0.23809523809523808
+    }
+   ]
+  },
+  {
+   "file": "099.png",
+   "position": "start",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     58,
+     418
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.85,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  }
+ ]
+}

@@ -1,0 +1,711 @@
+{
+ "summary": {
+  "mumer_exact": "47/70",
+  "pix2text_exact": "65/70",
+  "mumer_equiv": "66/70",
+  "pix2text_equiv": "66/70",
+  "secs_per_formula": 8.9
+ },
+ "rows": [
+  {
+   "file": "00.png",
+   "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "01.png",
+   "gt": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "mumer": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "pix2text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "02.png",
+   "gt": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "mumer": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "pix2text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "03.png",
+   "gt": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "mumer": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "pix2text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "04.png",
+   "gt": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "mumer": "1 + \\frac { 1 } { 1 } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "pix2text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "05.png",
+   "gt": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "mumer": "\\lim _ { x \\to \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "pix2text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": false,
+   "pix2text_equiv": false
+  },
+  {
+   "file": "06.png",
+   "gt": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+   "mumer": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+   "pix2text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "07.png",
+   "gt": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+   "mumer": "\\frac { 1 } { a } F ( a x + b ) + C",
+   "pix2text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "08.png",
+   "gt": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "mumer": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "pix2text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "09.png",
+   "gt": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "mumer": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "pix2text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "10.png",
+   "gt": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "mumer": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "pix2text": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "11.png",
+   "gt": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+   "mumer": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+   "pix2text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+   "mumer_exact": true,
+   "pix2text_exact": false,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "12.png",
+   "gt": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "mumer": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "pix2text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "13.png",
+   "gt": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "mumer": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "pix2text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "14.png",
+   "gt": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "mumer": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "pix2text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "15.png",
+   "gt": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "mumer": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "pix2text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "16.png",
+   "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "17.png",
+   "gt": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "mumer": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "pix2text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "18.png",
+   "gt": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "mumer": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "pix2text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "19.png",
+   "gt": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+   "mumer": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+   "pix2text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "20.png",
+   "gt": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "mumer": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "pix2text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "21.png",
+   "gt": "a + b + c + d + e",
+   "mumer": "a + b + c + d + e",
+   "pix2text": "a + b + c + d + e",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "22.png",
+   "gt": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "mumer": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "pix2text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "23.png",
+   "gt": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+   "mumer": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+   "pix2text": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "24.png",
+   "gt": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "mumer": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "pix2text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "25.png",
+   "gt": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+   "mumer": "\\sin x - \\sin y - \\sin ( x - y )",
+   "pix2text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "26.png",
+   "gt": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "mumer": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "pix2text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "27.png",
+   "gt": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "mumer": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "pix2text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "28.png",
+   "gt": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "mumer": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "pix2text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "29.png",
+   "gt": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "mumer": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "pix2text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "30.png",
+   "gt": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "mumer": "\\lim _ { x \\to \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "pix2text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": false,
+   "pix2text_equiv": false
+  },
+  {
+   "file": "31.png",
+   "gt": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+   "mumer": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+   "pix2text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "32.png",
+   "gt": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+   "mumer": "\\frac { 1 } { a } F ( a x + b ) + C",
+   "pix2text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "33.png",
+   "gt": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "mumer": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "pix2text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "34.png",
+   "gt": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "mumer": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "pix2text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "35.png",
+   "gt": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "mumer": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "pix2text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "36.png",
+   "gt": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "mumer": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "pix2text": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "37.png",
+   "gt": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+   "mumer": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+   "pix2text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+   "mumer_exact": true,
+   "pix2text_exact": false,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "38.png",
+   "gt": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "mumer": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "pix2text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "39.png",
+   "gt": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "mumer": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "pix2text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "40.png",
+   "gt": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "mumer": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "pix2text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "41.png",
+   "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "42.png",
+   "gt": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "mumer": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "pix2text": "\\sqrt { x - y - z + x ^ { 2 } + y ^ { 2 } + z ^ { 2 } }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "43.png",
+   "gt": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "mumer": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "pix2text": "\\frac { \\sin \\theta + \\cos \\theta + \\tan \\theta } { x + y + z }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "44.png",
+   "gt": "\\left( x ^ { 3 } - x ^ { 2 } - x \\right) \\left( 2 x - 7 \\right)",
+   "mumer": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+   "pix2text": "( x ^ { 3 } - x ^ { 2 } - x ) ( 2 x - 7 )",
+   "mumer_exact": false,
+   "pix2text_exact": false,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "45.png",
+   "gt": "a + b + c + d + e",
+   "mumer": "a + b + c + d + e",
+   "pix2text": "a + b + c + d + e",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "46.png",
+   "gt": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "mumer": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "pix2text": "x _ { 1 } - x _ { 2 } + y _ { 1 } - y _ { 2 } + z _ { 1 } - z _ { 2 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "47.png",
+   "gt": "a + b + c + d + e",
+   "mumer": "a + b + c + d + e",
+   "pix2text": "a + b + c + d + e",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "48.png",
+   "gt": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "mumer": "x ^ { i + 2 , \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "pix2text": "x ^ { i + 2 ) \\times k ^ { 3 } - 2 \\frac { i } { i } }",
+   "mumer_exact": false,
+   "pix2text_exact": false,
+   "mumer_equiv": false,
+   "pix2text_equiv": false
+  },
+  {
+   "file": "49.png",
+   "gt": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "mumer": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "pix2text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "50.png",
+   "gt": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+   "mumer": "\\sin x - \\sin y - \\sin ( x - y )",
+   "pix2text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "51.png",
+   "gt": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "mumer": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "pix2text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "52.png",
+   "gt": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "mumer": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "pix2text": "\\frac { 2 \\tan \\alpha } { 1 - \\tan ^ { 2 } \\alpha }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "53.png",
+   "gt": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "mumer": "\\lim _ { x \\to - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "pix2text": "\\lim _ { x \\rightarrow - 1 } \\frac { x ^ { 3 } + 1 } { x + 1 }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "54.png",
+   "gt": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "mumer": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "pix2text": "1 + \\frac { 1 } { 1 ! } + \\frac { 1 } { 2 ! } + \\frac { 1 } { 3 ! } + \\frac { 1 } { 4 ! }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "55.png",
+   "gt": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "mumer": "\\lim _ { x \\to \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "pix2text": "\\lim _ { x \\rightarrow \\frac { \\pi } { 2 } + 0 } \\tan x = - \\infty",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": false,
+   "pix2text_equiv": false
+  },
+  {
+   "file": "56.png",
+   "gt": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "mumer": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "pix2text": "x ^ { i + 2 j \\times k ^ { 3 } - 2 \\frac { j } { i } }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "57.png",
+   "gt": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+   "mumer": "\\int ( 2 ^ { x } - 3 e ^ { x } ) d x",
+   "pix2text": "\\int \\left( 2 ^ { x } - 3 e ^ { x } \\right) d x",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "58.png",
+   "gt": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+   "mumer": "\\frac { 1 } { a } F ( a x + b ) + C",
+   "pix2text": "\\frac { 1 } { a } F \\left( a x + b \\right) + C",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "59.png",
+   "gt": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "mumer": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "pix2text": "\\frac { \\sin B + \\sin C } { \\cos B + \\cos C }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "60.png",
+   "gt": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "mumer": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "pix2text": "\\alpha _ { n + 1 } - 3 \\beta = \\frac { 2 } { 3 } \\alpha _ { n } + \\beta - 3 \\beta",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "61.png",
+   "gt": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "mumer": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "pix2text": "3 0 \\times 2 9 x ^ { 2 8 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "62.png",
+   "gt": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+   "mumer": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt { 4 } } } }",
+   "pix2text": "\\sqrt { 1 + \\sqrt { 2 + \\sqrt { 3 + \\sqrt 4 } } }",
+   "mumer_exact": true,
+   "pix2text_exact": false,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "63.png",
+   "gt": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "mumer": "\\lim _ { x \\to \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "pix2text": "\\lim _ { x \\rightarrow \\frac { 1 } { 4 } } \\frac { 1 - 4 ^ { x - \\frac { 1 } { 4 } } } { 1 - 4 x }",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "64.png",
+   "gt": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "mumer": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "pix2text": "x _ { 1 } + x _ { 2 } = x _ { 3 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "65.png",
+   "gt": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "mumer": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "pix2text": "x _ { i } - x _ { i + 1 } + x _ { i + 2 }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "66.png",
+   "gt": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "pix2text": "\\sqrt { b ^ { 2 } - 4 a c }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "67.png",
+   "gt": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "mumer": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "pix2text": "\\log _ { 2 } 8 + \\log _ { 3 } 9 + \\log _ { 4 } 1 6",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "68.png",
+   "gt": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+   "mumer": "\\sin x - \\sin y - \\sin ( x - y )",
+   "pix2text": "\\sin x - \\sin y - \\sin \\left( x - y \\right)",
+   "mumer_exact": false,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  },
+  {
+   "file": "69.png",
+   "gt": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "mumer": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "pix2text": "\\frac { \\tan \\alpha - \\tan \\beta } { 1 + \\tan \\alpha \\tan \\beta }",
+   "mumer_exact": true,
+   "pix2text_exact": true,
+   "mumer_equiv": true,
+   "pix2text_equiv": true
+  }
+ ]
+}

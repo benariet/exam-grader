@@ -1,0 +1,19 @@
+{
+ "name": "silly test (photo, 2026-10-25)",
+ "note": "points as written on the page: each exercise 8 (8 x 8 = 64), the three questions 8 each (24), the last two 6 each (12)",
+ "items": [
+  {"id": "1", "points": 8, "arithmetic": "1+5"},
+  {"id": "2", "points": 8, "arithmetic": "70/7"},
+  {"id": "3", "points": 8, "arithmetic": "7*7"},
+  {"id": "4", "points": 8, "arithmetic": "14*2"},
+  {"id": "5", "points": 8, "arithmetic": "19-4"},
+  {"id": "6", "points": 8, "arithmetic": "8*8"},
+  {"id": "7", "points": 8, "arithmetic": "98-11"},
+  {"id": "8", "points": 8, "arithmetic": "36/6"},
+  {"id": "Q1", "points": 8, "open": "how many legs does a dog have? (4)"},
+  {"id": "Q2", "points": 8, "open": "the world wars (1914-1918, 1939-1945)"},
+  {"id": "Q3", "points": 8, "open": "x^2 + y^2 = c^2 ... (the question is not on the page)"},
+  {"id": "B1", "points": 6, "arithmetic": "17+17+24"},
+  {"id": "B2", "points": 6, "arithmetic": "12+12+13"}
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "oov_logp": -20.6664,
+ "words": 538717,
+ "sources": [
+  "wordfreq 3.x Hebrew 'large' list (Wikipedia, subtitles, news, web, social media; data CC BY-SA 4.0)"
+ ],
+ "note": "unigram log P(word), Hebrew letters only. The handwriting datasets' own transcriptions are NOT used: the same texts were copied by many writers, so they would leak test vocabulary.",
+ "prefix_logp": -4.5,
+ "lm_weight": 0.3,
+ "word_bonus": 1.5,
+ "tuned_on": "300 lines of 21 held-out training writers (98% of their words in the list), with the first 286 course words",
+ "dev_cer_no_lm": 0.1148,
+ "dev_cer_with_lm": 0.093,
+ "choice": "lowest dev CER 0.0930; within 0.001 of it the smallest lm_weight",
+ "alternatives_tried": {
+  "OpenSubtitles top-50k only (49k words, 85% of dev words known)": "best dev CER 0.0987",
+  "+ the handwriting datasets' transcriptions": "rejected: leaks test vocabulary (shared texts)"
+ },
+ "test_300_lines_86_unseen_writers": {
+  "cer_no_lm": 0.1084,
+  "cer_lm": 0.0906,
+  "cer_unseen_text_no_lm": 0.1101,
+  "cer_unseen_text_lm": 0.0916,
+  "wer_no_lm": 0.4268,
+  "wer_lm": 0.3218,
+  "lines_exact_no_lm": 0.1167,
+  "lines_exact_lm": 0.2167,
+  "note": "with the 1053-word course list (286 words: CER 0.0904/0.0905 - no difference on general text)"
+ }
+}

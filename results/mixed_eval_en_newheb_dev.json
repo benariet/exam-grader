@@ -1,0 +1,5855 @@
+{
+ "summary": {
+  "data": "mixed_eval_en",
+  "lines": 120,
+  "layout_correct": 0.458,
+  "layout_correct_old_box_rule": 0.458,
+  "layout_correct_by_position": {
+   "english+hebrew": 0.591,
+   "english+hebrew+math": 0.308,
+   "english+math+hebrew": 0.083,
+   "hebrew+english": 0.643,
+   "hebrew+english+math": 0.25,
+   "hebrew+math+english": 0.273,
+   "math+english+hebrew": 0.562,
+   "math+hebrew+english": 0.5
+  },
+  "parts_read_as": {
+   "hebrew": {
+    "hebrew": 116,
+    "english": 2,
+    "math": 2,
+    "none": 0
+   },
+   "english": {
+    "hebrew": 11,
+    "english": 94,
+    "math": 9,
+    "none": 6
+   },
+   "math": {
+    "hebrew": 10,
+    "english": 4,
+    "math": 55,
+    "none": 1
+   }
+  },
+  "english_CER_(lines_split_right)": 0.2415,
+  "hebrew_CER": 0.193,
+  "math_exact": 0.208,
+  "math_exact_or_equivalent": 0.208,
+  "flagged_for_review": 0.917,
+  "layout_wrong_and_NOT_flagged": 0.008,
+  "layout_right_but_flagged": 0.383,
+  "secs_per_line": 12.87
+ },
+ "rows": [
+  {
+   "file": "000.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     522,
+     541
+    ],
+    [
+     357,
+     496
+    ],
+    [
+     167,
+     310
+    ],
+    [
+     51,
+     118
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: nim"
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "hebrew",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "001.png",
+   "position": "math+hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     348,
+     433
+    ],
+    [
+     190,
+     311
+    ],
+    [
+     65,
+     158
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: time you've"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "0-0=0",
+     "hyp": "0 - D = 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "הענייה.",
+     "hyp": "הענייה.",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "you 're in",
+     "hyp": "time you've",
+     "cer": 1.0
+    }
+   ]
+  },
+  {
+   "file": "002.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     363,
+     643
+    ],
+    [
+     271,
+     326
+    ],
+    [
+     53,
+     249
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: rises per ,"
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "003.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     276,
+     565
+    ],
+    [
+     61,
+     236
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "formula or English? English reader: lone"
+    ],
+    [
+     "hebrew",
+     0.9,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "004.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     544,
+     551
+    ],
+    [
+     427,
+     533
+    ],
+    [
+     142,
+     385
+    ],
+    [
+     51,
+     103
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: fa; English? English reader: shiny"
+    ],
+    [
+     "hebrew",
+     0.97,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "005.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     210,
+     349
+    ],
+    [
+     59,
+     175
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.8,
+     ""
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "earth",
+     "hyp": "the",
+     "cer": 0.8
+    },
+    {
+     "kind": "hebrew",
+     "ref": "כאן בלילה",
+     "hyp": "אבל",
+     "cer": 0.6666666666666666
+    }
+   ]
+  },
+  {
+   "file": "006.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     201,
+     391
+    ],
+    [
+     56,
+     148
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.72,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: rcs ."
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "and obstinate baffled",
+     "hyp": "and obstinate , baffled",
+     "cer": 0.09523809523809523
+    },
+    {
+     "kind": "hebrew",
+     "ref": "סבתא",
+     "hyp": "סבתא",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "007.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     274,
+     348
+    ],
+    [
+     56,
+     249
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English next to English; Hebrew or English? English reader: is"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "008.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     348,
+     691
+    ],
+    [
+     56,
+     315
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "Nigel",
+     "hyp": "Nigel",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "במחסור, על",
+     "hyp": "במחסור, על",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "009.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     270,
+     562
+    ],
+    [
+     54,
+     223
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: wrong"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "במחט ומאצבעה",
+     "hyp": "במחט ומאצבעה",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "work for",
+     "hyp": "work . For",
+     "cer": 0.375
+    }
+   ]
+  },
+  {
+   "file": "010.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     603,
+     744
+    ],
+    [
+     379,
+     556
+    ],
+    [
+     54,
+     339
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: cook"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: ante"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "0x+0y=4",
+     "hyp": "x + O y = 4",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "pastry cook",
+     "hyp": "pastry cook",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "אחד ישבה",
+     "hyp": "אחד ישבה",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "011.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     243,
+     286
+    ],
+    [
+     56,
+     191
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?; Hebrew or English? English reader: 1cdg"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שלא",
+     "hyp": "שלא",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "down",
+     "hyp": "down",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "012.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     525,
+     608
+    ],
+    [
+     402,
+     490
+    ],
+    [
+     241,
+     362
+    ],
+    [
+     115,
+     203
+    ],
+    [
+     51,
+     86
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.88,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.92,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?; formula or English? English reader: acidity"
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "013.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     152,
+     246
+    ],
+    [
+     53,
+     109
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.94,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "formula reader: l a d _ { 9 }"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "014.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     589,
+     609
+    ],
+    [
+     489,
+     560
+    ],
+    [
+     280,
+     464
+    ],
+    [
+     61,
+     229
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.51,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?; formula or English? English reader: ten"
+    ],
+    [
+     "hebrew",
+     0.87,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "015.png",
+   "position": "english+hebrew+math",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     355,
+     418
+    ],
+    [
+     159,
+     310
+    ],
+    [
+     67,
+     108
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.95,
+     ""
+    ],
+    [
+     "math",
+     0.63,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "meetings",
+     "hyp": "meeting",
+     "cer": 0.125
+    },
+    {
+     "kind": "hebrew",
+     "ref": "המחשבים",
+     "hyp": "המחאבים",
+     "cer": 0.14285714285714285
+    },
+    {
+     "kind": "math",
+     "ref": "F^{2}B^{n}=0",
+     "hyp": "\\mathbf { p _ { b } } = \\mathbf { \\Lambda }",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "016.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     489,
+     610
+    ],
+    [
+     103,
+     442
+    ],
+    [
+     51,
+     90
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.72,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: M"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "017.png",
+   "position": "math+hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     476,
+     586
+    ],
+    [
+     287,
+     442
+    ],
+    [
+     53,
+     275
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.91,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?; Hebrew or English? English reader: \" the"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "018.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     174,
+     402
+    ],
+    [
+     50,
+     135
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "formula or English? English reader: then"
+    ],
+    [
+     "hebrew",
+     0.91,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "019.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     391,
+     421
+    ],
+    [
+     188,
+     372
+    ],
+    [
+     59,
+     145
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: warat"
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "020.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     137,
+     384
+    ],
+    [
+     50,
+     101
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.82,
+     ""
+    ],
+    [
+     "english",
+     0.64,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "מהעולם? משרד",
+     "hyp": "מהעולם? משרד",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "the",
+     "hyp": "the",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "021.png",
+   "position": "hebrew+math+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     637,
+     857
+    ],
+    [
+     486,
+     603
+    ],
+    [
+     59,
+     450
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: huran ."
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "חרקים בקרבת",
+     "hyp": "חרקים בקרבת",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "W_{1-2}=\\int PdV",
+     "hyp": "W _ { 2 } - \\int P _ { \\mathrm { d } } v",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "true human The",
+     "hyp": "true human . The",
+     "cer": 0.14285714285714285
+    }
+   ]
+  },
+  {
+   "file": "022.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     403,
+     490
+    ],
+    [
+     289,
+     358
+    ],
+    [
+     54,
+     242
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.61,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "PH=\\Sigma_{2}",
+     "hyp": "+ H = \\sum _ { 2 }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "best",
+     "hyp": "best",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "לחידוש מרשם",
+     "hyp": "א לחידוש מרשם",
+     "cer": 0.18181818181818182
+    }
+   ]
+  },
+  {
+   "file": "023.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     742,
+     768
+    ],
+    [
+     592,
+     724
+    ],
+    [
+     332,
+     556
+    ],
+    [
+     57,
+     298
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "math",
+     0.95,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "024.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     171,
+     402
+    ],
+    [
+     65,
+     128
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.77,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: colors ."
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "025.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     299,
+     532
+    ],
+    [
+     57,
+     268
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: subjects , for being"
+    ],
+    [
+     "hebrew",
+     0.95,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "subjects for being",
+     "hyp": "subjects , for being",
+     "cer": 0.1111111111111111
+    },
+    {
+     "kind": "hebrew",
+     "ref": "בני משפחה",
+     "hyp": "בו משפחה",
+     "cer": 0.2222222222222222
+    }
+   ]
+  },
+  {
+   "file": "026.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     52,
+     187
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew reader: של"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "027.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     573,
+     636
+    ],
+    [
+     171,
+     540
+    ],
+    [
+     50,
+     136
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.93,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\frac{dy}{dx}=xy",
+     "hyp": "x = y",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "washing-up while others",
+     "hyp": "washing-up - while",
+     "cer": 0.391304347826087
+    },
+    {
+     "kind": "hebrew",
+     "ref": "בעוברי",
+     "hyp": "בעוברי",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "028.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     224,
+     280
+    ],
+    [
+     58,
+     178
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "formula reader: / _ { 2 ^ { 1 } }"
+    ],
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: the"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "אוכל",
+     "hyp": "אוכל",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "the",
+     "hyp": "the",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "029.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     255,
+     353
+    ],
+    [
+     122,
+     210
+    ],
+    [
+     58,
+     102
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?; Hebrew or English? English reader: day ."
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "030.png",
+   "position": "math+hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     769,
+     875
+    ],
+    [
+     514,
+     736
+    ],
+    [
+     51,
+     473
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.98,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: sales ."
+    ],
+    [
+     "english",
+     0.56,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "B=-13.1",
+     "hyp": "B = - 1 3 . 1",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "hebrew",
+     "ref": "אבל ההצלחה",
+     "hyp": "אבל ההצלחה",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "suddenly they were",
+     "hyp": "suddenly they were",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "031.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     495,
+     682
+    ],
+    [
+     213,
+     458
+    ],
+    [
+     59,
+     176
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "formula pieces joined: 1 . 9 6 x ^ { 2 } \\! + 1 9 . 6 x ="
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: parading"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "formula reader: \\mu 1 . 9 5; a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "1.96x^{2}+19.6x=",
+     "hyp": "1 . 9 6 x ^ { 2 } \\! + 1 9 . 6 x =",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "became mere marauding",
+     "hyp": "became more unsounding",
+     "cer": 0.2857142857142857
+    },
+    {
+     "kind": "hebrew",
+     "ref": "יש זהות",
+     "hyp": "יש זהות",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "032.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     411,
+     716
+    ],
+    [
+     56,
+     378
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "english",
+     0.56,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שהאדם הצליח",
+     "hyp": "שהסבם הצליח שייצר",
+     "cer": 0.7272727272727273
+    },
+    {
+     "kind": "english",
+     "ref": "the following",
+     "hyp": "the following",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "033.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     258,
+     307
+    ],
+    [
+     161,
+     212
+    ],
+    [
+     55,
+     119
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.95,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: y"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "034.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     653,
+     739
+    ],
+    [
+     578,
+     631
+    ],
+    [
+     357,
+     547
+    ],
+    [
+     60,
+     343
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.91,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "math",
+     0.5,
+     "Hebrew reader: שבו"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "035.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     436,
+     508
+    ],
+    [
+     225,
+     398
+    ],
+    [
+     61,
+     181
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word"
+    ],
+    [
+     "english",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "036.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     441,
+     501
+    ],
+    [
+     365,
+     415
+    ],
+    [
+     52,
+     339
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?; Hebrew or English? English reader: aego"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "037.png",
+   "position": "english+hebrew+math",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     357,
+     608
+    ],
+    [
+     211,
+     324
+    ],
+    [
+     58,
+     172
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "math",
+     0.61,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "John and worked",
+     "hyp": "John and worked",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מופצים",
+     "hyp": "ונצרם",
+     "cer": 0.5
+    },
+    {
+     "kind": "math",
+     "ref": "\\int2xdx=x^{2}+C",
+     "hyp": "\\left\\{ \\begin{matrix} 2 \\times 2 0 - x ^ { 2 } + C \\end{matrix} \\right.",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "038.png",
+   "position": "hebrew+english+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     263,
+     654
+    ],
+    [
+     161,
+     253
+    ],
+    [
+     59,
+     121
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.72,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "039.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     386,
+     593
+    ],
+    [
+     192,
+     351
+    ],
+    [
+     57,
+     157
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.69,
+     ""
+    ],
+    [
+     "hebrew",
+     0.85,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "y=x^{2}-x-2",
+     "hyp": "y = x ^ { 2 } - x - 2",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "english",
+     "ref": "inter-",
+     "hyp": "inter-",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "צמחונות,",
+     "hyp": "לחום",
+     "cer": 0.75
+    }
+   ]
+  },
+  {
+   "file": "040.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     210,
+     442
+    ],
+    [
+     63,
+     167
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.68,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "vengeance",
+     "hyp": "vengeance",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "כשלושה",
+     "hyp": "כשלושה",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "041.png",
+   "position": "hebrew+english+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     1300,
+     1579
+    ],
+    [
+     597,
+     1257
+    ],
+    [
+     409,
+     547
+    ],
+    [
+     252,
+     393
+    ],
+    [
+     61,
+     206
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     0.81,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?; formula or English? English reader: ers ,"
+    ],
+    [
+     "english",
+     0.65,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "042.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     189,
+     438
+    ],
+    [
+     57,
+     146
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English next to English; Hebrew or English? English reader: x-d-"
+    ],
+    [
+     "hebrew",
+     0.95,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "043.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     196,
+     363
+    ],
+    [
+     62,
+     161
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English? English reader: ' Good"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: care"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "Good heavens darling",
+     "hyp": "' Good heavens ,",
+     "cer": 0.45
+    },
+    {
+     "kind": "hebrew",
+     "ref": "שלהם",
+     "hyp": "שלהם",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "044.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     55,
+     460
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: disc"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "045.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     178,
+     289
+    ],
+    [
+     64,
+     129
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "עשרות",
+     "hyp": "עשרות",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "the",
+     "hyp": "the",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "046.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     354,
+     478
+    ],
+    [
+     60,
+     319
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "בביתנו,",
+     "hyp": "בהיחנו,",
+     "cer": 0.2857142857142857
+    },
+    {
+     "kind": "english",
+     "ref": "would not stand",
+     "hyp": "would not stand",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "047.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     63,
+     349
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: little"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "048.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     431,
+     517
+    ],
+    [
+     62,
+     393
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: no"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "לכך.",
+     "hyp": "לכך.",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "Edwards Now",
+     "hyp": "Edwards . Now",
+     "cer": 0.18181818181818182
+    }
+   ]
+  },
+  {
+   "file": "049.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     358,
+     603
+    ],
+    [
+     218,
+     327
+    ],
+    [
+     52,
+     148
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "english",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "050.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     204,
+     369
+    ],
+    [
+     61,
+     161
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word"
+    ],
+    [
+     "english",
+     0.83,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "וממשיכה",
+     "hyp": "גבתה,",
+     "cer": 1.0
+    },
+    {
+     "kind": "english",
+     "ref": "that",
+     "hyp": "that",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "051.png",
+   "position": "math+hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     345,
+     455
+    ],
+    [
+     51,
+     296
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.97,
+     ""
+    ],
+    [
+     "hebrew",
+     0.65,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "052.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     501,
+     727
+    ],
+    [
+     313,
+     456
+    ],
+    [
+     53,
+     275
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "m_{E}=-A-2B",
+     "hyp": "m _ { E } = - A - 2 B",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "english",
+     "ref": "you are",
+     "hyp": "you are",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "יכל לסבול",
+     "hyp": "יכל לסבול",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "053.png",
+   "position": "hebrew+math+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     869,
+     1043
+    ],
+    [
+     670,
+     823
+    ],
+    [
+     51,
+     627
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: th"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שהם חלק",
+     "hyp": "שהם הלק",
+     "cer": 0.14285714285714285
+    },
+    {
+     "kind": "math",
+     "ref": "x+y=-13",
+     "hyp": "x + y = - 1 3",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "english",
+     "ref": "the traditional methods",
+     "hyp": "the traditional methods",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "054.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     306,
+     564
+    ],
+    [
+     62,
+     264
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word; a mark next to an English word; a mark next to an English word; a mark next to an English word; a mark next to an English word; a mark next to an English word; a mark next to an English word"
+    ],
+    [
+     "english",
+     0.81,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "אל תוכה,",
+     "hyp": "אל תורה. -שים",
+     "cer": 0.875
+    },
+    {
+     "kind": "english",
+     "ref": "unlimited",
+     "hyp": "unlimited",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "055.png",
+   "position": "english+hebrew+math",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     403,
+     738
+    ],
+    [
+     170,
+     365
+    ],
+    [
+     56,
+     121
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English? English reader: crowd"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "math",
+     0.59,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "about serious things",
+     "hyp": "about serious things",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מגיע פחות",
+     "hyp": "מגיע פחות",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "0^{2}+0^{2}=1",
+     "hyp": "0 ^ { 2 } + d ^ { 2 } = 1",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "056.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     164,
+     244
+    ],
+    [
+     64,
+     121
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "נשרו",
+     "hyp": "נשרו",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "flesh",
+     "hyp": "flesh",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "057.png",
+   "position": "hebrew+english+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     340,
+     587
+    ],
+    [
+     130,
+     304
+    ],
+    [
+     67,
+     98
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: \" They"
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "058.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     425,
+     576
+    ],
+    [
+     62,
+     378
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.71,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "their",
+     "hyp": "their",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "גילה פרצות",
+     "hyp": "גולה פרכות",
+     "cer": 0.2
+    }
+   ]
+  },
+  {
+   "file": "059.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     237,
+     451
+    ],
+    [
+     54,
+     193
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.74,
+     ""
+    ],
+    [
+     "math",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "060.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     141,
+     207
+    ],
+    [
+     60,
+     99
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.93,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "for",
+     "hyp": "for",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "את",
+     "hyp": "את",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "061.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     244,
+     333
+    ],
+    [
+     63,
+     197
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     0.85,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "man she",
+     "hyp": "mass she",
+     "cer": 0.2857142857142857
+    },
+    {
+     "kind": "hebrew",
+     "ref": "המשימה",
+     "hyp": "המשימה",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "062.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     510,
+     540
+    ],
+    [
+     58,
+     464
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.81,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: on; English? English reader: vocals fellly; English? English reader: w. jp"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "063.png",
+   "position": "math+hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     630,
+     708
+    ],
+    [
+     269,
+     584
+    ],
+    [
+     65,
+     228
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.8,
+     ""
+    ],
+    [
+     "hebrew",
+     0.75,
+     ""
+    ],
+    [
+     "english",
+     0.59,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "=C_{H_{2}O}",
+     "hyp": "= C _ { \\infty }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "על טמפרטורת",
+     "hyp": "על שטמתרטורת",
+     "cer": 0.18181818181818182
+    },
+    {
+     "kind": "english",
+     "ref": "not touch",
+     "hyp": "not touch",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "064.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     256,
+     268
+    ],
+    [
+     152,
+     215
+    ],
+    [
+     60,
+     144
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.97,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "065.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     341,
+     421
+    ],
+    [
+     58,
+     299
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: transported"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שאפשר",
+     "hyp": "שאפשר",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "be transported",
+     "hyp": "be transported .",
+     "cer": 0.14285714285714285
+    }
+   ]
+  },
+  {
+   "file": "066.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     557,
+     585
+    ],
+    [
+     422,
+     542
+    ],
+    [
+     225,
+     392
+    ],
+    [
+     58,
+     186
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.52,
+     ""
+    ],
+    [
+     "math",
+     0.71,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: \" Why"
+    ],
+    [
+     "math",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "067.png",
+   "position": "math+hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     582,
+     771
+    ],
+    [
+     368,
+     545
+    ],
+    [
+     111,
+     322
+    ],
+    [
+     62,
+     92
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "068.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     394,
+     416
+    ],
+    [
+     319,
+     379
+    ],
+    [
+     64,
+     280
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: am"
+    ],
+    [
+     "hebrew",
+     0.83,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "069.png",
+   "position": "math+hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     631,
+     923
+    ],
+    [
+     58,
+     595
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.53,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: driver"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "070.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     946,
+     1027
+    ],
+    [
+     810,
+     911
+    ],
+    [
+     523,
+     774
+    ],
+    [
+     318,
+     487
+    ],
+    [
+     59,
+     284
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: all-power; English? English reader: pole"
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "hebrew",
+     0.97,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "071.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     362,
+     478
+    ],
+    [
+     302,
+     328
+    ],
+    [
+     172,
+     280
+    ],
+    [
+     54,
+     135
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.96,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.99,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "072.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     51,
+     254
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: woe; Hebrew or English? English reader: discipating"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "073.png",
+   "position": "math+hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     423,
+     508
+    ],
+    [
+     306,
+     375
+    ],
+    [
+     52,
+     265
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "A={X_{1}}^{2}",
+     "hyp": "A = \\times _ { 1 } ^ { \\alpha }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ברן",
+     "hyp": "ברן",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "the casual",
+     "hyp": "the casual",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "074.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     62,
+     269
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: the"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "075.png",
+   "position": "hebrew+english+math",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     561,
+     783
+    ],
+    [
+     408,
+     527
+    ],
+    [
+     58,
+     366
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: ordiff"
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "לדוגמה, מסננים",
+     "hyp": "לדוגמה, מסננים",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "set out or",
+     "hyp": "ordiff",
+     "cer": 0.9
+    },
+    {
+     "kind": "math",
+     "ref": "1.96x^{2}+19.6x=",
+     "hyp": "1 . 9 6 \\times 2 + 1 9 . 6 \\times 2",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "076.png",
+   "position": "hebrew+english+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     211,
+     351
+    ],
+    [
+     177,
+     202
+    ],
+    [
+     67,
+     169
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: uc"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "077.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     302,
+     361
+    ],
+    [
+     62,
+     267
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: impires ,"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "מתוך",
+     "hyp": "מתוך",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "Earth nature inspires",
+     "hyp": "Each volume inspires ,",
+     "cer": 0.38095238095238093
+    }
+   ]
+  },
+  {
+   "file": "078.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     353,
+     392
+    ],
+    [
+     54,
+     315
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English? English reader: list"
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "League",
+     "hyp": "list",
+     "cer": 1.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "שימש במגוון",
+     "hyp": "שימש למגוון",
+     "cer": 0.09090909090909091
+    }
+   ]
+  },
+  {
+   "file": "079.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     564,
+     615
+    ],
+    [
+     525,
+     529
+    ],
+    [
+     293,
+     509
+    ],
+    [
+     53,
+     248
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.65,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English next to English; Hebrew or English? English reader: gorte"
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "080.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     52,
+     389
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: was; Hebrew or English? English reader: w"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "081.png",
+   "position": "hebrew+math+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     265,
+     338
+    ],
+    [
+     161,
+     223
+    ],
+    [
+     56,
+     118
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.91,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: ney"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "מעבר",
+     "hyp": "מעבר",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "C=\\cup_{p}F_{p}C",
+     "hyp": "c = v _ { r } F _ { r } C",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "They will",
+     "hyp": "they will",
+     "cer": 0.1111111111111111
+    }
+   ]
+  },
+  {
+   "file": "082.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     892,
+     1163
+    ],
+    [
+     736,
+     854
+    ],
+    [
+     608,
+     721
+    ],
+    [
+     446,
+     572
+    ],
+    [
+     396,
+     397
+    ],
+    [
+     58,
+     384
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.88,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; Hebrew or English? English reader: ' and"
+    ],
+    [
+     "english",
+     0.94,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: pots ,; English? English reader: mal; English? English reader: Muggerido ."
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "083.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     532,
+     552
+    ],
+    [
+     439,
+     515
+    ],
+    [
+     299,
+     405
+    ],
+    [
+     65,
+     265
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.56,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "084.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     609,
+     685
+    ],
+    [
+     438,
+     550
+    ],
+    [
+     218,
+     391
+    ],
+    [
+     58,
+     174
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: as"
+    ],
+    [
+     "english",
+     0.97,
+     ""
+    ],
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.85,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "085.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     345,
+     695
+    ],
+    [
+     273,
+     307
+    ],
+    [
+     51,
+     246
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.54,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: cingful"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "086.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     484,
+     518
+    ],
+    [
+     429,
+     469
+    ],
+    [
+     316,
+     382
+    ],
+    [
+     65,
+     282
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "math",
+     0.74,
+     ""
+    ],
+    [
+     "hebrew",
+     0.58,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "087.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     307,
+     579
+    ],
+    [
+     196,
+     267
+    ],
+    [
+     155,
+     157
+    ],
+    [
+     58,
+     121
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "088.png",
+   "position": "hebrew+english+math",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     501,
+     784
+    ],
+    [
+     255,
+     478
+    ],
+    [
+     65,
+     208
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "math",
+     0.99,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "מחלות המועברות",
+     "hyp": "מחלות המועברות:",
+     "cer": 0.07142857142857142
+    },
+    {
+     "kind": "english",
+     "ref": "and down",
+     "hyp": "and down",
+     "cer": 0.0
+    },
+    {
+     "kind": "math",
+     "ref": "\\int dx=x+C",
+     "hyp": "\\int _ { d x } = x + C",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "089.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     67,
+     462
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: thin; Hebrew or English? English reader: simply"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "090.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     442,
+     478
+    ],
+    [
+     296,
+     432
+    ],
+    [
+     154,
+     266
+    ],
+    [
+     50,
+     109
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: hills"
+    ],
+    [
+     "math",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "hebrew",
+     0.89,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "091.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     244,
+     342
+    ],
+    [
+     63,
+     207
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.98,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "חיה",
+     "hyp": "גבעות",
+     "cer": 1.6666666666666667
+    },
+    {
+     "kind": "english",
+     "ref": "first ideal and",
+     "hyp": "ideal , and",
+     "cer": 0.5333333333333333
+    }
+   ]
+  },
+  {
+   "file": "092.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     554,
+     812
+    ],
+    [
+     51,
+     533
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: dai"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "אמיתי בכסף.",
+     "hyp": "אמיתי בכח,",
+     "cer": 0.2727272727272727
+    },
+    {
+     "kind": "english",
+     "ref": "Dai meanwhile",
+     "hyp": "Dai , meanwhile",
+     "cer": 0.15384615384615385
+    }
+   ]
+  },
+  {
+   "file": "093.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     59,
+     187
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.58,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "094.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     265,
+     442
+    ],
+    [
+     67,
+     230
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English next to English; Hebrew or English? English reader: sails ."
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word; a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "095.png",
+   "position": "english+math+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     388,
+     670
+    ],
+    [
+     256,
+     343
+    ],
+    [
+     60,
+     217
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: and not"
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "hebrew",
+     0.9,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "and",
+     "hyp": "and not",
+     "cer": 1.3333333333333333
+    },
+    {
+     "kind": "math",
+     "ref": "a=\\frac{1}{2n+1}",
+     "hyp": "\\alpha = \\frac { 1 } { 2 m + 1 }",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "הרעבים, מכבידים",
+     "hyp": "הרעבים.",
+     "cer": 0.6
+    }
+   ]
+  },
+  {
+   "file": "096.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     303,
+     450
+    ],
+    [
+     59,
+     256
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: erosion ."
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "the switch",
+     "hyp": "the switch",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "המכירה המסורתיים",
+     "hyp": "הכירה המשורתש",
+     "cer": 0.3125
+    }
+   ]
+  },
+  {
+   "file": "097.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     503,
+     519
+    ],
+    [
+     349,
+     491
+    ],
+    [
+     66,
+     307
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.97,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "098.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     252,
+     459
+    ],
+    [
+     52,
+     217
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: b. Levin"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "שבצד הגן",
+     "hyp": "שבצד הגן",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "b.",
+     "hyp": "b. Levin",
+     "cer": 3.0
+    }
+   ]
+  },
+  {
+   "file": "099.png",
+   "position": "math+hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     217,
+     301
+    ],
+    [
+     91,
+     182
+    ],
+    [
+     53,
+     81
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.89,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: tm"
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "100.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     414,
+     431
+    ],
+    [
+     303,
+     399
+    ],
+    [
+     237,
+     271
+    ],
+    [
+     61,
+     201
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: the"
+    ],
+    [
+     "english",
+     0.81,
+     ""
+    ],
+    [
+     "math",
+     0.96,
+     ""
+    ],
+    [
+     "hebrew",
+     0.89,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "101.png",
+   "position": "english+hebrew+math",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     223,
+     394
+    ],
+    [
+     161,
+     189
+    ],
+    [
+     56,
+     122
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.77,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "next to an English word - English too?; Hebrew reader: כל"
+    ],
+    [
+     "math",
+     0.9,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "From the",
+     "hyp": "from the",
+     "cer": 0.125
+    },
+    {
+     "kind": "hebrew",
+     "ref": "בוקר",
+     "hyp": "כל",
+     "cer": 1.0
+    },
+    {
+     "kind": "math",
+     "ref": "W=-\\oint PdV",
+     "hyp": "x - f _ { p } / x",
+     "exact": false,
+     "equivalent": false
+    }
+   ]
+  },
+  {
+   "file": "102.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     597,
+     806
+    ],
+    [
+     292,
+     560
+    ],
+    [
+     53,
+     251
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: Bella"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: relief; a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "R=45+48=93",
+     "hyp": "R = 4 \\xi + 4 8 = 9 3",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "Bella Marie",
+     "hyp": "Bella Marie \"",
+     "cer": 0.18181818181818182
+    },
+    {
+     "kind": "hebrew",
+     "ref": "מהלכת, עושה",
+     "hyp": "א מהלכת",
+     "cer": 0.7272727272727273
+    }
+   ]
+  },
+  {
+   "file": "103.png",
+   "position": "math+english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     741,
+     848
+    ],
+    [
+     503,
+     638
+    ],
+    [
+     64,
+     487
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: fort"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word; a mark next to an English word"
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "104.png",
+   "position": "english+math+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     244,
+     434
+    ],
+    [
+     54,
+     206
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.66,
+     ""
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "math",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "105.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     63,
+     308
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: shut"
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "106.png",
+   "position": "english+hebrew",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     651,
+     824
+    ],
+    [
+     495,
+     608
+    ],
+    [
+     383,
+     458
+    ],
+    [
+     53,
+     338
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English or a formula? English reader: century"
+    ],
+    [
+     "hebrew",
+     0.87,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": []
+  },
+  {
+   "file": "107.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     277,
+     434
+    ],
+    [
+     55,
+     237
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English? English reader: pery"
+    ],
+    [
+     "hebrew",
+     0.95,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "pay ten",
+     "hyp": "pay ten",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "אתר ביגוד",
+     "hyp": "אתר ביגוד",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "108.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     588,
+     700
+    ],
+    [
+     376,
+     548
+    ],
+    [
+     65,
+     346
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?"
+    ],
+    [
+     "english",
+     0.94,
+     ""
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "y=x^{2}-x-2",
+     "hyp": "y = x ^ { 2 } - x - 2",
+     "exact": true,
+     "equivalent": true
+    },
+    {
+     "kind": "english",
+     "ref": "particular",
+     "hyp": "particular",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "משנה חשיבות.",
+     "hyp": "משנה חשיבות.",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "109.png",
+   "position": "math+hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     400,
+     443
+    ],
+    [
+     313,
+     357
+    ],
+    [
+     57,
+     268
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.62,
+     ""
+    ],
+    [
+     "hebrew",
+     0.95,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\frac{dt}{ds}=1",
+     "hyp": "\\frac { A l } { A s } = l",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "hebrew",
+     "ref": "תא",
+     "hyp": "תא",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "value that commodity",
+     "hyp": "commodity ! -",
+     "cer": 0.75
+    }
+   ]
+  },
+  {
+   "file": "110.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     311,
+     518
+    ],
+    [
+     65,
+     268
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     1.0,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "ובעודה רוקמת",
+     "hyp": "ובעודה רוקמת",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "with trembling fingers",
+     "hyp": "with trembling fingers .",
+     "cer": 0.09090909090909091
+    }
+   ]
+  },
+  {
+   "file": "111.png",
+   "position": "hebrew+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     367,
+     409
+    ],
+    [
+     58,
+     327
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: is a"
+    ],
+    [
+     "math",
+     0.5,
+     "formula or English? English reader: # verify"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "112.png",
+   "position": "hebrew+english",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     440,
+     571
+    ],
+    [
+     55,
+     392
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english"
+   ],
+   "parts": [
+    {
+     "kind": "hebrew",
+     "ref": "בגוף יש",
+     "hyp": "בגוף יש",
+     "cer": 0.0
+    },
+    {
+     "kind": "english",
+     "ref": "he and Angelina",
+     "hyp": "he and Angelina",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "113.png",
+   "position": "hebrew+math+english",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     487,
+     597
+    ],
+    [
+     420,
+     441
+    ],
+    [
+     400,
+     404
+    ],
+    [
+     361,
+     373
+    ],
+    [
+     313,
+     341
+    ],
+    [
+     249,
+     293
+    ],
+    [
+     61,
+     201
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "math",
+     0.57,
+     ""
+    ],
+    [
+     "hebrew",
+     0.69,
+     ""
+    ],
+    [
+     "math",
+     0.58,
+     ""
+    ],
+    [
+     "hebrew",
+     0.78,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "formula reader: 0 ="
+    ],
+    [
+     "english",
+     0.5,
+     "English? English reader: loulsdon"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "math",
+    "english"
+   ],
+   "parts": []
+  },
+  {
+   "file": "114.png",
+   "position": "math+english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     677,
+     720
+    ],
+    [
+     119,
+     640
+    ],
+    [
+     52,
+     88
+    ]
+   ],
+   "pred": [
+    [
+     "math",
+     0.94,
+     ""
+    ],
+    [
+     "english",
+     0.95,
+     ""
+    ],
+    [
+     "hebrew",
+     0.98,
+     ""
+    ]
+   ],
+   "true": [
+    "math",
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "math",
+     "ref": "\\frac{dC}{dt}=0",
+     "hyp": "\\frac { J C } { M } \\cdot 0",
+     "exact": false,
+     "equivalent": false
+    },
+    {
+     "kind": "english",
+     "ref": "Buck reached into",
+     "hyp": "Buck reached into",
+     "cer": 0.0
+    },
+    {
+     "kind": "hebrew",
+     "ref": "גר",
+     "hyp": "גר",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "115.png",
+   "position": "hebrew+english+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": false,
+   "pred_boxes": [
+    [
+     294,
+     591
+    ],
+    [
+     184,
+     256
+    ],
+    [
+     57,
+     135
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.99,
+     ""
+    ],
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.94,
+     ""
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "116.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     379,
+     460
+    ],
+    [
+     161,
+     355
+    ],
+    [
+     57,
+     120
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     1.0,
+     ""
+    ],
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "math",
+     0.93,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "117.png",
+   "position": "english+hebrew",
+   "layout_ok": true,
+   "layout_ok_old": true,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     336,
+     627
+    ],
+    [
+     64,
+     298
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.53,
+     ""
+    ],
+    [
+     "hebrew",
+     0.88,
+     ""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew"
+   ],
+   "parts": [
+    {
+     "kind": "english",
+     "ref": "tiredness",
+     "hyp": "tiredness it",
+     "cer": 0.3333333333333333
+    },
+    {
+     "kind": "hebrew",
+     "ref": "ובטבעיות. אבל",
+     "hyp": "ובטבעיות. אבל",
+     "cer": 0.0
+    }
+   ]
+  },
+  {
+   "file": "118.png",
+   "position": "hebrew+english+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     668,
+     772
+    ],
+    [
+     321,
+     626
+    ],
+    [
+     65,
+     256
+    ]
+   ],
+   "pred": [
+    [
+     "hebrew",
+     0.5,
+     "a mark next to an English word"
+    ],
+    [
+     "english",
+     0.9,
+     ""
+    ],
+    [
+     "math",
+     0.5,
+     "next to an English word - English too?; formula or English? English reader: a"
+    ]
+   ],
+   "true": [
+    "hebrew",
+    "english",
+    "math"
+   ],
+   "parts": []
+  },
+  {
+   "file": "119.png",
+   "position": "english+hebrew+math",
+   "layout_ok": false,
+   "layout_ok_old": false,
+   "flagged": true,
+   "pred_boxes": [
+    [
+     540,
+     799
+    ],
+    [
+     67,
+     497
+    ]
+   ],
+   "pred": [
+    [
+     "english",
+     0.5,
+     "English? English reader: mut"
+    ],
+    [
+     "hebrew",
+     0.5,
+     "Hebrew or English? English reader: C \""
+    ]
+   ],
+   "true": [
+    "english",
+    "hebrew",
+    "math"
+   ],
+   "parts": []
+  }
+ ]
+}

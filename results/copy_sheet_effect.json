@@ -1,0 +1,122 @@
+[
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader",
+  "n": 3000,
+  "acc": 0.8973333333333333,
+  "sure_share": 0.632,
+  "sure_error": 0.018459915611814346
+ },
+ {
+  "source": "cvl_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl5",
+  "n": 3000,
+  "acc": 0.916,
+  "sure_share": 0.6883333333333334,
+  "sure_error": 0.012590799031476998
+ },
+ {
+  "source": "cvl_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl10",
+  "n": 3000,
+  "acc": 0.9256666666666666,
+  "sure_share": 0.721,
+  "sure_error": 0.012482662968099861
+ },
+ {
+  "source": "cvl_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl20",
+  "n": 3000,
+  "acc": 0.9356666666666666,
+  "sure_share": 0.748,
+  "sure_error": 0.008467023172905526
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2",
+  "n": 3000,
+  "acc": 0.951,
+  "sure_share": 0.7743333333333333,
+  "sure_error": 0.005165733964700818
+ },
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader",
+  "n": 2007,
+  "acc": 0.9651220727453911,
+  "sure_share": 0.8360737419033383,
+  "sure_error": 0.0029797377830750892
+ },
+ {
+  "source": "usps_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl5",
+  "n": 2007,
+  "acc": 0.9616342800199302,
+  "sure_share": 0.8360737419033383,
+  "sure_error": 0.003575685339690107
+ },
+ {
+  "source": "usps_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl10",
+  "n": 2007,
+  "acc": 0.9606377678126558,
+  "sure_share": 0.8375685102142502,
+  "sure_error": 0.004164187983343248
+ },
+ {
+  "source": "usps_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl20",
+  "n": 2007,
+  "acc": 0.9651220727453911,
+  "sure_share": 0.8455406078724464,
+  "sure_error": 0.004714201532115498
+ },
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2",
+  "n": 2007,
+  "acc": 0.9765819631290483,
+  "sure_share": 0.8789237668161435,
+  "sure_error": 0.003401360544217687
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader",
+  "n": 3000,
+  "acc": 0.984,
+  "sure_share": 0.9096666666666666,
+  "sure_error": 0.00036643459142543056
+ },
+ {
+  "source": "mnist_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl5",
+  "n": 3000,
+  "acc": 0.9843333333333333,
+  "sure_share": 0.9096666666666666,
+  "sure_error": 0.0010993037742762918
+ },
+ {
+  "source": "mnist_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl10",
+  "n": 3000,
+  "acc": 0.983,
+  "sure_share": 0.9073333333333333,
+  "sure_error": 0.0
+ },
+ {
+  "source": "mnist_test",
+  "model": "/home/claude/cache/models/ft_v1_cvl20",
+  "n": 3000,
+  "acc": 0.981,
+  "sure_share": 0.9013333333333333,
+  "sure_error": 0.0007396449704142012
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2",
+  "n": 3000,
+  "acc": 0.9896666666666667,
+  "sure_share": 0.9293333333333333,
+  "sure_error": 0.0003586800573888092
+ }
+]

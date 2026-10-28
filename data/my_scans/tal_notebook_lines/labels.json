@@ -1,0 +1,82 @@
+[
+ {
+  "file": "heb1.png",
+  "kind": "hebrew",
+  "text": "הי מה שלומך קלוד, איך"
+ },
+ {
+  "file": "heb2.png",
+  "kind": "hebrew",
+  "text": "אתה מרגיש?"
+ },
+ {
+  "file": "heb3.png",
+  "kind": "hebrew",
+  "text": "אני בודק אותך איך אתה קורא"
+ },
+ {
+  "file": "heb4.png",
+  "kind": "hebrew",
+  "text": "עברית."
+ },
+ {
+  "file": "heb5.png",
+  "kind": "hebrew",
+  "text": "גנן גידל דגן בגן דגן גדול גדל"
+ },
+ {
+  "file": "heb6.png",
+  "kind": "hebrew",
+  "text": "בגן"
+ },
+ {
+  "file": "heb7.png",
+  "kind": "hebrew",
+  "text": "אני לא מהממהרים אני מהמהרות"
+ },
+ {
+  "file": "eng1.png",
+  "kind": "english",
+  "text": "hi there cladue, how"
+ },
+ {
+  "file": "eng2.png",
+  "kind": "english",
+  "text": "are you i want to test"
+ },
+ {
+  "file": "eng3.png",
+  "kind": "english",
+  "text": "the text recongnition"
+ },
+ {
+  "file": "math1.png",
+  "kind": "math",
+  "text": "1) a^{2}+b^{2}=c^{2} | a=3, b=4"
+ },
+ {
+  "file": "math2.png",
+  "kind": "math",
+  "text": "c=9"
+ },
+ {
+  "file": "math3.png",
+  "kind": "math",
+  "text": "2) a^{2}+b^{2}=c^{2} | 4^{2}+2^{2}=\\sqrt{20}"
+ },
+ {
+  "file": "math4.png",
+  "kind": "math",
+  "text": "16+4"
+ },
+ {
+  "file": "math5.png",
+  "kind": "math",
+  "text": "3) A=\\pi r^{2} | r=5"
+ },
+ {
+  "file": "math6.png",
+  "kind": "math",
+  "text": "A=78.54"
+ }
+]

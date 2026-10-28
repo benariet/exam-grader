@@ -1,0 +1,14 @@
+{
+ "height": 48,
+ "max_width": 1600,
+ "charset": " אבגדהוזחטיכךלמםנןסעפףצץקרשת0123456789.,-?:\"()!;/'%",
+ "blank": 0,
+ "time_stride": 4,
+ "order": "visual (use recog.hebrew_text.to_logical)",
+ "val_cer": 0.1171,
+ "epoch": 5,
+ "train_lines": 9196,
+ "epochs_total": 10,
+ "note": "trained on 2 CPU cores: 5 epochs + 5 more from that checkpoint (time limits); setup.cmd trains a longer run into models/hebrew-crnn",
+ "test_cer_300_unseen_writers": 0.1084
+}

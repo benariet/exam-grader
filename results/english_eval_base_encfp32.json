@@ -1,0 +1,1213 @@
+{
+ "summary": {
+  "lines": 150,
+  "CER": 0.0452,
+  "WER": 0.1162,
+  "lines_exact": 0.493,
+  "CER_top_quarter_by_confidence": 0.0123,
+  "CER_bottom_quarter_by_confidence": 0.1173,
+  "secs_per_line": 3.55
+ },
+ "rows": [
+  {
+   "ref": "Finally, being so obviously on their own,",
+   "hyp": "Finally, being so obviously on their own,",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9994536247567881,
+   "min_p": 0.9818934381785132
+  },
+  {
+   "ref": "Sally and of course Mrs Septimus, for surely",
+   "hyp": "Sally and of course Mrs Septimus, for surely",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.994162303341546,
+   "min_p": 0.8975601209773968
+  },
+  {
+   "ref": "beginning. It is \" the stone, which the builders",
+   "hyp": "beginning. It is the stone, which the builders",
+   "cer": 0.041666666666666664,
+   "wer": 0.1111111111111111,
+   "conf": 0.9788804168405331,
+   "min_p": 0.5385894363413561
+  },
+  {
+   "ref": "touch, the same unfailing sense of",
+   "hyp": "touch, the same unfailing sense of",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.993147903255322,
+   "min_p": 0.7945695061504829
+  },
+  {
+   "ref": "fault. \"",
+   "hyp": "fault. \"",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.8815846696633236,
+   "min_p": 0.5311385825427163
+  },
+  {
+   "ref": "left, Milan. The directional angle of the",
+   "hyp": "left, Mikan. The directional angle of the",
+   "cer": 0.024390243902439025,
+   "wer": 0.14285714285714285,
+   "conf": 0.9952798546640746,
+   "min_p": 0.925819834793615
+  },
+  {
+   "ref": "which had grown up during the Moon's",
+   "hyp": "which had grown up during the Monn's",
+   "cer": 0.027777777777777776,
+   "wer": 0.14285714285714285,
+   "conf": 0.9804946724501852,
+   "min_p": 0.5671041055551014
+  },
+  {
+   "ref": "nal funds, they were usually granted an",
+   "hyp": "nal founds, they were usually pranted on",
+   "cer": 0.07692307692307693,
+   "wer": 0.42857142857142855,
+   "conf": 0.9424384015890024,
+   "min_p": 0.5088042729131276
+  },
+  {
+   "ref": "the creatures participating in them. For Lily-yo, Flor",
+   "hyp": "the creatures participating in them. For Lily-yo, Flor",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9879481309125121,
+   "min_p": 0.5494121380043705
+  },
+  {
+   "ref": "and Fletcher that Byron would have wished his",
+   "hyp": "and Fletcher that Byron would have wished less",
+   "cer": 0.06666666666666667,
+   "wer": 0.125,
+   "conf": 0.9650436001335935,
+   "min_p": 0.3274969539885715
+  },
+  {
+   "ref": "disposed towards each other.",
+   "hyp": "disposed towards one another.",
+   "cer": 0.21428571428571427,
+   "wer": 0.5,
+   "conf": 0.9980902002364627,
+   "min_p": 0.9541567939778816
+  },
+  {
+   "ref": "And, if certain dishes and modes of food have",
+   "hyp": "And, if certain dishes and modes of food have",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9964865531715087,
+   "min_p": 0.9372487065916236
+  },
+  {
+   "ref": "For the time being Beryl was content to let",
+   "hyp": "For the time being Beryl was content to let",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9674870312636705,
+   "min_p": 0.3461176781864836
+  },
+  {
+   "ref": "texts to support the thesis of R. Joshua b. Levi.",
+   "hyp": "texts to support the thesis of R. Joshua b. Letri.",
+   "cer": 0.04081632653061224,
+   "wer": 0.1,
+   "conf": 0.9248364232056444,
+   "min_p": 0.1537112451925712
+  },
+  {
+   "ref": "an elusive foe, and, afraid to return home without",
+   "hyp": "an elusive foe, and, afraid to return home without",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9986836618175248,
+   "min_p": 0.9391777542573843
+  },
+  {
+   "ref": "known comment on the verse; quoted by",
+   "hyp": "known comment on the verse; quoted by",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9976921747222618,
+   "min_p": 0.9714505863665557
+  },
+  {
+   "ref": "Because of the plan That God, Who",
+   "hyp": "Because of the plan that God, who",
+   "cer": 0.06060606060606061,
+   "wer": 0.2857142857142857,
+   "conf": 0.9795086741312334,
+   "min_p": 0.596262780357508
+  },
+  {
+   "ref": "outbuilding where the grave digger kept his spades",
+   "hyp": "outbuilding where the grave digles kept his spades",
+   "cer": 0.04,
+   "wer": 0.125,
+   "conf": 0.9561311468409528,
+   "min_p": 0.303768290682237
+  },
+  {
+   "ref": "over with flour, you will find a stack",
+   "hyp": "over with flour, you will find a stock",
+   "cer": 0.02631578947368421,
+   "wer": 0.125,
+   "conf": 0.989688618897899,
+   "min_p": 0.8222036309151979
+  },
+  {
+   "ref": "And then she received a jolt. Old Hubert, standing",
+   "hyp": "And then she received a jult. Old Hubert, standing",
+   "cer": 0.02,
+   "wer": 0.1111111111111111,
+   "conf": 0.9625705506158564,
+   "min_p": 0.4115620558939397
+  },
+  {
+   "ref": "Sandra too deeply to ruin her",
+   "hyp": "Sandra too too deeply to ruin her",
+   "cer": 0.13793103448275862,
+   "wer": 0.16666666666666666,
+   "conf": 0.9525093696100114,
+   "min_p": 0.5639918109573736
+  },
+  {
+   "ref": "Dead. Shuffled out of the deck. Blasted",
+   "hyp": "lead. Shuffled out of the cheek: Biomedical",
+   "cer": 0.3333333333333333,
+   "wer": 0.42857142857142855,
+   "conf": 0.9111692713832775,
+   "min_p": 0.2844024052525571
+  },
+  {
+   "ref": "become so well known that it was",
+   "hyp": "become so well known that it was",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9998275927964793,
+   "min_p": 0.9960706114969483
+  },
+  {
+   "ref": "adult was altered to read' over sixteen',",
+   "hyp": "adult was altered to read' over sixteen',",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9876997557336958,
+   "min_p": 0.7988598773306169
+  },
+  {
+   "ref": "which causes them to wake feeling worse",
+   "hyp": "which causes them to wake feeling worse",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.99484607458436,
+   "min_p": 0.8851170941644725
+  },
+  {
+   "ref": "Book was issued in 1604 but the Puritans",
+   "hyp": "Bork was issued in 1604 but the Puritans",
+   "cer": 0.025,
+   "wer": 0.125,
+   "conf": 0.9662408967520724,
+   "min_p": 0.4320790087232354
+  },
+  {
+   "ref": "then regarded the ring which he retrieved",
+   "hyp": "\" then regarded the ring which he retrieved",
+   "cer": 0.04878048780487805,
+   "wer": 0.14285714285714285,
+   "conf": 0.9565175684057933,
+   "min_p": 0.21430371605490947
+  },
+  {
+   "ref": "mix 100 stone of bread in 12 hours, and Kate served in the",
+   "hyp": "mix too stone of bread in 12 hours, and white selded in the",
+   "cer": 0.13793103448275862,
+   "wer": 0.23076923076923078,
+   "conf": 0.9515033701619966,
+   "min_p": 0.26960318113669796
+  },
+  {
+   "ref": "' Before she can enjoy, Lily-yo and her companion",
+   "hyp": "Before she can enjoy, Lily-yo and her companion",
+   "cer": 0.04081632653061224,
+   "wer": 0.1111111111111111,
+   "conf": 0.9853710965671181,
+   "min_p": 0.6903012405444636
+  },
+  {
+   "ref": "than her usual cordiality and flashed a warning",
+   "hyp": "than has visual cordiality and flashed a warning",
+   "cer": 0.0851063829787234,
+   "wer": 0.25,
+   "conf": 0.9377107857657343,
+   "min_p": 0.45146998779466463
+  },
+  {
+   "ref": "The mind tires first and conveys the impression",
+   "hyp": "The mind five first and century the impression",
+   "cer": 0.1702127659574468,
+   "wer": 0.25,
+   "conf": 0.9485939679581695,
+   "min_p": 0.24673847191374929
+  },
+  {
+   "ref": "Chairman of the local War Pensions Committee. This",
+   "hyp": "Chairman of the local War Pensions Committee. This",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9984776758739599,
+   "min_p": 0.9608952548716795
+  },
+  {
+   "ref": "did not visualise the awful truth - that",
+   "hyp": "did not visualise the awful truth - that",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9860642402227145,
+   "min_p": 0.75282618676316
+  },
+  {
+   "ref": "carrying it into effect, and a subordinate",
+   "hyp": "carrying it into effect, and a subordinate",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9606262526591766,
+   "min_p": 0.21229976441642473
+  },
+  {
+   "ref": "miles it led into a small canyon which",
+   "hyp": "miles it led into a small canyon which",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9883931048770185,
+   "min_p": 0.770346152503508
+  },
+  {
+   "ref": "loved her, was already flirting with a girl",
+   "hyp": "loved her, was already fighting with a girl",
+   "cer": 0.06976744186046512,
+   "wer": 0.125,
+   "conf": 0.9721818998493338,
+   "min_p": 0.4746115091248291
+  },
+  {
+   "ref": "reports were being gathered about all traffic over",
+   "hyp": "reports were being gathered about all traffic over",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9997852245438174,
+   "min_p": 0.9940767157283948
+  },
+  {
+   "ref": "few moments later the yawl was upside",
+   "hyp": "few moments later the yawl was opposite",
+   "cer": 0.10810810810810811,
+   "wer": 0.14285714285714285,
+   "conf": 0.9562884111267991,
+   "min_p": 0.36053828993175174
+  },
+  {
+   "ref": "that they learned to fly properly. The pains associated",
+   "hyp": "that they learned to fly properly. The pains associated",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9976685053052167,
+   "min_p": 0.9028834272793202
+  },
+  {
+   "ref": "looked down at the fast-disappearing",
+   "hyp": "looked down at the fast-disappearing",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9837619979644805,
+   "min_p": 0.5613709723795386
+  },
+  {
+   "ref": "flamingoes our first morning on the island. \"",
+   "hyp": "flamingoes over first morning on the island. \"",
+   "cer": 0.044444444444444446,
+   "wer": 0.125,
+   "conf": 0.9694677421207243,
+   "min_p": 0.4919325281659161
+  },
+  {
+   "ref": "typically French.",
+   "hyp": "typically French.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9983659334444546,
+   "min_p": 0.9784912393824046
+  },
+  {
+   "ref": "We eat it. We accept it, to show we have self-control",
+   "hyp": "We eat it. We accept it. to show we have self-control",
+   "cer": 0.018867924528301886,
+   "wer": 0.09090909090909091,
+   "conf": 0.953696153035241,
+   "min_p": 0.3824079143807972
+  },
+  {
+   "ref": "surprised if we broke all",
+   "hyp": "surprised if we broke all",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9924076460109198,
+   "min_p": 0.8972276702924561
+  },
+  {
+   "ref": "and who is now being pluckily convivial",
+   "hyp": "and who is now being pluckily carnival",
+   "cer": 0.10256410256410256,
+   "wer": 0.14285714285714285,
+   "conf": 0.9632878786967739,
+   "min_p": 0.33016922584158714
+  },
+  {
+   "ref": "the way to face life. To see all the latent",
+   "hyp": "the way to face life. To see all the latent",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9970651963079791,
+   "min_p": 0.891612960560637
+  },
+  {
+   "ref": "wives, romanced about him in his absence. \" Lester was a",
+   "hyp": "wives, rammed about him in his absence. \" Lester was a",
+   "cer": 0.07142857142857142,
+   "wer": 0.09090909090909091,
+   "conf": 0.9752420728686172,
+   "min_p": 0.5193747075729733
+  },
+  {
+   "ref": "a grey superimposition of respectability over",
+   "hyp": "a grey superimposition of respectability over",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9606317573284046,
+   "min_p": 0.44469071898509493
+  },
+  {
+   "ref": "liked during his off-duty periods",
+   "hyp": "libed # during his off-duty periods",
+   "cer": 0.09090909090909091,
+   "wer": 0.4,
+   "conf": 0.925116750370181,
+   "min_p": 0.28726690399033855
+  },
+  {
+   "ref": "as the dawn was breaking, and",
+   "hyp": "as the dawn was breaking, and",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.990478979298223,
+   "min_p": 0.765218112919824
+  },
+  {
+   "ref": "Tolch, as he is known in Tin Pan Alley, likes songs with a month in the title. He wrote",
+   "hyp": "Folch, as he is known in Tin Pan Alley, lives, with a month in the title. He wrote",
+   "cer": 0.09195402298850575,
+   "wer": 0.15789473684210525,
+   "conf": 0.968814667705695,
+   "min_p": 0.34036734193512325
+  },
+  {
+   "ref": "Here in a dried-up creek-bed we found",
+   "hyp": "Here is a dried-up creek-hed we found",
+   "cer": 0.05405405405405406,
+   "wer": 0.2857142857142857,
+   "conf": 0.9345562736465588,
+   "min_p": 0.5505617677276112
+  },
+  {
+   "ref": "thought he could recognise the route of N12,",
+   "hyp": "thought he could recognise the talk of Native",
+   "cer": 0.22727272727272727,
+   "wer": 0.25,
+   "conf": 0.8953239862444938,
+   "min_p": 0.13430983189007956
+  },
+  {
+   "ref": "on West Street, where a successful Sunday",
+   "hyp": "on West Street, where a successful Sunday",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9995478207775399,
+   "min_p": 0.9869647951560339
+  },
+  {
+   "ref": "of fruits.",
+   "hyp": "of fruits.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.999777447881178,
+   "min_p": 0.9986712493458789
+  },
+  {
+   "ref": "- rouse itself and, in reply to two or",
+   "hyp": "mouse itself ) and, in reply to two or",
+   "cer": 0.13157894736842105,
+   "wer": 0.3333333333333333,
+   "conf": 0.9476786021585908,
+   "min_p": 0.19750216871984236
+  },
+  {
+   "ref": "should she lie? Besides, it wasn't just",
+   "hyp": "should she like? Beside, it wasn't just",
+   "cer": 0.05128205128205128,
+   "wer": 0.2857142857142857,
+   "conf": 0.9523872429857491,
+   "min_p": 0.4187298055685161
+  },
+  {
+   "ref": "so are we deficient without spiritual knowledge, and to",
+   "hyp": "so are we deficient without spiritual knowledge, and to",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9989727385203736,
+   "min_p": 0.962111296811124
+  },
+  {
+   "ref": "through tunnels would be an equally",
+   "hyp": "through tunnels would be an equally",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9988716077302001,
+   "min_p": 0.964362591383932
+  },
+  {
+   "ref": "Commander, \" he said. \" Now what about that",
+   "hyp": "Commander, \" he said. \" Now what about that",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9960115161448431,
+   "min_p": 0.89531566517082
+  },
+  {
+   "ref": "banquets of later days, when the table",
+   "hyp": "banquets of later days, when the table",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9508409275822823,
+   "min_p": 0.20150112237525852
+  },
+  {
+   "ref": "from lifted urns.",
+   "hyp": "from lifted wins.",
+   "cer": 0.11764705882352941,
+   "wer": 0.3333333333333333,
+   "conf": 0.9382347383416113,
+   "min_p": 0.33010654339931916
+  },
+  {
+   "ref": "This can either mean that both sugyas are",
+   "hyp": "This can either mean that both sugyas are",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9710671982281611,
+   "min_p": 0.5052783199258521
+  },
+  {
+   "ref": "of wet canvas, Bill cleared the",
+   "hyp": "of wet canvas, Bill cleared the",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9939867747200868,
+   "min_p": 0.8949342001790745
+  },
+  {
+   "ref": "the windows. Little to be seen, only a",
+   "hyp": "the windows. Little to be seen, only a",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9990440040801613,
+   "min_p": 0.9888915235494347
+  },
+  {
+   "ref": "which occur less frequently than",
+   "hyp": "which occur less frequently than",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.995281907765821,
+   "min_p": 0.8633917477571493
+  },
+  {
+   "ref": "important Prayer Books in the Anglican",
+   "hyp": "important Prayer books in the Anglican",
+   "cer": 0.02631578947368421,
+   "wer": 0.16666666666666666,
+   "conf": 0.9695271797946967,
+   "min_p": 0.46978865836917993
+  },
+  {
+   "ref": "or in flagging warmer ones. At the time of its movement",
+   "hyp": "or in flagging warmer ones. At the time of its movement",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.995638604585541,
+   "min_p": 0.8005749500421494
+  },
+  {
+   "ref": "on his taking her out in the jeep -",
+   "hyp": "on his taking her out in the jeep-",
+   "cer": 0.02857142857142857,
+   "wer": 0.2222222222222222,
+   "conf": 0.9772955791025675,
+   "min_p": 0.5661659895532482
+  },
+  {
+   "ref": "pitch changed as the nose of the aircraft",
+   "hyp": "pitch changed as the nose of the aircraft",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9941534503957218,
+   "min_p": 0.8710854641840892
+  },
+  {
+   "ref": "physical illness. There is, nevertheless, a",
+   "hyp": "physical illness. Then it, numsthalom, a",
+   "cer": 0.2558139534883721,
+   "wer": 0.5,
+   "conf": 0.880839376925742,
+   "min_p": 0.10099111448851972
+  },
+  {
+   "ref": "means of that' staple' system which ensured that",
+   "hyp": "means of that example' system which ensured that",
+   "cer": 0.08333333333333333,
+   "wer": 0.25,
+   "conf": 0.9716572723440021,
+   "min_p": 0.582531262801241
+  },
+  {
+   "ref": "over Bueno Buck reached into the foot",
+   "hyp": "over Bueno Buck reached into the foot",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9990112278511543,
+   "min_p": 0.9804923800677808
+  },
+  {
+   "ref": "those in authority to find some simple",
+   "hyp": "those in authority to find some simple",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9991342975517365,
+   "min_p": 0.9710028685803324
+  },
+  {
+   "ref": "What his story will be. I reckon",
+   "hyp": "What his story will be. I reckon",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.998226295115566,
+   "min_p": 0.9567034858896436
+  },
+  {
+   "ref": "which it engenders. But I am not arguing",
+   "hyp": "which it engenders. But I am not arguing",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9769148816160609,
+   "min_p": 0.6993493561528297
+  },
+  {
+   "ref": "mine seems to know how to do",
+   "hyp": "misve fleems to know how to do",
+   "cer": 0.14285714285714285,
+   "wer": 0.2857142857142857,
+   "conf": 0.894751848943284,
+   "min_p": 0.2019828912278478
+  },
+  {
+   "ref": "sing to the miners, and sang for other organisations such",
+   "hyp": "to the miners, and sang for other organisations such",
+   "cer": 0.08771929824561403,
+   "wer": 0.1,
+   "conf": 0.9973450476393082,
+   "min_p": 0.9325072440590818
+  },
+  {
+   "ref": "weather side of that pier! He'll wreck! \"",
+   "hyp": "weather side of that pier! He'll speak I'll",
+   "cer": 0.1951219512195122,
+   "wer": 0.25,
+   "conf": 0.9534689209725995,
+   "min_p": 0.3953548289546798
+  },
+  {
+   "ref": "It was the battered and broken body of a woman.",
+   "hyp": "It was the battered and broken body of a woman.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9911551268758093,
+   "min_p": 0.7631906140821411
+  },
+  {
+   "ref": "tried to surprise him. \" Dead? \" he said. \" Yes.",
+   "hyp": "tied to surprise him. \" Dead? \" he said. \" Yes.",
+   "cer": 0.020833333333333332,
+   "wer": 0.09090909090909091,
+   "conf": 0.9920631722347732,
+   "min_p": 0.8817784701669328
+  },
+  {
+   "ref": "found Bueno Buck, now on the",
+   "hyp": "found Serena Buck, now on the",
+   "cer": 0.14285714285714285,
+   "wer": 0.16666666666666666,
+   "conf": 0.9337824633058505,
+   "min_p": 0.22729969928710422
+  },
+  {
+   "ref": "lying in pairs alongside the jetty at Fort Blockhouse.",
+   "hyp": "lying in pairs alongside the jetty at Ford Blockhouse.",
+   "cer": 0.018518518518518517,
+   "wer": 0.1111111111111111,
+   "conf": 0.9908855892442866,
+   "min_p": 0.7703699769794281
+  },
+  {
+   "ref": "without a large-scale and concentrated invasion.",
+   "hyp": "without a large-scale and concentrated invasion.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9921881786723182,
+   "min_p": 0.6996161924257861
+  },
+  {
+   "ref": "Llangrwl, and his dear Morfydd quietly",
+   "hyp": "Llangrwl, and his dear Morfydd quietly",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9967930029373145,
+   "min_p": 0.9181411843354986
+  },
+  {
+   "ref": "impression that nothing nasty ever",
+   "hyp": "impressions that nothing nasty ever",
+   "cer": 0.029411764705882353,
+   "wer": 0.2,
+   "conf": 0.9840760411332368,
+   "min_p": 0.7380189027037751
+  },
+  {
+   "ref": "near me. \" Yes, \" I said. \" It'll be here to-",
+   "hyp": "never me. \" Yes, \" I said. \" It'll be here to-",
+   "cer": 0.044444444444444446,
+   "wer": 0.08333333333333333,
+   "conf": 0.9734805682317631,
+   "min_p": 0.5373081600073347
+  },
+  {
+   "ref": "impatience pending an awaited",
+   "hyp": "impatience, pencling an awaited",
+   "cer": 0.10344827586206896,
+   "wer": 0.5,
+   "conf": 0.9383905628752442,
+   "min_p": 0.4591777534685552
+  },
+  {
+   "ref": "three times the rate would produce 66,000.",
+   "hyp": "three times the vote would produce 6,6,000.",
+   "cer": 0.07142857142857142,
+   "wer": 0.2857142857142857,
+   "conf": 0.926243323947494,
+   "min_p": 0.35015786273325095
+  },
+  {
+   "ref": "right? \" \" Who told you? \" \" Little bird.",
+   "hyp": "right? \" \" Who told you? \" \" Little bird.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9827800318974415,
+   "min_p": 0.6749033638652486
+  },
+  {
+   "ref": "of the ancient world was the fact that they did not",
+   "hyp": "of the ancient world was the fact that they did not",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9999700930227663,
+   "min_p": 0.9995292150417076
+  },
+  {
+   "ref": "Peasants' Revolt of 1381.",
+   "hyp": "Peasants' Revolt of 1381.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9981243452729461,
+   "min_p": 0.9846656644135066
+  },
+  {
+   "ref": "money. All the while the police were casting about",
+   "hyp": "money. All the while the police were casting about",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9992270100860307,
+   "min_p": 0.980269555448104
+  },
+  {
+   "ref": "pestle had been of no assistance. The killer must",
+   "hyp": "pestile had been of no assistance. The killer must",
+   "cer": 0.02040816326530612,
+   "wer": 0.1111111111111111,
+   "conf": 0.9945569877672297,
+   "min_p": 0.8911480941449643
+  },
+  {
+   "ref": "The porter at the station bore out this",
+   "hyp": "The porter at the station bore out this",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9941138949888435,
+   "min_p": 0.8551551323416995
+  },
+  {
+   "ref": "in it the reservoir... and I made both the",
+   "hyp": "in other reservoirs. \" And I made both the",
+   "cer": 0.19047619047619047,
+   "wer": 0.4444444444444444,
+   "conf": 0.9214868451138833,
+   "min_p": 0.1591645941046562
+  },
+  {
+   "ref": "out, \" If you come any closer, I'll sure blow",
+   "hyp": "and, If you come any closer, I'll sure blow",
+   "cer": 0.1111111111111111,
+   "wer": 0.2,
+   "conf": 0.9693813570411534,
+   "min_p": 0.6902300732699621
+  },
+  {
+   "ref": "Gay read the rest of the letter then put",
+   "hyp": "Gay read the rest of the letter put",
+   "cer": 0.125,
+   "wer": 0.1111111111111111,
+   "conf": 0.9994318324936123,
+   "min_p": 0.9931754180453375
+  },
+  {
+   "ref": "feeding, the same subtle delicacy of",
+   "hyp": "feeding, the same subtle delicacy of",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9994241133192964,
+   "min_p": 0.9860012125794196
+  },
+  {
+   "ref": "for those negligible events that seemed so large to",
+   "hyp": "for those negligible event that seemed so large to",
+   "cer": 0.0196078431372549,
+   "wer": 0.1111111111111111,
+   "conf": 0.9918427077364179,
+   "min_p": 0.8107251034923245
+  },
+  {
+   "ref": "the literal meaning of Pesach which",
+   "hyp": "the literal meaning of Pesach which",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.997554085456801,
+   "min_p": 0.9595699908764955
+  },
+  {
+   "ref": "to some extent against it. To keep a child",
+   "hyp": "to some extent against it. To keep a child",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9995148372791585,
+   "min_p": 0.9827443153354681
+  },
+  {
+   "ref": "Though Diana knew the name of every",
+   "hyp": "Though Diana knew the name of every",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9976169423500756,
+   "min_p": 0.9485581113205127
+  },
+  {
+   "ref": "notice in the entrance saying which",
+   "hyp": "Notice in the entrance saying which",
+   "cer": 0.02857142857142857,
+   "wer": 0.16666666666666666,
+   "conf": 0.9989329788329008,
+   "min_p": 0.9687762968727451
+  },
+  {
+   "ref": "saying here is obvious, it follows naturally",
+   "hyp": "saying here is obvious, it follows naturally",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.999873983554182,
+   "min_p": 0.9966957360107476
+  },
+  {
+   "ref": "Such a Shamir possesses the real acid",
+   "hyp": "Such a Shamir possesses the real acid",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9950118628095082,
+   "min_p": 0.8631034064743761
+  },
+  {
+   "ref": "before. Bacon was at work and Milton was",
+   "hyp": "before. Bacon was at work and Milton was",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9959730552299676,
+   "min_p": 0.8979703115004409
+  },
+  {
+   "ref": "what they were saying. Sandra",
+   "hyp": "what they were saying. Sandra",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9850179690347702,
+   "min_p": 0.6788595973409287
+  },
+  {
+   "ref": "black eyes showing any emotion. With a",
+   "hyp": "black eyes choosing any emotion. with a",
+   "cer": 0.10526315789473684,
+   "wer": 0.2857142857142857,
+   "conf": 0.9685646600620057,
+   "min_p": 0.5417959162553345
+  },
+  {
+   "ref": "out of his sight. \" Mine, \" Nigel Lester had",
+   "hyp": "out of his sight. \" Mime, \" Nigel Lester had",
+   "cer": 0.022727272727272728,
+   "wer": 0.1,
+   "conf": 0.9888545570234886,
+   "min_p": 0.6777419842111502
+  },
+  {
+   "ref": "Hostettler",
+   "hyp": "Hastettler",
+   "cer": 0.1,
+   "wer": 1.0,
+   "conf": 0.9237326855683294,
+   "min_p": 0.7119392384673844
+  },
+  {
+   "ref": "\" What they can bring off! I'll admit that.",
+   "hyp": "\" What they can bring offs! I'll catchment that.",
+   "cer": 0.16279069767441862,
+   "wer": 0.2222222222222222,
+   "conf": 0.9116633725719642,
+   "min_p": 0.22795599699998648
+  },
+  {
+   "ref": "Dante Gabriel Rossetti had simple tastes in food. At one",
+   "hyp": "Dante Gabriel Rosetti had simple tasks in food. At one",
+   "cer": 0.05357142857142857,
+   "wer": 0.2,
+   "conf": 0.9554154621233251,
+   "min_p": 0.43203078774019776
+  },
+  {
+   "ref": "A bully like that respects anyone who",
+   "hyp": "A bully like that respects anyone who",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9771684860733579,
+   "min_p": 0.6786215343124834
+  },
+  {
+   "ref": "lifted urns",
+   "hyp": "lifted arms.",
+   "cer": 0.2727272727272727,
+   "wer": 0.5,
+   "conf": 0.9659506325730615,
+   "min_p": 0.7482024150240643
+  },
+  {
+   "ref": "homely and protecting flame.",
+   "hyp": "homely and protecting flame.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9965379914479673,
+   "min_p": 0.9299273520525184
+  },
+  {
+   "ref": "joking, Nigel. \" \" You shouldn't joke",
+   "hyp": "potting, Nigel \" \" You shouldn't joke",
+   "cer": 0.10810810810810811,
+   "wer": 0.2857142857142857,
+   "conf": 0.9430098079740185,
+   "min_p": 0.6071121480626818
+  },
+  {
+   "ref": "Turton noticed its existence as they sat in silence over",
+   "hyp": "Turton noticed its existence as they sat in silence over",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9984626215611845,
+   "min_p": 0.9428876748415137
+  },
+  {
+   "ref": "would be inopportune; and with the idea came",
+   "hyp": "would be inappropriate; and with the idea came",
+   "cer": 0.13636363636363635,
+   "wer": 0.125,
+   "conf": 0.9766334145100816,
+   "min_p": 0.48673634257050297
+  },
+  {
+   "ref": "\" Tell me who the little bird was. \" \" Can't",
+   "hyp": "\" Fell me who the little bird was. \" \" Can't",
+   "cer": 0.022727272727272728,
+   "wer": 0.09090909090909091,
+   "conf": 0.9919672408897724,
+   "min_p": 0.7519126816316106
+  },
+  {
+   "ref": "turbot and to have been much more interested in the",
+   "hyp": "turdost and to have been much more interested in the",
+   "cer": 0.0392156862745098,
+   "wer": 0.1,
+   "conf": 0.9827242943348333,
+   "min_p": 0.5996969094626377
+  },
+  {
+   "ref": "about a verse or two of Cwm Rhondda? \"",
+   "hyp": "about a verse or two of turn Rhondda? \"",
+   "cer": 0.10526315789473684,
+   "wer": 0.1111111111111111,
+   "conf": 0.9451161776391162,
+   "min_p": 0.10991495549552968
+  },
+  {
+   "ref": "on the bridge over the Po, barely forty miles to port.",
+   "hyp": "on the bridge over the Roy Barely forty miles to port:",
+   "cer": 0.07407407407407407,
+   "wer": 0.2727272727272727,
+   "conf": 0.9044333605707695,
+   "min_p": 0.07493662091691225
+  },
+  {
+   "ref": "she felt happier. Gay loved them for their warm sympathy,",
+   "hyp": "felt happier. Gay loved them For their warm sympathy,",
+   "cer": 0.08771929824561403,
+   "wer": 0.2,
+   "conf": 0.9781927387227324,
+   "min_p": 0.6479856536221729
+  },
+  {
+   "ref": "Gavin although he had told her that he",
+   "hyp": "Govins although he had told her that he",
+   "cer": 0.05263157894736842,
+   "wer": 0.125,
+   "conf": 0.9815193660295306,
+   "min_p": 0.6882866711708376
+  },
+  {
+   "ref": "I knew he was responsible for",
+   "hyp": "I knew he gives responsible for",
+   "cer": 0.13793103448275862,
+   "wer": 0.16666666666666666,
+   "conf": 0.9494368122957085,
+   "min_p": 0.39871923527882974
+  },
+  {
+   "ref": "and Sir Frederick Stoven, but with their perfect con-",
+   "hyp": "and Sir Frederick Steven, but with their perfect con-",
+   "cer": 0.018867924528301886,
+   "wer": 0.1111111111111111,
+   "conf": 0.9872171987039183,
+   "min_p": 0.591706787625161
+  },
+  {
+   "ref": "the Jesuit, Fisher. But anyone who was friendly",
+   "hyp": "the Jesuit, Fisher. But anyone who was friendly",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9991226882705257,
+   "min_p": 0.967838797537274
+  },
+  {
+   "ref": "hindered by compression, infarction or inter-",
+   "hyp": "hindered by compression, infarction or inter-",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9870340221323755,
+   "min_p": 0.5706439023052269
+  },
+  {
+   "ref": "a' double' life without ever deliberately",
+   "hyp": "a' double life without ever deliberately",
+   "cer": 0.024390243902439025,
+   "wer": 0.16666666666666666,
+   "conf": 0.9612593207115866,
+   "min_p": 0.2255933489173621
+  },
+  {
+   "ref": "image and the ground itself. Ahead lay the",
+   "hyp": "image and the ground itself. Ahead bay the",
+   "cer": 0.023809523809523808,
+   "wer": 0.125,
+   "conf": 0.9836139018942275,
+   "min_p": 0.5047773624037525
+  },
+  {
+   "ref": "\" Ever been to Fleet Street? \" asked Bawley.",
+   "hyp": "\" Ever been to Fleet Street? \" asked Bawly.",
+   "cer": 0.022727272727272728,
+   "wer": 0.1111111111111111,
+   "conf": 0.9551885846356889,
+   "min_p": 0.43669913975132074
+  },
+  {
+   "ref": "He was writing something in his",
+   "hyp": "He was writing something in his",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9998321959110578,
+   "min_p": 0.998415275773137
+  },
+  {
+   "ref": "with the Bible, which he had",
+   "hyp": "with the Bible, which he had",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9997296073430051,
+   "min_p": 0.9930207983716308
+  },
+  {
+   "ref": "yet so strange were the circumstances that it was",
+   "hyp": "yet so strange were the circumstances that it was",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9969978827173095,
+   "min_p": 0.8948763919741992
+  },
+  {
+   "ref": "By delicate application of odours and richly-distilled",
+   "hyp": "By delicate application of odours and richly-distilled",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9994772922754371,
+   "min_p": 0.9835491214094259
+  },
+  {
+   "ref": "There is a whole group of theories which attempt to explain the problems of the",
+   "hyp": "there is a whole group of theories which attempt to explain the problems of the",
+   "cer": 0.012658227848101266,
+   "wer": 0.06666666666666667,
+   "conf": 0.9801336575072197,
+   "min_p": 0.45752049033686243
+  },
+  {
+   "ref": "breakfast and supper consisted of a piece of coarse bread",
+   "hyp": "breakfast and supper consisted of a piece of coarse bread",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9828957976339914,
+   "min_p": 0.5763682276220699
+  },
+  {
+   "ref": "planning to do so or in fact being conscious",
+   "hyp": "planning to do so or in fact being conscious",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9785446636769406,
+   "min_p": 0.39871081044305784
+  },
+  {
+   "ref": "origin of her recent illness. His notes",
+   "hyp": "origin of her recent illness. His notes",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9971459904266556,
+   "min_p": 0.9099348119108681
+  },
+  {
+   "ref": "programme of entertainment almost",
+   "hyp": "programme of entertainment almost",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9990695680835991,
+   "min_p": 0.9769959404192982
+  },
+  {
+   "ref": "them out. Just what these orders will be, we don't",
+   "hyp": "them out. Just what these orders will be, we don't",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9979592057298434,
+   "min_p": 0.9457347148725219
+  },
+  {
+   "ref": "almost a mile on every tide at the Smith's",
+   "hyp": "almost a mile on every tide at the Smith's",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9762156839293644,
+   "min_p": 0.5526056043679787
+  },
+  {
+   "ref": "Dinas Motor Omnibus Co. to ask what had happened to their",
+   "hyp": "Dennis Mater Omnibus, her wish that had happened for Flavi",
+   "cer": 0.38596491228070173,
+   "wer": 0.8181818181818182,
+   "conf": 0.8216853025908654,
+   "min_p": 0.10265256009673694
+  },
+  {
+   "ref": "and that God dwells within us.",
+   "hyp": "and that God dwells within us.",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9803189226633457,
+   "min_p": 0.5718020009740933
+  },
+  {
+   "ref": "latter part of the verse by Rami bar Rabh",
+   "hyp": "latter part of the verse by Rami bar Rath",
+   "cer": 0.024390243902439025,
+   "wer": 0.1111111111111111,
+   "conf": 0.9154423462446363,
+   "min_p": 0.2675827696542118
+  },
+  {
+   "ref": "He needed her. She would find",
+   "hyp": "Heneeded her. \" he would find",
+   "cer": 0.10344827586206896,
+   "wer": 0.6666666666666666,
+   "conf": 0.8959258370428427,
+   "min_p": 0.13434556832581318
+  },
+  {
+   "ref": "persisted down the ages, the motive that preserved",
+   "hyp": "persisted down the ages, the motive that preserved",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.9956744541817585,
+   "min_p": 0.9152388381030961
+  },
+  {
+   "ref": "language. The Shamir is the \" seventh \" and",
+   "hyp": "language. The Shawyir is the' seventh \" aged",
+   "cer": 0.13953488372093023,
+   "wer": 0.4444444444444444,
+   "conf": 0.9333537685100622,
+   "min_p": 0.19166109537395215
+  },
+  {
+   "ref": "found him curiously stimulating. \" You're a",
+   "hyp": "found him curiously stimulating. \" You're a",
+   "cer": 0.0,
+   "wer": 0.0,
+   "conf": 0.99882079347796,
+   "min_p": 0.9815274576520091
+  }
+ ]
+}

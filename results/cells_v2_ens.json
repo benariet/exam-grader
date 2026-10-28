@@ -1,0 +1,122 @@
+[
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 0.975,
+  "sure_share": 0.885,
+  "sure_error": 0.003389830508474576
+ },
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2/b",
+  "n": 2000,
+  "acc": 0.9725,
+  "sure_share": 0.8805,
+  "sure_error": 0.004542873367404884
+ },
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2/ens",
+  "n": 2000,
+  "acc": 0.9765,
+  "sure_share": 0.88,
+  "sure_error": 0.003409090909090909
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader-v2/main",
+  "n": 1593,
+  "acc": 0.8976773383553045,
+  "sure_share": 0.5731324544883867,
+  "sure_error": 0.00547645125958379
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader-v2/b",
+  "n": 1593,
+  "acc": 0.8957940991839297,
+  "sure_share": 0.568738229755179,
+  "sure_error": 0.006622516556291391
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader-v2/ens",
+  "n": 1593,
+  "acc": 0.898932831136221,
+  "sure_share": 0.5530445699937225,
+  "sure_error": 0.0056753688989784334
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 1.0,
+  "sure_share": 0.9835,
+  "sure_error": 0.0
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader-v2/b",
+  "n": 2000,
+  "acc": 0.9995,
+  "sure_share": 0.981,
+  "sure_error": 0.0
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader-v2/ens",
+  "n": 2000,
+  "acc": 1.0,
+  "sure_share": 0.9805,
+  "sure_error": 0.0
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 0.953,
+  "sure_share": 0.78,
+  "sure_error": 0.005128205128205128
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2/b",
+  "n": 2000,
+  "acc": 0.95,
+  "sure_share": 0.7805,
+  "sure_error": 0.003843689942344651
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2/ens",
+  "n": 2000,
+  "acc": 0.9535,
+  "sure_share": 0.7725,
+  "sure_error": 0.003883495145631068
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2/main",
+  "n": 2000,
+  "acc": 0.992,
+  "sure_share": 0.9385,
+  "sure_error": 0.0005327650506126798
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2/b",
+  "n": 2000,
+  "acc": 0.993,
+  "sure_share": 0.9385,
+  "sure_error": 0.0
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2/ens",
+  "n": 2000,
+  "acc": 0.9915,
+  "sure_share": 0.9345,
+  "sure_error": 0.0
+ }
+]

@@ -1,0 +1,19 @@
+silly test (photo, 2026-10-25)  (silly_test.jpg)
+
+     1    ? / 8   to a human: exercise 1+5 not found on the page
+     2    ? / 8   to a human: 28% of the reading probability is unparseable  (tool's guess 8)  read: 70/7=10
+     3    ? / 8   to a human: no candidate reading could be parsed  (tool's guess 0)  read: 7×7=L10
+     4    ? / 8   to a human: exercise 14*2 not found on the page
+     5    ? / 8   to a human: exercise 19-4 not found on the page
+     6    8 / 8   auto, confidence 100%  read: 8×8=64
+     7    ? / 8   to a human: exercise 98-11 not found on the page
+     8    ? / 8   to a human: exercise 36/6 not found on the page
+    Q1    ? / 8   to a human: open answer: graded by a human
+    Q2    ? / 8   to a human: open answer: graded by a human
+    Q3    ? / 8   to a human: open answer: graded by a human
+    B1    ? / 6   to a human: 89% of the reading probability is unparseable  (tool's guess 0)  read: 17+17+24=4z
+    B2    ? / 6   to a human: unsure this part is a formula (50%)  (tool's guess 0)  read: 12+12+13=34
+
+graded by the tool: 8 of 8 points
+for a human:        92 points (1, 2, 3, 4, 5, 7, 8, Q1, Q2, Q3, B1, B2)
+total so far:       8 + what the human gives, out of 100

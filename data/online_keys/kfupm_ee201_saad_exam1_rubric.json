@@ -1,0 +1,13 @@
+{"name": "KFUPM EE201 Major Exam I, 2001 (key handwritten by Dr. Saad Al-Shahrani; scan cut at the right edge)",
+ "source": "https://faculty.kfupm.edu.sa/EE/saadms/courses201.htm",
+ "items": [
+  {"id": "1a-V1",  "points": 7, "page": 2, "value": "V_1",     "answer": "124.5 V"},
+  {"id": "1a-V2",  "points": 7, "page": 2, "value": "V_2",     "answer": "250 V"},
+  {"id": "1a-V3",  "points": 7, "page": 2, "value": "V_3",     "answer": "235 V"},
+  {"id": "1b-is",  "points": 4, "page": 2, "value": "i_s",     "answer": "77.75 A"},
+  {"id": "1c-P",   "points": 3, "page": 2, "value": "P_{250}", "answer": "19437.5 W"},
+  {"id": "2a-Vy",  "points": 4, "page": 3, "value": "V_y",     "answer": "-46 V"},
+  {"id": "2b-Req", "points": 3, "page": 4, "value": "R_{eq}",  "answer": "43.5 ohm"},
+  {"id": "2c-P",   "points": 3, "page": 4, "value": "P_{100}", "answer": "94.09 W"},
+  {"id": "3-Vx",   "points": 30, "page": 5, "value": "V_x",    "answer": "6 V"}
+ ]}

@@ -1,0 +1,19 @@
+{
+ "file": "tal_circuit.pdf",
+ "note": "Tal's hand-drawn two-source circuit on a ruled notebook page (26.10.2026), transcribed by hand. Only R2 is labelled on the page; the two top resistors are called R1 (left) and R3 (right) here. E2's label is cut by the page edge.",
+ "components": [
+  {"id": "E1", "type": "voltage_source", "nodes": ["N1", "0"], "plus": "N1", "label_on_page": "E1"},
+  {"id": "R1", "type": "resistor", "nodes": ["N1", "A"], "label_on_page": null},
+  {"id": "R2", "type": "resistor", "nodes": ["A", "0"], "label_on_page": "R2"},
+  {"id": "R3", "type": "resistor", "nodes": ["A", "N3"], "label_on_page": null},
+  {"id": "E2", "type": "voltage_source", "nodes": ["N3", "0"], "plus": "N3", "label_on_page": "E2"}
+ ],
+ "currents": [
+  {"label": "I1", "through": "R1", "from": "N1", "to": "A"},
+  {"label": "I2", "through": "R2", "from": "A", "to": "0"},
+  {"label": "I3", "through": "R3", "from": "N3", "to": "A"}
+ ],
+ "ground": "0",
+ "node_labels": {"A": "A"},
+ "kcl": {"A": "I1 + I3 = I2"}
+}

@@ -1,0 +1,1070 @@
+{
+ "counts": {
+  "students": 120,
+  "id_accepted": 21,
+  "id_right": 20,
+  "id_wrong_but_accepted": 1,
+  "cells": 6071,
+  "cells_right": 5765,
+  "items": 744,
+  "answer_read_right": 557,
+  "auto": 169,
+  "review": 575,
+  "cell_err:9->3": 6,
+  "cell_err:2->8": 9,
+  "cell_err:0->?": 3,
+  "cell_err:2->3": 2,
+  "cell_err:4->9": 4,
+  "cell_err:7->?": 9,
+  "cell_err:1->7": 16,
+  "cell_err:6->5": 15,
+  "cell_err:4->6": 10,
+  "cell_err:6->0": 3,
+  "cell_err:1->?": 24,
+  "cell_err:2->?": 6,
+  "cell_err:0->3": 1,
+  "cell_err:9->?": 7,
+  "cell_err:6->8": 2,
+  "cell_err:6->?": 7,
+  "cell_err:8->?": 7,
+  "cell_err:4->?": 5,
+  "cell_err:9->8": 7,
+  "cell_err:7->4": 2,
+  "cell_err:4->7": 1,
+  "cell_err:1->4": 14,
+  "cell_err:9->7": 1,
+  "cell_err:4->5": 3,
+  "cell_err:7->2": 5,
+  "cell_err:4->8": 2,
+  "cell_err:3->5": 3,
+  "cell_err:1->3": 1,
+  "cell_err:7->8": 2,
+  "cell_err:1->0": 1,
+  "cell_err:0->7": 1,
+  "cell_err:-->7": 1,
+  "cell_err:1->8": 1,
+  "cell_err:.-> ": 1,
+  "cell_err:4->1": 1,
+  "cell_err:2->0": 1,
+  "cell_err:0->8": 1,
+  "cell_err:2->7": 2
+ },
+ "by": {
+  "E1": {
+   "items": 144,
+   "auto": 36,
+   "review": 108
+  },
+  "scan": {
+   "items": 744,
+   "auto": 169,
+   "review": 575
+  },
+  "E2": {
+   "items": 144,
+   "review": 123,
+   "auto": 21
+  },
+  "E3": {
+   "items": 144,
+   "review": 101,
+   "auto": 43
+  },
+  "E4": {
+   "items": 144,
+   "review": 115,
+   "auto": 29
+  },
+  "E5": {
+   "items": 168,
+   "review": 128,
+   "auto": 40
+  }
+ },
+ "review_reasons": {
+  "readings disagree on the score": 58,
+  "2% of the reading looks unreadable or crossed out": 27,
+  "4% of the reading looks unreadable or crossed out": 28,
+  "26% of the reading looks unreadable or crossed out": 4,
+  "3% of the reading looks unreadable or crossed out": 39,
+  "15% of the reading looks unreadable or crossed out": 5,
+  "9% of the reading looks unreadable or crossed out": 23,
+  "35% of the reading looks unreadable or crossed out": 3,
+  "21% of the reading looks unreadable or crossed out": 5,
+  "a cell looks crossed out or unreadable": 62,
+  "the answer's digits with the decimal point elsewhere": 7,
+  "crossed-out box: writing crosses the cells' borders": 13,
+  "writing crosses the cells' borders": 26,
+  "6% of the reading looks unreadable or crossed out": 19,
+  "12% of the reading looks unreadable or crossed out": 10,
+  "34% of the reading looks unreadable or crossed out": 5,
+  "10% of the reading looks unreadable or crossed out": 16,
+  "5% of the reading looks unreadable or crossed out": 18,
+  "22% of the reading looks unreadable or crossed out": 5,
+  "25% of the reading looks unreadable or crossed out": 6,
+  "crossed-out box: a cell looks crossed out or unreadable": 3,
+  "13% of the reading looks unreadable or crossed out": 11,
+  "43% of the reading looks unreadable or crossed out": 2,
+  "11% of the reading looks unreadable or crossed out": 7,
+  "17% of the reading looks unreadable or crossed out": 8,
+  "7% of the reading looks unreadable or crossed out": 19,
+  "the reading is not a number": 7,
+  "46% of the reading looks unreadable or crossed out": 3,
+  "44% of the reading looks unreadable or crossed out": 3,
+  "8% of the reading looks unreadable or crossed out": 8,
+  "39% of the reading looks unreadable or crossed out": 3,
+  "28% of the reading looks unreadable or crossed out": 6,
+  "29% of the reading looks unreadable or crossed out": 6,
+  "24% of the reading looks unreadable or crossed out": 10,
+  "18% of the reading looks unreadable or crossed out": 6,
+  "14% of the reading looks unreadable or crossed out": 8,
+  "20% of the reading looks unreadable or crossed out": 10,
+  "52% of the reading looks unreadable or crossed out": 1,
+  "54% of the reading looks unreadable or crossed out": 2,
+  "41% of the reading looks unreadable or crossed out": 5,
+  "47% of the reading looks unreadable or crossed out": 2,
+  "53% of the reading looks unreadable or crossed out": 1,
+  "42% of the reading looks unreadable or crossed out": 1,
+  "45% of the reading looks unreadable or crossed out": 2,
+  "27% of the reading looks unreadable or crossed out": 3,
+  "16% of the reading looks unreadable or crossed out": 6,
+  "23% of the reading looks unreadable or crossed out": 6,
+  "51% of the reading looks unreadable or crossed out": 3,
+  "19% of the reading looks unreadable or crossed out": 6,
+  "49% of the reading looks unreadable or crossed out": 2,
+  "66% of the reading looks unreadable or crossed out": 1,
+  "37% of the reading looks unreadable or crossed out": 2,
+  "31% of the reading looks unreadable or crossed out": 6,
+  "32% of the reading looks unreadable or crossed out": 6,
+  "36% of the reading looks unreadable or crossed out": 4,
+  "61% of the reading looks unreadable or crossed out": 1,
+  "60% of the reading looks unreadable or crossed out": 1,
+  "50% of the reading looks unreadable or crossed out": 3,
+  "30% of the reading looks unreadable or crossed out": 2,
+  "33% of the reading looks unreadable or crossed out": 2,
+  "58% of the reading looks unreadable or crossed out": 2,
+  "55% of the reading looks unreadable or crossed out": 2,
+  "38% of the reading looks unreadable or crossed out": 2,
+  "an empty cell between characters": 1,
+  "48% of the reading looks unreadable or crossed out": 1
+ },
+ "auto_errors": [],
+ "students": [
+  {
+   "student": "E1_s01",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s02",
+   "true": 70.0,
+   "auto_points": 35.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s03",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s04",
+   "true": 50.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s05",
+   "true": 70.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s06",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s07",
+   "true": 55.0,
+   "auto_points": 15.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s08",
+   "true": 85.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s09",
+   "true": 65.0,
+   "auto_points": 35.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s10",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s11",
+   "true": 35.0,
+   "auto_points": 0.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s12",
+   "true": 100.0,
+   "auto_points": 20.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s13",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s14",
+   "true": 85.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s15",
+   "true": 15.0,
+   "auto_points": 15.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s16",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s17",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s18",
+   "true": 65.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s19",
+   "true": 15.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s20",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s21",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s22",
+   "true": 55.0,
+   "auto_points": 20.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s23",
+   "true": 85.0,
+   "auto_points": 35.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s24",
+   "true": 0.0,
+   "auto_points": 0.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s01",
+   "true": 100.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s02",
+   "true": 100.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s03",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s04",
+   "true": 65.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s05",
+   "true": 70.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s06",
+   "true": 85.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s07",
+   "true": 85.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s08",
+   "true": 55.0,
+   "auto_points": 0.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s09",
+   "true": 65.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s10",
+   "true": 70.0,
+   "auto_points": 0.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s11",
+   "true": 80.0,
+   "auto_points": 30.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s12",
+   "true": 70.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s13",
+   "true": 100.0,
+   "auto_points": 20.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s14",
+   "true": 70.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s15",
+   "true": 65.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s16",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s17",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s18",
+   "true": 85.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s19",
+   "true": 100.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s20",
+   "true": 65.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s21",
+   "true": 100.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s22",
+   "true": 55.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s23",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s24",
+   "true": 50.0,
+   "auto_points": 0.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s01",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s02",
+   "true": 35.0,
+   "auto_points": 20.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s03",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s04",
+   "true": 85.0,
+   "auto_points": 35.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s05",
+   "true": 35.0,
+   "auto_points": 0.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s06",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s07",
+   "true": 65.0,
+   "auto_points": 20.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s08",
+   "true": 35.0,
+   "auto_points": 0.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s09",
+   "true": 55.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s10",
+   "true": 35.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s11",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s12",
+   "true": 70.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s13",
+   "true": 85.0,
+   "auto_points": 30.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s14",
+   "true": 100.0,
+   "auto_points": 50.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s15",
+   "true": 100.0,
+   "auto_points": 35.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s16",
+   "true": 65.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s17",
+   "true": 40.0,
+   "auto_points": 0.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s18",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s19",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s20",
+   "true": 70.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s21",
+   "true": 100.0,
+   "auto_points": 20.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s22",
+   "true": 35.0,
+   "auto_points": 20.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s23",
+   "true": 100.0,
+   "auto_points": 50.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s24",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s01",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s02",
+   "true": 30.0,
+   "auto_points": 0.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s03",
+   "true": 15.0,
+   "auto_points": 0.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s04",
+   "true": 85.0,
+   "auto_points": 35.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s05",
+   "true": 50.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s06",
+   "true": 85.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s07",
+   "true": 100.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s08",
+   "true": 50.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s09",
+   "true": 50.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s10",
+   "true": 35.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s11",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s12",
+   "true": 50.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s13",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s14",
+   "true": 85.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s15",
+   "true": 70.0,
+   "auto_points": 20.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s16",
+   "true": 85.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s17",
+   "true": 80.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s18",
+   "true": 65.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s19",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s20",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s21",
+   "true": 30.0,
+   "auto_points": 0.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s22",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s23",
+   "true": 15.0,
+   "auto_points": 0.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s24",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E5_s01",
+   "true": 49.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s02",
+   "true": 85.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s03",
+   "true": 0.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s04",
+   "true": 73.0,
+   "auto_points": 10.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s05",
+   "true": 49.0,
+   "auto_points": 10.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s06",
+   "true": 63.0,
+   "auto_points": 24.0,
+   "auto_max": 36.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s07",
+   "true": 24.0,
+   "auto_points": 0.0,
+   "auto_max": 12.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s08",
+   "true": 58.0,
+   "auto_points": 10.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s09",
+   "true": 85.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s10",
+   "true": 49.0,
+   "auto_points": 10.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s11",
+   "true": 48.0,
+   "auto_points": 12.0,
+   "auto_max": 49.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s12",
+   "true": 73.0,
+   "auto_points": 12.0,
+   "auto_max": 24.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s13",
+   "true": 85.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s14",
+   "true": 12.0,
+   "auto_points": 0.0,
+   "auto_max": 12.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s15",
+   "true": 61.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s16",
+   "true": 24.0,
+   "auto_points": 0.0,
+   "auto_max": 24.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s17",
+   "true": 85.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s18",
+   "true": 12.0,
+   "auto_points": 0,
+   "auto_max": 0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s19",
+   "true": 73.0,
+   "auto_points": 10.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s20",
+   "true": 58.0,
+   "auto_points": 22.0,
+   "auto_max": 37.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s21",
+   "true": 73.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s22",
+   "true": 73.0,
+   "auto_points": 0.0,
+   "auto_max": 12.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s23",
+   "true": 58.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s24",
+   "true": 58.0,
+   "auto_points": 22.0,
+   "auto_max": 34.0,
+   "complete_numeric": true
+  }
+ ],
+ "rates": {
+  "cell_accuracy": 0.9495964421017954,
+  "answer_read_right": 0.7486559139784946,
+  "auto_share": 0.2271505376344086,
+  "auto_wrong": 0,
+  "student_loses": 0,
+  "student_gains": 0,
+  "auto_wrong_share_of_auto": 0.0,
+  "id_right": 0.16666666666666666,
+  "id_wrong_but_accepted": 1
+ },
+ "seconds_per_student": 1.2138228158156077,
+ "reader": "models/cell-reader-v2/main",
+ "sweep": {
+  "0.95": {
+   "cell_accuracy": 0.9495964421017954,
+   "answer_read_right": 0.7486559139784946,
+   "auto_share": 0.3548387096774194,
+   "auto_wrong": 0,
+   "student_loses": 0,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.0,
+   "id_right": 0.16666666666666666,
+   "id_wrong_but_accepted": 1
+  },
+  "0.97": {
+   "cell_accuracy": 0.9495964421017954,
+   "answer_read_right": 0.7486559139784946,
+   "auto_share": 0.28225806451612906,
+   "auto_wrong": 0,
+   "student_loses": 0,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.0,
+   "id_right": 0.16666666666666666,
+   "id_wrong_but_accepted": 1
+  },
+  "0.98": {
+   "cell_accuracy": 0.9495964421017954,
+   "answer_read_right": 0.7486559139784946,
+   "auto_share": 0.2271505376344086,
+   "auto_wrong": 0,
+   "student_loses": 0,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.0,
+   "id_right": 0.16666666666666666,
+   "id_wrong_but_accepted": 1
+  },
+  "0.99": {
+   "cell_accuracy": 0.9495964421017954,
+   "answer_read_right": 0.7486559139784946,
+   "auto_share": 0.13172043010752688,
+   "auto_wrong": 0,
+   "student_loses": 0,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.0,
+   "id_right": 0.16666666666666666,
+   "id_wrong_but_accepted": 1
+  },
+  "0.995": {
+   "cell_accuracy": 0.9495964421017954,
+   "answer_read_right": 0.7486559139784946,
+   "auto_share": 0.06048387096774194,
+   "auto_wrong": 0,
+   "student_loses": 0,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.0,
+   "id_right": 0.16666666666666666,
+   "id_wrong_but_accepted": 1
+  }
+ },
+ "with_roster": {
+  "id_right": 0.7166666666666667,
+  "id_wrong_but_accepted": 0,
+  "auto_share": 0.21908602150537634,
+  "auto_wrong": 0
+ }
+}

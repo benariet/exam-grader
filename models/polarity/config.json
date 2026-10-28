@@ -1,0 +1,1 @@
+{"classes": ["voltage_dc", "current_dc", "diode"], "roles": {"voltage_dc": "Positive", "current_dc": "Flowing To", "diode": "Cathode"}, "input": [48, 96]}

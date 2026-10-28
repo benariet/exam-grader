@@ -1,0 +1,31 @@
+{
+ "classes": [
+  "hebrew",
+  "math"
+ ],
+ "norm_height": 40,
+ "canvas_width": 200,
+ "crop_mode": "band",
+ "val_acc_raw": 0.9498,
+ "val_acc_calibrated": 0.9496,
+ "val_auc": 0.9864,
+ "val_confusion_raw": [
+  [
+   3180,
+   103
+  ],
+  [
+   145,
+   1510
+  ]
+ ],
+ "epoch": 6,
+ "platt_a": 1.169597069403219,
+ "platt_b": -0.26584792928802453,
+ "calibration": "Platt on val chunks (test-split writers; writers of data/mixed_eval excluded)",
+ "excluded_from_training": [
+  "I=\\frac{1}{R}V",
+  "V=5V",
+  "V=I\\cdot R"
+ ]
+}

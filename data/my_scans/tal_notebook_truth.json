@@ -1,0 +1,14 @@
+{
+ "file": "tal_notebook.pdf",
+ "note": "Tal's handwriting test page (26.10.2026): Hebrew, English and math on a ruled notebook page, scanned with a phone (Adobe Scan). Transcribed by hand. The English is as written (with its spelling slips); the last Hebrew word of the 4th sentence is unclear (mem-he-mem-he-resh-vav-tav as written).",
+ "hebrew": ["הי מה שלומך קלוד, איך", "אתה מרגיש?", "אני בודק אותך איך אתה קורא", "עברית.",
+            "גנן גידל דגן בגן דגן גדול גדל", "בגן", "אני לא מהממהרים אני מהמהרות", "תוצאה", "תוצאה:"],
+ "english": ["hi there cladue, how", "are you i want to test", "the text recongnition"],
+ "math": ["a^{2}+b^{2}=c^{2}", "a=3", "b=4", "c=9", "a^{2}+b^{2}=c^{2}", "4^{2}+2^{2}=\\sqrt{20}", "16+4",
+          "A=\\pi r^{2}", "r=5", "A=78.54"],
+ "checks": [
+   {"problem": "1", "formula": "a^2+b^2=c^2", "given": {"a": 3, "b": 4}, "student": {"c": 9}, "right": {"c": 5}, "verdict": "wrong"},
+   {"problem": "2", "formula": "a^2+b^2=c^2", "given": {"a": 4, "b": 2}, "student": {"c": "sqrt(20)"}, "right": {"c": "sqrt(20)"}, "verdict": "right value; the line '4^2+2^2 = sqrt(20)' is not a true equality (4^2+2^2 = 20 = c^2)"},
+   {"problem": "3", "formula": "A=pi*r^2", "given": {"r": 5}, "student": {"A": 78.54}, "right": {"A": "25*pi"}, "verdict": "right"}
+ ]
+}

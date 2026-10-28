@@ -1,0 +1,1027 @@
+[
+{
+"kind": "hebrew",
+"box": [
+1203,
+152,
+1330,
+260
+],
+"p_kind": 0.5760003819633764,
+"note": "",
+"nbest": [
+[
+"אפ",
+-3.454359292984009
+],
+[
+"אם",
+-4.683704376220703
+],
+[
+"א",
+-5.065001010894775
+]
+]
+},
+{
+"kind": "math",
+"box": [
+703,
+152,
+1001,
+260
+],
+"p_kind": 0.8352487347241365,
+"note": "",
+"nbest": [
+[
+"7 0 / 7 = 1 0",
+-1.0985697381491657
+],
+[
+"7 0 / 4 = 1 0",
+-1.6416500807149457
+],
+[
+"7 0 / 7 = 4 0",
+-1.8665866633486765
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+343,
+152,
+461,
+260
+],
+"p_kind": 0.7891593989036861,
+"note": "",
+"nbest": [
+[
+".",
+-3.8155276775360107
+],
+[
+"",
+-3.85792875289917
+],
+[
+":",
+-4.114284038543701
+]
+]
+},
+{
+"kind": "math",
+"box": [
+162,
+152,
+306,
+260
+],
+"p_kind": 0.5,
+"note": "formula reader: 1 + 5",
+"nbest": [
+[
+"1 + 5",
+-0.0026497593019257624
+],
+[
+"1 1 + 5",
+-7.34390316555747
+],
+[
+"1 + 5 \\;",
+-8.427817941666483
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+1182,
+288,
+1349,
+339
+],
+"p_kind": 0.5,
+"note": "Hebrew reader: ץ",
+"nbest": [
+[
+"עור",
+-3.1463966369628906
+],
+[
+"עור",
+-3.3855299949645996
+],
+[
+"שור",
+-5.408496856689453
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+930,
+346,
+1349,
+454
+],
+"p_kind": 0.9624105244231409,
+"note": "",
+"nbest": [
+[
+"וקופות דב",
+-8.04143238067627
+],
+[
+"וקופות דר",
+-9.04093074798584
+],
+[
+"וקופות דם",
+-9.27802848815918
+]
+]
+},
+{
+"kind": "math",
+"box": [
+696,
+346,
+891,
+454
+],
+"p_kind": 0.7251380827499779,
+"note": "",
+"nbest": [
+[
+"\\pi _ { 1 } \\times 2 =",
+-2.301565435914308
+],
+[
+"\\pi 1 \\times 2 =",
+-1.9721006274278197
+],
+[
+"\\pi _ { 1 } \\times Z =",
+-3.2616922671388435
+]
+]
+},
+{
+"kind": "math",
+"box": [
+130,
+346,
+530,
+454
+],
+"p_kind": 0.9636328576189017,
+"note": "",
+"nbest": [
+[
+"7 \\times 7 = L 1 0",
+-1.1910669133464784
+],
+[
+"7 \\times 7 = L _ { 1 } 9",
+-2.3423047101005445
+],
+[
+"7 \\times 7 = \\pm 1 0",
+-2.393580975062542
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+1313,
+508,
+1355,
+588
+],
+"p_kind": 0.7444719026905391,
+"note": "",
+"nbest": [
+[
+"ת",
+-2.626288414001465
+],
+[
+"ת.",
+-3.354341745376587
+],
+[
+"מ",
+-4.09035587310791
+]
+]
+},
+{
+"kind": "math",
+"box": [
+674,
+508,
+903,
+588
+],
+"p_kind": 0.8666605423914752,
+"note": "",
+"nbest": [
+[
+"8 \\times 8 = 6 4",
+-0.01611611304634046
+],
+[
+"8 \\times 8 = ( 4",
+-5.786755847019991
+],
+[
+"8 \\times 8 = G H",
+-6.389147649603194
+]
+]
+},
+{
+"kind": "math",
+"box": [
+250,
+508,
+509,
+588
+],
+"p_kind": 0.6200080845253456,
+"note": "",
+"nbest": [
+[
+"- 4 = 1 1",
+-1.0352042295132522
+],
+[
+"- i 1 = 1 1",
+-1.818801282639544
+],
+[
+"- 1 = 1 1",
+-1.8124072799263875
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+23,
+508,
+224,
+588
+],
+"p_kind": 0.5135434619629391,
+"note": "",
+"nbest": [
+[
+"רם-",
+-3.166826009750366
+],
+[
+"רח-",
+-3.751436233520508
+],
+[
+"ר-",
+-4.377140998840332
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+1325,
+595,
+1377,
+662
+],
+"p_kind": 0.569895471061157,
+"note": "",
+"nbest": [
+[
+"כל",
+-3.759140729904175
+],
+[
+"וכל",
+-4.240661144256592
+],
+[
+"ל",
+-4.867311000823975
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+1344,
+676,
+1359,
+765
+],
+"p_kind": 0.98162561497493,
+"note": "",
+"nbest": [
+[
+"",
+-1.8985278606414795
+],
+[
+"ב",
+-2.575817346572876
+],
+[
+"פ",
+-3.1254794597625732
+]
+]
+},
+{
+"kind": "math",
+"box": [
+971,
+676,
+1202,
+765
+],
+"p_kind": 0.5,
+"note": "formula reader looped - unreadable",
+"nbest": [
+[
+"\\unitlength . 5 c m \\left\\{ \\begin{picture} { ( 6 , 1 ) \\put ( 1 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) {",
+-28.390639175996085
+],
+[
+"\\unitlength . 5 c m \\left\\{ \\begin{picture} { ( 6 , 1 ) \\put ( 1 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) {",
+-28.98878806121774
+],
+[
+"\\unitlength . 5 c m \\left\\{ \\begin{picture} { ( 6 , 1 ) \\put ( 1 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 0 ) { \\line ( 1 , 0 ) { 1 0 } } \\put ( 1 . 5 , 1 ) {",
+-29.010009189360897
+]
+]
+},
+{
+"kind": "math",
+"box": [
+251,
+676,
+517,
+765
+],
+"p_kind": 0.6602891850937618,
+"note": "",
+"nbest": [
+[
+"- 1 1 = 7 8",
+-0.09071375510379363
+],
+[
+"- 4 1 = 7 8",
+-3.0509726254090253
+],
+[
+"- A 1 = 7 8",
+-3.7924327722214866
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+135,
+676,
+220,
+765
+],
+"p_kind": 0.875533893369149,
+"note": "",
+"nbest": [
+[
+"פ",
+-2.528992176055908
+],
+[
+"ע",
+-2.9447646141052246
+],
+[
+"ל",
+-3.94301438331604
+]
+]
+},
+{
+"kind": "english",
+"box": [
+825,
+769,
+1377,
+889
+],
+"p_kind": 0.5,
+"note": "read as one English phrase: how many legs have; English? English reader: how . Now; read as one English phrase: how many legs have; next to an English word - English too?; Hebrew or English? English reader: man &; read as one English phrase: how many legs have; English? English reader: logs . He",
+"nbest": [
+[
+"how many legs have",
+-0.49839149547048633
+],
+[
+"how many logs have",
+-2.578657456002377
+],
+[
+"how many legs had",
+-3.0804338784195875
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+454,
+769,
+671,
+889
+],
+"p_kind": 0.5,
+"note": "a mark next to an English word; a mark next to an English word",
+"nbest": [
+[
+"יש",
+-2.8911969661712646
+],
+[
+"ש",
+-3.138054847717285
+],
+[
+"ש",
+-4.135913848876953
+]
+]
+},
+{
+"kind": "math",
+"box": [
+367,
+769,
+392,
+889
+],
+"p_kind": 0.5,
+"note": "a mark next to an English word",
+"nbest": [
+[
+"\\underline { { \\qquad \\qquad \\qquad } } \\underline { { \\qquad \\qquad \\qquad } } \\underline { { \\qquad \\qquad \\qquad } }",
+-10.368525936809586
+],
+[
+"\\underline { { \\qquad \\qquad } } \\underline { { \\qquad \\qquad \\qquad } } \\underline { { \\qquad \\qquad \\qquad } }",
+-9.824225883665317
+],
+[
+"\\underline { { \\qquad \\qquad } } \\underline { { \\qquad \\qquad \\qquad } } \\underline { { \\qquad \\qquad \\qquad \\qquad } }",
+-10.751727014393161
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+154,
+769,
+317,
+889
+],
+"p_kind": 0.5,
+"note": "formula reader: 3 6 / 6",
+"nbest": [
+[
+"אט",
+-2.982980728149414
+],
+[
+"אטד",
+-4.484829902648926
+],
+[
+"אטה",
+-5.370750427246094
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+1358,
+881,
+1377,
+965
+],
+"p_kind": 0.9695642398786667,
+"note": "",
+"nbest": [
+[
+"צ",
+-2.4169955253601074
+],
+[
+"?",
+-3.1091110706329346
+],
+[
+"",
+-3.200251817703247
+]
+]
+},
+{
+"kind": "english",
+"box": [
+154,
+881,
+1043,
+965
+],
+"p_kind": 0.5,
+"note": "read as one English phrase: Normal dog have 3 legs; Hebrew or English? English reader: Normal; read as one English phrase: Normal dog have 3 legs; next to an English word - English too?; Hebrew or English? English reader: dog; read as one English phrase: Normal dog have 3 legs; English? English reader: in av.e.; read as one English phrase: Normal dog have 3 legs; a mark next to an English word; read as one English phrase: Normal dog have 3 legs; Hebrew or English? English reader: legs .",
+"nbest": [
+[
+"Normal dog have 3 legs",
+-0.8261600483055358
+],
+[
+"Normal dog have 3 legs .",
+-1.3416935598919262
+],
+[
+"Normal dog have 3 legs",
+-3.391529159546896
+]
+]
+},
+{
+"kind": "english",
+"box": [
+148,
+992,
+1004,
+1054
+],
+"p_kind": 0.5,
+"note": "read as one English phrase: normal cat have 4 legs; formula reader: n _ { 0 } r m _ { 0 } l; read as one English phrase: normal cat have 4 legs; next to an English word - English too?; read as one English phrase: normal cat have 4 legs; read as one English phrase: normal cat have 4 legs; a mark next to an English word; read as one English phrase: normal cat have 4 legs; Hebrew or English? English reader: leg ,",
+"nbest": [
+[
+"normal cat have 4 legs",
+-1.001263351225264
+],
+[
+"normal cat have # legs",
+-1.8484233028559203
+],
+[
+"normal cat have 4 legs .",
+-2.6984547207758345
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+1001,
+1057,
+1159,
+1188
+],
+"p_kind": 0.9950392411144422,
+"note": "",
+"nbest": [
+[
+"ערים",
+-6.654423713684082
+],
+[
+"עשרים",
+-6.726223945617676
+],
+[
+"עפרים",
+-8.075721740722656
+]
+]
+},
+{
+"kind": "english",
+"box": [
+835,
+1057,
+957,
+1188
+],
+"p_kind": 0.5,
+"note": "English? English reader: Visa .",
+"nbest": [
+[
+"Visa .",
+-4.440742276956586
+],
+[
+"tisor",
+-7.123700115687163
+],
+[
+"# Star",
+-5.720585448261833
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+360,
+1057,
+772,
+1188
+],
+"p_kind": 0.5,
+"note": "Hebrew or English? English reader: mg.m.; next to an English word - English too?",
+"nbest": [
+[
+"האשנה היתה",
+-9.659149169921875
+],
+[
+"האשנם היתה",
+-10.374895095825195
+],
+[
+"ההאשנה היתה",
+-10.907746315002441
+]
+]
+},
+{
+"kind": "math",
+"box": [
+29,
+1057,
+300,
+1188
+],
+"p_kind": 0.9446733441214406,
+"note": "",
+"nbest": [
+[
+"2 y \\log 1 7 >",
+-1.0580219801791197
+],
+[
+"2 y \\log 1 7",
+-2.054908102106289
+],
+[
+"2 ) \\log 1 7 >",
+-2.486960176262835
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+506,
+1211,
+1165,
+1284
+],
+"p_kind": 0.8910176869883304,
+"note": "",
+"nbest": [
+[
+"והשניה היתה ב טור",
+-10.183422088623047
+],
+[
+"והשניה היתהב טור",
+-12.761547088623047
+],
+[
+"והשניה, היתה ב טור",
+-13.211858749389648
+]
+]
+},
+{
+"kind": "english",
+"box": [
+1101,
+1289,
+1377,
+1391
+],
+"p_kind": 0.5,
+"note": "English? English reader: 6 0 0 ) .; English? English reader: ( 00",
+"nbest": [
+[
+"6cc ) \" ( x \"",
+-4.67843750690104
+],
+[
+"6oc ) \" ( x \"",
+-4.6845358927588965
+],
+[
+"& VC ) \" ( x \"",
+-5.167553123982317
+]
+]
+},
+{
+"kind": "math",
+"box": [
+164,
+1289,
+1069,
+1391
+],
+"p_kind": 0.560645127372502,
+"note": "",
+"nbest": [
+[
+"x ^ { 2 } + y ^ { 2 } = c ^ { 2 } = ( x + y ) + ( y + y ) =",
+-2.6632194598807617
+],
+[
+"x ^ { 2 } + y ^ { 2 } = c ^ { 2 } = 1 x ( x ) + ( y + y ) =",
+-2.923905685285798
+],
+[
+"x ^ { 2 } + y ^ { 2 } = c ^ { 2 } = 1 x + y ) + ( y + y ) =",
+-3.6055675525486475
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+45,
+1289,
+115,
+1391
+],
+"p_kind": 0.6298599420095592,
+"note": "",
+"nbest": [
+[
+"ה",
+-0.5640853047370911
+],
+[
+"ה.",
+-3.296945571899414
+],
+[
+"הה",
+-5.170039653778076
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+370,
+1413,
+1187,
+1522
+],
+"p_kind": 0.5,
+"note": "Hebrew or English? English reader: fear",
+"nbest": [
+[
+"כל תרגל שוה ע נקודות",
+-13.148001670837402
+],
+[
+"כל תרגל שוה נקודות",
+-13.926820755004883
+],
+[
+"כל תרגל שונה ע נקודות",
+-14.065755844116211
+]
+]
+},
+{
+"kind": "math",
+"box": [
+839,
+1563,
+918,
+1616
+],
+"p_kind": 0.8019719266053481,
+"note": "",
+"nbest": [
+[
+"\\longrightarrow",
+-0.4691026178002647
+],
+[
+"\\to \\quad",
+-3.4908009538168843
+],
+[
+"\\to \\ldots",
+-4.342428119939119
+]
+]
+},
+{
+"kind": "math",
+"box": [
+197,
+1563,
+214,
+1616
+],
+"p_kind": 0.5,
+"note": "formula reader looped - unreadable",
+"nbest": [
+[
+"\\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad",
+-8.428964463994324
+],
+[
+"\\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad",
+-8.936819306683043
+],
+[
+"\\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad \\qquad",
+-9.494134247828447
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+82,
+1563,
+178,
+1616
+],
+"p_kind": 0.6392716302514763,
+"note": "",
+"nbest": [
+[
+"-.",
+-2.2695677280426025
+],
+[
+".",
+-2.3873226642608643
+],
+[
+":.",
+-3.69571852684021
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+793,
+1629,
+1271,
+1705
+],
+"p_kind": 0.9384962227931029,
+"note": "",
+"nbest": [
+[
+"כל שאלה ט נקודות",
+-9.280302047729492
+],
+[
+"כל שאלה 6 נקודות",
+-9.328968048095703
+],
+[
+"כל שאלר ט נקודות",
+-9.964460372924805
+]
+]
+},
+{
+"kind": "math",
+"box": [
+124,
+1730,
+601,
+1790
+],
+"p_kind": 0.5,
+"note": "formula pieces joined: + 2 4 = 4 z",
+"nbest": [
+[
+"1 7 + 1 7 + 2 4 = 4 z",
+-0.1781248467478003
+],
+[
+"1 7 + 1 7 + 2 4 = 4 7",
+-2.8590457116940895
+],
+[
+"1 7 + 1 7 + 2 4 = 4 8",
+-3.0866645643780943
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+49,
+1730,
+73,
+1790
+],
+"p_kind": 0.9068431628774049,
+"note": "",
+"nbest": [
+[
+"ה",
+-0.9184799790382385
+],
+[
+"ב",
+-2.658693552017212
+],
+[
+"ה.",
+-3.0485739707946777
+]
+]
+},
+{
+"kind": "math",
+"box": [
+138,
+1797,
+656,
+1865
+],
+"p_kind": 0.5,
+"note": "read as one formula: 1 2 + 1 2 + 1 3 = 3 4; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; Hebrew or English? English reader: 1 2; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; read as one formula: 1 2 + 1 2 + 1 3 = 3 4; formula reader: 3 4",
+"nbest": [
+[
+"1 2 + 1 2 + 1 3 = 3 4",
+-0.001716836971631904
+],
+[
+"1 2 4 1 2 + 1 3 = 3 4",
+-8.03655421338867
+],
+[
+"1 2 + 1 2 + 1 3 = 3 9",
+-8.29606378527297
+]
+]
+},
+{
+"kind": "hebrew",
+"box": [
+53,
+1797,
+90,
+1865
+],
+"p_kind": 0.8148206766433689,
+"note": "",
+"nbest": [
+[
+"פ",
+-1.7123405933380127
+],
+[
+"ה",
+-4.25821590423584
+],
+[
+"פי",
+-4.77736759185791
+]
+]
+}
+]

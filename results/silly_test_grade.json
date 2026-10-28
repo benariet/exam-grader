@@ -1,0 +1,226 @@
+{
+ "name": "silly test (photo, 2026-10-25)",
+ "max_points": 100.0,
+ "auto_points": 8.0,
+ "auto_max": 8.0,
+ "review_points": 92.0,
+ "items": [
+  {
+   "id": "1",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "exercise 1+5 not found on the page",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "2",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": 8.0,
+   "expected": 5.465,
+   "confidence": 0.489,
+   "reason": "28% of the reading probability is unparseable",
+   "found": "7 0 / 7 = 1 0",
+   "readings": [
+    [
+     "10",
+     0.489
+    ],
+    [
+     "40",
+     0.227
+    ],
+    [
+     "?",
+     0.284
+    ]
+   ]
+  },
+  {
+   "id": "3",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": 0.0,
+   "expected": 0.0,
+   "confidence": 0.0,
+   "reason": "no candidate reading could be parsed",
+   "found": "7 \\times 7 = L 1 0",
+   "readings": [
+    [
+     "L10",
+     0.619
+    ],
+    [
+     "L_19",
+     0.196
+    ],
+    [
+     "\\pm10",
+     0.186
+    ]
+   ]
+  },
+  {
+   "id": "4",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "exercise 14*2 not found on the page",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "5",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "exercise 19-4 not found on the page",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "6",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "auto",
+   "score": 8.0,
+   "expected": 8.0,
+   "confidence": 0.995,
+   "reason": "confidence 100%",
+   "found": "8 \\times 8 = 6 4",
+   "readings": [
+    [
+     "64",
+     0.995
+    ],
+    [
+     "(4",
+     0.003
+    ],
+    [
+     "GH",
+     0.002
+    ]
+   ]
+  },
+  {
+   "id": "7",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "exercise 98-11 not found on the page",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "8",
+   "points": 8.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "exercise 36/6 not found on the page",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "Q1",
+   "points": 8.0,
+   "kind": "open",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "open answer: graded by a human",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "Q2",
+   "points": 8.0,
+   "kind": "open",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "open answer: graded by a human",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "Q3",
+   "points": 8.0,
+   "kind": "open",
+   "route": "review",
+   "score": null,
+   "expected": null,
+   "confidence": null,
+   "reason": "open answer: graded by a human",
+   "found": "",
+   "readings": []
+  },
+  {
+   "id": "B1",
+   "points": 6.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": 0.0,
+   "expected": 0.0,
+   "confidence": 0.11,
+   "reason": "89% of the reading probability is unparseable",
+   "found": "1 7 + 1 7 + 2 4 = 4 z",
+   "readings": [
+    [
+     "4z",
+     0.89
+    ],
+    [
+     "47",
+     0.061
+    ],
+    [
+     "48",
+     0.049
+    ]
+   ]
+  },
+  {
+   "id": "B2",
+   "points": 6.0,
+   "kind": "arithmetic",
+   "route": "review",
+   "score": 0.0,
+   "expected": 0.0,
+   "confidence": 1.0,
+   "reason": "unsure this part is a formula (50%)",
+   "found": "1 2 + 1 2 + 1 3 = 3 4",
+   "readings": [
+    [
+     "34",
+     0.999
+    ],
+    [
+     "39",
+     0.0
+    ]
+   ]
+  }
+ ]
+}

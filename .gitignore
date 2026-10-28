@@ -1,0 +1,42 @@
+# environment, caches, logs
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.cache/
+setup.log
+_to_delete/
+
+# models: the downloaded ones (Dicta-LM, Uni-MuMER, TrOCR, Qwen3-VL, pix2text, RT-DETR) are fetched again by
+# download_models.py; the ones trained in this project are kept here
+models/*
+!models/english-classifier/
+!models/hebrew-crnn-cpu/
+!models/hebrew-crnn-cpu2/
+!models/hebrew-crnn-cpu5ep/
+!models/hebrew-lm/
+!models/script-classifier/
+!models/script-classifier-tight/
+!models/cell-reader/
+!models/cell-reader-v2/
+!models/polarity/
+
+# data: the large sets are downloaded or generated again; the small evaluation sets are kept
+data/*
+!data/demo/
+!data/handwritten_formulas/
+!data/hebrew_lines/
+!data/mixed_dev_en/
+!data/mixed_eval/
+!data/mixed_eval2/
+!data/mixed_eval3/
+!data/mixed_eval_en/
+!data/mixed_eval_en2/
+!data/my_scans/
+!data/online_keys/
+
+# students' exams and their readings never go into the repository
+grader_runs/
+*_checked.pdf
+Stud_exam/
+Stud exam/

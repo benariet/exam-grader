@@ -1,0 +1,39 @@
+question: זרם של 2mA עובר בנגד של 2.5kΩ. מה המתח על הנגד, והאם הוא גבוה או נמוך ביחס ל-10V? 
+
+===== student A (Hebrew handwriting: writer w4, never seen in training)
+  line 1: read   באשר  $V = I \cdot R$
+          truth  כאשר  $V=I\cdot R$
+  line 2: read   ולכן  $V = 5 V$
+          truth  ולכן  $V=5V$
+  line 3: read   זה ערך נמוך
+          truth  זה  ערך  נמוך
+    [hebrew p_kind=0.50] באשר (0.55) | כאשר (0.41) | פאשר (0.04)   <- CROSS-CHECK: Hebrew or English? English reader: relics
+    [math   p_kind=0.94] V = I \cdot R (0.83) | \mathbf { v } = \mathbf { I } \cdot R (0.04) | v = I \cdot R (0.13)
+    [hebrew p_kind=1.00] ולכן (0.64) | ולכו (0.28) | ולבן (0.08)
+    [math   p_kind=0.50] V = 5 V (0.96) | v = 5 V (0.03) | \downarrow = 5 V (0.01)   <- CROSS-CHECK: formula reader: V = 5 V
+    [hebrew p_kind=0.95] זה ערך נמוך (0.80) | זה ערך נמוך? (0.10) | זה ערך נמוך (0.10)
+  - uses Ohm's law                         3 pt   P(full)=0.96   V = I \cdot R (P match=0.96); V = 5 V (P match=0.00)
+  - final answer V = 5 V                   5 pt   P(full)=1.00   V = 5 V -> correct (p=0.96); v = 5 V -> correct (p=0.03); \downarrow = 5 V -> correct (p=0.01)
+  - says 5 V is low compared with 10 V     2 pt   P(full)=1.00   באשר (P=0.00); ולכן (P=0.00); זה ערך נמוך (P=1.00)
+  => score 10/10  expected 9.89  confidence 96%  route=review  (unsure what 2 chunk(s) are (Hebrew / English / math))
+     score distribution: {5.0: -0.0, 7.0: 0.0352, 8.0: -0.0, 10.0: 0.9648}
+
+===== student B (Hebrew handwriting: writer w569, never seen in training)
+  line 1: read   כאשה  $l = \frac { 1 } { R } V$
+          truth  כאשר  $I=\frac{1}{R}V$
+  line 2: read   ולכן  $V = 5 V$
+          truth  ולכן  $V=5V$
+  line 3: read   זה גבוה
+          truth  זה  גבוה
+    [hebrew p_kind=0.50] כאשה (0.82) | ראשה (0.09) | כאסה (0.09)   <- CROSS-CHECK: Hebrew or English? English reader: sexes
+    [math   p_kind=0.99] l = \frac { 1 } { R } V (0.73) | 1 = \frac { 1 } { R } V (0.19) | l = \frac { 1 } { R } r (0.07)
+    [hebrew p_kind=0.95] ולכן (0.86) | ולכן (0.10) | ולכן, (0.04)
+    [math   p_kind=0.50] V = 5 V (0.92) | V = 5 v (0.08) | V = 5 N (0.00)   <- CROSS-CHECK: formula pieces joined: V = 5 V
+    [hebrew p_kind=0.91] זה גבוה (0.58) | זה גביה (0.31) | זת גבוה (0.10)
+  - uses Ohm's law                         3 pt   P(full)=0.46   l = \frac { 1 } { R } V (P match=0.46); V = 5 V (P match=0.00)
+  - final answer V = 5 V                   5 pt   P(full)=1.00   V = 5 V -> correct (p=0.92); V = 5 v -> correct (p=0.08); V = 5 N -> unit_mismatch (p=0.00)
+  - says 5 V is low compared with 10 V     2 pt   P(full)=0.00   כאשה (P=0.00); ולכן (P=0.00); זה גבוה (P=0.00)
+  => score 5/10  expected 6.39  confidence 54%  route=review  (unsure what 2 chunk(s) are (Hebrew / English / math))
+     score distribution: {0.0: 0.0001, 2.0: 0.0, 3.0: 0.0001, 5.0: 0.537, 7.0: 0.0, 8.0: 0.4628, 10.0: 0.0}
+
+wrote results/mixed_A.png, results/mixed_B.png, results/mixed_demo.png

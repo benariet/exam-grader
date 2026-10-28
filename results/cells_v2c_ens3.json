@@ -1,0 +1,122 @@
+[
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2/c",
+  "n": 2000,
+  "acc": 0.973,
+  "sure_share": 0.885,
+  "sure_error": 0.003389830508474576
+ },
+ {
+  "source": "usps_test",
+  "model": "models/cell-reader-v2",
+  "n": 2000,
+  "acc": 0.9765,
+  "sure_share": 0.88,
+  "sure_error": 0.003409090909090909
+ },
+ {
+  "source": "usps_test",
+  "model": "/home/claude/cache/models/ens3",
+  "n": 2000,
+  "acc": 0.974,
+  "sure_share": 0.879,
+  "sure_error": 0.0022753128555176336
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader-v2/c",
+  "n": 1593,
+  "acc": 0.7959824231010671,
+  "sure_share": 0.38480853735091025,
+  "sure_error": 0.040783034257748776
+ },
+ {
+  "source": "semeion",
+  "model": "models/cell-reader-v2",
+  "n": 1593,
+  "acc": 0.898932831136221,
+  "sure_share": 0.5530445699937225,
+  "sure_error": 0.0056753688989784334
+ },
+ {
+  "source": "semeion",
+  "model": "/home/claude/cache/models/ens3",
+  "n": 1593,
+  "acc": 0.8857501569365976,
+  "sure_share": 0.43063402385436284,
+  "sure_error": 0.0029154518950437317
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader-v2/c",
+  "n": 2000,
+  "acc": 0.9995,
+  "sure_share": 0.9725,
+  "sure_error": 0.0
+ },
+ {
+  "source": "screen_test",
+  "model": "models/cell-reader-v2",
+  "n": 2000,
+  "acc": 1.0,
+  "sure_share": 0.9805,
+  "sure_error": 0.0
+ },
+ {
+  "source": "screen_test",
+  "model": "/home/claude/cache/models/ens3",
+  "n": 2000,
+  "acc": 1.0,
+  "sure_share": 0.977,
+  "sure_error": 0.0
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2/c",
+  "n": 2000,
+  "acc": 0.9415,
+  "sure_share": 0.7425,
+  "sure_error": 0.00404040404040404
+ },
+ {
+  "source": "cvl_test",
+  "model": "models/cell-reader-v2",
+  "n": 2000,
+  "acc": 0.9535,
+  "sure_share": 0.7725,
+  "sure_error": 0.003883495145631068
+ },
+ {
+  "source": "cvl_test",
+  "model": "/home/claude/cache/models/ens3",
+  "n": 2000,
+  "acc": 0.9545,
+  "sure_share": 0.752,
+  "sure_error": 0.003989361702127659
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2/c",
+  "n": 2000,
+  "acc": 0.991,
+  "sure_share": 0.9205,
+  "sure_error": 0.0
+ },
+ {
+  "source": "mnist_test",
+  "model": "models/cell-reader-v2",
+  "n": 2000,
+  "acc": 0.9915,
+  "sure_share": 0.9345,
+  "sure_error": 0.0
+ },
+ {
+  "source": "mnist_test",
+  "model": "/home/claude/cache/models/ens3",
+  "n": 2000,
+  "acc": 0.994,
+  "sure_share": 0.9225,
+  "sure_error": 0.0
+ }
+]

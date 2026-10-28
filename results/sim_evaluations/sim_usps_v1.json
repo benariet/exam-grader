@@ -1,0 +1,1063 @@
+{
+ "counts": {
+  "students": 120,
+  "id_accepted": 76,
+  "id_right": 76,
+  "id_wrong_but_accepted": 0,
+  "cells": 6063,
+  "cells_right": 5948,
+  "items": 744,
+  "answer_read_right": 653,
+  "auto": 450,
+  "review": 294,
+  "cell_err:2->7": 3,
+  "cell_err:4->1": 3,
+  "auto_wrong": 2,
+  "student_loses": 2,
+  "cell_err:0->8": 2,
+  "cell_err:3->2": 2,
+  "cell_err:5->3": 20,
+  "cell_err:5->9": 6,
+  "cell_err: ->?": 2,
+  "cell_err:2->3": 3,
+  "cell_err:6->4": 2,
+  "cell_err:4->7": 1,
+  "cell_err:8->9": 2,
+  "cell_err:2->6": 2,
+  "cell_err:9->5": 1,
+  "cell_err:6->8": 3,
+  "cell_err:9->7": 3,
+  "cell_err:4->9": 1,
+  "cell_err:0->1": 1,
+  "cell_err:0->2": 1,
+  "cell_err:0->-": 1,
+  "cell_err:8->3": 1,
+  "cell_err:3->5": 3,
+  "cell_err:7->1": 1,
+  "cell_err:1->9": 1,
+  "cell_err:5->.": 1,
+  "cell_err:1->4": 2,
+  "cell_err:2->4": 1,
+  "cell_err:0->7": 3,
+  "cell_err:0->6": 1,
+  "cell_err:8->1": 1,
+  "cell_err:0->9": 1,
+  "cell_err:1->6": 1
+ },
+ "by": {
+  "E1": {
+   "items": 144,
+   "auto": 81,
+   "review": 63,
+   "auto_wrong": 1
+  },
+  "scan": {
+   "items": 744,
+   "auto": 450,
+   "review": 294,
+   "auto_wrong": 2
+  },
+  "E2": {
+   "items": 144,
+   "auto": 90,
+   "review": 54
+  },
+  "E3": {
+   "items": 144,
+   "review": 52,
+   "auto": 92
+  },
+  "E4": {
+   "items": 144,
+   "auto": 90,
+   "review": 54
+  },
+  "E5": {
+   "items": 168,
+   "review": 71,
+   "auto": 97,
+   "auto_wrong": 1
+  }
+ },
+ "review_reasons": {
+  "readings disagree on the score": 92,
+  "22% of the reading looks unreadable or crossed out": 3,
+  "9% of the reading looks unreadable or crossed out": 3,
+  "5% of the reading looks unreadable or crossed out": 14,
+  "7% of the reading looks unreadable or crossed out": 11,
+  "the answer's digits with the decimal point elsewhere": 25,
+  "crossed-out box: writing crosses the cells' borders": 10,
+  "6% of the reading looks unreadable or crossed out": 11,
+  "4% of the reading looks unreadable or crossed out": 16,
+  "11% of the reading looks unreadable or crossed out": 2,
+  "2% of the reading looks unreadable or crossed out": 18,
+  "3% of the reading looks unreadable or crossed out": 26,
+  "19% of the reading looks unreadable or crossed out": 1,
+  "writing crosses the cells' borders": 7,
+  "crossed-out box: a cell looks crossed out or unreadable": 6,
+  "16% of the reading looks unreadable or crossed out": 3,
+  "a cell looks crossed out or unreadable": 1,
+  "32% of the reading looks unreadable or crossed out": 2,
+  "40% of the reading looks unreadable or crossed out": 2,
+  "10% of the reading looks unreadable or crossed out": 6,
+  "31% of the reading looks unreadable or crossed out": 1,
+  "21% of the reading looks unreadable or crossed out": 2,
+  "13% of the reading looks unreadable or crossed out": 4,
+  "29% of the reading looks unreadable or crossed out": 1,
+  "17% of the reading looks unreadable or crossed out": 1,
+  "8% of the reading looks unreadable or crossed out": 4,
+  "24% of the reading looks unreadable or crossed out": 1,
+  "the reading is not a number": 4,
+  "14% of the reading looks unreadable or crossed out": 4,
+  "20% of the reading looks unreadable or crossed out": 1,
+  "47% of the reading looks unreadable or crossed out": 1,
+  "18% of the reading looks unreadable or crossed out": 2,
+  "26% of the reading looks unreadable or crossed out": 1,
+  "12% of the reading looks unreadable or crossed out": 3,
+  "15% of the reading looks unreadable or crossed out": 3,
+  "39% of the reading looks unreadable or crossed out": 1,
+  "crossed-out box: 13% of the reading looks unreadable or crossed out": 1
+ },
+ "auto_errors": [
+  {
+   "student": "E1_s10",
+   "item": "q6",
+   "written": "4",
+   "read": "1",
+   "tool": 0.0,
+   "true": 15.0,
+   "conf": 1.0,
+   "mode": "scan",
+   "crossed": false
+  },
+  {
+   "student": "E5_s16",
+   "item": "q6",
+   "written": "1150",
+   "read": "1130",
+   "tool": 0.0,
+   "true": 15.0,
+   "conf": 0.994,
+   "mode": "scan",
+   "crossed": false
+  }
+ ],
+ "students": [
+  {
+   "student": "E1_s01",
+   "true": 100.0,
+   "auto_points": 85.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s02",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s03",
+   "true": 70.0,
+   "auto_points": 70.0,
+   "auto_max": 100.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E1_s04",
+   "true": 85.0,
+   "auto_points": 30.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s05",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s06",
+   "true": 30.0,
+   "auto_points": 30.0,
+   "auto_max": 100.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E1_s07",
+   "true": 70.0,
+   "auto_points": 35.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s08",
+   "true": 70.0,
+   "auto_points": 35.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s09",
+   "true": 65.0,
+   "auto_points": 45.0,
+   "auto_max": 60.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s10",
+   "true": 80.0,
+   "auto_points": 30.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s11",
+   "true": 50.0,
+   "auto_points": 50.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s12",
+   "true": 100.0,
+   "auto_points": 30.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s13",
+   "true": 15.0,
+   "auto_points": 15.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s14",
+   "true": 100.0,
+   "auto_points": 30.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s15",
+   "true": 100.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s16",
+   "true": 80.0,
+   "auto_points": 45.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s17",
+   "true": 55.0,
+   "auto_points": 35.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s18",
+   "true": 30.0,
+   "auto_points": 15.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s19",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s20",
+   "true": 80.0,
+   "auto_points": 45.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s21",
+   "true": 85.0,
+   "auto_points": 15.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s22",
+   "true": 35.0,
+   "auto_points": 15.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s23",
+   "true": 65.0,
+   "auto_points": 35.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E1_s24",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s01",
+   "true": 70.0,
+   "auto_points": 50.0,
+   "auto_max": 80.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s02",
+   "true": 50.0,
+   "auto_points": 30.0,
+   "auto_max": 80.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s03",
+   "true": 50.0,
+   "auto_points": 50.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s04",
+   "true": 35.0,
+   "auto_points": 15.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s05",
+   "true": 15.0,
+   "auto_points": 0.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s06",
+   "true": 50.0,
+   "auto_points": 50.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s07",
+   "true": 80.0,
+   "auto_points": 45.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s08",
+   "true": 70.0,
+   "auto_points": 35.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s09",
+   "true": 70.0,
+   "auto_points": 70.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s10",
+   "true": 80.0,
+   "auto_points": 65.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s11",
+   "true": 35.0,
+   "auto_points": 35.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s12",
+   "true": 100.0,
+   "auto_points": 65.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s13",
+   "true": 45.0,
+   "auto_points": 30.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s14",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s15",
+   "true": 70.0,
+   "auto_points": 55.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s16",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s17",
+   "true": 80.0,
+   "auto_points": 35.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s18",
+   "true": 20.0,
+   "auto_points": 0.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s19",
+   "true": 15.0,
+   "auto_points": 15.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s20",
+   "true": 15.0,
+   "auto_points": 0.0,
+   "auto_max": 20.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s21",
+   "true": 70.0,
+   "auto_points": 30.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s22",
+   "true": 80.0,
+   "auto_points": 30.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s23",
+   "true": 55.0,
+   "auto_points": 35.0,
+   "auto_max": 80.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E2_s24",
+   "true": 85.0,
+   "auto_points": 70.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s01",
+   "true": 70.0,
+   "auto_points": 55.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s02",
+   "true": 70.0,
+   "auto_points": 20.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s03",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s04",
+   "true": 100.0,
+   "auto_points": 65.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s05",
+   "true": 80.0,
+   "auto_points": 35.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s06",
+   "true": 100.0,
+   "auto_points": 70.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s07",
+   "true": 20.0,
+   "auto_points": 20.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s08",
+   "true": 80.0,
+   "auto_points": 65.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s09",
+   "true": 100.0,
+   "auto_points": 70.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s10",
+   "true": 55.0,
+   "auto_points": 55.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s11",
+   "true": 40.0,
+   "auto_points": 40.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s12",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s13",
+   "true": 50.0,
+   "auto_points": 35.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s14",
+   "true": 35.0,
+   "auto_points": 35.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s15",
+   "true": 70.0,
+   "auto_points": 35.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s16",
+   "true": 80.0,
+   "auto_points": 50.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s17",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s18",
+   "true": 85.0,
+   "auto_points": 50.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s19",
+   "true": 20.0,
+   "auto_points": 0.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s20",
+   "true": 100.0,
+   "auto_points": 70.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s21",
+   "true": 85.0,
+   "auto_points": 40.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s22",
+   "true": 35.0,
+   "auto_points": 35.0,
+   "auto_max": 100.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E3_s23",
+   "true": 35.0,
+   "auto_points": 20.0,
+   "auto_max": 35.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E3_s24",
+   "true": 50.0,
+   "auto_points": 35.0,
+   "auto_max": 70.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s01",
+   "true": 70.0,
+   "auto_points": 70.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s02",
+   "true": 35.0,
+   "auto_points": 35.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s03",
+   "true": 100.0,
+   "auto_points": 30.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s04",
+   "true": 85.0,
+   "auto_points": 85.0,
+   "auto_max": 100.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E4_s05",
+   "true": 50.0,
+   "auto_points": 50.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s06",
+   "true": 65.0,
+   "auto_points": 30.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s07",
+   "true": 15.0,
+   "auto_points": 15.0,
+   "auto_max": 100.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E4_s08",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s09",
+   "true": 55.0,
+   "auto_points": 0.0,
+   "auto_max": 15.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s10",
+   "true": 80.0,
+   "auto_points": 65.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s11",
+   "true": 50.0,
+   "auto_points": 35.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s12",
+   "true": 100.0,
+   "auto_points": 45.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s13",
+   "true": 85.0,
+   "auto_points": 45.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s14",
+   "true": 50.0,
+   "auto_points": 15.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s15",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s16",
+   "true": 70.0,
+   "auto_points": 55.0,
+   "auto_max": 85.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s17",
+   "true": 35.0,
+   "auto_points": 20.0,
+   "auto_max": 55.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s18",
+   "true": 65.0,
+   "auto_points": 50.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s19",
+   "true": 100.0,
+   "auto_points": 50.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s20",
+   "true": 85.0,
+   "auto_points": 35.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s21",
+   "true": 70.0,
+   "auto_points": 15.0,
+   "auto_max": 45.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s22",
+   "true": 85.0,
+   "auto_points": 30.0,
+   "auto_max": 30.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s23",
+   "true": 35.0,
+   "auto_points": 35.0,
+   "auto_max": 65.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E4_s24",
+   "true": 65.0,
+   "auto_points": 15.0,
+   "auto_max": 50.0,
+   "complete_numeric": false
+  },
+  {
+   "student": "E5_s01",
+   "true": 48.0,
+   "auto_points": 24.0,
+   "auto_max": 61.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s02",
+   "true": 51.0,
+   "auto_points": 51.0,
+   "auto_max": 73.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s03",
+   "true": 85.0,
+   "auto_points": 46.0,
+   "auto_max": 46.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s04",
+   "true": 34.0,
+   "auto_points": 22.0,
+   "auto_max": 61.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s05",
+   "true": 63.0,
+   "auto_points": 27.0,
+   "auto_max": 49.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s06",
+   "true": 85.0,
+   "auto_points": 34.0,
+   "auto_max": 34.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s07",
+   "true": 85.0,
+   "auto_points": 49.0,
+   "auto_max": 49.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s08",
+   "true": 73.0,
+   "auto_points": 10.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s09",
+   "true": 46.0,
+   "auto_points": 34.0,
+   "auto_max": 58.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s10",
+   "true": 85.0,
+   "auto_points": 46.0,
+   "auto_max": 46.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s11",
+   "true": 85.0,
+   "auto_points": 46.0,
+   "auto_max": 46.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s12",
+   "true": 49.0,
+   "auto_points": 12.0,
+   "auto_max": 12.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s13",
+   "true": 85.0,
+   "auto_points": 34.0,
+   "auto_max": 34.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s14",
+   "true": 49.0,
+   "auto_points": 37.0,
+   "auto_max": 61.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s15",
+   "true": 58.0,
+   "auto_points": 34.0,
+   "auto_max": 46.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s16",
+   "true": 49.0,
+   "auto_points": 22.0,
+   "auto_max": 61.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s17",
+   "true": 46.0,
+   "auto_points": 46.0,
+   "auto_max": 73.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s18",
+   "true": 61.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s19",
+   "true": 49.0,
+   "auto_points": 49.0,
+   "auto_max": 73.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s20",
+   "true": 73.0,
+   "auto_points": 61.0,
+   "auto_max": 73.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s21",
+   "true": 73.0,
+   "auto_points": 22.0,
+   "auto_max": 34.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s22",
+   "true": 27.0,
+   "auto_points": 0.0,
+   "auto_max": 34.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s23",
+   "true": 85.0,
+   "auto_points": 22.0,
+   "auto_max": 22.0,
+   "complete_numeric": true
+  },
+  {
+   "student": "E5_s24",
+   "true": 37.0,
+   "auto_points": 27.0,
+   "auto_max": 63.0,
+   "complete_numeric": true
+  }
+ ],
+ "rates": {
+  "cell_accuracy": 0.9810324921655946,
+  "answer_read_right": 0.8776881720430108,
+  "auto_share": 0.6048387096774194,
+  "auto_wrong": 2,
+  "student_loses": 2,
+  "student_gains": 0,
+  "auto_wrong_share_of_auto": 0.0044444444444444444,
+  "id_right": 0.6333333333333333,
+  "id_wrong_but_accepted": 0
+ },
+ "seconds_per_student": 1.4302525520324707,
+ "reader": "models/cell-reader",
+ "sweep": {
+  "0.95": {
+   "cell_accuracy": 0.9810324921655946,
+   "answer_read_right": 0.8776881720430108,
+   "auto_share": 0.7043010752688172,
+   "auto_wrong": 4,
+   "student_loses": 4,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.007633587786259542,
+   "id_right": 0.6333333333333333,
+   "id_wrong_but_accepted": 0
+  },
+  "0.97": {
+   "cell_accuracy": 0.9810324921655946,
+   "answer_read_right": 0.8776881720430108,
+   "auto_share": 0.6451612903225806,
+   "auto_wrong": 3,
+   "student_loses": 3,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.00625,
+   "id_right": 0.6333333333333333,
+   "id_wrong_but_accepted": 0
+  },
+  "0.98": {
+   "cell_accuracy": 0.9810324921655946,
+   "answer_read_right": 0.8776881720430108,
+   "auto_share": 0.6048387096774194,
+   "auto_wrong": 2,
+   "student_loses": 2,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.0044444444444444444,
+   "id_right": 0.6333333333333333,
+   "id_wrong_but_accepted": 0
+  },
+  "0.99": {
+   "cell_accuracy": 0.9810324921655946,
+   "answer_read_right": 0.8776881720430108,
+   "auto_share": 0.5013440860215054,
+   "auto_wrong": 2,
+   "student_loses": 2,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.005361930294906166,
+   "id_right": 0.6333333333333333,
+   "id_wrong_but_accepted": 0
+  },
+  "0.995": {
+   "cell_accuracy": 0.9810324921655946,
+   "answer_read_right": 0.8776881720430108,
+   "auto_share": 0.31048387096774194,
+   "auto_wrong": 1,
+   "student_loses": 1,
+   "student_gains": 0,
+   "auto_wrong_share_of_auto": 0.004329004329004329,
+   "id_right": 0.6333333333333333,
+   "id_wrong_but_accepted": 0
+  }
+ },
+ "with_roster": {
+  "id_right": 0.9583333333333334,
+  "id_wrong_but_accepted": 0,
+  "auto_share": 0.5913978494623656,
+  "auto_wrong": 2
+ }
+}
