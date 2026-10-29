@@ -147,7 +147,9 @@ def solution_text(tex: str) -> str:
 
 
 def against_key(student: dict, key: dict) -> list:
-    """-> [(name as shown, the student's value, the solution's values, agrees)] for each name both give"""
+    """-> [(name as shown, the student's value, the solution's values, agrees)] for each name both give; a delay the
+    solution names otherwise ('t_{p21}' for its 't_{NAND}') against all its delays: agrees True when like one of them
+    (a unitless value at any prefix), None - like none of them (a value to look at)"""
     def close(a, b):
         return abs(a - b) <= 0.02 * max(abs(a), abs(b)) + 1e-15
     def swapped(n):
@@ -168,7 +170,18 @@ def against_key(student: dict, key: dict) -> list:
             sol = [x for k, xs in key.items() if k.startswith(name) and re.fullmatch(r"[a-z]{1,2}", k[len(name):])
                    for x in xs] or None
             loose = bool(sol)
+        family = False
+        if sol is None and re.fullmatch(r"t_\S+", name):     # ('t_{p21}', a delay the solution names t_{NAND}: held
+            sol = [x for k, xs in key.items() if k[0] == "t" and k[1:2] in ("_", "") for x in xs if x[0]] or None
+            family = bool(sol)                              # against all the solution's delays - like one, or none)
         if not sol:
+            continue
+        if family:
+            for v, shown, ab, written in vals:
+                scales = (1,) if re.search(r"\d\s*\\?[A-Za-zµ]", written) else (1, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15)
+                like = [t for w, _, _, t in sol for f in scales if close(abs(f * v), abs(w))]
+                out.append((f"{shown} (as {like[0]}?)" if like else shown, written,
+                            sorted({t for _, _, _, t in sol}), True if like else None))
             continue
         for v, shown, ab, written in vals:
             agree = any(close(abs(v), abs(w)) if (ab or sab) else close(sign * v, w) for w, _, sab, _ in sol)
@@ -178,7 +191,23 @@ def against_key(student: dict, key: dict) -> list:
                         written += f" (x{f:g} is near the solution: a unit prefix slip?)"
                         break
             out.append((shown + ("?" if loose else ""), written, sorted({("-" if sign < 0 else "") + t for _, _, _, t in sol}), agree))
-    return out
+    seen = {w.split(" (")[0] for _, w, _, a in out if a is not None}   # (one value under two names, 't_{PD} = t_{PHL}
+    return [o for o in out if o[3] is not None or o[1].split(" (")[0] not in seen]   # = 51.86 ps': once)
+
+
+PER_FINDING = 2.0     # points off estimated per finding - fixed before the first blind test, not fitted to an exam
+
+
+def estimate(c: dict, full: float | None) -> tuple:
+    """a question's counts -> (estimated points off or None when nothing in it could be checked, findings, checked):
+    a finding is a sure wrong step, a value unlike the solution's or like none of its values - PER_FINDING points each,
+    at most the question's points; not-sure verdicts are listed, not counted"""
+    checked = c["right"] + c["wrong_sure"] + c["wrong_unsure"] + c["agrees"] + c["differs"] + c["unlike"]
+    findings = c["wrong_sure"] + c["differs"] + c["unlike"]
+    if not checked:
+        return None, findings, checked
+    off = findings * PER_FINDING
+    return (min(off, full) if full else off), findings, checked
 
 
 def main():
@@ -190,10 +219,12 @@ def main():
     ap.add_argument("--grades", default="", help="the lecturer's sheet (.xlsx): points off per question, beside the verdicts")
     ap.add_argument("--quiet", action="store_true", help="the table only, not every verdict")
     ap.add_argument("--solution", default="", help="the official solution's math per question (JSON): the values against it")
+    ap.add_argument("--points", default="", help="each question's points, '1:50,2:25,3:25': an estimate of the points off")
     args = ap.parse_args()
     want = set(args.students)
     qpages = json.load(open(args.pages, encoding="utf-8")) if args.pages else {}
     marks = grades(args.grades) if args.grades else {}
+    full = {int(q): float(v) for q, v in (x.split(":") for x in args.points.split(",") if x)} if args.points else {}
     keys = {}
     if args.solution:
         from grader.selfcheck import statements
@@ -221,13 +252,15 @@ def main():
                 continue                                 # (a cover, the instructions: no question's)
             checks = check_pages([pages[k - 1] for k in pnos])
             tag = f"q{key}" if qpages else key
-            c = counts.setdefault(key, {"right": 0, "wrong_sure": 0, "wrong_unsure": 0, "other": 0, "differs": 0, "agrees": 0})
+            c = counts.setdefault(key, {"right": 0, "wrong_sure": 0, "wrong_unsure": 0, "other": 0, "differs": 0, "agrees": 0,
+                                          "unlike": 0})
             if keys and qpages and key in keys:          # the values named against the official solution's
                 for shown, v, sol, agree in against_key(key_values(_best_statements([pages[k - 1] for k in pnos])), keys[key]):
-                    c["agrees" if agree else "differs"] += 1
+                    c["agrees" if agree else "differs" if agree is False else "unlike"] += 1
                     if not args.quiet:
-                        print(f"{name}\t{tag}\tp{','.join(map(str, pnos))}\tkey\t{'agrees' if agree else 'DIFFERS'}\t"
-                              f"{shown} = {v}; the solution: {' or '.join(sol)}")
+                        word = "agrees" if agree else "DIFFERS" if agree is False else "UNLIKE ANY"
+                        print(f"{name}\t{tag}\tp{','.join(map(str, pnos))}\tkey\t{word}\t"
+                              f"{shown} = {v}; the solution: {' or '.join(sol[:6])}{' ...' if len(sol) > 6 else ''}")
             for ch in checks:
                 if ch.verdict == "right":
                     c["right"] += 1
@@ -241,18 +274,26 @@ def main():
             for q in sorted(k for k in counts if k is not None):
                 off = marks.get(name, {}).get(int(q)) if marks else None
                 table.append((name, q, off, counts[q]))
+    if table and full:
+        print("\nstudent\tquestion\tpoints\testimated off (findings x %g)\tfindings\tchecks\tlecturer took off" % PER_FINDING)
+        for name, q, off, c in table:
+            est, nf, nc = estimate(c, full.get(int(q)))
+            pts = full.get(int(q))
+            print(f"{name}\t{q}\t{'' if pts is None else f'{pts:g}'}\t{'not checked' if est is None else f'{est:g}'}\t{nf}\t{nc}\t"
+                  f"{'' if off is None else f'{off:g}'}")
     if table:
-        print("\nstudent\tquestion\tpoints off\tright\twrong (sure)\twrong (not sure)\tother\tsolution: agrees\tdiffers\tlook at")
+        print("\nstudent\tquestion\tpoints off\tright\twrong (sure)\twrong (not sure)\tother\tsolution: agrees\tdiffers\t"
+              "like none\tlook at")
         for name, q, off, c in table:
             look = ""
             if off is not None and off == 0 and c["wrong_sure"]:
                 look = "nothing off, a sure wrong: a false wrong or a misreading?"
-            elif off is not None and off >= 5 and not (c["wrong_sure"] or c["wrong_unsure"] or c["differs"]):
+            elif off is not None and off >= 5 and not (c["wrong_sure"] or c["wrong_unsure"] or c["differs"] or c["unlike"]):
                 look = "points off, nothing found"
             elif off is not None and off == 0 and c["differs"]:
                 look = "nothing off, a value unlike the solution's: a misreading?"
             print(f"{name}\t{q}\t{'' if off is None else f'{off:g}'}\t{c['right']}\t{c['wrong_sure']}\t{c['wrong_unsure']}\t{c['other']}\t"
-                  f"{c['agrees']}\t{c['differs']}\t{look}")
+                  f"{c['agrees']}\t{c['differs']}\t{c['unlike']}\t{look}")
 
 
 if __name__ == "__main__":

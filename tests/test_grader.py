@@ -5979,3 +5979,30 @@ def test_a_big_vlm_as_second_formula_reader_merged_with_uni_mumer():
     assert data[0]["lines"][0][0]["math2"][1][0] == "V _ { T } = - 0 . 3 V"      # (Uni-MuMER's after it)
     kv = key_values(statements("t_{PD} = t_{PHL} = C_L \\cdot \\frac{\\Delta V}{I_{av}} = 1pF \\cdot \\frac{0.6V}{1.565mA} = 51.86pscc"))
     assert sorted(kv) == ["t_pd", "t_phl"] and abs(kv["t_phl"][0][0] - 51.86e-12) < 1e-15
+
+
+def test_before_a_blind_exam_made_up_endings_delays_by_value_and_an_estimate():
+    """made ready before the first exam judged blind: a VLM's made-up ending ('= 200 psec x = 1': a letter set to one
+    digit, found nowhere else) left out; a delay the solution names otherwise ('t_{p21}' for its 't_{NAND}') held
+    against all its delays - like one of them, or like none (the sizing slip of exam 1's question 3: 12.075 ps where
+    the solution has 6.9, 11.5, 20.7, 27.6); one value under two names judged once; an estimate of the points off
+    (PER_FINDING a finding, fixed in advance) - 'not checked' when nothing in the question could be checked"""
+    from grader.selfcheck import statements
+    from tools.recheck_exams import PER_FINDING, against_key, estimate, key_values
+    from tools.reread_math_vlm import drop_made_up_tail
+
+    assert drop_made_up_tail("T = \\frac{1}{5.1 \\times 10^{-9}} = 200psec x = 1", "T = \\frac { 1 } { 5 . 1 0 } = 2 0 0 p s e c") == \
+        "T = \\frac{1}{5.1 \\times 10^{-9}} = 200psec"
+    assert drop_made_up_tail("t_{P21} = t_{P0} (1 + \\frac{3}{4}) = 7/4 t_{P0} = 12.075", "") .endswith("12.075")
+    assert drop_made_up_tail("a = 2, b = 3", "a = 2, b") == "a = 2, b = 3"          # (b in the other reading too)
+    key = key_values(statements("t_{p0} = 6.9 ps") + statements("t_{pd,F1} = 11.5 ps") + statements("t_{pd,NAND} = 20.7 ps")
+                     + statements("V_{BS} = 0 V") + statements("t_{pHL} = 69.7 ns"))
+    got = against_key(key_values(statements("t_{P21} = 12.075") + statements("t_{M} = 6.9 ps")), key)
+    assert [(n, a) for n, _, _, a in got] == [("t_P21", None), ("t_M (as 6.9ps?)", True)]
+    assert against_key(key_values(statements("V_{SGT} = 0.32")), key) == []          # (only delays: not every voltage)
+    two = against_key(key_values(statements("t_{PD} = t_{PHL} = 1pF \\cdot \\frac{0.6V}{1.565mA} = 51.86ps")), key)
+    assert [(n, a) for n, _, _, a in two] == [("t_PHL", False)]
+    c = {"right": 2, "wrong_sure": 1, "wrong_unsure": 3, "other": 2, "agrees": 3, "differs": 2, "unlike": 0}
+    assert estimate(c, 50) == (3 * PER_FINDING, 3, 11)
+    assert estimate(dict(c, wrong_sure=40), 25)[0] == 25                             # (at most the question's points)
+    assert estimate({k: 0 for k in c}, 25) == (None, 0, 0)                           # not checked

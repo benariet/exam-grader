@@ -43,6 +43,26 @@ def _trusted(text: str, counts: dict) -> bool:
     return counts.get(text, 0) < REPEATS or len(text) <= 12
 
 
+_TAIL = re.compile(r"(?:\\quad|,|;|\s)\s*(?P<v>[A-Za-z])(?:_\{?\w+\}?)?\s*=\s*-?\d\s*$")   # (one digit: 'x = 1')
+
+
+def _letters(t: str) -> str:
+    return re.sub(r"\\[A-Za-z]+", " ", t)                 # (the letters of the math, not of \frac, \text)
+
+
+def drop_made_up_tail(vlm: str, other: str) -> str:
+    """'T = \\frac{1}{5 \\cdot 10^9} = 200 psec x = 1': a letter set to one digit at the end of the VLM's reading, the
+    letter found nowhere else in it nor in the other reader's - left out ('b = 3' after 'a = 2' when the other reader
+    has 'b' too stays; a longer value, '= 12.075', is never taken for made up)"""
+    m = _TAIL.search(vlm)
+    if not m or "=" not in vlm[:m.start()]:
+        return vlm
+    v = m.group("v")
+    if re.search(r"(?<![A-Za-z])" + v, _letters(vlm[:m.start()])) or re.search(r"(?<![A-Za-z])" + v, _letters(other)):
+        return vlm
+    return vlm[:m.start()].rstrip(" ,;")
+
+
 def merge(data) -> dict:
     """each math piece's math2: the VLM's readings first where trusted (_trusted), then Uni-MuMER's (math2_mumer);
     Uni-MuMER's alone where not -> counts {"vlm": n, "mumer": n}"""
@@ -56,7 +76,7 @@ def merge(data) -> dict:
         vlm, mumer = s.pop("math2_vlm", None) or s["math2"], s["math2_mumer"]
         s["math2_vlm"] = vlm
         vlm = [(" ".join(_HEB_TEXT.sub(" ", t).split()), lp) for t, lp in vlm]   # (Hebrew words it wrote out: not math)
-        vlm = [(t, lp) for t, lp in vlm if t] or [("", 0.0)]
+        vlm = [(drop_made_up_tail(t, mumer[0][0] if mumer else ""), lp) for t, lp in vlm if t] or [("", 0.0)]
         if _trusted(vlm[0][0], counts):
             s["math2"] = vlm + [m for m in mumer if m[0] not in {v[0] for v in vlm}]
             used["vlm"] += 1
