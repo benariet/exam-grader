@@ -5973,7 +5973,7 @@ def test_a_big_vlm_as_second_formula_reader_merged_with_uni_mumer():
     data = page(("V_T = - 0.3 V", "V _ { T } = - 0 . 3 V"), (made_up, "a"), (made_up, "b"), (made_up, "c"),
                 ("There is no handwritten math in the image provided, only printed text", "d"),
                 ("C_{L} = 1pF: \\text{יש להתחשב באפקט המצע}", "e"), ("2025-2026", "f"), ("2025-2026", "g"), ("2025-2026", "h"))
-    assert merge(data) == {"vlm": 5, "mumer": 4}
+    assert merge(data) == {"vlm": 5, "mumer": 4, "made_up": 0}
     firsts = [segs[0]["math2"][0][0] for segs in data[0]["lines"]]
     assert firsts == ["V_T = - 0.3 V", "a", "b", "c", "d", "C_{L} = 1pF:", "2025-2026", "2025-2026", "2025-2026"]
     assert data[0]["lines"][0][0]["math2"][1][0] == "V _ { T } = - 0 . 3 V"      # (Uni-MuMER's after it)
@@ -6006,3 +6006,201 @@ def test_before_a_blind_exam_made_up_endings_delays_by_value_and_an_estimate():
     assert estimate(c, 50) == (3 * PER_FINDING, 3, 11)
     assert estimate(dict(c, wrong_sure=40), 25)[0] == 25                             # (at most the question's points)
     assert estimate({k: 0 for k in c}, 25) == (None, 0, 0)                           # not checked
+
+
+def test_coverage_against_the_solution_cross_exam_made_up_readings_and_pages_read_in_shares():
+    """after the blind exam 6 (estimated 94, graded 31 - most of its points were lost on work not done): the
+    solution's results (checkpoints, each chain's result once - a given value is none) and which of them the work
+    reaches by value under any name (a '= ... = 69.8 ns' continuation too); a VLM reading also found in another
+    student's exam is made up (exams 1 and 6 alike: 't_{pLH} = 1.5 ns, t_{pHL} = 1.8 ns', spacing aside); one exam's
+    pages read by several processes and joined"""
+    from grader.selfcheck import statements
+    from tools.join_pages import join
+    from tools.recheck_exams import checkpoints, coverage
+    from tools.reread_math_vlm import _same, _trusted
+
+    sol = (statements("Y_2 = V_{DD} - V_{Tn} = 1.151 V") + statements("I_D(0) = \\frac{k}{2}(V_{SG}-|V_{Tp}|)^2 = 5.65 \\mu A")
+           + statements("C_L = 1 pF") + statements("t_{pHL} = C_L \\frac{\\Delta V}{I_{avg}} = 69.7 ns"))
+    cps = checkpoints(sol)
+    assert [(n, round(v, 12)) for n, v, _ in cps] == [("Y_2", 1.151), ("I_D(0)", 5.65e-06), ("t_pHL", 6.97e-08)]
+    got, miss = coverage(cps, statements("Y_2 = 1.15 V") + statements("= C \\cdot \\frac{0.6}{8.6 \\mu} = 69.8 ns"))
+    assert [n for n, _ in got] == ["Y_2", "t_pHL"] and [n for n, _ in miss] == ["I_D(0)"]
+    made_up = "t_{pLH} = 1.5 \\text{ ns}, \\quad t_{pHL} = 1.8 \\text{ ns}"
+    assert not _trusted(made_up, {}, frozenset({_same("t_{pLH} = 1.5 \\text{ ns} \\quad t_{pHL} = 1.8 \\text{ ns}")}))
+    assert _trusted(made_up, {}) and _trusted("V_T = -0.3 V", {}, frozenset({_same("V_T = -0.3 V")}))   # (short: common)
+    a = [{"page": 1, "lines": [1]}, {"page": 2, "skipped": True}]
+    b = [{"page": 1, "skipped": True}, {"page": 2, "lines": [2]}]
+    assert join([a, b]) == [{"page": 1, "lines": [1]}, {"page": 2, "lines": [2]}]
+    try:
+        join([a, a])
+        assert False, "a page read twice"
+    except ValueError:
+        pass
+
+
+def _crossing_canvas(w=900, h=400):
+    from PIL import Image, ImageDraw, ImageFont
+    font = next((p for p in ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "C:/Windows/Fonts/arial.ttf")
+                 if os.path.isfile(p)), None)
+    im = Image.new("L", (w, h), 255)
+    return im, ImageDraw.Draw(im), ImageFont.truetype(font, 26) if font else ImageFont.load_default()
+
+
+def test_what_the_student_crossed_out_is_found_and_not_judged():
+    """writing the student crossed out (Tal's examples from the exams: a straight or wavy line through a word, a
+    dense or looped scribble, an X over a computation, a zigzag over a drawing) is found on the page - and what only
+    looks like it is not: a fraction bar (also with its numerator and denominator touching it), an underline, plain
+    writing, a graph's axis with its ticks and a slanted plotted line, a grid; a piece under it is not judged
+    (recheck's load leaves it out and counts it)"""
+    import json
+    import math
+    import tempfile
+    import numpy as np
+    from recog.crossed import covered, crossed_regions
+    from tools.recheck_exams import load
+
+    def kinds(im):
+        return sorted({r["kind"] for r in crossed_regions(np.asarray(im) < 128, 20)})
+
+    im, d, f = _crossing_canvas()
+    d.text((40, 100), "pseudo PMOS gate", font=f, fill=0)
+    d.line((35, 117, 290, 115), fill=0, width=3)
+    assert kinds(im) == ["strike"]
+    regions = crossed_regions(np.asarray(im) < 128, 20)
+    assert covered((40, 100, 285, 130), regions)["share"] > 0.8                # (the word under it)
+    assert covered((40, 200, 285, 230), regions) is None                       # (a line below it)
+    im, d, f = _crossing_canvas()
+    d.text((40, 100), "pseudo PMOS gate", font=f, fill=0)
+    d.line([(x, 116 + 4 * math.sin(x / 9)) for x in range(35, 295)], fill=0, width=3)
+    assert kinds(im) == ["strike"]
+    im, d, f = _crossing_canvas()
+    d.text((40, 100), "pseudo PMOS gate", font=f, fill=0)
+    d.line([(40 + x * 0.9 + 8 * math.cos(x / 3.0), 114 + 9 * math.sin(x / 3.0)) for x in range(280)], fill=0, width=2)
+    assert kinds(im) == ["scribble"]
+    im, d, f = _crossing_canvas()
+    for i in range(6):
+        d.text((60, 40 + 50 * i), "VT2 = -0.4 - 0.4(sqrt(1.6+VT) - 0.77)", font=f, fill=0)
+    d.line((50, 30, 600, 340), fill=0, width=3)
+    d.line((600, 30, 50, 340), fill=0, width=3)
+    assert kinds(im) == ["hatch"]
+    im, d, f = _crossing_canvas()
+    d.rectangle((150, 120, 500, 260), outline=0, width=3)
+    d.text((300, 170), "A+B+C", font=f, fill=0)
+    d.line([(120 + 50 * i, 110 if i % 2 == 0 else 280) for i in range(9)], fill=0, width=3)
+    assert "hatch" in kinds(im)
+    for draw in (lambda d, f: (d.text((60, 70), "R_N + 2.5", font=f, fill=0), d.line((50, 108, 240, 108), fill=0, width=3),
+                               d.text((60, 114), "R_N + R_P", font=f, fill=0)),
+                 lambda d, f: (d.text((60, 84), "VDD - VT", font=f, fill=0), d.line((50, 110, 240, 110), fill=0, width=3),
+                               d.text((90, 108), "2 k", font=f, fill=0)),
+                 lambda d, f: (d.text((40, 100), "pseudo PMOS gate", font=f, fill=0), d.line((35, 131, 290, 131), fill=0, width=3)),
+                 lambda d, f: d.text((40, 100), "V_T = 0.43 + 0.4(sqrt(2.4+V_T) - sqrt(0.6))", font=f, fill=0),
+                 lambda d, f: ([d.line((60, 350, 800, 350), fill=0, width=3), d.line((60, 350, 60, 60), fill=0, width=3)]
+                               + [d.line((x, 342, x, 358), fill=0, width=2) for x in (200, 420, 640)]
+                               + [d.line((200, 350, 700, 60), fill=0, width=3)]),
+                 lambda d, f: ([d.line((40, y, 600, y), fill=0, width=2) for y in range(60, 380, 60)]
+                               + [d.line((x, 60, x, 340), fill=0, width=2) for x in range(40, 620, 80)]
+                               + [d.text((x + 30, y + 15), "1", font=f, fill=0) for y in range(60, 340, 60) for x in range(40, 600, 80)])):
+        im, d, f = _crossing_canvas()
+        draw(d, f)
+        assert kinds(im) == [], kinds(im)
+    page = [{"info": {}, "lines": [[{"kind": "math", "box": [0, 0, 9, 9], "p_kind": 1.0, "nbest": [["x = 1", -1.0]]}],
+                                   [{"kind": "math", "box": [0, 20, 9, 29], "p_kind": 1.0, "nbest": [["y = 2", -1.0]],
+                                     "crossed": {"kind": "hatch", "share": 0.9}}]]}]
+    with tempfile.TemporaryDirectory() as tmp:
+        json.dump(page, open(os.path.join(tmp, "1.json"), "w"))
+        got = load(os.path.join(tmp, "1.json"))
+    assert len(got[0]["lines"]) == 1 and got[0]["crossed_out"] == 1
+
+
+def test_the_printed_booklet_is_told_from_the_handwriting():
+    """the booklet's print - the same in every copy - is found from many scans of it laid on each other (a shift and a
+    slight turn between scans), then erased from one scan: its handwriting is left; a page with only print left over
+    (a pixel off at its edges) has no handwriting and is not read - small digits in a form's boxes are writing; the
+    template of another page does not match; formula sheets never read (27, 29) stay empty pages when the shares join"""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from read_page import handwriting_only, has_writing
+    from recog.printed import build_template
+    from tools.join_pages import join
+
+    rng = np.random.default_rng(0)
+    base, d, f = _crossing_canvas(1000, 1400)
+    for i in range(20):
+        d.text((80, 60 + 60 * i), f"Printed question line {i} about CMOS delays", font=f, fill=0)
+    d.rectangle((60, 1250, 940, 1380), outline=0, width=3)
+
+    def copy(write=True):
+        im = base.copy()
+        dd = ImageDraw.Draw(im)
+        if write:
+            for _ in range(12):
+                x, y = int(rng.integers(100, 850)), int(rng.integers(90, 1200))
+                dd.line([(x + int(rng.integers(-30, 30)), y + int(rng.integers(-12, 12))) for _ in range(6)], fill=0, width=2)
+        return im.rotate(float(rng.uniform(-0.3, 0.3)), resample=Image.NEAREST, fillcolor=255,
+                         translate=(int(rng.integers(-10, 10)), int(rng.integers(-10, 10))))
+    template = build_template([np.asarray(copy()) < 128 for _ in range(7)])
+    page = copy()
+    left, hand, info = handwriting_only(page, template)
+    ink = np.asarray(page) < 128
+    assert info["booklet_match"] > 0.8 and hand is not None and hand.sum() < 0.35 * ink.sum() and has_writing(hand)
+    _, hand, _ = handwriting_only(copy(write=False), template)
+    assert not has_writing(hand)
+    digits = np.zeros((200, 400), bool)
+    for k in range(12):                                       # (twelve small marks of 54 pixels: an ID in boxes)
+        digits[20:29, 10 + 30 * k:16 + 30 * k] = True
+    assert has_writing(digits)
+    other, _, _ = _crossing_canvas(1000, 1400)
+    ImageDraw.Draw(other).text((300, 500), "another page altogether", font=f, fill=0)
+    assert handwriting_only(other, template)[1] is None
+    a = [{"page": 1, "lines": [1]}, {"skipped": True, "left_out": True}]
+    b = [{"skipped": True}, {"skipped": True, "left_out": True}]
+    assert join([a, b])[1] == {"page": 2, "left_out": True, "info": {}, "figures": [], "lines": []}
+
+
+def test_merged_readings_agreeing_readers_and_answers_in_words():
+    """both readers reading one line alike: it is written there, even when another exam has it too (a common formula,
+    or print) - not made up; Uni-MuMER's line found in another exam where the VLM answered in words ('There is no
+    handwritten math') is made up too: nothing read there"""
+    from tools.reread_math_vlm import _english, _same, _trusted, merge
+    lim, f = "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1", "t_{pHL} = 0.69 R_{eq} C_{L}"
+    seg = lambda v, m: {"kind": "math", "box": [0, 0, 9, 9], "nbest": [["x", -1.0]], "math2": [[v, -1.0]], "math2_mumer": [[m, -2.0]]}
+    data = [{"info": {}, "lines": [[seg("There is no handwritten math", lim), seg(f, f)]]}]
+    assert merge(data, frozenset({_same(lim), _same(f)})) == {"vlm": 1, "mumer": 0, "made_up": 1}
+    assert [s["math2"][0][0] for s in data[0]["lines"][0]] == ["", f] and data[0]["lines"][0][0]["made_up"]
+    assert _english("There is no handwritten math") == 3 and not _trusted("There is no handwritten math", {})
+    assert _english("V_{OH max} = 1.15 V") == 0 and _english("\\text{Type NAND delay} 2400 ns") == 0
+
+
+def test_a_root_of_a_negative_number_in_a_real_calculation_is_a_misread_sign():
+    """exam 5 read with the print erased: '\\sqrt{0.6 + 0.9}' read '\\sqrt{-0.6 - 0.9}' - worked out to a real value as
+    written, a root of a negative number on the left is a sign misread, not a sure wrong step; complex work written
+    with j stays judged"""
+    from grader.selfcheck import check_statements, statements
+    c, = check_statements(statements("-0.4-0.4(\\sqrt{-0.6-0.9}-\\sqrt{1-0.61}) = -0.58"))
+    assert c.verdict == "wrong step" and not c.sure and "sign misread" in c.text
+    c, = check_statements(statements("\\frac{10}{3+j4} = 2-j1"))
+    assert c.verdict == "wrong step" and c.sure
+    c, = check_statements(statements("-0.4-0.4(\\sqrt{0.6+0.9}-\\sqrt{0.6}) = -0.58"))
+    assert c.verdict == "right"
+
+
+def test_the_points_off_estimate_fitted_on_graded_exams():
+    """tools/fit_estimate.py: the estimate fitted on exams whose grades are known - the weights by least squares, none
+    negative (findings that come with fewer points off are noise: left out), the mean share off where the solution
+    has no results to reach; each exam left out in turn against the plain baseline"""
+    import os
+    import tempfile
+    from tools.fit_estimate import fit, predict, rows
+    head = "student\tquestion\tpoints\testimated off (findings x 2)\tfindings\tchecks\tsolution results reached\tlecturer took off\n"
+    body = ("1\t1\t50\t6\t3\t9\t9 of 9\t2\n1\t2\t25\tnot checked\t0\t0\t\t9\n2\t1\t50\t0\t0\t1\t0 of 9\t40\n2\t2\t25\t0\t0\t1\t\t5\n"
+            "3\t1\t50\t0\t1\t3\t3 of 9\t28\n3\t2\t25\t0\t0\t2\t\t7\n")
+    with tempfile.TemporaryDirectory() as tmp:
+        f = os.path.join(tmp, "t.txt")
+        open(f, "w").write("noise\n" + head + body + "\n")
+        data = rows(f)
+    assert len(data) == 6 and data[0]["reached"] == 9 and data[1]["results"] is None and data[2]["off"] == 40
+    m = fit(data)
+    assert m["alpha"] > 0.5 and m["beta"] >= 0 and m["gamma"] >= 0
+    assert abs(m["prior"]["2"] - (9 + 5 + 7) / 75) < 1e-9
+    assert predict({"q": "2", "points": 25, "results": None}, m) == m["prior"]["2"] * 25
+    assert predict({"q": "1", "points": 50, "results": 9, "reached": 0, "findings": 0, "checks": 0}, m) <= 50

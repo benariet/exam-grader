@@ -41,3 +41,6 @@ grader_runs/
 Stud_exam/
 Stud exam/
 .idea/
+
+# the printed booklet of a real exam (tools/build_booklet.py) - exam material, kept out too
+booklet/

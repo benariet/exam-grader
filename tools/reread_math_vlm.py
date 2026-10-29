@@ -34,13 +34,33 @@ def clean_latex(t: str) -> str:
 REPEATS = 3          # one reading for this many pieces or more: made up (but a line on every page, '2025-2026')
 _HEB_TEXT = re.compile(r"\\text\s*\{[^{}]*[\u0590-\u05FF][^{}]*\}")
 _WORDS = re.compile(r"(?:\b[A-Za-z]{3,}\b[ ,.]+){4,}")
+_ENGLISH = re.compile(r"(?<![\\A-Za-z])[A-Za-z]{4,}(?![A-Za-z])")
+_MATH_WORDS = {"nand", "nmos", "pmos", "cmos", "pseudo", "delay", "gate", "gates", "input", "output", "load", "high",
+               "rise", "fall", "pull", "down", "inverter", "chain", "stage", "stages", "fanout", "true", "false"}
 
 
-def _trusted(text: str, counts: dict) -> bool:
-    """a VLM reading worth putting first: LaTeX, not words; not the same as many other pieces' unless trivially short"""
-    if not text or _WORDS.search(re.sub(r"\\text\s*\{[^{}]*\}", " ", text)) or re.search(r"[\u0590-\u05FF]", text):
+def _english(text: str) -> int:
+    """English words (4 letters or more, not a LaTeX command, not a word of the subject) outside \\text{}: 'There is no
+    handwritten math' has 3 - a VLM's answer in words, not a reading"""
+    plain = re.sub(r"\\text\s*\{[^{}]*\}", " ", text)
+    return sum(1 for w in _ENGLISH.findall(plain) if w.lower() not in _MATH_WORDS)
+
+
+def _trusted(text: str, counts: dict, elsewhere: frozenset = frozenset()) -> bool:
+    """a VLM reading worth putting first: LaTeX, not words; not the same as many other pieces' unless trivially short,
+    nor the same as a reading of another student's exam (elsewhere: 't_{pLH} = 1.5 ns, t_{pHL} = 1.8 ns' in exams 1 and
+    6 alike - two students do not write one line letter for letter where the readers disagree)"""
+    if not text or _WORDS.search(re.sub(r"\\text\s*\{[^{}]*\}", " ", text)) or re.search(r"[\u0590-\u05FF]", text) \
+            or _english(text) >= 2:
         return False
-    return counts.get(text, 0) < REPEATS or len(text) <= 12
+    if len(text) <= 12:
+        return True
+    return counts.get(text, 0) < REPEATS and _same(text) not in elsewhere
+
+
+def _same(t: str) -> str:
+    """a reading as compared across exams: no spaces, commas, braces, \\quad, \\text"""
+    return re.sub(r"\\q?quad|\\text|[\s,{}]", "", t)
 
 
 _TAIL = re.compile(r"(?:\\quad|,|;|\s)\s*(?P<v>[A-Za-z])(?:_\{?\w+\}?)?\s*=\s*-?\d\s*$")   # (one digit: 'x = 1')
@@ -63,13 +83,26 @@ def drop_made_up_tail(vlm: str, other: str) -> str:
     return vlm[:m.start()].rstrip(" ,;")
 
 
-def merge(data) -> dict:
+def vlm_readings(data) -> set:
+    """both readers' first readings in an exam (the VLM's: math2_vlm after a merge, math2 before one; Uni-MuMER's:
+    math2_mumer), as compared across exams"""
+    out = set()
+    for page in data:
+        for segs in page["lines"]:
+            for s in segs:
+                if s["kind"] == "math" and s.get("math2_mumer") and (s.get("math2_vlm") or s.get("math2")):
+                    out |= {_same((s.get("math2_vlm") or s["math2"])[0][0]), _same(s["math2_mumer"][0][0])}
+    return out
+
+
+def merge(data, elsewhere: frozenset = frozenset()) -> dict:
     """each math piece's math2: the VLM's readings first where trusted (_trusted), then Uni-MuMER's (math2_mumer);
-    Uni-MuMER's alone where not -> counts {"vlm": n, "mumer": n}"""
+    Uni-MuMER's alone where not, nothing where Uni-MuMER's is made up too -> counts {"vlm", "mumer", "made_up"}.
+    elsewhere: both readers' readings of the other exams (vlm_readings)"""
     from collections import Counter
     segs = [s for page in data for segs in page["lines"] for s in segs if s["kind"] == "math" and s.get("math2")]
     counts = Counter(s["math2"][0][0] for s in segs if s.get("math2_mumer"))
-    used = {"vlm": 0, "mumer": 0}
+    used = {"vlm": 0, "mumer": 0, "made_up": 0}
     for s in segs:
         if "math2_mumer" not in s:
             continue
@@ -77,9 +110,17 @@ def merge(data) -> dict:
         s["math2_vlm"] = vlm
         vlm = [(" ".join(_HEB_TEXT.sub(" ", t).split()), lp) for t, lp in vlm]   # (Hebrew words it wrote out: not math)
         vlm = [(drop_made_up_tail(t, mumer[0][0] if mumer else ""), lp) for t, lp in vlm if t] or [("", 0.0)]
-        if _trusted(vlm[0][0], counts):
+        agree = bool(vlm[0][0]) and bool(mumer) and _same(vlm[0][0]) == _same(mumer[0][0])
+        if agree or _trusted(vlm[0][0], counts, elsewhere):
+            # (both readers read the same: what is written - a line common to two students' work, or printed, is
+            # not made up)
             s["math2"] = vlm + [m for m in mumer if m[0] not in {v[0] for v in vlm}]
             used["vlm"] += 1
+        elif len(mumer[0][0]) > 12 and _same(mumer[0][0]) in elsewhere:
+            # neither: Uni-MuMER's line is another exam's too ('\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1' in exams 1 and
+            # 3 - a textbook formula it fills an unread piece with): no reading - nothing judged here
+            s["math2"], s["nbest"], s["made_up"] = [["", 0.0]], [["", 0.0]], True
+            used["made_up"] += 1
         else:
             s["math2"] = mumer
             used["mumer"] += 1
@@ -87,9 +128,14 @@ def merge(data) -> dict:
 
 
 def main():
-    if len(sys.argv) == 4 and sys.argv[1] == "--merge":
+    if len(sys.argv) >= 4 and sys.argv[1] == "--merge":
+        # --merge <its out.json> <merged.json> [other exams' VLM jsons ...]: a reading also found in another exam is made up
         data = json.load(open(sys.argv[2], encoding="utf-8"))
-        print(merge(data))
+        others = set()
+        for f in sys.argv[4:]:
+            if os.path.abspath(f) != os.path.abspath(sys.argv[2]):
+                others |= vlm_readings(json.load(open(f, encoding="utf-8")))
+        print(merge(data, frozenset(others)))
         json.dump(data, open(sys.argv[3], "w", encoding="utf-8"), ensure_ascii=False)
         return
     from read_page import load_pages

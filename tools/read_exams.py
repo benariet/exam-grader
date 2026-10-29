@@ -46,6 +46,8 @@ def _segment(s) -> dict:
         d["note"] = str(s.note)
     if getattr(s, "boxed", False):
         d["boxed"] = True
+    if getattr(s, "crossed", None):
+        d["crossed"] = _plain(s.crossed)                 # (under the student's crossing-out: recheck leaves it out)
     return d
 
 
@@ -66,7 +68,22 @@ def main():
     ap.add_argument("--dpi", type=int, default=150)
     ap.add_argument("--only", default="", help="comma-separated student numbers (the file names), e.g. 1,3,4")
     ap.add_argument("--shard", default="", help="k/n: this reader's share of the exams, e.g. 0/2 and 1/2 on two GPUs")
+    ap.add_argument("--pages", default="", help="a-b: only these pages of each exam -> <n>.p<a>-<b>.json, joined after by "
+                                               "tools/join_pages.py (one exam read by several processes at once)")
+    ap.add_argument("--photos", action="store_true", help="the exams are phone photos: each page looked at (a photo "
+                                                           "is flattened) - otherwise scans, never taken for photos")
+    ap.add_argument("--booklet", default="", help="the printed booklet's templates (tools/build_booklet.py): only the "
+                                                 "handwriting read, pages without it not read, crossing-out found")
+    ap.add_argument("--skip-pages", default="", help="comma-separated pages never read - the same printed page in every "
+                                                    "copy, no answers on it (this course's formula sheets: 27,29); saved "
+                                                    "empty, {'left_out': true}")
     args = ap.parse_args()
+    skip = {int(x) for x in args.skip_pages.split(",") if x.strip()}
+    part = ""
+    only_pages = None
+    if args.pages:
+        a, b = (int(x) for x in args.pages.split("-"))
+        only_pages, part = set(range(a, b + 1)), f".p{a}-{b}"
     from read_page import read_pages, write_page
     from recog.mixed_reader import MixedReader
     os.makedirs(os.path.join(args.out, "read"), exist_ok=True)
@@ -82,7 +99,7 @@ def main():
     only = {x.strip() for x in args.only.split(",") if x.strip()}
     n_all, pdfs = len(pdfs), _share(pdfs, args.shard)
     todo = [p for p in pdfs if (not only or os.path.splitext(os.path.basename(p))[0] in only)
-            and not os.path.isfile(os.path.join(args.out, os.path.splitext(os.path.basename(p))[0] + ".json"))]
+            and not os.path.isfile(os.path.join(args.out, os.path.splitext(os.path.basename(p))[0] + part + ".json"))]
     say(f"{n_all} exams in {args.folder}" + (f" - share {args.shard}: {len(pdfs)} of them" if args.shard else "") +
         f"; to read now: {len(todo)}" + (f" ({', '.join(os.path.splitext(os.path.basename(p))[0] for p in todo[:10])})" if todo else ""))
     try:
@@ -99,33 +116,44 @@ def main():
     done_secs = []
     for pdf in pdfs:
         name = os.path.splitext(os.path.basename(pdf))[0]
-        out_json = os.path.join(args.out, f"{name}.json")
+        out_json = os.path.join(args.out, f"{name}{part}.json")
         if (only and name not in only) or os.path.isfile(out_json):
             continue
         t0 = time.time()
-        left = [p for p in todo if p != pdf and not os.path.isfile(os.path.join(args.out, os.path.splitext(os.path.basename(p))[0] + ".json"))]
+        left = [p for p in todo if p != pdf and not os.path.isfile(os.path.join(args.out, os.path.splitext(os.path.basename(p))[0] + part + ".json"))]
         say(f"{name}: reading" + (f" (then {len(left)} more" + (f", about {sum(done_secs) / len(done_secs) * len(left) / 60:.0f} min"
                                                                     if done_secs else "") + ")" if left else ""))
+        here = only_pages
+        if skip:
+            import pypdfium2 as pdfium
+            here = (only_pages or set(range(1, len(pdfium.PdfDocument(pdf)) + 1))) - skip
         try:
-            pages = read_pages(pdf, args.dpi, reader=reader, circuits=False, progress=lambda m: say(f"{name}: {m}"))
+            # (scanner PDFs: never taken for phone photos - a page heavy with print, the cover or a question's first
+            # page, looked like one and was flattened and warped, its print not erased)
+            pages = read_pages(pdf, args.dpi, reader=reader, circuits=False, progress=lambda m: say(f"{name}{part}: {m}"),
+                               pages=here, booklet=args.booklet, scan=not args.photos)
         except Exception as e:                       # noqa: BLE001 - one exam's failure: the next one
             say(f"{name}: FAILED {type(e).__name__}: {e}")
             continue
         data, n_checks = [], 0
         for pno, res in enumerate(pages, 1):
+            if res.get("skipped"):                      # (another process's share, or a page never read)
+                data.append({"page": pno, "skipped": True, "info": {}, "figures": [], "lines": [],
+                             **({"left_out": True} if pno in skip else {})})
+                continue
             try:
                 txt = write_page(res, pno, os.path.join(args.out, "read", f"{name}_p{pno}.png"), check=True)
                 n_checks += sum(1 for t in txt if t.startswith("  ") and ("right" in t or "wrong" in t))
             except Exception as e:                   # noqa: BLE001
                 say(f"{name} page {pno}: drawing/checks failed {type(e).__name__}: {e}")
             if pno == 1 or pno % 5 == 0 or pno == len(pages):
-                say(f"{name}: drawn and checked {pno}/{len(pages)} pages")
+                say(f"{name}{part}: drawn and checked {pno}/{len(pages)} pages")
             data.append({"page": pno, "info": _plain(res["info"]), "figures": _plain(res.get("figures", [])),
                          "lines": [[_segment(s) for s in segs] for segs in res["lines"]]})
         json.dump(data, open(out_json + ".tmp", "w", encoding="utf-8"), ensure_ascii=False)
         os.replace(out_json + ".tmp", out_json)
         done_secs.append(time.time() - t0)
-        say(f"{name}: DONE - {len(pages)} pages, {sum(len(p['lines']) for p in data)} lines, {round(time.time() - t0)} s; "
+        say(f"{name}{part}: DONE - {len(pages)} pages, {sum(len(p['lines']) for p in data)} lines, {round(time.time() - t0)} s; "
             f"saved {out_json}")
     say("done" + (f" (share {args.shard})" if args.shard else ""))
 

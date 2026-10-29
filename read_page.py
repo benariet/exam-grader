@@ -37,6 +37,58 @@ def load_pages(path: str, dpi: int):
             return [Image.open(os.path.join(tmp, f)).convert("RGB") for f in sorted(os.listdir(tmp))]
 
 
+def booklet_pages(folder: str) -> dict:
+    """the printed booklet's templates (tools/build_booklet.py): {"n": its pages, "pages": {k: mask}} or {} - none there"""
+    if not folder or not os.path.isfile(os.path.join(folder, "booklet.json")):
+        return {}
+    info = json.load(open(os.path.join(folder, "booklet.json")))
+    out = {}
+    for k in info.get("pages", {}):
+        f = os.path.join(folder, f"p{k}.png")
+        if os.path.isfile(f):
+            out[int(k)] = np.asarray(Image.open(f).convert("L")) < 128
+    return {"n": info.get("n_pages") or len(info.get("pages", {})), "pages": out}
+
+
+BOOKLET_MATCH = 0.6         # the template's print found on the scan (within a pixel) at least this much, or not this page
+MIN_WRITING = 80            # pixels: a mark of handwriting this big at least (a circle round a choice) - or a page unread
+
+
+def handwriting_only(page, template):
+    """the cleaned page without its print (the booklet's template laid on it, recog/printed.py) -> (page, its
+    handwriting's ink, info); the page unchanged - (page, None, info) - when the template does not match it"""
+    from scipy import ndimage as ndi
+    from recog.printed import printed_on
+    arr = np.asarray(page)
+    ink = arr < 128
+    exact = printed_on(template, ink, grow=0)
+    match = float((exact & ndi.binary_dilation(ink)).sum()) / max(1, int(exact.sum()))   # (the print found where laid)
+    if match < BOOKLET_MATCH:
+        return page, None, {"booklet_match": round(match, 2)}
+    printed = printed_on(template, ink)
+    hand = ink & ~printed
+    return Image.fromarray(np.where(hand, arr, 255).astype(np.uint8)), hand, \
+        {"booklet_match": round(match, 2), "printed_px": int((ink & printed).sum()), "handwriting_px": int(hand.sum())}
+
+
+def has_writing(hand) -> bool:
+    """any mark of handwriting at least MIN_WRITING pixels, more than a thin line (what is left of print laid a pixel
+    off is thin: a frame's edge) - or small marks (digits in the boxes of a form) adding up to 600 pixels"""
+    from scipy import ndimage as ndi
+    lab, n = ndi.label(hand, structure=np.ones((3, 3)))
+    if not n:
+        return False
+    sizes = ndi.sum(hand, lab, range(1, n + 1))
+    small = 0
+    for sz, o in zip(sizes, ndi.find_objects(lab)):
+        side = min(o[0].stop - o[0].start, o[1].stop - o[1].start)
+        if sz >= MIN_WRITING and side >= 6:
+            return True
+        if sz >= 15 and side >= 4:
+            small += sz
+    return small >= 600
+
+
 CIRCUIT_MIN_PARTS = 2                  # a figure the circuit reader finds this many parts in is a circuit
 
 
@@ -124,13 +176,19 @@ def read_circuits(img, figures, reader):
 
 
 def read_pages(path: str, dpi: int = 150, reader=None, photo: bool = False, scan: bool = False,
-               language: str = "hebrew", circuits: bool | None = None, progress=None):
+               language: str = "hebrew", circuits: bool | None = None, progress=None, pages=None, booklet: str = ""):
     """-> per page {"page": cleaned page image, "info": {...}, "lines": [[Segment, ...] per line,
     boxes in page coordinates], "figures": [(x0, y0, x1, y1)], "circuits": [...] (read_circuits)}. A segment
     written inside a frame the student drew (info["answer_boxes"]) gets .boxed = True - most likely a final answer.
     language: "hebrew" (Hebrew, English and math) or "english" (an exam in English: English and math)
     circuits: read the figures that are circuits (recog/circuit_reader.py) - None: when its detector is trained
-    progress: a function given a line of text as the reading goes (each page's layout, the heavy readers)"""
+    progress: a function given a line of text as the reading goes (each page's layout, the heavy readers)
+    pages: the page numbers to read (a set; None - all): the others come back {"skipped": True, "lines": [], ...} - one
+    exam read by several processes, a share of its pages each (tools/read_exams.py --pages), joined after
+    booklet: the printed booklet's templates (tools/build_booklet.py): each page's print erased before its lines are
+    found - only the handwriting read (the question text, the header are not the student's); a page with no
+    handwriting left is not read (info["no_handwriting"]); what the student crossed out (recog/crossed.py) found on
+    the handwriting - info["crossed"], and each piece under it .crossed = {"kind", "share"}"""
     from recog.mixed_reader import MixedReader
     from recog.page import clean_scan, find_lines, flatten_photo, looks_like_photo
     reader = reader or MixedReader(language=language)
@@ -146,14 +204,35 @@ def read_pages(path: str, dpi: int = 150, reader=None, photo: bool = False, scan
     out = []
     say = progress or (lambda msg: None)
     imgs = load_pages(path, dpi)
-    say(f"{len(imgs)} pages - their layout and first readings")
+    say(f"{len(imgs)} pages - their layout and first readings" + (f" (pages {min(pages)}-{max(pages)} here)" if pages else ""))
+    book = booklet_pages(booklet)
+    if book and book["n"] != len(imgs):
+        say(f"the booklet has {book['n']} pages, this scan {len(imgs)}: read without it")
+        book = {}
     for pno, img in enumerate(imgs, 1):
+        if pages is not None and pno not in pages:
+            out.append({"page": None, "info": {}, "lines": [], "figures": [], "circuits": [], "skipped": True})
+            continue
         flat = None
         if photo or (not scan and looks_like_photo(img)):
             img, flat = flatten_photo(img)
         page, info = clean_scan(img)
         if flat:
             info = {**info, "photo": {k: v for k, v in flat.items() if k != "photo"}}
+        hand, crossed = None, []
+        if book and not flat and pno in book["pages"]:
+            page, hand, binfo = handwriting_only(page, book["pages"][pno])
+            info = {**info, **binfo}
+            if hand is not None and not has_writing(hand):
+                out.append({"page": page, "info": {**info, "no_handwriting": True}, "lines": [], "figures": [],
+                            "circuits": []})
+                say(f"page {pno}/{len(imgs)}: no handwriting - not read")
+                continue
+            if hand is not None:
+                from recog.crossed import crossed_regions
+                from recog.page import letter_height
+                crossed = crossed_regions(hand, letter_height(hand) if hand.sum() > 2000 else None)
+                info["crossed"] = crossed
         lines = []
         regions = []
         if circuits:                                    # circuit drawings first: their area is not text
@@ -176,6 +255,9 @@ def read_pages(path: str, dpi: int = 150, reader=None, photo: bool = False, scan
                 for s in segs:                              # back to page coordinates
                     s.box = (s.box[0], s.box[1] + y0, s.box[2], s.box[3] + y0)
                     s.boxed = in_box(s.box, info.get("answer_boxes", []))
+                    if crossed:
+                        from recog.crossed import covered
+                        s.crossed = covered(s.box, crossed, hand)
                 lines.append(segs)
         circs = read_circuits(img, regions + list(figures), cr) if circuits and (regions or figures) else []
         out.append({"page": page, "info": info, "lines": lines, "figures": figures, "circuits": circs})

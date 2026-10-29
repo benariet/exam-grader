@@ -1219,6 +1219,9 @@ def _cnum(e):
     return v if math.isfinite(v.real) and math.isfinite(v.imag) else None
 
 
+_IMAG_UNIT = re.compile(r"(?<![A-Za-z\\])[ij](?![A-Za-z])|\\imath|\\jmath|\\angle|e\^\{?-?\s*[ij]")   # (written complex)
+
+
 def _fmt_c(v: complex) -> str:
     if abs(v.imag) < 1e-9:
         return _fmt(v.real)
@@ -3122,6 +3125,10 @@ def _chain(s: Statement, data: dict, steps: list, derived: list, data_si: dict |
                     ok, fa = True, (fa if deg else _UNSURE + _DEG_NOTE)
             if not ok and k == len(shown) - 2 and f_last not in (None, 1.0) and abs(ca / f_last - cb) < abs(ca - cb):
                 fa = f"{_fmt_c(ca / f_last)} {_unit_text(s.unit)}"     # (in the unit written: '1.2 - j1.6 mA is not 2 - j1')
+            if not ok and abs(cb.imag) < 1e-9 and "\\sqrt" in s.text and not _IMAG_UNIT.search(s.text):
+                # a root of a negative number in a real calculation, worked out to a real value: a sign misread
+                # ('\sqrt{0.6 + 0.9}' read '\sqrt{-0.6 - 0.9}', exam 5) - not a sure wrong step
+                fa = _MAYBE + f"{fa} is not {_fmt_c(cb)} - the root of a negative number: a sign misread?"
             steps.append((f"{_pretty(a)} = {_pretty(b)}", ok, fa, _fmt_c(cb)))
     db_last = False                                # the last step a ratio in dB ('A_v = 100 = 40 dB')
     orig_sides = [x.strip() for x in _split_eq(s.text)]

@@ -21,14 +21,22 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 
+CROSSED = 0.6           # a piece this much under the student's crossing-out (tools/find_crossed.py) is not judged
+
+
 def load(path):
+    """the saved pages as the checks take them; pieces the student crossed out left out (counted: "crossed_out")"""
     from recog.segment import Segment
     pages = []
     for p in json.load(open(path, encoding="utf-8")):
         lines = []
+        gone = 0
         for segs in p["lines"]:
             row = []
             for s in segs:
+                if (s.get("crossed") or {}).get("share", 0) >= CROSSED:
+                    gone += 1
+                    continue
                 seg = Segment(kind=s["kind"], box=tuple(s["box"]), p_kind=s["p_kind"], nbest=[(t, lp) for t, lp in s["nbest"]])
                 for k in ("math2", "formula_nbest"):         # (what the heavy readers added - read_exams.py keeps it)
                     if s.get(k):
@@ -36,8 +44,10 @@ def load(path):
                 seg.note = s.get("note", "")
                 seg.boxed = bool(s.get("boxed", False))
                 row.append(seg)
-            lines.append(row)
-        pages.append({"page": None, "info": p["info"], "lines": lines, "figures": p.get("figures", []), "circuits": []})
+            if row:
+                lines.append(row)
+        pages.append({"page": None, "info": p["info"], "lines": lines, "figures": p.get("figures", []), "circuits": [],
+                      "crossed_out": gone})
     return pages
 
 
@@ -139,6 +149,58 @@ def key_values(stmts) -> dict:
     return out
 
 
+def _result(s):
+    """a statement's number in SI units: a value's ('Y_2 = 1.151 V') or a chain's last side, named or not
+    ('= C_L \\frac{\\Delta V}{I} = 69.7 ns') -> float or None"""
+    from grader.selfcheck import _last_unit, _num, _si
+    import sympy as sp
+    if s.kind == "value" and isinstance(s.number, (int, float)):
+        f = _si(s.unit) if s.unit else None
+        return float(s.number) * f if f else float(s.number)
+    if s.kind == "cont" and s.side_texts:                  # ('= 69.8 ns' under the line it goes on: its last side alone)
+        from grader.selfcheck import statements
+        got = statements("x = " + s.side_texts[-1])
+        return _result(got[0]) if len(got) == 1 and got[0].kind == "value" else None
+    if s.kind == "chain" and len(s.sides) >= 2 and isinstance(s.sides[-1], sp.Basic) and not s.sides[-1].free_symbols:
+        v = _num(s.sides[-1])
+        if v is None:
+            return None
+        if "10^{" not in (s.side_texts[-1] if len(s.side_texts) == len(s.sides) else ""):
+            unit = s.unit or _last_unit(s.text or "")
+            f = _si(unit) if unit else None
+            v = v * f if f else v
+        return v
+    return None
+
+
+def checkpoints(stmts) -> list:
+    """the results a question's solution works out -> [(its name as shown, value in SI, as written)]: each chain's
+    result once (a value given in the question, 'C_L = 1 pF', is no result; 0 and 1 are too common to look for)"""
+    from grader.selfcheck import _pretty
+    out = []
+    for s in stmts:
+        if s.kind != "chain":
+            continue
+        v = _result(s)
+        if v is None or abs(v) in (0.0, 1.0) or any(_close(v, w) for _, w, _ in out):
+            continue
+        last = re.split(r"(?<![<>!])=|\\approx", s.text or "")[-1].strip()
+        out.append((_pretty(s.side_texts[0]) if s.side_texts else "", v, _pretty(last)))
+    return out
+
+
+def _close(a, b) -> bool:
+    return abs(abs(a) - abs(b)) <= 0.02 * max(abs(a), abs(b))
+
+
+def coverage(cps: list, stmts) -> tuple:
+    """which of the solution's results (checkpoints) the student's work reaches, by value under any name (a student
+    calls the solution's t_{pd,NAND} 't_{p21}' or nothing at all) -> (reached [(name, as written)], missing ...)"""
+    vals = [v for v in (_result(s) for s in stmts) if v]
+    hit = [any(_close(v, w) for w in vals) for _, v, _ in cps]
+    return [(n, t) for (n, _, t), h in zip(cps, hit) if h], [(n, t) for (n, _, t), h in zip(cps, hit) if not h]
+
+
 def solution_text(tex: str) -> str:
     """a line of the official solution as its document converter wrote it -> plain: '{= t}_{p0}' -> '= t_{p0}', a qualifier
     inside a name's subscript ('t_{pd,NAND;S = 1}': its sizing) left out"""
@@ -219,13 +281,16 @@ def main():
     ap.add_argument("--grades", default="", help="the lecturer's sheet (.xlsx): points off per question, beside the verdicts")
     ap.add_argument("--quiet", action="store_true", help="the table only, not every verdict")
     ap.add_argument("--solution", default="", help="the official solution's math per question (JSON): the values against it")
+    ap.add_argument("--remarks", action="store_true", help="per question, remarks in Hebrew as a lecturer writes them "
+                    "(-> <out>/<n>_auto_remarks.txt): a value unlike the solution's, a result not found, a sure wrong step")
+    ap.add_argument("--model", default="", help="tools/fit_estimate.py's fitted estimate (JSON): an estimate v2 table")
     ap.add_argument("--points", default="", help="each question's points, '1:50,2:25,3:25': an estimate of the points off")
     args = ap.parse_args()
     want = set(args.students)
     qpages = json.load(open(args.pages, encoding="utf-8")) if args.pages else {}
     marks = grades(args.grades) if args.grades else {}
     full = {int(q): float(v) for q, v in (x.split(":") for x in args.points.split(",") if x)} if args.points else {}
-    keys = {}
+    keys, cps = {}, {}
     if args.solution:
         from grader.selfcheck import statements
         sol = json.load(open(args.solution, encoding="utf-8"))
@@ -234,6 +299,7 @@ def main():
             for k, o in enumerate(x for x in sol if x["q"] == q):
                 st += statements(solution_text(o["tex"]), line=k, piece=k)
             keys[q] = key_values(st)
+            cps[q] = checkpoints(st)
     files = [f for f in glob.glob(os.path.join(args.out, "*.json")) if re.fullmatch(r"\d+\.json", os.path.basename(f))]
     files.sort(key=lambda p: int(re.sub(r"\D", "", os.path.basename(p))))
     table = []
@@ -253,9 +319,28 @@ def main():
             checks = check_pages([pages[k - 1] for k in pnos])
             tag = f"q{key}" if qpages else key
             c = counts.setdefault(key, {"right": 0, "wrong_sure": 0, "wrong_unsure": 0, "other": 0, "differs": 0, "agrees": 0,
-                                          "unlike": 0})
+                                          "unlike": 0, "remarks": []})
+            gone = sum(pages[k - 1].get("crossed_out", 0) for k in pnos)
+            if gone:
+                c["crossed_out"] = gone
+                c["remarks"].append(f"מה שהסטודנט מחק לא נבדק ({gone} קטעים).")
             if keys and qpages and key in keys:          # the values named against the official solution's
-                for shown, v, sol, agree in against_key(key_values(_best_statements([pages[k - 1] for k in pnos])), keys[key]):
+                best = _best_statements([pages[k - 1] for k in pnos])
+                if cps.get(key):                          # which of the solution's results the work reaches at all
+                    got, miss = coverage(cps[key], best)
+                    c["reached"], c["results"] = len(got), len(cps[key])
+                    if miss:
+                        c["remarks"].append("לא נמצא בדף ערך שתואם לפתרון עבור: " + ", ".join(f"{n} (בפתרון {t})" for n, t in miss) + ".")
+                    if not args.quiet:
+                        print(f"{name}\t{tag}\tp{','.join(map(str, pnos))}\tcoverage\t{len(got)} of {len(cps[key])}\t"
+                              f"reached: {', '.join(n for n, _ in got) or '-'}; not found: {', '.join(n for n, _ in miss) or '-'}")
+                for shown, v, sol, agree in against_key(key_values(best), keys[key]):
+                    if agree is False:
+                        slip = " (x1000 is near" in v
+                        c["remarks"].append(f"{shown}: אצלך {v.split(' (')[0]}, ובפתרון {' או '.join(sol[:3])}." +
+                                            (" ייתכן בלבול בקידומת היחידה (פי 1000)." if slip else ""))
+                    elif agree is None:
+                        c["remarks"].append(f"{shown} = {v}: לא דומה לאף ערך מתאים בפתרון ({', '.join(sol[:6])}).")
                     c["agrees" if agree else "differs" if agree is False else "unlike"] += 1
                     if not args.quiet:
                         word = "agrees" if agree else "DIFFERS" if agree is False else "UNLIKE ANY"
@@ -266,6 +351,8 @@ def main():
                     c["right"] += 1
                 elif ch.verdict.startswith("wrong"):
                     c["wrong_sure" if ch.sure else "wrong_unsure"] += 1
+                    if ch.sure:
+                        c["remarks"].append(f"צעד שגוי: {ch.text[:160]}")
                 else:
                     c["other"] += 1
                 if not args.quiet:
@@ -275,12 +362,54 @@ def main():
                 off = marks.get(name, {}).get(int(q)) if marks else None
                 table.append((name, q, off, counts[q]))
     if table and full:
-        print("\nstudent\tquestion\tpoints\testimated off (findings x %g)\tfindings\tchecks\tlecturer took off" % PER_FINDING)
+        print("\nstudent\tquestion\tpoints\testimated off (findings x %g)\tfindings\tchecks\tsolution results reached\t"
+              "lecturer took off" % PER_FINDING)
         for name, q, off, c in table:
             est, nf, nc = estimate(c, full.get(int(q)))
             pts = full.get(int(q))
+            reach = f"{c['reached']} of {c['results']}" if c.get("results") else ""
             print(f"{name}\t{q}\t{'' if pts is None else f'{pts:g}'}\t{'not checked' if est is None else f'{est:g}'}\t{nf}\t{nc}\t"
-                  f"{'' if off is None else f'{off:g}'}")
+                  f"{reach}\t{'' if off is None else f'{off:g}'}")
+    if table and full and args.model:                    # the estimate fitted on graded exams (tools/fit_estimate.py)
+        from tools.fit_estimate import predict
+        model = json.load(open(args.model, encoding="utf-8"))
+        print(f"\nestimate v2 (fitted on exams {', '.join(model.get('fitted_on', []))}: per question off = "
+              f"{model['alpha']:.2f} x points x missing + {model['beta']:.2f} x findings + {model['gamma']:.2f} x points "
+              f"/ (1 + checks); without the solution's results: the mean share off)")
+        print("student	question	points	estimated off v2	lecturer took off")
+        tot = {}
+        for name, q, off, c in table:
+            pts = full.get(int(q))
+            if pts is None:
+                continue
+            _, nf, nc = estimate(c, pts)
+            r = {"exam": name, "q": str(q), "points": pts, "findings": nf, "checks": nc, "reached": c.get("reached"),
+                 "results": c.get("results")}
+            v = predict(r, model)
+            t = tot.setdefault(name, [0.0, 0.0, True])
+            t[0] += v
+            if off is None:
+                t[2] = False
+            else:
+                t[1] += off
+            print(f"{name}	{q}	{pts:g}	{v:.1f}	{'' if off is None else f'{off:g}'}")
+        total = sum(full.values())
+        print("student	estimated grade v2	grade")
+        for name, (v, o, known) in tot.items():
+            print(f"{name}	{total - v:.0f}	{f'{total - o:g}' if known and marks else ''}")
+    if table and args.remarks:
+        for name in dict.fromkeys(t[0] for t in table):
+            lines = []
+            for n, q, off, c in table:
+                if n != name:
+                    continue
+                lines.append(f"שאלה {q} - הערות אוטומטיות")
+                checked = c["right"] + c["wrong_sure"] + c["wrong_unsure"] + c["agrees"] + c["differs"] + c["unlike"]
+                manual = [] if c.get("results") else ["בפתרון אין כאן ערכים מחושבים (ציור, טבלת אמת, בחירה או הסבר): לבדיקה ידנית."]
+                rem = manual + c["remarks"] or ["לא נמצאה טעות בחישובים שנקראו." if checked else "לא נקראו כאן חישובים."]
+                lines += [f"  - {r}" for r in rem]
+            open(os.path.join(args.out, f"{name}_auto_remarks.txt"), "w", encoding="utf-8").write("\n".join(lines) + "\n")
+            print(f"\n{name}: automatic remarks\n" + "\n".join(lines))
     if table:
         print("\nstudent\tquestion\tpoints off\tright\twrong (sure)\twrong (not sure)\tother\tsolution: agrees\tdiffers\t"
               "like none\tlook at")
