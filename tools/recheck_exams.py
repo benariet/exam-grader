@@ -79,6 +79,27 @@ def grades(path: str) -> dict:
 
 
 _ABS = re.compile(r"\\[lr]vert|\\left\s*\||\\right\s*\||\\mid|\|")
+_NAME_SIDE = re.compile(r"\s*(?:\\[lr]vert|\|)?\s*\\?[A-Za-z]+(?:_\{[^{}]*\}|_\w)?(?:\([^()]*\))?\s*(?:\\[lr]vert|\|)?\s*")
+
+
+def _delay_name(t: str) -> str:
+    """'t P_{HL}', 'tp_{LH}' (a delay's p read apart from its t) -> 't_{pHL}'"""
+    return re.sub(r"^\s*t\s*[pP]\s*_\s*\{\s*(HL|LH|d)\s*\}", lambda m: "t_{p" + m.group(1) + "}", t)
+
+
+def _name_sides(s) -> list:
+    """the chain's names: its sides before the first that is no name ('t_{PD} = t_{PHL} = C_L ... = 51.86 ps': both),
+    past a misread first side ('t\\Omega_2 = t P_{HL} = ...': t_{pHL})"""
+    texts = s.side_texts if len(s.side_texts) == len(s.sides) else s.side_texts[:1]
+    out, started = [], False
+    for t in (texts[:-1] if len(texts) == len(s.sides) else texts):
+        t = _delay_name(t)
+        if _NAME_SIDE.fullmatch(t):
+            out.append(t)
+            started = True
+        elif started:
+            break
+    return out
 
 
 def key_values(stmts) -> dict:
@@ -90,15 +111,16 @@ def key_values(stmts) -> dict:
     for s in stmts:
         last = re.split(r"(?<![<>!])=|\\approx", s.text or "")[-1].strip()      # the result as written ('21.6 \mu A')
         if s.kind == "value" and s.symbol is not None and isinstance(s.number, (int, float)):
-            name, v, unit = (s.side_texts[0] if s.side_texts else str(s.symbol)), float(s.number), s.unit or ""
+            name, v, unit = (_delay_name(s.side_texts[0]) if s.side_texts else str(s.symbol)), float(s.number), s.unit or ""
+            names = [name]
             if v in (0.0, 1.0) and unit in ("", "S", "W"):
                 continue                                 # (a node's state, an input's value)
             f = _si(unit) if unit else None
             v = v * f if f else v
         elif s.kind == "chain" and s.side_texts and len(s.sides) >= 2 and isinstance(s.sides[-1], sp.Basic) and \
-                not s.sides[-1].free_symbols and re.fullmatch(r"\s*(?:\\[lr]vert|\|)?\s*\\?[A-Za-z]+(?:_\{[^{}]*\}|_\w)?(?:\([^()]*\))?\s*(?:\\[lr]vert|\|)?\s*",
-                                                              s.side_texts[0]):
-            name, v = s.side_texts[0], _num(s.sides[-1])
+                not s.sides[-1].free_symbols and _name_sides(s):
+            names, v = _name_sides(s), _num(s.sides[-1])
+            name = names[0]
             if v is None:
                 continue
             if "10^{" not in (s.side_texts[-1] if len(s.side_texts) == len(s.sides) else ""):
@@ -107,12 +129,13 @@ def key_values(stmts) -> dict:
                 v = v * f if f else v
         else:
             continue
-        absolute = bool(_ABS.search(name))
-        key = _canon_name(_ABS.sub("", name)).replace("\\", "")
-        out.setdefault(key, []).append((v, _pretty(name), absolute, _pretty(last)))
-        alias = re.fullmatch(r"t_p?d?,(.+)", key)          # ('t_{pd,NAND}' as 't_{NAND}' too: a delay's name either way)
-        if alias:
-            out.setdefault("t_" + alias.group(1), []).append((v, _pretty(name), absolute, _pretty(last)))
+        for name in names:
+            absolute = bool(_ABS.search(name))
+            key = _canon_name(_ABS.sub("", name)).replace("\\", "")
+            out.setdefault(key, []).append((v, _pretty(name), absolute, _pretty(last)))
+            alias = re.fullmatch(r"t_p?d?,(.+)", key)      # ('t_{pd,NAND}' as 't_{NAND}' too: a delay's name either way)
+            if alias:
+                out.setdefault("t_" + alias.group(1), []).append((v, _pretty(name), absolute, _pretty(last)))
     return out
 
 
@@ -140,11 +163,21 @@ def against_key(student: dict, key: dict) -> list:
             sol, sign = key.get(swapped(name)), -1          # ('V_{SB} = -0.649' against the solution's 'V_{BS} = 0.649')
         if sol is None:                                     # ('I_D' against the solution's 'I_D(0)' and 'I_D(t_{pHL})': any)
             sol = [x for k, xs in key.items() if k.startswith(name + "(") for x in xs] or None
+        loose = False
+        if sol is None:                                     # ('V_T' against the solution's 'V_{Tp}', 'V_{Tn}': any - shown 'V_T?')
+            sol = [x for k, xs in key.items() if k.startswith(name) and re.fullmatch(r"[a-z]{1,2}", k[len(name):])
+                   for x in xs] or None
+            loose = bool(sol)
         if not sol:
             continue
         for v, shown, ab, written in vals:
             agree = any(close(abs(v), abs(w)) if (ab or sab) else close(sign * v, w) for w, _, sab, _ in sol)
-            out.append((shown, written, sorted({("-" if sign < 0 else "") + t for _, _, _, t in sol}), agree))
+            if not agree and re.search(r"\d\s*\\?[A-Za-zµ]", written):  # a value with a unit 1000 times off the key's,
+                for f in (1e3, 1e-3):                       # near it otherwise: a prefix slip ('51.86 ps' for 51.86 ns)
+                    if any(abs(f * v - w) <= 0.3 * abs(w) for w, _, _, _ in sol if w):
+                        written += f" (x{f:g} is near the solution: a unit prefix slip?)"
+                        break
+            out.append((shown + ("?" if loose else ""), written, sorted({("-" if sign < 0 else "") + t for _, _, _, t in sol}), agree))
     return out
 
 

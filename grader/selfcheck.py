@@ -1591,7 +1591,7 @@ def _pretty(tex: str) -> str:
     t = re.sub(r"\\(?:left|right)(?=\\[{}]|[()\[\]|.])", "", t).replace("\\{", "\ue010").replace("\\}", "\ue011")
     t = re.sub(r"\\(?:mathcal|mathscr)\{?L\}?", "L", t)
     t = re.sub(r"\\(?:mathrm|text|rm|operatorname)\{([A-Za-z]+)\}", r"\1", t)      # 'pf', 'BW' (one name: _ee_words)
-    t = re.sub(r"\^\{([+-]\d+(?:\.\d+)?)\}", r"^\1", re.sub(r"_\{(\w+)\}", r"_\1", t))     # 10^{-12}, V_{in}
+    t = re.sub(r"\^\{([+-]\d+(?:\.\d+)?)\}", r"^\1", re.sub(r"_\{(\w+(?:,\w+)*)\}", r"_\1", t))     # 10^{-12}, V_{in}, C_{g,min}
     t = re.sub(r"\^\{([^{}]+)\}", lambda m: "^" + (m.group(1) if len(m.group(1)) == 1 else f"({m.group(1)})"), t)  # 'e^(-2s)'
     atom = re.compile(r"[+-]?\d+(?:\.\d+)?|[A-Za-zα-ωΑ-Ωπ](?:_\w+)?|d[A-Za-z]|\\[A-Za-z]+|\([^()]*\)")
 
@@ -2345,6 +2345,9 @@ def _statements(tex: str, conf: float = 1.0, line: int = -1, piece: int = -1):
     # superscripts and subscripts as typed ('8×10⁻¹⁹ J', 'log₂(8)'): in LaTeX before the units are looked for (the unit
     # of '8×10⁻¹⁹ J' was not found - J a letter: no verdict)
     tex = re.sub(r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+", lambda m: "^{" + m.group(0).translate(_UNSUP) + "}", tex)
+    tex = re.sub(r"\\(?:no)?limits(?![A-Za-z])", "", tex)   # '\lim\limits_{x \to 0}': where the limits go, nothing else
+    # a dot for times before a power of ten ('5.10^{9}', '2.10^3' - 5·10⁹, as many write it, not 5.1 to the 9th)
+    tex = re.sub(r"(?<![\d.])([1-9]\d{0,2})\.(10\s*\^)", "\\1 \\\\cdot \\2", tex)
     tex = re.sub(r"\\left(?=\s*\\left)|\\right(?=\s*\\right(?![A-Za-z]))", "", tex)   # '\left \left(': a stray \left (a
     #                                                  bracket of the student's own then gets the reader's - one is enough)
     tex = re.sub(r"(?<=\d)(\s*)μ(?=\s*(?:F|H|A|V|W|s|S|m|Ω|\\Omega|C|J|T|Wb)(?![A-Za-z]))", "\\1µ", tex)   # a Greek mu as
@@ -2373,7 +2376,11 @@ def _statements(tex: str, conf: float = 1.0, line: int = -1, piece: int = -1):
                  r"\1^\\circ", tex)
     tex = re.sub(r"(\\(?:sin|cos|tan|cot|sec|csc)\s*(?:\\left\s*)?\(\s*-?\s*\d+(?:\.\d+)?)\s*rad(?:ians?)?(?=\s*(?:\\right\s*)?\))",
                  r"\1", tex)
-    tex = re.sub(r"(?<=\d)(\s*)([mµun]|\\mu\s*)?sec(?![A-Za-z])", lambda m: m.group(1) + (m.group(2) or "").strip() + ("" if not m.group(2) or not m.group(2).startswith("\\") else " ") + "s", tex)
+    # 'sec' read letter by letter, its e as a c ('51.86 p s c c', '3 s e c' - a reader that spaces its letters)
+    tex = re.sub(r"(?<=\d)(\s*)([mµunpP]?)\s*s\s*[ec]\s*c(?![A-Za-z])", "\\1\\2sec", tex)
+    # a capital P for pico after a number ('51.86 Psec', '1 P F' - a handwritten p read as P; peta-seconds are no answer)
+    tex = re.sub(r"(?<=\d)(\s*)P\s*(?=(?:sec|s|F|H)(?![A-Za-z]))", "\\1p", tex)
+    tex = re.sub(r"(?<=\d)(\s*)([mµunp]|\\mu\s*)?sec(?![A-Za-z])", lambda m: m.group(1) + (m.group(2) or "").strip() + ("" if not m.group(2) or not m.group(2).startswith("\\") else " ") + "s", tex)
     tex = re.sub(r"(?<=\d)(\s*)([kMG]?)hz(?![A-Za-z])", "\\1\\2Hz", tex)
     if not re.search(r"\\[oi]+nt|∫", tex):                # (not an integral's 'db')
         tex = re.sub(r"(?<=\d)(\s*)db(?![A-Za-z])", "\\1dB", tex)

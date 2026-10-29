@@ -5924,3 +5924,58 @@ def test_a_name_worked_out_again_and_names_with_min_max():
     assert v(["x = \\frac{4C_{g,\\min}}{6C_{g,\\min}} = \\frac{2}{3}"]) == [("right", True)]
     assert v(["t_{p0} = 0.69R_{eq}C_{in\\_ inv} = 0.69 \\cdot 2f \\cdot 5k = 6.9ps"]) == [("right", True)]
     assert _parse_full("0.69R_{eq}C_{in\\_ inv}") == (None, None)    # (a name's letters lost: no expression, not 0.69)
+
+
+def test_a_real_exams_delays_names_and_units_against_the_solution():
+    """a real exam read again (exam 1, Uni-MuMER's readings): 'Psec' and '1 P F' (a handwritten p read as P), 'p s c c'
+    (sec letter by letter) were no units; a chain whose first side was misread ('t\\Omega_2 = t P_{HL} = C_L ... = 51.86
+    ps') gave no value to compare - its first side that is a name does now; 'V_T' against the solution's 'V_{Tp}',
+    'V_{Tn}' (any, shown 'V_T?'); a value 1000 times off the key's but near it otherwise gets a prefix-slip note;
+    '\\lim\\limits' lost its limit and '5.10^{9}' (5 times 10^9) was 5.1^9 - sure false wrongs in the same exam"""
+    from grader.selfcheck import statements
+    from tools.recheck_exams import against_key, key_values
+
+    def u(t):
+        return [(s.kind, s.unit, s.number) for s in statements(t)]
+    assert u("t = 51.86 Psec") == u("t = 51.86 p s c c") == u("t = 51.86 ps") == [("value", "ps", 51.86)]
+    assert u("C_L = 1 P F") == [("value", "pF", 1.0)]
+    assert u("P = 5 P") == [("formula", "", None)]                      # (a letter P: not pico)
+    kv = key_values(statements("t \\Omega _ { 2 } \\equiv t P _ { H L } = C _ { L } \\cdot \\frac { \\Delta v } { I _ { a v } } "
+                               "= 1 P F \\cdot 0 . 6 v = 5 1 . 8 6 P s c c"))
+    assert list(kv) == ["t_phl"] and abs(kv["t_phl"][0][0] - 51.86e-12) < 1e-15
+    key = key_values(statements("t_{pHL} = 69.7 ns") + statements("|V_{Tp}| = 0.537 V") + statements("V_{Tn} = 0.649 V"))
+    got = against_key(kv, key)
+    assert got[0][3] is False and "prefix slip" in got[0][1]
+    vt = against_key(key_values(statements("V_T = -0.3 V") + statements("V_{T} = 0.65 V")), key)
+    assert [(n, a) for n, _, _, a in vt] == [("V_T?", False), ("V_T?", True)]
+    assert against_key(key_values(statements("I = 2 mA")), key_values(statements("I_{avg} = 3 mA"))) == []
+    # '\lim\limits_{x \to 0}' (where the limits are typeset): the limit was lost - a sure false wrong 'lim sinx/x = 1'
+    assert [x[:2] for x in _page_verdicts(["\\lim \\limits _ { x \\rightarrow 0 } \\frac { \\sin x } { x } = 1"])] == [("right", True)]
+    assert [x[:2] for x in _page_verdicts(["\\sum\\nolimits_{n=1}^{3} n = 7"])] == [("wrong step", True)]
+    # a dot for times before a power of ten ('T = 1/(5.10^9) = 200 ps', the same exam): it was 5.1 to the 9th, a sure wrong
+    assert [x[:2] for x in _page_verdicts(["T = \\frac{1}{5.10^{9}} = 200 ps"])] == [("right", True)]
+    assert [x[:2] for x in _page_verdicts(["y = 0.10^{2} = 0.01"])] == [("right", True)]     # (0.10: a decimal)
+
+
+def test_a_big_vlm_as_second_formula_reader_merged_with_uni_mumer():
+    """exam 1 read again with Qwen3-VL-8B (tools/reread_math_vlm.py): it reads much more of the handwriting than
+    Uni-MuMER, and fills what it cannot read with something plausible - the same reading for many pieces, an answer in
+    words, Hebrew written out; merge() puts its reading first only where it can be trusted. A chain naming the value
+    twice ('t_{PD} = t_{PHL} = ... = 51.86 ps') gives both names to compare with the solution"""
+    from grader.selfcheck import statements
+    from tools.recheck_exams import key_values
+    from tools.reread_math_vlm import merge
+
+    def page(*pairs):
+        return [{"info": {}, "lines": [[{"kind": "math", "box": [0, 0, 9, 9], "math2": [(v, -1.0)], "math2_mumer": [(m, -2.0)]}]
+                                       for v, m in pairs]}]
+    made_up = "\\tau_p = 0.69 \\cdot R \\cdot C = 0.69 \\cdot 100 \\cdot 10^3 \\cdot 100 \\cdot 10^{-12}"
+    data = page(("V_T = - 0.3 V", "V _ { T } = - 0 . 3 V"), (made_up, "a"), (made_up, "b"), (made_up, "c"),
+                ("There is no handwritten math in the image provided, only printed text", "d"),
+                ("C_{L} = 1pF: \\text{יש להתחשב באפקט המצע}", "e"), ("2025-2026", "f"), ("2025-2026", "g"), ("2025-2026", "h"))
+    assert merge(data) == {"vlm": 5, "mumer": 4}
+    firsts = [segs[0]["math2"][0][0] for segs in data[0]["lines"]]
+    assert firsts == ["V_T = - 0.3 V", "a", "b", "c", "d", "C_{L} = 1pF:", "2025-2026", "2025-2026", "2025-2026"]
+    assert data[0]["lines"][0][0]["math2"][1][0] == "V _ { T } = - 0 . 3 V"      # (Uni-MuMER's after it)
+    kv = key_values(statements("t_{PD} = t_{PHL} = C_L \\cdot \\frac{\\Delta V}{I_{av}} = 1pF \\cdot \\frac{0.6V}{1.565mA} = 51.86pscc"))
+    assert sorted(kv) == ["t_pd", "t_phl"] and abs(kv["t_phl"][0][0] - 51.86e-12) < 1e-15
