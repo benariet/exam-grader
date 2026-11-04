@@ -6272,3 +6272,80 @@ def test_a_size_bar_whose_opening_was_misread_is_no_separator_and_a_matrix_no_cr
     assert s.kind == "chain" and len(s.sides) == 3
     assert [x.kind for x in statements("a = 3 | b = 4")] == ["value", "value"]
     assert _same_expr(sp.MatrixSymbol("M", 2, 2), sp.Symbol("x")) is None
+
+
+def test_a_vision_models_latex_tidied_and_its_reading_first_by_weight():
+    """Qwen3.6 (4.11) writes math delimiters anywhere ('$$a$$ $$b$$') and spaces every token as the handwriting
+    datasets do ('t _ { p d 1 } = 1 6 . 1 p s'): tidied, the checks read them as the 8B model's readings; and a
+    trusted VLM reading put first in a piece's readings is first by weight too - one model's log-probabilities are not
+    another's (the 27B's greedy -3.6 under Uni-MuMER's -2.5: its 't_{pd1} = 16.1 ps' was lost)"""
+    from tools.read_blocks import math_of, tidy_latex
+    from tools.reread_math_vlm import clean_latex, merge
+    assert tidy_latex("$$t _ { p d 1 } = 1 6 . 1 p s$$ $$t _ { p d 2 } = 2 7 . 6 p s$$") == \
+        "t_{pd1}=16.1ps \\quad t_{pd2}=27.6ps"
+    assert tidy_latex("V _ { g s } = \\vert V _ { t p } \\vert \\qquad x") == "V_{gs}=|V_{tp}| \\quad x"
+    assert tidy_latex("\\frac { 1 } { 2 } \\cdot x + y = z") == "\\frac{1}{2}\\cdot x+y=z"
+    assert tidy_latex("t_{pD1} = 16.1 ps \\quad t_{pD2} = 27.6 ps") == "t_{pD1} = 16.1 ps \\quad t_{pD2} = 27.6 ps"
+    assert clean_latex("$t_{pHL} = 84 ns$") == "t_{pHL} = 84 ns" and math_of("$$V_{DD} = 1.8$$ לכן") == "V_{DD} = 1.8"
+    seg = {"kind": "math", "math2": [["t_{pd1} = 16.1 ps", -3.6]], "math2_mumer": [["z _ { p s } = 1 6 . 1", -2.5]],
+           "nbest": [["x", -1.0]]}
+    used = merge([{"page": 1, "lines": [[seg]]}])
+    assert used["vlm"] == 1 and seg["math2"][0][0] == "t_{pd1} = 16.1 ps" and seg["math2"][0][1] > seg["math2"][1][1]
+
+
+def test_a_page_of_notes_routed_line_by_line_and_mishkefet_loaded_safely():
+    """tools/read_notes.py: a line is Hebrew where the formula reader made Hebrew up over it (or the Hebrew reader is
+    sure of it), a formula where the formula reader wrote math and the Hebrew reader is not sure, a Latin word where
+    the formula reader read letters alone ('login'); recog/mishkefet.py: its language models' pickles are read with no
+    class or function allowed"""
+    import io
+    import pickle
+    import pytest
+    from recog.mishkefet import _Plain
+    from tools.read_notes import kind
+    assert kind("בנוסף אני רוצה לבדוק", 0.98, "כריותי כריותי") == "H"
+    assert kind("לא נכנסים", 0.95, "i_{p-0} > j_{19}") == "H"
+    assert kind("ת השמש משפט", 0.91, "f_{osc} \\sim \\frac{1}{2N t_p}") == "M"
+    assert kind("ז חיפו", 0.95, "login ts") == "E"
+    assert kind("ה", 0.6, "") == ""
+    assert _Plain(io.BytesIO(pickle.dumps({"order": 6, "counts": [{"אב": 3}]}))).load()["order"] == 6
+    with pytest.raises(pickle.UnpicklingError):
+        _Plain(io.BytesIO(pickle.dumps({"x": io.BytesIO}))).load()
+
+
+def test_writing_forms_made_and_cut_back_by_their_corner_squares():
+    """tools/writing_forms.py: a page of lines to copy, its number in the squares at its top; a scan of it - turned,
+    pages out of order, a box left empty - cut back into each box with its line as the label"""
+    import json
+    import os
+    import tempfile
+    import numpy as np
+    import cv2
+    import pypdfium2 as pdfium
+    from PIL import Image, ImageDraw
+    from tools.writing_forms import cut, make, visual
+    assert visual("טופס כתב יד - עמוד 1") == "1 דומע - די בתכ ספוט"
+    assert visual("במצב זה ה-NMOS כבוי") == "יובכ NMOS-ה הז בצמב"
+    with tempfile.TemporaryDirectory() as tmp:
+        make(os.path.join(tmp, "f"), 2, 3)
+        info = json.load(open(os.path.join(tmp, "f.json"), encoding="utf-8"))
+        assert [len(p["slots"]) for p in info["pages"]] == [8, 8]
+        doc = pdfium.PdfDocument(os.path.join(tmp, "f.pdf"))
+        px, scans = 150 / 25.4, []
+        for k in (1, 0):
+            img = doc[k].render(scale=150 / 72).to_pil().convert("L")
+            d = ImageDraw.Draw(img)
+            for s, slot in enumerate(info["pages"][k]["slots"]):
+                if s != 2:
+                    a, b, c, e = (v * px for v in slot["box_mm"])
+                    d.rectangle((a + 30, b + 15, a + 300, e - 15), fill=0)
+            arr = np.asarray(img)
+            h, w = arr.shape
+            M = cv2.getPerspectiveTransform(np.float32([[0, 0], [w, 0], [w, h], [0, h]]),
+                                            np.float32([[20, 30], [w - 8, 12], [w - 25, h - 10], [10, h - 28]]))
+            scans.append(Image.fromarray(cv2.warpPerspective(arr, M, (w, h), borderValue=240)).convert("RGB"))
+        scans[0].save(os.path.join(tmp, "scan.pdf"), save_all=True, append_images=scans[1:], resolution=150)
+        cut(os.path.join(tmp, "f.json"), os.path.join(tmp, "scan.pdf"), os.path.join(tmp, "out"), 150)
+        rows = [json.loads(r) for r in open(os.path.join(tmp, "out", "labels.jsonl"), encoding="utf-8")]
+    assert len(rows) == 14 and {r["page"] for r in rows} == {1, 2} and all(r["slot"] != 3 for r in rows)
+    assert rows[0]["text"] == info["pages"][1]["slots"][0]["text"]

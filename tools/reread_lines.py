@@ -181,6 +181,7 @@ def refilter(lines_data: list, pieces_data: list) -> tuple:
         for i, segs in enumerate(page.get("lines", [])):
             seg = next((s for s in segs if "line_text" in s), None)
             if seg is None or i not in by_i:
+                page["lines"][i] = orig["lines"][i]   # (not read whole: its pieces as in the reading given - merged again)
                 continue
             maths, rest = by_i[i]
             text = clean_line(seg["line_text"])

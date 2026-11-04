@@ -39,6 +39,12 @@ def normalize_hebrew(s: str) -> str:
     return " ".join(s.split())
 
 
+def no_thinking(text: str) -> str:
+    """a reasoning model's answer without its thinking (Qwen3.5 / 3.6 think first unless the chat template is told
+    enable_thinking=False - which a template that does not know it ignores): what follows '</think>'"""
+    return text.split("</think>")[-1].strip() if "</think>" in text else text
+
+
 def pick_device() -> tuple[str, torch.dtype]:
     from . import gpu
     return gpu.pick()
@@ -80,8 +86,18 @@ class HebrewRecognizer:
             if self.device.startswith("cuda"):
                 budget = max(1.0, self.gpu.gpu_free_gb() - self.gpu.MARGIN_GB - 0.5)
                 kwargs["max_memory"] = {0: f"{budget:.1f}GiB", "cpu": "96GiB"}
+        elif self.device.startswith("cuda") and torch.cuda.device_count() > 1 and self.n_b:
+            # a model too big for one GPU (Qwen3.6-27B: 56 GB in 16 bits) spread over the GPUs the job has; in 8 bits
+            # where even all of them are too small (two 24 GB cards)
+            free = [torch.cuda.mem_get_info(i)[0] / 2**30 for i in range(torch.cuda.device_count())]
+            kwargs["device_map"] = "auto"
+            kwargs["max_memory"] = {i: f"{max(1.0, f - 2 * self.gpu.MARGIN_GB):.0f}GiB" for i, f in enumerate(free)}
+            if self.n_b * 2e9 / 2**30 * 1.1 > sum(free) - 2 * self.gpu.MARGIN_GB * len(free):
+                from transformers import BitsAndBytesConfig
+                kwargs["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
+                print(f"[vlm] {self.n_b:.0f}B in 8 bits over {len(free)} GPUs ({sum(free):.0f} GB free)", flush=True)
         self.model = AutoModelForImageTextToText.from_pretrained(self.model_dir, **kwargs)
-        if not self.load_in_4bit:
+        if "device_map" not in kwargs:
             self.model.to(self.device)
         if self.adapter_dir:
             from peft import PeftModel
@@ -125,7 +141,7 @@ class HebrewRecognizer:
         if system:
             msgs.insert(0, {"role": "system", "content": [{"type": "text", "text": system}]})
         for attempt in range(2):
-            inputs = self.proc.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True,
+            inputs = self.proc.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True, enable_thinking=False,
                                                    return_dict=True, return_tensors="pt").to(self.model.device)
             if "pixel_values" in inputs and inputs["pixel_values"].is_floating_point():
                 inputs["pixel_values"] = inputs["pixel_values"].to(self.model.dtype)
@@ -145,7 +161,7 @@ class HebrewRecognizer:
             valid = seq != pad if pad is not None else torch.ones_like(seq, dtype=torch.bool)
             tok_lp = ts[: len(seq)][valid[: ts.shape[0]]].float()
             tok_lp = tok_lp[torch.isfinite(tok_lp)]
-            text = normalize_hebrew(self.proc.tokenizer.decode(seq, skip_special_tokens=True))
+            text = normalize_hebrew(no_thinking(self.proc.tokenizer.decode(seq, skip_special_tokens=True)))
             cands.append(Candidate(text, float(tok_lp.sum()) if len(tok_lp) else 0.0,
                                    float(tok_lp.min().exp()) if len(tok_lp) else 0.0))
         return cands

@@ -28,7 +28,8 @@ def clean_latex(t: str) -> str:
     for a, b in (("$$", "$$"), ("$", "$"), ("\\(", "\\)"), ("\\[", "\\]")):
         if t.startswith(a) and t.endswith(b) and len(t) > len(a) + len(b):
             t = t[len(a):-len(b)].strip()
-    return " ".join(t.split())
+    from tools.read_blocks import tidy_latex
+    return tidy_latex(" ".join(t.split()))
 
 
 REPEATS = 3          # one reading for this many pieces or more: made up (but a line on every page, '2025-2026')
@@ -113,7 +114,11 @@ def merge(data, elsewhere: frozenset = frozenset()) -> dict:
         agree = bool(vlm[0][0]) and bool(mumer) and _same(vlm[0][0]) == _same(mumer[0][0])
         if agree or _trusted(vlm[0][0], counts, elsewhere):
             # (both readers read the same: what is written - a line common to two students' work, or printed, is
-            # not made up)
+            # not made up). First also by its weight: the checks mix a piece's readings by their probabilities, and
+            # one model's log-probabilities are not another's (Qwen3.6-27B greedy, -3.6, under Uni-MuMER's -2.5 for
+            # the same 't_{pd1} = 16.1 ps': its reading lost) - the VLM's top made at least Uni-MuMER's
+            lift = max(0.0, (mumer[0][1] if mumer else -1e9) - vlm[0][1] + 0.5)
+            vlm = [(t, lp + lift) for t, lp in vlm]
             s["math2"] = vlm + [m for m in mumer if m[0] not in {v[0] for v in vlm}]
             used["vlm"] += 1
         elif len(mumer[0][0]) > 12 and _same(mumer[0][0]) in elsewhere:
@@ -151,6 +156,9 @@ def main():
     ap.add_argument("--pad", type=int, default=6, help="pixels around each box (at the reading's dpi)")
     args = ap.parse_args()
     data = json.load(open(args.json, encoding="utf-8"))
+    for s in (s for page in data for segs in page["lines"] for s in segs if s.get("math2_mumer")):
+        s["math2"] = s.pop("math2_mumer")       # (read by another VLM before: Uni-MuMER's readings back, to read again)
+        s.pop("math2_vlm", None)
     from recog.page import flatten_photo
     imgs = load_pages(args.pdf, args.dpi)
     f = args.dpi / args.read_dpi
@@ -166,30 +174,39 @@ def main():
     print(f"{len(jobs)} math pieces on {len(imgs)} pages - loading {args.model}", flush=True)
     t0 = time.time()
     import torch
-    rec = HebrewRecognizer(model_dir=args.model, dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else None)
+    from recog.remote_vlm import RemoteReader, is_url
+    rec = RemoteReader(args.model) if is_url(args.model) else \
+        HebrewRecognizer(model_dir=args.model, dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else None)
     print(f"model ready in {time.time() - t0:.0f} s ({rec.device}, {rec.dtype})", flush=True)
     t1 = time.time()
-    for k, (p, s) in enumerate(jobs, 1):
+
+    def read_one(k, p, s):
         x0, y0, x1, y1 = s["box"]
         img = imgs[p].convert("L")
         a, b = max(0, int((min(x0, x1) - args.pad) * f)), max(0, int((min(y0, y1) - args.pad) * f))
         c, d = min(img.width, int((max(x0, x1) + args.pad) * f)), min(img.height, int((max(y0, y1) + args.pad) * f))
         if c - a < 4 or d - b < 4:                           # (a box off the page: keep Uni-MuMER's reading)
-            continue
-        crop = img.crop((a, b, c, d))
+            return []
         try:
-            cands = rec.recognize(crop, n_best=args.n_best, max_new_tokens=160, prompt=PROMPT_VLM)
-            got = [(clean_latex(c.text), float(c.logp)) for c in cands if clean_latex(c.text)]
+            cands = rec.recognize(img.crop((a, b, c, d)), n_best=args.n_best, max_new_tokens=160, prompt=PROMPT_VLM)
+            return [(clean_latex(c.text), float(c.logp)) for c in cands if clean_latex(c.text)]
         except Exception as e:                              # noqa: BLE001  (one piece: keep Uni-MuMER's)
             print(f"piece {k}: {type(e).__name__}: {e}", flush=True)
-            got = []
-        if got:
-            if s.get("math2"):
-                s["math2_mumer"] = s["math2"]
-            s["math2"] = got
-        if k % 20 == 0 or k == len(jobs):
-            each = (time.time() - t1) / k
-            print(f"{k}/{len(jobs)} pieces ({each:.1f} s each, about {each * (len(jobs) - k) / 60:.1f} min left)", flush=True)
+            return []
+
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=16 if is_url(args.model) else 1) as pool:   # (a served model: many at once)
+        futures = [pool.submit(read_one, k, p, s) for k, (p, s) in enumerate(jobs, 1)]
+        for k, ((p, s), fut) in enumerate(zip(jobs, futures), 1):
+            got = fut.result()
+            if got:
+                if s.get("math2"):
+                    s["math2_mumer"] = s["math2"]
+                s["math2"] = got
+            if k % 20 == 0 or k == len(jobs):
+                each = (time.time() - t1) / k
+                print(f"{k}/{len(jobs)} pieces ({each:.1f} s each, about {each * (len(jobs) - k) / 60:.1f} min left)",
+                      flush=True)
     json.dump(data, open(args.out, "w", encoding="utf-8"), ensure_ascii=False)
     print(f"DONE - saved {args.out}", flush=True)
 

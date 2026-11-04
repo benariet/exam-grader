@@ -68,6 +68,11 @@ def strips(bands: list, lh: float, max_lines: int = STRIP_LINES) -> list:
 
 class BlockReader:
     def __init__(self, model_dir: str):
+        """model_dir: a downloaded model, or the URL of one vLLM serves in the job (recog/remote_vlm.py)"""
+        from recog.remote_vlm import RemoteReader, is_url
+        self.remote = RemoteReader(model_dir) if is_url(model_dir) else None
+        if self.remote:
+            return
         import torch
         from recog.hebrew_vlm import HebrewRecognizer
         self.rec = HebrewRecognizer(model_dir=model_dir,
@@ -76,18 +81,23 @@ class BlockReader:
     def read(self, img, max_new_tokens: int = 1500, prompt: str = PROMPT_BLOCK) -> str:
         """one strip -> its transcription, its lines kept (greedy: one reading); a line the model keeps writing again
         (a table's borders: '|' 750 times) cut after its third time in a row"""
+        if self.remote:
+            text = self.remote.read(img, max_new_tokens=max_new_tokens, prompt=prompt)
+            text = re.sub(r"^```(?:latex|tex|text)?\s*|\s*```$", "", text.strip())
+            return "\n".join(drop_runs([ln.rstrip() for ln in text.splitlines() if ln.strip()]))
         import torch
+        from recog.hebrew_vlm import no_thinking
         rec = self.rec
         rec._unpark()
         msgs = [{"role": "user", "content": [{"type": "image", "image": img.convert("RGB")},
                                              {"type": "text", "text": prompt}]}]
         inputs = rec.proc.apply_chat_template(msgs, tokenize=True, add_generation_prompt=True, return_dict=True,
-                                              return_tensors="pt").to(rec.model.device)
+                                              enable_thinking=False, return_tensors="pt").to(rec.model.device)
         if "pixel_values" in inputs and inputs["pixel_values"].is_floating_point():
             inputs["pixel_values"] = inputs["pixel_values"].to(rec.model.dtype)
         with torch.inference_mode():
             out = rec.model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False, repetition_penalty=1.1)
-        text = rec.proc.tokenizer.decode(out[0, inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+        text = no_thinking(rec.proc.tokenizer.decode(out[0, inputs["input_ids"].shape[1]:], skip_special_tokens=True))
         text = re.sub(r"^```(?:latex|tex|text)?\s*|\s*```$", "", text.strip())
         return "\n".join(drop_runs([ln.rstrip() for ln in text.splitlines() if ln.strip()]))
 
@@ -171,12 +181,37 @@ def tokens_for(box, lh: float = 20.0) -> int:
     return int(120 + 90 * max(1, (box[3] - box[1]) / (1.6 * lh)))
 
 
+_CMD_END = re.compile(r"\\[A-Za-z]+$")
+
+
+def tidy_latex(t: str) -> str:
+    """a vision model's LaTeX as the checks read it (Qwen3.6, 4.11): math delimiters anywhere ('$$a = 1$$ $$b = 2$$',
+    '$x$', '\\[ \\]') a wide space between statements, not text; '\\vert' a bar, '\\qquad' a '\\quad'; a reading spaced
+    token by token as handwriting datasets write it ('t _ { p H L } = 1 . 8') put together ('t_{pHL}=1.8' - a command
+    keeps the space after it: '\\cdot x')"""
+    t = re.sub(r"\$\$|\$|\\\[|\\\]|\\\(|\\\)", r" \\quad ", t)
+    t = re.sub(r"\\vert(?![A-Za-z])", "|", t)
+    t = re.sub(r"\\qquad(?![A-Za-z])|\\displaystyle(?![A-Za-z])", lambda m: r" \quad " if "qq" in m.group(0) else " ", t)
+    toks = t.split()
+    if len(toks) >= 6 and sum(1 for x in toks if len(x) == 1) > 0.6 * len(toks):
+        out = ""
+        for x in toks:
+            if out and _CMD_END.search(out) and re.match(r"[A-Za-z]", x):
+                out += " "
+            out += x
+        t = out.replace("\\quad", " \\quad ")
+    t = re.sub(r"(?:\s*\\quad(?![A-Za-z])\s*)+", r" \\quad ", t)
+    t = re.sub(r"^\s*\\quad\s*|\s*\\quad\s*$", "", t)
+    return " ".join(t.split())
+
+
 def math_of(line: str) -> str:
     """a transcribed line's math: Hebrew words (and \\text{...} with Hebrew) left out, what is left trimmed"""
-    t = re.sub(r"\\text\s*\{[^{}]*[\u0590-\u05FF][^{}]*\}", " ", line)
+    t = re.sub(r"\\text\s*\{[^{}]*[\u0590-\u05FF][^{}]*\}", " ", tidy_latex(line))
     t = _HEB.sub(" ", t)
     t = re.sub(r"\[\?\]", " ", t)
-    t = " ".join(t.split()).strip(" ,.:;-")
+    t = re.sub(r"^(?:\s*\\quad(?![A-Za-z]))+|(?:\s*\\quad(?![A-Za-z]))+\s*$", "", " ".join(t.split()))
+    t = t.strip(" ,.:;-")
     return t if re.search(r"[0-9A-Za-z\\]", t) else ""
 
 
