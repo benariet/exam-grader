@@ -5949,6 +5949,9 @@ def test_a_real_exams_delays_names_and_units_against_the_solution():
     vt = against_key(key_values(statements("V_T = -0.3 V") + statements("V_{T} = 0.65 V")), key)
     assert [(n, a) for n, _, _, a in vt] == [("V_T?", False), ("V_T?", True)]
     assert against_key(key_values(statements("I = 2 mA")), key_values(statements("I_{avg} = 3 mA"))) == []
+    # a result misread past its number (the lines read whole, 4.11): no value to hold against the solution's
+    assert key_values(statements("t_{pHL} = 2e'c-5(c")) == {} and key_values(statements("t_{pHL} = 26 \\mu s)Y_1")) == {}
+    assert list(key_values(statements("t_{PD} = 1.38 ps \\\\;"))) == ["t_pd"]
     # '\lim\limits_{x \to 0}' (where the limits are typeset): the limit was lost - a sure false wrong 'lim sinx/x = 1'
     assert [x[:2] for x in _page_verdicts(["\\lim \\limits _ { x \\rightarrow 0 } \\frac { \\sin x } { x } = 1"])] == [("right", True)]
     assert [x[:2] for x in _page_verdicts(["\\sum\\nolimits_{n=1}^{3} n = 7"])] == [("wrong step", True)]
@@ -6204,3 +6207,68 @@ def test_the_points_off_estimate_fitted_on_graded_exams():
     assert abs(m["prior"]["2"] - (9 + 5 + 7) / 75) < 1e-9
     assert predict({"q": "2", "points": 25, "results": None}, m) == m["prior"]["2"] * 25
     assert predict({"q": "1", "points": 50, "results": 9, "reached": 0, "findings": 0, "checks": 0}, m) <= 50
+
+
+def test_an_answer_read_as_one_block():
+    """tools/read_blocks.py (Tal's idea): a sub-question's whole answer read at once - its lines found (bands of rows
+    with ink), grouped into strips of whole lines the model reads well, the model's lines kept in order (a line it
+    writes again and again - a table's borders - cut), the math of each line (Hebrew words left out) as one math
+    piece of a reading tools/recheck_exams.py judges"""
+    import numpy as np
+    from tools.read_blocks import as_reading, drop_runs, line_bands, math_of, strips
+    ink = np.zeros((700, 400), bool)
+    for i in range(20):
+        ink[20 + 28 * i:38 + 28 * i, 50:300] = True
+    bands = line_bands(ink, 18)
+    assert len(bands) == 20 and bands[0] == (20, 38)
+    assert len(strips(bands, 18)) == 2                       # (14 lines at most a strip)
+    assert math_of("לכן V_T = 0.43 + 0.4(\\sqrt{2.4+V_T}-\\sqrt{0.6}) = 0.65V") == \
+        "V_T = 0.43 + 0.4(\\sqrt{2.4+V_T}-\\sqrt{0.6}) = 0.65V"
+    assert math_of("מכאן נובע שהטרנזיסטור כבוי.") == "" and math_of("\\text{ולכן} t_{pHL} = 69.8 ns [?]") == "t_{pHL} = 69.8 ns"
+    assert drop_runs(["V = 1"] + ["|"] * 8 + ["t = 2"] * 4 + ["c = 3"]) == ["V = 1", "|", "|", "|", "t = 2", "t = 2", "t = 2", "c = 3"]
+    pages = as_reading([{"page": 2, "strips": [{"box": [0, 0, 100, 90], "text": "שורה\nV = 1.2 V\n\\frac{1}{2} = 0.5"}]}], 3)
+    assert [r[0]["nbest"][0][0] for r in pages[1]["lines"]] == ["V = 1.2 V", "\\frac{1}{2} = 0.5"] and pages[0]["lines"] == []
+
+
+def test_a_line_read_whole_with_its_context_and_its_inventions_left_out():
+    """tools/reread_lines.py: each line read whole, the lines before it as context - the reading cleaned of the model's
+    loops (spacing written again and again, the line written twice) without losing what parts two statements ('\\\\' a
+    new line, '\\quad' a wide space), names written run together given their subscripts, a lone 'v' after a number a
+    volt; a line the model wrote on instead of reading - its numbers in no other reading of the line - given back its
+    pieces (exam 7: a small 'Y_2' beside Hebrew read as 't_{pHL} = 8.60 ns, ...'; a dash read as a line of values)"""
+    from tools.reread_lines import clean_line, latexify, made_up, numbers, refilter
+    assert clean_line("t_{pD1} = 16.1 ps \\quad \\quad t_{pD2} = 27.6 ps") == "t_{pD1} = 16.1 ps \\quad t_{pD2} = 27.6 ps"
+    assert clean_line("a = 0.26p \\\\ t_{pHL} = 84 ns \\\\") == "a = 0.26p \\\\ t_{pHL} = 84 ns"
+    assert clean_line("Y_1 = V_{DD} \\cdot \\cdot \\cdot \\cdot") == "Y_1 = V_{DD} \\cdot"
+    assert clean_line("t_{pHL} = 8.60 ns, t_{pLH} = 5.72 ns; : t_{pHL} = 8.60 ns, t_{pLH} = 5.72 ns;") == \
+        "t_{pHL} = 8.60 ns, t_{pLH} = 5.72 ns"
+    assert latexify("tPD1 = 16 ps, VOHmax = 1.15 V, V₀ = 2") == "t_{PD1} = 16 ps, V_{OHmax} = 1.15 V, V_{0} = 2"
+    assert latexify("V_{TP} = -0.496 v") == "V_{TP} = -0.496 V" and latexify("2v_x = 3") == "2v_x = 3"
+    assert numbers("V _ { O H } = 1 . 8 - 0 . 6 5 = 1 . 1 5") == ["1.8", "0.65", "1.15"]
+    assert made_up("t_{pHL} = 8.60 \\text{ ns}, t_{pLH} = 5.72 \\text{ ns}", "y _ { 2 }", "Y_2")
+    assert made_up("t_{pHL} = 3 \\cdot 10^{-12} s, V_{DD} = 5V, V_{Tn} = 0.7V", "-")
+    assert not made_up("V_{SB}=1.15-0=1.15[V]", "V _ { S S D } = 1 . 7 5 - 0 = 1 . 1 5 [ V ]")
+    assert not made_up("t_{pD_1} = 16.1 ps", "z _ { p s _ { 1 } } = 1 6 . 1 p s", "t_{pD1} = 16.1 ps")
+    piece = lambda t, x: {"kind": "math", "box": [x, 10, x + 40, 30], "p_kind": 0.9, "nbest": [[t, 0.0]],
+                          "math2": [[t, 0.0]], "math2_mumer": [[t, 0.0]]}
+    orig = [{"page": 1, "lines": [[piece("Y _ { 2 }", 10)], [piece("V _ { S B } = 1 . 1 5", 10), piece("[ V ]", 60)]]}]
+    run = [{"page": 1, "lines": [[{"kind": "math", "box": [10, 10, 50, 30], "nbest": [["x", 0.0]],
+                                    "line_text": "t_{pHL} = 8.60 ns, t_{pLH} = 5.72 ns"}],
+                                  [{"kind": "math", "box": [10, 10, 100, 30], "nbest": [["x", 0.0]],
+                                    "line_text": "V_{SB} = 1.15 [V] \\quad \\quad"}]]}]
+    data, n, bad = refilter(run, orig)
+    assert (n, bad) == (2, 1) and data[0]["lines"][0] == orig[0]["lines"][0]
+    seg, = data[0]["lines"][1]
+    assert seg["nbest"][0][0] == "V_{SB} = 1.15 [V]" and seg["math2"][0][0] == "V _ { S B } = 1 . 1 5 [ V ]"
+
+
+def test_a_size_bar_whose_opening_was_misread_is_no_separator_and_a_matrix_no_crash():
+    """a line read 'V_{SG} - N T_{Pnq}| = 1.15 - 0 - 0.623 = 0.527' (|V_Tp| misread): the lone bar is not two
+    statements' separator - its rest no new chain going on from the line above (a false sure wrong step,
+    '1.15 = 1.15 - 0 - 0.623'); a matrix read beside a number no crash"""
+    import sympy as sp
+    from grader.selfcheck import _same_expr, statements
+    s, = statements("V_{SG}-N T_{Pnq}|=1.15-0-0.623=0.527")
+    assert s.kind == "chain" and len(s.sides) == 3
+    assert [x.kind for x in statements("a = 3 | b = 4")] == ["value", "value"]
+    assert _same_expr(sp.MatrixSymbol("M", 2, 2), sp.Symbol("x")) is None

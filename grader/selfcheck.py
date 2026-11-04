@@ -1294,10 +1294,14 @@ def _sl_factor_end(t: str, i: int, depth: int = 0) -> int:
     if i >= len(t) or depth > 12:                    # (functions of functions without end: no factor - it recursed past the
         return -1                                    # stack's depth: '1/\sin \sin \sin ... x')
     c = t[i]
-    if c.isdigit():
-        j = i + re.match(r"\d+(?:\.\d+)?", t[i:]).end()
-    elif c.isalpha():
-        j = i + re.match(r"[A-Za-z](?:\s*_\s*(?:\{[^{}]*\}|[A-Za-z0-9]))?", t[i:]).end()
+    num = re.match(r"\d+(?:\.\d+)?", t[i:])
+    let = re.match(r"[A-Za-z](?:\s*_\s*(?:\{[^{}]*\}|[A-Za-z0-9]))?", t[i:])
+    if num:
+        j = i + num.end()
+    elif let:
+        j = i + let.end()
+    elif c.isalnum():                                # (a letter or digit outside ASCII - 'Δ', 'μ', '²' - one character)
+        j = i + 1
     elif c == "\\":
         m = re.match(r"\\([A-Za-z]+)", t[i:])
         if not m or m.group(1) in _SL_OPS:
@@ -2423,7 +2427,9 @@ def _statements(tex: str, conf: float = 1.0, line: int = -1, piece: int = -1):
     #                                                  0.010, which messages show as '%' (a '\cdot 0.01' written stays)
     tex = re.sub(r"\\left\s*\|", r"\\lvert ", re.sub(r"\\right\s*\|", r" \\rvert", tex))    # |Z|, |3 + j4|: a size,
     tex = re.sub(r"(?<![\\|])\|([^|=]{1,40}?)\|(?!\|)", r"\\lvert \1 \\rvert", tex)    # not two statements' separator
-    raw_parts = _top_level_split(_decimal_commas(tex))
+    if tex.count("|") % 2:                           # a size's closing bar, its opening one misread ('V_{SG} - N T_p| =
+        tex = re.sub(r"(?<=[A-Za-z0-9}])\s*\|(?=\s*=)", " ", tex, count=1)   # 1.15 - 0.623'): no separator - the
+    raw_parts = _top_level_split(_decimal_commas(tex))       # rest no new chain going on from the line above
     raw_parts = [_MARK_TEXT.sub(r"\1 ", p) for p in raw_parts]
     numbered = {k for k, p in enumerate(raw_parts) if _ITEM.match(p)}          # '2) ...': a new exercise
     labels = [_label(p) for p in raw_parts]                  # 'Q2: ...', '2a) ...' too; 'b) ...': a part of this one
@@ -2912,7 +2918,10 @@ def _same_expr(a, b, indefinite=()):
     """two expressions in letters equal? (under an indefinite integral: up to a constant) - True / False / None (cannot
     tell). Decided at random points, where sympy's simplify may not see an identity (sin^2 + cos^2)"""
     import random
-    d = a - b
+    try:
+        d = a - b
+    except (TypeError, ValueError):                # (a matrix read where a number stands: '\\begin{matrix}' beside 1.8)
+        return None
     try:
         if sp.simplify(d) == 0:
             return True

@@ -120,6 +120,9 @@ def key_values(stmts) -> dict:
     out = {}
     for s in stmts:
         last = re.split(r"(?<![<>!])=|\\approx", s.text or "")[-1].strip()      # the result as written ('21.6 \mu A')
+        last = re.sub(r"(?:\s*\\\\)+\s*[;,.]?\s*$", "", last)                  # ('1.38 ps \\;': a new line after it)
+        if re.search(r"['?]|\)\s*[A-Za-z]|\([^()]*$", last):
+            continue                     # (a result misread past its number: "2e'c-5(c", '26 \mu s)Y_1', '56Hz'fc?')
         if s.kind == "value" and s.symbol is not None and isinstance(s.number, (int, float)):
             name, v, unit = (_delay_name(s.side_texts[0]) if s.side_texts else str(s.symbol)), float(s.number), s.unit or ""
             names = [name]
