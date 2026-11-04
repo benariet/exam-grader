@@ -51,6 +51,9 @@ def main():
     ap.add_argument("--pages", default="")
     ap.add_argument("--dpi", type=int, default=200)
     ap.add_argument("--both", action="store_true")
+    ap.add_argument("--hebrew-lm", default=os.path.join(HERE, "models", "dictalm-3.0-1.7b-base"),
+                    help="a Hebrew language model choosing among each Hebrew line's 16 readings ('' - none)")
+    ap.add_argument("--lm-weight", type=float, default=0.3)
     args = ap.parse_args()
     from PIL import Image
     from recog import mishkefet
@@ -69,12 +72,14 @@ def main():
         import torch
         from recog.hebrew_vlm import HebrewRecognizer
         vlm = HebrewRecognizer(model_dir=args.model, dtype=torch.bfloat16 if torch.cuda.is_available() else None)
+    hlm = mishkefet.HebrewLM(args.hebrew_lm) if args.hebrew_lm and os.path.isdir(args.hebrew_lm) else None
     out = []
     for pno, img in enumerate(pages, 1):
         if want and pno not in want:
             continue
         clean = mishkefet.no_vertical_rules(img.convert("RGB"))
         out.append(f"== page {pno}")
+        before = []                                      # (the Hebrew lines chosen so far: the language model's context)
         for r in mishkefet.read_page(clean, heb):
             formula = tidy_latex(vlm.recognize(r["crop"].convert("RGB"), n_best=1, max_new_tokens=160,
                                                prompt=PROMPT)[0].text)
@@ -83,6 +88,10 @@ def main():
             k = kind(r["text"], r["confidence"], formula)
             if not k:
                 continue
+            if k == "H" and hlm is not None:             # (Tal's page: 24% of the characters wrong -> 21%)
+                cands = mishkefet.read_nbest(heb, [r["crop"]], n=16, beam_width=32)
+                r["text"] = mishkefet.rescore(cands, hlm, weight=args.lm_weight, context=before)[0]
+                before.append(r["text"])
             line = f"{k} | {r['text'].strip() if k == 'H' else formula}"
             if args.both:
                 line += f"    [{'formula reader' if k == 'H' else 'Hebrew reader'}: {formula if k == 'H' else r['text']}]"

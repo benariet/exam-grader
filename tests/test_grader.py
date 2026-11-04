@@ -6349,3 +6349,29 @@ def test_writing_forms_made_and_cut_back_by_their_corner_squares():
         rows = [json.loads(r) for r in open(os.path.join(tmp, "out", "labels.jsonl"), encoding="utf-8")]
     assert len(rows) == 14 and {r["page"] for r in rows} == {1, 2} and all(r["slot"] != 3 for r in rows)
     assert rows[0]["text"] == info["pages"][1]["slots"][0]["text"]
+
+
+def test_a_lines_readings_n_best_and_chosen_by_a_hebrew_language_model():
+    """recog/mishkefet.nbest_decode: the CTC prefix beam search keeping the n best readings of a line (the blank
+    between two of a letter keeps both); rescore: each line's reading chosen by the hand's score plus a language
+    model's, after the lines chosen before it"""
+    import math
+    import torch
+    from recog.mishkefet import nbest_decode, rescore
+
+    class CS:
+        chars = ["", "א", "ב", " "]
+    p = lambda *v: [math.log(x) for x in v]
+    lp = torch.tensor([[p(0.1, 0.6, 0.3, 1e-6), p(0.8, 0.1, 0.1, 1e-6), p(0.1, 0.6, 0.3, 1e-6)]])
+    out = nbest_decode(lp, torch.tensor([3]), CS, n=4, beam_width=8, word_lm=None)
+    texts = [t for t, _ in out[0]]
+    assert texts[0] == "אא" and "אב" in texts and len(texts) == 4
+    assert all(a[1] >= b[1] for a, b in zip(out[0], out[0][1:]))
+
+    class LM:
+        def logprob(self, text, context=""):
+            return 0.0 if text.strip() in ("שלום", "עולם") else -20.0
+    nb = [[("שלוס", -1.0), ("שלום", -1.5)], [("עולס", -0.5), ("עולם", -2.0)]]
+    assert rescore(nb, LM(), weight=0.3) == ["שלום", "עולם"]
+    assert rescore(nb, LM(), weight=0.0) == ["שלוס", "עולס"]
+    assert rescore(nb[1:], LM(), weight=0.3, context=["שלום"]) == ["עולם"]
