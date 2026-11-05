@@ -54,6 +54,16 @@ class RemoteReader:
         lps = [t.get("logprob", 0.0) for t in ((choice.get("logprobs") or {}).get("content") or [])]
         return no_thinking(choice["message"]["content"] or ""), lps
 
+    def chat(self, prompt: str, max_new_tokens: int = 800) -> str:
+        """a text-only request (no image): the served model as a language model"""
+        body = {"model": self.name, "temperature": 0.0, "max_tokens": max_new_tokens,
+                "chat_template_kwargs": {"enable_thinking": False},
+                "messages": [{"role": "user", "content": prompt}]}
+        req = urllib.request.Request(self.url + "/chat/completions", data=json.dumps(body).encode(),
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=self.timeout) as r:
+            return no_thinking(json.load(r)["choices"][0]["message"]["content"] or "")
+
     def recognize(self, img, n_best: int = 1, max_new_tokens: int = 96, prompt: str = "", **_) -> list[Candidate]:
         """as recog/hebrew_vlm.HebrewRecognizer.recognize - one candidate (greedy), its log-probability summed"""
         text, lps = self._ask(img, prompt, max_new_tokens)

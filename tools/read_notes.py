@@ -4,7 +4,10 @@ Mishkefet-v1, the Hebrew reader (recog/mishkefet.py), and each also by a vision-
 formula reader's reading holds no Hebrew and some math and the Hebrew reader is not sure of its words (kind()).
 
     python tools/read_notes.py <scan.pdf | image> [--out page.txt] [--model models/qwen3-vl-8b | http://.../v1]
-        [--pages 1,2] [--dpi 200]
+        [--pages 1,2] [--dpi 200] [--hebrew-model models/mishkefet-tal.pt]
+
+--hebrew-model: Mishkefet fine-tuned on the writer's own lines (tools/writing_forms.py, tools/finetune_mishkefet.py:
+5.11, six of Tal's lines learned, the other six read with 12% of the letters wrong instead of 15%).
 
 -> each line: 'H | <Hebrew>', 'M | <LaTeX>' or 'E | <Latin letters>' (and the other reader's reading, to compare, with --both)"""
 import argparse
@@ -54,6 +57,7 @@ def main():
     ap.add_argument("--hebrew-lm", default=os.path.join(HERE, "models", "dictalm-3.0-1.7b-base"),
                     help="a Hebrew language model choosing among each Hebrew line's 16 readings ('' - none)")
     ap.add_argument("--lm-weight", type=float, default=0.3)
+    ap.add_argument("--hebrew-model", default=None, help="a fine-tuned Mishkefet checkpoint (default: the original)")
     args = ap.parse_args()
     from PIL import Image
     from recog import mishkefet
@@ -65,7 +69,7 @@ def main():
     else:
         pages = [Image.open(args.src)]
     want = {int(p) for p in args.pages.split(",") if p.strip()}
-    heb = mishkefet.recognizer()
+    heb = mishkefet.recognizer(checkpoint=args.hebrew_model)
     if is_url(args.model):
         vlm = RemoteReader(args.model)
     else:

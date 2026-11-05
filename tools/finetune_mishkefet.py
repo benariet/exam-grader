@@ -3,11 +3,15 @@
 lines' character error rate kept:
 
     python tools/finetune_mishkefet.py data/handwriting/tal/labels.jsonl [more.jsonl ...] --out models/mishkefet-tal.pt
-        [--epochs 40] [--lr 5e-5] [--val 0.15] [--kinds hebrew]
+        [--epochs 40] [--lr 5e-5] [--val 0.15] [--kinds hebrew] [--val-labels held_out.jsonl]
+        [--mix other_lines.jsonl --mix-share 0.3]
 
 The held-out lines (a fixed share, by the line's text and image name) are read before training and after each epoch;
 the checkpoint (the original's format: model, config, charset) is saved only when they are read better. The
-recognizer reads it as the original (recog/mishkefet.recognizer(checkpoint=...))."""
+recognizer reads it as the original (recog/mishkefet.recognizer(checkpoint=...)). --val-labels: these lines held out
+instead (another writer's page, lines transcribed by hand), all the others learned. --mix: lines of other hands
+added to each epoch (a share of the epoch's lines, drawn anew each epoch) - so a model taught one writer keeps the
+others it read (one writer's thousands of lines alone would pull it to that hand)."""
 import argparse
 import hashlib
 import json
@@ -54,6 +58,9 @@ def main():
     ap.add_argument("--kinds", default="hebrew")
     ap.add_argument("--aug", type=float, default=0.6, help="augmentation strength (hebocr's Augment)")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--val-labels", nargs="*", default=[])
+    ap.add_argument("--mix", nargs="*", default=[])
+    ap.add_argument("--mix-share", type=float, default=0.3)
     args = ap.parse_args()
     import numpy as np
     import torch
@@ -66,9 +73,16 @@ def main():
 
     random.seed(args.seed)
     data = lines(args.labels, set(args.kinds.split(",")))
-    val = [d for d in data if held_out(d, args.val)]
-    train = [d for d in data if not held_out(d, args.val)]
-    print(f"{len(train)} lines to learn, {len(val)} held out", flush=True)
+    if args.val_labels:
+        val = lines(args.val_labels, set(args.kinds.split(",")))
+        held = {p for p, _ in val}
+        train = [d for d in data if d[0] not in held]
+    else:
+        val = [d for d in data if held_out(d, args.val)]
+        train = [d for d in data if not held_out(d, args.val)]
+    mix = lines(args.mix, set(args.kinds.split(","))) if args.mix else []
+    print(f"{len(train)} lines to learn, {len(val)} held out, {len(mix)} of other hands to mix in", flush=True)
+    data = data + [d for d in val if d not in data] + mix
     if not train or not val:
         sys.exit("too few lines")
     rec = mishkefet.recognizer(page=False, beam_width=0)          # (greedy: the held-out reading is the model's own)
@@ -90,10 +104,12 @@ def main():
     aug = Augment(np.random.default_rng(args.seed), strength=args.aug)
     for ep in range(1, args.epochs + 1):
         model.train()
-        random.shuffle(train)
+        epoch = train + (random.sample(mix, min(len(mix), int(len(train) * args.mix_share / (1 - args.mix_share))))
+                         if mix else [])
+        random.shuffle(epoch)
         t0, total, n = time.time(), 0.0, 0
-        for k in range(0, len(train), args.batch):
-            chunk = train[k:k + args.batch]
+        for k in range(0, len(epoch), args.batch):
+            chunk = epoch[k:k + args.batch]
             arrays = [torch.from_numpy(aug(imgs[p])) for p, _ in chunk]   # (Augment: the preprocessed array)
             widths = torch.tensor([a.shape[-1] for a in arrays])
             x = torch.zeros(len(arrays), 1, arrays[0].shape[-2], int(widths.max()))

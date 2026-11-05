@@ -6375,3 +6375,140 @@ def test_a_lines_readings_n_best_and_chosen_by_a_hebrew_language_model():
     assert rescore(nb, LM(), weight=0.3) == ["שלום", "עולם"]
     assert rescore(nb, LM(), weight=0.0) == ["שלוס", "עולס"]
     assert rescore(nb[1:], LM(), weight=0.3, context=["שלום"]) == ["עולם"]
+
+
+def test_margin_rules_whitened_on_grey_paper_and_a_sideways_page_turned():
+    """recog/mishkefet.no_vertical_rules: ink is what is darker than the paper around it - on a yellowed or
+    photographed page (grey paper) a fixed level took the whole page for ink and whitened it (no line found); a long
+    light vertical rule goes, the writing stays. read_page: a small scan enlarged first, its boxes given back in the
+    page as it was; a page read unsurely read again at other working scales and turned, the surest reading kept"""
+    import numpy as np
+    from PIL import Image
+    from recog import mishkefet as M
+    for paper, rule, ink in ((250, 205, 40), (150, 120, 40)):
+        a = np.full((600, 400, 3), paper, np.uint8)
+        a[:, 60:62] = rule                                   # the margin rule
+        a[100:130, 150:300] = ink                            # a word
+        out = np.asarray(M.no_vertical_rules(Image.fromarray(a)).convert("L"))
+        assert out[300, 61] == 255 and out[115, 200] == ink and out[50, 200] == paper
+    a = np.full((600, 400, 3), 30, np.uint8)                 # (all dark: not rules - left alone)
+    assert np.asarray(M.no_vertical_rules(Image.fromarray(a)))[300, 61, 0] == 30
+
+    assert abs(M.page_quality([{"text": "שלום עולם", "confidence": 0.9}, {"text": "ב", "confidence": 0.1}]) - 0.9) < 1e-9
+    assert M.page_quality([]) == 0.0
+    seen = []
+
+    def fake(img, rec, clean=False, max_side=2000):
+        seen.append(img.size)
+        sure = 0.97 if img.width > img.height else 0.4       # (the writing runs along the long side)
+        return [{"text": "שורה ארוכה", "confidence": sure, "box": {"x": 10, "y": 20, "w": 300, "h": 40},
+                 "skew": 0.0, "crop": None}]
+    real, M._read_lines = M._read_lines, fake
+    try:
+        out = M.read_page(Image.new("RGB", (370, 550), "white"), rec=object())
+    finally:
+        M._read_lines = real
+    assert seen[0] == (1211, 1800)                           # (enlarged: the long side 1800)
+    assert out[0]["turned"] == 90 and out[0]["confidence"] == 0.97 and len(seen) == 6     # (2 more scales)
+    assert out[0]["box"] == {"x": 3, "y": 6, "w": 92, "h": 12}
+
+
+def test_lines_cut_for_transcribing_a_spread_split_at_its_fold_and_joined_back():
+    """tools/line_sheets.py: a notebook's two-page spread is cut at its gutter (the right page first), one page is
+    left whole; the lines are laid out on a sheet under their numbers; transcriptions (id or number, a tab, the text;
+    empty or '?' left out) are joined back into lines to learn from"""
+    import json
+    import tempfile
+    import numpy as np
+    from PIL import Image
+    from tools.line_sheets import gutter, halves, sheet, join
+    a = np.full((1000, 1600, 3), 235, np.uint8)
+    rng = np.random.default_rng(1)
+    for y in range(100, 900, 60):                            # (lines of 'writing' on both pages, the fold empty)
+        for x0, x1 in ((120, 720), (880, 1480)):
+            for x in range(x0, x1, 14):
+                if rng.random() < 0.7:
+                    a[y:y + 22, x:x + 6] = 40
+    spread = Image.fromarray(a)
+    x = gutter(spread)
+    assert x is not None and 760 <= x <= 840
+    (r, right), (l, left) = halves(spread)
+    assert (r, l) == ("R", "L") and right.width + left.width == 1600
+    assert gutter(spread.crop((0, 0, 800, 1000))) is None    # (one page: portrait)
+    page = np.full((1000, 1600, 3), 235, np.uint8)
+    for y in range(100, 900, 60):                            # (lines across the whole width: no fold)
+        for x in range(120, 1480, 14):
+            page[y:y + 22, x:x + 6] = 40
+    assert gutter(Image.fromarray(page)) is None
+    sh = sheet([Image.new("L", (800, 60), 200), Image.new("L", (3000, 90), 120)], 17)
+    assert sh.width == 1400 and sh.height == 74 + round(90 * 1330 / 3000) + 14
+    with tempfile.TemporaryDirectory() as d:
+        with open(os.path.join(d, "lines.jsonl"), "w", encoding="utf-8") as f:
+            for n, lid in enumerate(["p1R_00", "p1R_01", "p1L_00"]):
+                f.write(json.dumps({"id": lid, "n": n, "source": "p1.jpg", "reading": "x"}) + "\n")
+        tsv = os.path.join(d, "t.tsv")
+        open(tsv, "w", encoding="utf-8").write("0\tשלום  עולם\np1R_01\t?\n2\t\nnot a row\n1\tמה שלומך?\n")
+
+        class A:
+            out, src, name, exclude = d, [tsv], "labels.jsonl", ""
+        join(A)
+        rows = [json.loads(r) for r in open(os.path.join(d, "labels.jsonl"), encoding="utf-8")]
+    assert rows == [{"image": "lines/p1R_00.png", "text": "שלום עולם", "kind": "hebrew", "source": "p1.jpg"},
+                    {"image": "lines/p1R_01.png", "text": "מה שלומך?", "kind": "hebrew", "source": "p1.jpg"}]
+
+
+def test_a_correction_kept_only_where_the_handwriting_supports_it():
+    """recog/mishkefet.verified_words: a language model's corrected word is taken only if the line with it scores,
+    under the recognizer's own CTC model of the image, within `slack` of the line without it; word counts that differ
+    are judged as whole lines. tools/pseudo_label.known_share, tools/eval_hebrew_pages.norm"""
+    from recog import mishkefet as M
+    from tools.pseudo_label import known_share
+    from tools.eval_hebrew_pages import norm
+    score = {"הקוצה היתה טובה": -10.0, "התוצאה היתה טובה": -12.0, "הקוצה היתה רעה": -40.0,
+             "התוצאה היתה רעה": -45.0, "התוצאה הייתה טובה מאוד": -11.0}
+    real, M.ctc_logprob = M.ctc_logprob, lambda rec, image, text: score.get(text, -100.0)
+    try:
+        assert M.verified_words(None, None, "הקוצה היתה טובה", "התוצאה היתה רעה", slack=4.0) == \
+            ("התוצאה היתה טובה", ["התוצאה"])
+        assert M.verified_words(None, None, "הקוצה היתה טובה", "התוצאה היתה רעה", slack=1.0) == \
+            ("הקוצה היתה טובה", [])
+        assert M.verified_words(None, None, "הקוצה היתה טובה", "התוצאה הייתה טובה מאוד", slack=2.0) == \
+            ("התוצאה הייתה טובה מאוד", ["*"])
+        assert M.verified_words(None, None, "הקוצה היתה טובה", "", slack=2.0) == ("הקוצה היתה טובה", [])
+    finally:
+        M.ctc_logprob = real
+
+    class W:
+        def known(self, w):
+            return w in {"שלום", "עולם"}
+    assert known_share("שלום עולם קצפצ", W()) == 2 / 3 and known_share("12 + 3", W()) == 0.0
+    assert norm("שָׁלוֹם, עוֹלָם! abc 12") == "שלום עולם"
+
+
+def test_a_printed_grid_taken_out_and_the_writing_kept():
+    """recog/mishkefet.no_printed_rules: squared paper's light thin lines, and anything as light, whitened where the
+    writing is clearly darker (Hannah Senesh's diaries: the squares were read as letters); pencil as light as the
+    rules is left alone; a page with no rules is left alone. page_quality: scraps of 2-4 letters count for little"""
+    import numpy as np
+    from PIL import Image
+    from recog import mishkefet as M
+
+    def page(rule, ink):
+        a = np.full((900, 700, 3), 240, np.uint8)
+        if rule is not None:
+            a[::30, :] = rule
+            a[:, ::30] = rule
+        for y in range(100, 800, 90):
+            for x in range(80, 620, 20):
+                a[y:y + 40, x:x + 7] = ink
+        return a
+    out, info = M.no_printed_rules(Image.fromarray(page(205, 40)))
+    o = np.asarray(out.convert("L"))
+    assert info["rules"] > 0.004 and o[450, 300] == 255 and o[150, 310] == 255 and o[120, 82] == 40
+    out, info = M.no_printed_rules(Image.fromarray(page(205, 190)))       # (pencil: as light as the grid)
+    assert "t" not in info and np.asarray(out.convert("L"))[450, 300] == 205
+    out, info = M.no_printed_rules(Image.fromarray(page(None, 40)))
+    assert info == {"rules": 0.0} and np.asarray(out.convert("L"))[120, 82] == 40
+    scraps = [{"text": "עו יד", "confidence": 0.96}] * 20
+    lines = [{"text": "גן נעול לא שביל אליו", "confidence": 0.94}] * 5
+    assert M.page_quality(scraps) < 0.5 and abs(M.page_quality(lines) - 0.94) < 1e-9
