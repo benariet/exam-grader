@@ -6559,6 +6559,46 @@ def test_scans_for_self_training_an_image_or_each_page_of_a_pdf():
         assert [n for n, _ in got] == ["7_p1", "7_p2"] and got[0][1].size == (400, 600) and got[1][1].mode == "RGB"
 
 
+def test_exams_for_self_training_only_their_handwriting():
+    """tools/pseudo_label.booklet_pages: an exam's pages with the booklet's print erased (read_page.py's cleaning) -
+    the printed questions are read surely and are not a hand to learn; a page with no handwriting left out"""
+    import json
+    import tempfile
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from tools.pseudo_label import booklet_pages
+    pytest.importorskip("pypdfium2")
+    W, H = 1240, 1754
+
+    def printed(draw):
+        for y in range(150, 600, 60):
+            for x in range(200, 1000, 40):
+                draw.rectangle([x, y, x + 25, y + 30], fill=0)
+    with tempfile.TemporaryDirectory() as d:
+        os.makedirs(os.path.join(d, "book"))
+        tmpl = Image.new("L", (W, H), 255)
+        printed(ImageDraw.Draw(tmpl))
+        for k in (1, 2):
+            tmpl.save(os.path.join(d, "book", f"p{k}.png"))
+        json.dump({"pages": {"1": {}, "2": {}}, "n_pages": 2, "dpi": 150},
+                  open(os.path.join(d, "book", "booklet.json"), "w"))
+        p1 = Image.new("RGB", (W, H), "white")
+        dr = ImageDraw.Draw(p1)
+        printed(dr)
+        rng = np.random.default_rng(0)
+        for y in range(900, 1400, 70):                       # (the student's lines, in blue)
+            for x in range(150, 1100, 30):
+                if rng.random() < 0.7:
+                    dr.line([x, y, x + 20, y + 25], fill=(20, 30, 160), width=4)
+        p2 = Image.new("RGB", (W, H), "white")
+        printed(ImageDraw.Draw(p2))
+        p1.save(os.path.join(d, "7.pdf"), save_all=True, append_images=[p2], resolution=150)
+        got = booklet_pages(os.path.join(d, "7.pdf"), os.path.join(d, "book"))
+    assert [n for n, _ in got] == ["7_p1"]
+    a = np.asarray(got[0][1].convert("L"))
+    assert (a[150:600, 200:1000] < 128).mean() < 0.005 and (a[900:1400, 150:1100] < 128).mean() > 0.02
+
+
 def test_checkpoints_of_one_start_averaged():
     """tools/soup_mishkefet.soup: the weights' mean (whole-number buffers kept whole), the first's config and
     charset; checkpoints of different models refused"""
