@@ -307,6 +307,27 @@ def roboflow_items(folder):
                        by_img[im["id"]], {"source": f"roboflow:{project}"}, "invert-if-dark")
 
 
+COPY_BITS = 80     # of 1024: a Roboflow image this close to a validation / test image is a copy of it (5.11: the
+                   # 'circuit diagram' project holds Digitize-HCD's scans - 111 of them within 50 bits of its test)
+
+
+def dhash(path) -> "np.ndarray":
+    """the image's difference hash: 1024 bits, whether each pixel of a 33 x 32 grey thumbnail is brighter than the one
+    to its left (a resized, recompressed or slightly recoloured copy keeps nearly all of them)"""
+    import numpy as np
+    a = np.asarray(Image.open(path).convert("L").resize((33, 32), Image.BILINEAR), dtype=np.float32)
+    return (a[:, 1:] > a[:, :-1]).flatten()
+
+
+def copies(train_paths: list, ref_paths: list, bits: int = COPY_BITS) -> set:
+    """the train images within `bits` of a reference image (a copy: it would put the test in training)"""
+    import numpy as np
+    if not train_paths or not ref_paths:
+        return set()
+    R = np.stack([dhash(p) for p in ref_paths])
+    return {p for p in train_paths if int((R != dhash(p)).sum(1).min()) < bits}
+
+
 def _convert(job):
     """one image: load, scale, redraw the chosen sources as diamonds (or, draws == 'invert-if-dark', turn light lines
     on black into dark on white), save -> (job index, scale, (w, h)) or (job index, None, error)"""
@@ -392,6 +413,20 @@ def main():
                 ann["text"] = text
             sets[split]["annotations"].append(ann)
             counts[split][cls] = counts[split].get(cls, 0) + 1
+    if a.roboflow:                                   # (a published collection may hold copies of the test's images)
+        ref = [os.path.join(a.out, im["file_name"]) for sp in ("val", "test") for im in sets[sp]["images"]]
+        rf = [os.path.join(a.out, im["file_name"]) for im in sets["train"]["images"] if im.get("source", "").startswith("roboflow:")]
+        drop = copies(rf, ref)
+        gone = {im["id"] for im in sets["train"]["images"] if os.path.join(a.out, im["file_name"]) in drop}
+        sets["train"]["images"] = [im for im in sets["train"]["images"] if im["id"] not in gone]
+        sets["train"]["annotations"] = [an for an in sets["train"]["annotations"] if an["image_id"] not in gone]
+        for p in drop:
+            os.remove(p)
+        names = {v: k for k, v in cid.items()}
+        counts["train"] = {}
+        for an in sets["train"]["annotations"]:
+            counts["train"][names[an["category_id"]]] = counts["train"].get(names[an["category_id"]], 0) + 1
+        print(f"{len(drop)} Roboflow images left out: copies of validation / test images", flush=True)
     for sp, d in sets.items():
         json.dump(d, open(os.path.join(a.out, f"{sp}.json"), "w", encoding="utf-8"), ensure_ascii=False)
         print(f"{sp}: {len(d['images'])} images, {len(d['annotations'])} boxes  {dict(sorted(counts[sp].items()))}", flush=True)

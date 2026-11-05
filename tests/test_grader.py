@@ -6703,3 +6703,27 @@ def test_roboflow_circuit_exports_mapped_to_the_detectors_classes():
         out = os.path.join(d, "o.jpg")
         k, sc, size = _convert((7, path, out, draws))
         assert (k, sc, size) == (7, 1.0, (64, 48)) and Image.open(out).convert("L").getpixel((5, 5)) > 200
+
+
+def test_copies_of_test_images_kept_out_of_training():
+    """tools/circuit_data.copies: a training image that is a resized, recompressed copy of a test image is found (its
+    difference hash within COPY_BITS of 1024), another drawing is not"""
+    import tempfile
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from tools.circuit_data import copies
+
+    def drawing(path, seed, size=(800, 600)):
+        im = Image.new("RGB", size, "white")
+        d = ImageDraw.Draw(im)
+        r = np.random.default_rng(seed)
+        for _ in range(25):
+            x0, y0 = r.integers(0, size[0] - 100), r.integers(0, size[1] - 100)
+            d.line([x0, y0, x0 + r.integers(20, 100), y0 + r.integers(-60, 60)], fill="black", width=4)
+        im.save(path, quality=90)
+    with tempfile.TemporaryDirectory() as d:
+        drawing(os.path.join(d, "test.jpg"), 1)
+        Image.open(os.path.join(d, "test.jpg")).resize((640, 640)).save(os.path.join(d, "copy.jpg"), quality=70)
+        drawing(os.path.join(d, "other.jpg"), 2)
+        got = copies([os.path.join(d, "copy.jpg"), os.path.join(d, "other.jpg")], [os.path.join(d, "test.jpg")])
+    assert got == {os.path.join(d, "copy.jpg")}
