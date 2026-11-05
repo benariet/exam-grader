@@ -6544,6 +6544,21 @@ def test_published_line_datasets_turned_into_lines_to_learn():
         assert Image.open(os.path.join(d, "p", "lines", "pk_00000.png")).size == (208, 40)
 
 
+def test_scans_for_self_training_an_image_or_each_page_of_a_pdf():
+    """tools/pseudo_label.pages: an image is one page named by its file, a PDF each of its pages (name_p1, ...)"""
+    import tempfile
+    from PIL import Image
+    from tools.pseudo_label import pages
+    pytest.importorskip("pypdfium2")
+    with tempfile.TemporaryDirectory() as d:
+        Image.new("RGB", (200, 300), "white").save(os.path.join(d, "a.png"))
+        Image.new("RGB", (200, 300), "white").save(os.path.join(d, "7.pdf"), save_all=True,
+                                                   append_images=[Image.new("RGB", (200, 300), "white")])
+        assert [(n, i.size) for n, i in pages(os.path.join(d, "a.png"))] == [("a", (200, 300))]
+        got = pages(os.path.join(d, "7.pdf"), dpi=144)
+        assert [n for n, _ in got] == ["7_p1", "7_p2"] and got[0][1].size == (400, 600) and got[1][1].mode == "RGB"
+
+
 def test_checkpoints_of_one_start_averaged():
     """tools/soup_mishkefet.soup: the weights' mean (whole-number buffers kept whole), the first's config and
     charset; checkpoints of different models refused"""
