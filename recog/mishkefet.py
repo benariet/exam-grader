@@ -7,7 +7,8 @@ Mishkefet-v1 (github.com/itayinbarr/heb-ocr - code MIT, weights CC-BY-NC-SA-4.0:
 before it was run here; it is loaded safely: the checkpoint with torch.load(weights_only=True) - tensors and plain
 values only - and its language models (pickles of plain dicts) through an unpickler that refuses any class or function.
 
-The package is not installed: HEBOCR_SRC (default ~/heb-ocr-src) holds its clone, and its weights in weights/
+The package is not installed: HEBOCR_SRC (default ~/heb-ocr-src, else the project's models/heb-ocr-src) holds its
+clone, and its weights in weights/
 (mishkefet-v1.pt, hebrew_char6.pkl, hebrew_words.pkl - `hf download itayinbar/Mishkefet-v1 ... --local-dir weights`).
 """
 from __future__ import annotations
@@ -17,7 +18,16 @@ import pickle
 import sys
 from collections import Counter, defaultdict
 
-SRC = os.path.expanduser(os.environ.get("HEBOCR_SRC", "~/heb-ocr-src"))
+def _src() -> str:
+    """HEBOCR_SRC, else ~/heb-ocr-src, else the project's models/heb-ocr-src (a copy beside the other models)"""
+    if os.environ.get("HEBOCR_SRC"):
+        return os.path.expanduser(os.environ["HEBOCR_SRC"])
+    home = os.path.expanduser("~/heb-ocr-src")
+    local = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models", "heb-ocr-src")
+    return home if os.path.isdir(home) or not os.path.isdir(local) else local
+
+
+SRC = _src()
 WEIGHTS = os.path.join(SRC, "weights")
 
 

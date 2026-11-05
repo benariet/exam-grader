@@ -6753,3 +6753,26 @@ def test_hebrew_pieces_re_read_by_mishkefet_after_the_layout():
         assert r._mishkefet_read(Image.new("RGB", (80, 30), "white"), 3) == [] and r.mishkefet is None
     finally:
         M.recognizer, M.read_nbest = real
+
+
+def test_mishkefet_found_beside_the_other_models():
+    """recog/mishkefet._src: HEBOCR_SRC first, then ~/heb-ocr-src, then the project's models/heb-ocr-src"""
+    import tempfile
+    from recog import mishkefet as M
+    old_env, real = os.environ.get("HEBOCR_SRC"), os.path.expanduser
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            os.environ.pop("HEBOCR_SRC", None)
+            os.path.expanduser = lambda p: p.replace("~", d, 1)      # (a home with no heb-ocr-src)
+            local = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(M.__file__))), "models", "heb-ocr-src")
+            assert M._src() == (local if os.path.isdir(local) else os.path.join(d, "heb-ocr-src"))
+            os.makedirs(os.path.join(d, "heb-ocr-src"))
+            assert M._src() == os.path.join(d, "heb-ocr-src")
+            os.environ["HEBOCR_SRC"] = os.path.join(d, "x")
+            assert M._src() == os.path.join(d, "x")
+    finally:
+        os.path.expanduser = real
+        if old_env is None:
+            os.environ.pop("HEBOCR_SRC", None)
+        else:
+            os.environ["HEBOCR_SRC"] = old_env
