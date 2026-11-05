@@ -61,6 +61,8 @@ def main():
     ap.add_argument("--val-labels", nargs="*", default=[])
     ap.add_argument("--mix", nargs="*", default=[])
     ap.add_argument("--mix-share", type=float, default=0.3)
+    ap.add_argument("--keep", choices=["best", "last"], default="best",
+                    help="last: the checkpoint after the last epoch (when the held-out lines are the test, not a guide)")
     args = ap.parse_args()
     import numpy as np
     import torch
@@ -131,8 +133,8 @@ def main():
             total, n = total + float(loss), n + 1
         score, pred = evaluate()
         mark = ""
-        if score < best:
-            best, mark = score, "  <- saved"
+        if score < best or (args.keep == "last" and ep == args.epochs):
+            best, mark = min(best, score), "  <- saved"
             os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
             torch.save({"model": model.state_dict(), "config": base.get("config", {}), "charset": charset.chars,
                         "epoch": ep, "step": None, "finetuned_on": args.labels, "held_out_cer": best}, args.out)
