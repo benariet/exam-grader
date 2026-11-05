@@ -6422,8 +6422,36 @@ def test_margin_rules_whitened_on_grey_paper_and_a_sideways_page_turned():
     finally:
         M._read_lines = real
     assert seen[0] == (1211, 1800)                           # (enlarged: the long side 1800)
-    assert out[0]["turned"] == 90 and out[0]["confidence"] == 0.97 and len(seen) == 6     # (2 more scales)
+    assert out[0]["turned"] == 90 and out[0]["confidence"] == 0.97 and len(seen) == 8   # (2 scales, 2 padded)
     assert out[0]["box"] == {"x": 3, "y": 6, "w": 92, "h": 12}
+
+
+def test_a_few_lines_on_a_wide_page_given_white_below_not_cut_into_scraps():
+    """recog/mishkefet.read_page: the segmenter seeks the line pitch within 15% of the page's height, so a wide form
+    of 5 lines came out as hundreds of scraps (more than MAX_LINES: not read at all); read again with white added
+    below (`below`: the boxes stay where they were), its lines found"""
+    import numpy as np
+    from PIL import Image
+    from recog import mishkefet as M
+    w = M.below(Image.new("L", (40, 10), 0), 30)
+    a = np.asarray(w)
+    assert w.size == (40, 30) and a[5, 5] == 0 and a[20, 5] == 255 and M.below(w, 20) is w
+    assert M.below(Image.new("RGB", (4, 2), (0, 0, 0)), 4).getpixel((0, 3)) == (255, 255, 255)
+    seen = []
+
+    def fake(img, rec, clean=False, max_side=2000):
+        seen.append((img.size, max_side))
+        if img.height < 0.5 * img.width:                     # (scraps: too many to read)
+            return []
+        return [{"text": "שורה ארוכה של כתב", "confidence": 0.96, "box": {"x": 30, "y": 40 + 128 * i, "w": 2100,
+                 "h": 100}, "skew": 0.0, "crop": None} for i in range(5)]
+    real, M._read_lines = M._read_lines, fake
+    try:
+        out = M.read_page(Image.new("RGB", (2200, 640), "white"), rec=object())
+    finally:
+        M._read_lines = real
+    assert seen == [((2200, 640), 2000), ((2200, 640), 1000), ((2200, 640), 1400), ((2200, 1920), 2000)]   # (3x its height first)
+    assert len(out) == 5 and out[4]["box"]["y"] == 40 + 512 and out[0]["turned"] == 0
 
 
 def test_lines_cut_for_transcribing_a_spread_split_at_its_fold_and_joined_back():
@@ -6468,6 +6496,66 @@ def test_lines_cut_for_transcribing_a_spread_split_at_its_fold_and_joined_back()
         rows = [json.loads(r) for r in open(os.path.join(d, "labels.jsonl"), encoding="utf-8")]
     assert rows == [{"image": "lines/p1R_00.png", "text": "שלום עולם", "kind": "hebrew", "source": "p1.jpg"},
                     {"image": "lines/p1R_01.png", "text": "מה שלומך?", "kind": "hebrew", "source": "p1.jpg"}]
+
+
+def test_published_line_datasets_turned_into_lines_to_learn():
+    """tools/line_datasets.py: a Hugging Face parquet of lines (image, text, writer) and a PAGE-XML page become crops +
+    labels.jsonl (a line with an editor's [..] or under 3 characters left out); held-out lines spread over the writers,
+    none whose text the training lines have"""
+    import io
+    import json
+    import tempfile
+    pa = pytest.importorskip("pyarrow")
+    import pyarrow.parquet as pq
+    from PIL import Image
+    from tools.line_datasets import from_parquet, from_page_xml, heldout, page_lines
+
+    def png(w, h):
+        b = io.BytesIO()
+        Image.new("RGB", (w, h), (250, 250, 250)).save(b, "PNG")
+        return b.getvalue()
+    with tempfile.TemporaryDirectory() as d:
+        rows = [{"image": {"bytes": png(300, 64), "path": None}, "text": t, "writer": w}
+                for t, w in (("שלום עולם", "w1"), ("  ", "w1"), ("מה נשמע", "w2"), ("שלום עולם", "w3"),
+                             ("בוקר טוב", "w3"), ("ערב טוב", "w3"))]
+        pq.write_table(pa.Table.from_pylist(rows), os.path.join(d, "train-0.parquet"))
+        assert from_parquet(os.path.join(d, "train-*.parquet"), os.path.join(d, "o"), "m", "hf:x") == 5
+        got = [json.loads(r) for r in open(os.path.join(d, "o", "m.jsonl"), encoding="utf-8")]
+        assert got[1] == {"image": "lines/m_00001.png", "text": "מה נשמע", "kind": "hebrew", "source": "hf:x w2"}
+        assert Image.open(os.path.join(d, "o", got[0]["image"])).mode == "L"
+        ex = os.path.join(d, "ex.jsonl")
+        open(ex, "w", encoding="utf-8").write(json.dumps({"image": "a.png", "text": "מה נשמע"}) + "\n")
+        pick = heldout(os.path.join(d, "o", "m.jsonl"), [ex], 3)
+        assert [p["source"].split()[-1] for p in pick] == ["w1", "w3", "w3"]   # (a writer each round)
+        assert "מה נשמע" not in {p["text"] for p in pick} and all(os.path.isabs(p["image"]) for p in pick)
+        xml = ('<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2013-07-15"><Page>'
+               '<TextRegion><TextLine id="l0"><Coords points="100,40 300,40 300,72 100,72"/>'
+               '<TextEquiv><Unicode>דיבר מהוגני</Unicode></TextEquiv></TextLine>'
+               '<TextLine id="l1"><Coords points="100,90 300,90 300,120 100,120"/>'
+               '<TextEquiv><Unicode>[283]</Unicode></TextEquiv></TextLine>'
+               '<TextLine id="l2"><Coords points="100,130 300,130 300,160 100,160"/>'
+               '<TextEquiv><Unicode>על</Unicode></TextEquiv></TextLine></TextRegion></Page></PcGts>')
+        os.makedirs(os.path.join(d, "pg"))
+        open(os.path.join(d, "pg", "Page 1.xml"), "w", encoding="utf-8").write(xml)
+        Image.new("L", (400, 200), 230).save(os.path.join(d, "pg", "Page 1.jpg"))
+        assert page_lines(os.path.join(d, "pg", "Page 1.xml")) == [((96, 36, 304, 76), "דיבר מהוגני")]
+        assert from_page_xml(os.path.join(d, "pg"), os.path.join(d, "p"), "pk", only={"Page 1.xml"}) == 1
+        assert from_page_xml(os.path.join(d, "pg"), os.path.join(d, "p2"), "pk", only={"Page 2.xml"}) == 0
+        assert Image.open(os.path.join(d, "p", "lines", "pk_00000.png")).size == (208, 40)
+
+
+def test_checkpoints_of_one_start_averaged():
+    """tools/soup_mishkefet.soup: the weights' mean (whole-number buffers kept whole), the first's config and
+    charset; checkpoints of different models refused"""
+    torch = pytest.importorskip("torch")
+    from tools.soup_mishkefet import soup
+    a = {"model": {"w": torch.tensor([1.0, 3.0]), "n": torch.tensor(4)}, "charset": "אב", "config": {"h": 1}}
+    b = {"model": {"w": torch.tensor([3.0, 5.0]), "n": torch.tensor(6)}, "charset": "אב", "config": {"h": 2}}
+    s = soup([a, b])
+    assert s["model"]["w"].tolist() == [2.0, 4.0] and s["model"]["n"].item() == 5
+    assert s["model"]["n"].dtype == torch.int64 and s["config"] == {"h": 1} and s["charset"] == "אב"
+    with pytest.raises(ValueError):
+        soup([a, dict(b, charset="אבג")])
 
 
 def test_a_correction_kept_only_where_the_handwriting_supports_it():

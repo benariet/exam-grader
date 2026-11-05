@@ -162,13 +162,26 @@ def no_printed_rules(img):
     return Image.fromarray(a), info
 
 
+MAX_LINES = 150     # more 'lines' than this on a page are scraps (5.11: a 5-line form cut into 344): not read
+
+
+def below(img, height: int):
+    """the page with white added below it, to `height` (its boxes where they were)"""
+    from PIL import Image
+    if height <= img.height:
+        return img
+    out = Image.new(img.mode, (img.width, height), 255 if img.mode in ("L", "1") else (255,) * len(img.getbands()))
+    out.paste(img, (0, 0))
+    return out
+
+
 def _read_lines(img, rec, clean: bool = False, max_side: int = 2000) -> list:
     _import()
     from hebocr.page.segment import segment_page
     if clean:
         img = no_printed_rules(img)[0]
     crops, boxes, angle = segment_page(no_vertical_rules(img), max_side=max_side)
-    if not crops:
+    if not crops or len(crops) > MAX_LINES:
         return []
     texts = rec.read_tta(crops) if rec.tta and rec.tta > 1 else rec.read(crops)
     _, confs = rec.read(crops, return_confidence=True)
@@ -182,9 +195,12 @@ def read_page(img, rec=None, turn: bool = True, clean: bool = False) -> list:
     the crops are cut). A small scan is enlarged first (the segmenter's thresholds follow the line pitch, but
     stop at a few pixels). A page read unsurely is read again with the segmenter working smaller (1000 and 1400
     pixels a side, not 2000 - 5.11: a stained diary page, its faint squares taken for lines: 6 lines found at
-    2000, 22 at 1000), and with `turn` turned by 90, 270 and 180 degrees - a photo taken sideways; the surest
-    reading is kept (the boxes are then in the turned page). With `clean`, a printed grid or ruled lines are taken
-    out first (no_printed_rules - squared paper)"""
+    2000, 22 at 1000), then with white added below it (a few lines on a wide page: the segmenter seeks the line
+    pitch within 15% of the page's height - hebocr.page.segment.estimate_line_pitch - so 5 lines across a 2200x640
+    form, 128 pixels apart, were cut into 344 scraps 8 pixels high; given white below: 5 lines), and with `turn`
+    turned by 90, 270 and 180 degrees - a photo taken sideways; the surest reading is kept (the boxes are then in
+    the turned page). With `clean`, a printed grid or ruled lines are taken out first (no_printed_rules - squared
+    paper)"""
     rec = rec or recognizer()
     from PIL import Image
     s = ENLARGED / max(img.size) if max(img.size) < SMALL_SIDE else 1.0
@@ -195,6 +211,12 @@ def read_page(img, rec=None, turn: bool = True, clean: bool = False) -> list:
     for side in (1000, 1400):
         if q < TURN_BELOW:
             alt = _read_lines(img, rec, clean, max_side=side)
+            qa = page_quality(alt)
+            if qa > q + 0.02:
+                best, q = alt, qa
+    for tall in sorted({max(img.width, 2 * img.height), 3 * img.height}):
+        if q < TURN_BELOW:
+            alt = _read_lines(below(img, tall), rec, clean)
             qa = page_quality(alt)
             if qa > q + 0.02:
                 best, q = alt, qa

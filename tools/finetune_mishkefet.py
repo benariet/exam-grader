@@ -4,7 +4,7 @@ lines' character error rate kept:
 
     python tools/finetune_mishkefet.py data/handwriting/tal/labels.jsonl [more.jsonl ...] --out models/mishkefet-tal.pt
         [--epochs 40] [--lr 5e-5] [--val 0.15] [--kinds hebrew] [--val-labels held_out.jsonl]
-        [--mix other_lines.jsonl --mix-share 0.3]
+        [--mix other_lines.jsonl --mix-share 0.3] [--init models/mishkefet-x.pt] [--keep last]
 
 The held-out lines (a fixed share, by the line's text and image name) are read before training and after each epoch;
 the checkpoint (the original's format: model, config, charset) is saved only when they are read better. The
@@ -61,6 +61,7 @@ def main():
     ap.add_argument("--val-labels", nargs="*", default=[])
     ap.add_argument("--mix", nargs="*", default=[])
     ap.add_argument("--mix-share", type=float, default=0.3)
+    ap.add_argument("--init", default=None, help="start from this checkpoint (one fine-tuned before), not the original")
     ap.add_argument("--keep", choices=["best", "last"], default="best",
                     help="last: the checkpoint after the last epoch (when the held-out lines are the test, not a guide)")
     args = ap.parse_args()
@@ -87,7 +88,7 @@ def main():
     data = data + [d for d in val if d not in data] + mix
     if not train or not val:
         sys.exit("too few lines")
-    rec = mishkefet.recognizer(page=False, beam_width=0)          # (greedy: the held-out reading is the model's own)
+    rec = mishkefet.recognizer(checkpoint=args.init, page=False, beam_width=0)   # (greedy: the model's own reading)
     base = mishkefet.load_checkpoint(os.path.join(mishkefet.WEIGHTS, "mishkefet-v1.pt"))
     model, charset, dev = rec.model, rec.charset, rec.device
     miss = sorted({c for _, t in data for c in t if charset.coverage(c) < 1})
