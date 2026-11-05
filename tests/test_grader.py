@@ -1,5 +1,7 @@
 import os
 
+os.environ.setdefault("EXAM_GRADER_MISHKEFET", "0")     # (hermetic: the pipeline's tests read Hebrew with the CRNN)
+
 import pytest
 
 from grader import Criterion, Question, Reading, grade_question
@@ -6727,3 +6729,27 @@ def test_copies_of_test_images_kept_out_of_training():
         drawing(os.path.join(d, "other.jpg"), 2)
         got = copies([os.path.join(d, "copy.jpg"), os.path.join(d, "other.jpg")], [os.path.join(d, "test.jpg")])
     assert got == {os.path.join(d, "copy.jpg")}
+
+
+def test_hebrew_pieces_re_read_by_mishkefet_after_the_layout():
+    """recog/mixed_reader.MixedReader._mishkefet_read: a Hebrew piece's n best readings by Mishkefet (its beam scores
+    as logp); when it fails the piece keeps the CRNN's and Mishkefet is not asked again; a checkpoint that is not
+    there: off"""
+    from PIL import Image
+    from recog import mishkefet as M
+    from recog.mixed_reader import MixedReader, MkCandidate
+    r = MixedReader.__new__(MixedReader)
+    r.mishkefet, r._mk = "x.pt", None
+    real = (M.recognizer, M.read_nbest)
+    M.recognizer = lambda checkpoint=None, **k: ("rec", checkpoint)
+    M.read_nbest = lambda rec, ims, n=12, beam_width=24: [[("שלום ", -3.0), (" ", -9.0), ("שלוס", -5.0)][:n]]
+    try:
+        got = r._mishkefet_read(Image.new("RGB", (80, 30), "white"), 3)
+        assert got == [MkCandidate("שלום", -3.0), MkCandidate("שלוס", -5.0)] and r._mk == ("rec", "x.pt")
+
+        def broken(*a, **k):
+            raise RuntimeError("no weights")
+        M.read_nbest = broken
+        assert r._mishkefet_read(Image.new("RGB", (80, 30), "white"), 3) == [] and r.mishkefet is None
+    finally:
+        M.recognizer, M.read_nbest = real

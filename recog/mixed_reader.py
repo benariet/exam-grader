@@ -34,6 +34,7 @@ import math
 import os
 import re
 import time
+from dataclasses import dataclass
 
 import numpy as np
 from PIL import Image
@@ -147,6 +148,15 @@ def _letter_height(ink: np.ndarray) -> float:
     return float(np.median(hs[ok])) if ok.any() else float(ink.shape[0])
 
 
+MISHKEFET_HHD = os.path.join(PROJECT, "models", "mishkefet-hhd", "mishkefet-hhd-soup3.pt")
+
+
+@dataclass
+class MkCandidate:
+    text: str
+    logp: float              # Mishkefet's beam score (its character and word models in it)
+
+
 class MixedReader:
     def __init__(self, clf=None, heb=None, frm=None, eng=None, join_split_formulas: bool = True,
                  english: bool = True, whole_runs: bool = True, language: str = "hebrew", hebrew_tta: bool | None = None):
@@ -161,6 +171,13 @@ class MixedReader:
         # models/dictalm-3.0-1.7b-base and is slow without a GPU (~5 s per line on 2 CPU cores)
         self.hebrew_context = os.environ.get("EXAM_GRADER_HEBREW_CONTEXT", "0") not in ("", "0")
         self._ctx = None
+        # the text of every Hebrew piece re-read by Mishkefet (recog/mishkefet.py) fine-tuned on the HHD forms' lines
+        # (5.11: the pipeline's 300 Hebrew test lines 9.4 -> 4.7 % CER) - after the layout is decided, which keeps
+        # the CRNN's confidences it was tuned on. On when its checkpoint is there (EXAM_GRADER_MISHKEFET: another
+        # checkpoint; 0: off)
+        m = os.environ.get("EXAM_GRADER_MISHKEFET", MISHKEFET_HHD).strip()
+        self.mishkefet = m if m not in ("", "0") and os.path.isfile(m) else None
+        self._mk = None
         # a second formula reader for every math piece (recog/mumer.py: Uni-MuMER 2B) - opt-in, it needs
         # models/uni-mumer-qwen3vl-2b and a GPU for speed; its reading is kept as seg.math2 and weighed with
         # the first reader's by the math validation (grader/selfcheck.py)
@@ -458,7 +475,9 @@ class MixedReader:
                         p_kind = min(p_kind, CONFLICT_CAP)
                 cands = heb if kind == "hebrew" else frm
                 in_context = kind == "hebrew" and self.hebrew_context and self.heb is not None
-                if kind == "hebrew" and self.hebrew_tta and not (in_context and not self.defer_heavy):
+                if kind == "hebrew" and self.mishkefet and not (in_context and not self.defer_heavy):
+                    cands = self._mishkefet_read(crop, n_best) or cands     # (the layout decided: only the text)
+                elif kind == "hebrew" and self.hebrew_tta and not (in_context and not self.defer_heavy):
                     # the layout is decided (above, with one look); only the text of a Hebrew piece is re-read at
                     # five widths (recog/hebrew.py, tta) - the decisions keep the confidences they were tuned on
                     cands = self.heb.recognize(crop, n_best=n_best, tta=True)
@@ -476,6 +495,20 @@ class MixedReader:
                 segs.append(seg); segments.append(seg)
             lines.append(segs)
         return lines, segments
+
+    def _mishkefet_read(self, crop, n_best):
+        """a Hebrew piece's n best readings by Mishkefet ([MkCandidate(text, logp)], best first; [] if it fails:
+        the piece keeps the CRNN's)"""
+        try:
+            from . import mishkefet
+            if self._mk is None:
+                self._mk = mishkefet.recognizer(checkpoint=self.mishkefet)
+            nb = mishkefet.read_nbest(self._mk, [crop.convert("L")], n=max(1, n_best), beam_width=16)[0]
+            return [MkCandidate(t.strip(), float(lp)) for t, lp in nb if t.strip()]
+        except Exception as e:                   # noqa: BLE001  (its code or weights missing: the CRNN's reading)
+            print(f"[mixed reader] Mishkefet failed ({type(e).__name__}: {e}) - the CRNN's Hebrew readings", flush=True)
+            self.mishkefet = None
+            return []
 
     # -- heavy readers (Hebrew in context, Uni-MuMER, an English VLM) ----------------------
     HEAVY = ("hebrew", "math2", "english")
