@@ -128,6 +128,83 @@ def math_lines(page: dict) -> list:
     return sorted(out, key=lambda t: min(s["box"][1] for s in t[1]))
 
 
+VIEW_SCALES = (1.0, 0.75, 1.33)     # --views: the line's image as cut, smaller, larger
+
+
+def medoid(texts: list) -> str:
+    """of several readings of one line, the one most like the others (letters and digits alone; ties: the first -
+    the image as cut): a digit one look misreads the others outvote"""
+    from difflib import SequenceMatcher
+    if len(texts) < 3:
+        return texts[0] if texts else ""
+    plain = [_plain(t) for t in texts]
+    score = [sum(SequenceMatcher(None, a, b, autojunk=False).ratio() for j, b in enumerate(plain) if j != i)
+             for i, a in enumerate(plain)]
+    return texts[max(range(len(texts)), key=lambda i: (score[i], -i))]
+
+
+def read_views(reader, crop, prompt: str, views: int = 1) -> str:
+    """a line read at `views` scales of its image (VIEW_SCALES), the reading most like the others kept (medoid)"""
+    from PIL import Image
+    texts = []
+    for sc in VIEW_SCALES[:max(1, views)]:
+        img = crop if sc == 1.0 else crop.resize((max(8, round(crop.width * sc)), max(8, round(crop.height * sc))),
+                                                  Image.LANCZOS)
+        t = reader.read(img, max_new_tokens=160, prompt=prompt).splitlines()
+        texts.append(clean_line(" \\\\ ".join(t[:4])))     # (a line of the reading that holds two: both)
+    return medoid(texts)
+
+
+def text_lines(page: dict) -> list:
+    """the page's lines with no math piece - read as Hebrew or English only (a formula the layout took for text: its
+    numbers in no reading) -> [(line index, its pieces)]; a line all crossed out left out"""
+    out = []
+    for i, segs in enumerate(page.get("lines", [])):
+        live = [s for s in segs if (s.get("crossed") or {}).get("share", 0) < 0.6]
+        if live and not any(s["kind"] == "math" for s in segs):
+            out.append((i, live))
+    return out
+
+
+def text_line_math(text: str) -> str:
+    """a text line read whole -> its math when it states a value ('t_{pHL} = 69.8 ps': a name or an expression set
+    equal to something holding a digit), else '' - the rest of such a line (Hebrew words, a lone number, a letter)
+    stays as the text readers read it"""
+    m = latexify(math_of(text))
+    if not m or not re.search(r"(?<![<>!])=", m):
+        return ""
+    sides = [x for x in re.split(r"(?<![<>!])=", m)]
+    return m if any(re.search(r"\d", x) for x in sides[1:]) and re.search(r"[0-9A-Za-z]", sides[0]) else ""
+
+
+def text_segment(math: str, text: str, segs: list, box) -> dict:
+    """a text line's math read whole -> a math piece of its own (one reader: the checks are not sure of it alone)"""
+    return {"kind": "math", "box": list(box), "p_kind": min(s.get("p_kind", 1.0) for s in segs),
+            "nbest": [[math, 0.0]], "line_text": text, "text_line": True}
+
+
+def second_text_readings(found: list, reader) -> tuple:
+    """the text lines' math (found: [(page, line index, its segment, the line's crop)]) read again by a formula reader
+    (Uni-MuMER: the second reader of the math lines) - a value the vision model wrote that this reading does not hold
+    (tools/reread_lines.made_up: its numbers in neither) is the model writing, not reading: left out; the others get
+    the second reading beside theirs (the checks weigh the two) -> (kept [(page, i, seg)], left out)"""
+    kept, dropped = [], 0
+    for pno, i, seg, crop in found:
+        try:
+            second = (reader.recognize(crop, n_best=1) or [None])[0]
+            second = second.text if second is not None else ""
+        except Exception:                                  # noqa: BLE001  (a reader that fails: no second reading)
+            second = ""
+        first = seg["nbest"][0][0]
+        if made_up(first, second):
+            dropped += 1
+            continue
+        if second and second != first:
+            seg["math2"] = [[second, 0.0]]
+        kept.append((pno, i, seg))
+    return kept, dropped
+
+
 def second_reading(maths: list) -> str:
     """the line's pieces as Uni-MuMER read them (its own readings, not the merged ones), left to right"""
     return " ".join(t for t in (_first(s, "math2_mumer") or _first(s, "nbest") for s in maths) if t)
@@ -210,6 +287,12 @@ def main():
     ap.add_argument("--model", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     ap.add_argument("--dpi", type=int, default=300)
     ap.add_argument("--read-dpi", type=int, default=150)
+    ap.add_argument("--text-lines", action="store_true", help="the lines read as Hebrew or English only read whole too: "
+                    "a value stated in one ('t_{pHL} = 69.8 ps') becomes a math piece of its own")
+    ap.add_argument("--views", type=int, default=1, help="each math line read at this many scales of its image "
+                    "(1-3: as cut, x0.75, x1.33), the reading most like the others kept")
+    ap.add_argument("--text-second", default="mumer", help="the text lines' values read again by Uni-MuMER and kept "
+                    "only where its reading holds their numbers ('none': kept as the vision model read them)")
     args = ap.parse_args()
     from read_page import booklet_pages, load_pages
     from tools.read_blocks import BlockReader
@@ -221,25 +304,40 @@ def main():
     t0 = time.time()
     reader = BlockReader(args.model)
     print(f"model ready in {time.time() - t0:.0f} s", flush=True)
-    n_lines = n_agree = n_made_up = 0
+    n_lines = n_agree = n_made_up = n_text = n_text_math = 0
+    found = []                  # (the text lines' values waiting for the second reader: page, line, segment, crop)
     for pno, page in enumerate(data, 1):
         if (want and pno not in want) or page.get("info", {}).get("photo"):
             continue
         lines = math_lines(page)
-        if not lines:
+        texts = dict(text_lines(page)) if args.text_lines else {}
+        if not lines and not texts:
             continue
         t1 = time.time()
         img = hand_page(high, low, pno, book)
         before = []
         new_lines = {}
-        for i, maths, rest in lines:
+        order = [(i, maths, rest) for i, maths, rest in lines] + [(i, None, segs) for i, segs in texts.items()]
+        order.sort(key=lambda t: min(s["box"][1] for s in page["lines"][t[0]]))
+        for i, maths, rest in order:
             x0, y0, x1, y1 = union([s["box"] for s in page["lines"][i]])
             pad = 6
             crop = img.crop((max(0, int((x0 - pad) * f)), max(0, int((y0 - pad) * f)),
                              min(img.width, int((x1 + pad) * f)), min(img.height, int((y1 + pad) * f))))
-            ctx = CONTEXT.format(lines="\n".join(before[-KEEP_CONTEXT:])) if before else ""
-            text = reader.read(crop, max_new_tokens=160, prompt=PROMPT_LINE.format(context=ctx)).splitlines()
-            text = clean_line(" \\\\ ".join(text[:4]))         # (a line of the reading that holds two: both)
+            ctx = CONTEXT.format(lines="\n".join(before[-KEEP_CONTEXT:])) if before and maths is not None else ""
+            text = read_views(reader, crop, PROMPT_LINE.format(context=ctx), args.views if maths is not None else 1)
+            if maths is None:                                   # (a text line: its math, when it states a value)
+                m = text_line_math(text)
+                n_text += 1
+                before.append(text)
+                if m:
+                    n_text_math += 1
+                    seg = text_segment(m, text, rest, (x0, y0, x1, y1))
+                    if args.text_second == "none":
+                        new_lines[i] = [seg] + page["lines"][i]
+                    else:                                       # (Uni-MuMER's reading of it after all the pages)
+                        found.append((pno, i, seg, crop))
+                continue
             first, second = latexify(math_of(text)), second_reading(maths)
             n_lines += 1
             if not first or made_up(first, second, pieces_reading(maths)):   # (its pieces kept as they were read)
@@ -254,10 +352,27 @@ def main():
         page["lines"] = [new_lines.get(i, segs if not any(s["kind"] == "math" for s in segs) else
                                        [s for s in segs if s["kind"] != "math"])
                          for i, segs in enumerate(page["lines"])]
-        print(f"page {pno}: {len(lines)} lines with math, {time.time() - t1:.0f} s", flush=True)
+        print(f"page {pno}: {len(lines)} lines with math, {len(texts)} text lines, {time.time() - t1:.0f} s", flush=True)
+    n_text_dropped = 0
+    if found:                                                   # (the vision model off the GPU, then Uni-MuMER)
+        import gc
+        del reader
+        gc.collect()
+        try:
+            import torch
+            torch.cuda.empty_cache()
+        except Exception:                                   # noqa: BLE001
+            pass
+        from recog.mumer import MumerReader
+        kept, n_text_dropped = second_text_readings(found, MumerReader())
+        for pno, i, seg in kept:
+            data[pno - 1]["lines"][i] = [seg] + data[pno - 1]["lines"][i]
+        n_text_math -= n_text_dropped
     json.dump(data, open(args.out, "w", encoding="utf-8"), ensure_ascii=False)
-    print(f"DONE {n_lines} lines ({n_agree} read alike by both, {n_made_up} made up: their pieces kept) in "
-          f"{time.time() - t0:.0f} s -> {args.out}", flush=True)
+    print(f"DONE {n_lines} lines ({n_agree} read alike by both, {n_made_up} made up: their pieces kept)" +
+          (f", {n_text} text lines ({n_text_math} stating a value: a math piece added; {n_text_dropped} more not held "
+           f"by the second reader: left out)" if args.text_lines else "") +
+          f" in {time.time() - t0:.0f} s -> {args.out}", flush=True)
 
 
 if __name__ == "__main__":

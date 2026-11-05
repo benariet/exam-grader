@@ -474,10 +474,14 @@ class MixedReader:
                     if note:
                         p_kind = min(p_kind, CONFLICT_CAP)
                 cands = heb if kind == "hebrew" else frm
-                in_context = kind == "hebrew" and self.hebrew_context and self.heb is not None
-                if kind == "hebrew" and self.mishkefet and not (in_context and not self.defer_heavy):
-                    cands = self._mishkefet_read(crop, n_best) or cands     # (the layout decided: only the text)
-                elif kind == "hebrew" and self.hebrew_tta and not (in_context and not self.defer_heavy):
+                mk = self._mishkefet_read(crop, n_best) if kind == "hebrew" and self.mishkefet else []
+                if mk:
+                    cands = mk                           # (the layout decided: only the text)
+                # the CRNN's reading in context (Dicta-LM) only where Mishkefet did not read the piece: on the 300 test
+                # lines Mishkefet-HHD alone 4.7 % CER, the CRNN in context 7.0 % (5.11: the server's exam runs had
+                # context on - Mishkefet's readings were replaced by the CRNN's in context, the Hebrew as before)
+                in_context = kind == "hebrew" and not mk and self.hebrew_context and self.heb is not None
+                if kind == "hebrew" and not mk and self.hebrew_tta and not (in_context and not self.defer_heavy):
                     # the layout is decided (above, with one look); only the text of a Hebrew piece is re-read at
                     # five widths (recog/hebrew.py, tta) - the decisions keep the confidences they were tuned on
                     cands = self.heb.recognize(crop, n_best=n_best, tta=True)

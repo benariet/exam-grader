@@ -6258,10 +6258,64 @@ def test_a_line_read_whole_with_its_context_and_its_inventions_left_out():
                                     "line_text": "t_{pHL} = 8.60 ns, t_{pLH} = 5.72 ns"}],
                                   [{"kind": "math", "box": [10, 10, 100, 30], "nbest": [["x", 0.0]],
                                     "line_text": "V_{SB} = 1.15 [V] \\quad \\quad"}]]}]
+    from PIL import Image
+    from tools.reread_lines import medoid, read_views
+    assert medoid(["t_{pHL} = 68.8 ps", "t_{pHL} = 69.8 ps", "t_{pHL} = 69.8 ps"]) == "t_{pHL} = 69.8 ps"
+    assert medoid(["V = 1.15", "V = 7.15", "V = 1.75"]) == "V = 1.15" and medoid(["a", "b"]) == "a"
+
+    class Looks:                                   # (--views: one reading a scale of the line's image)
+        def __init__(self):
+            self.sizes = []
+
+        def read(self, img, max_new_tokens=160, prompt=""):
+            self.sizes.append(img.size)
+            return {100: "V = 7.15", 75: "V = 1.15", 133: "V = 1.15"}[img.width]
+    r = Looks()
+    assert read_views(r, Image.new("L", (100, 30), 255), "p", 3) == "V = 1.15" and r.sizes == [(100, 30), (75, 22), (133, 40)]
+    assert read_views(Looks(), Image.new("L", (100, 30), 255), "p", 1) == "V = 7.15"
     data, n, bad = refilter(run, orig)
     assert (n, bad) == (2, 1) and data[0]["lines"][0] == orig[0]["lines"][0]
     seg, = data[0]["lines"][1]
     assert seg["nbest"][0][0] == "V_{SB} = 1.15 [V]" and seg["math2"][0][0] == "V _ { S B } = 1 . 1 5 [ V ]"
+
+
+def test_a_text_line_read_whole_gives_the_value_it_states_and_where_results_are_missing():
+    """tools/reread_lines.py --text-lines: a line the layout read as Hebrew or English only is read whole too, and a
+    value it states becomes a math piece of its own beside its text pieces (a lone number, a letter, Hebrew words: not
+    a statement - nothing added); tools/coverage_gap.py: a result of the solution not reached, classed by where its
+    number is in the readings - and moved by a factor, how often a number not the solution's is found so by chance"""
+    from tools.coverage_gap import classify, numbers
+    from tools.reread_lines import text_line_math, text_lines, text_segment
+    assert text_line_math("לכן t_{pHL} = 69.8 ps") == "t_{pHL} = 69.8 ps"
+    assert text_line_math("tpHL=0.69RC=16.6ps") == "t_{pHL}=0.69RC=16.6ps"
+    assert text_line_math("הטרנזיסטור כבוי") == "" and text_line_math("1.5") == "" and text_line_math("x = y") == ""
+    heb = {"kind": "hebrew", "box": [10, 10, 90, 30], "p_kind": 0.7, "nbest": [["לכן", 0.0]]}
+    gone = dict(heb, crossed={"share": 0.9})
+    page = {"lines": [[heb], [dict(heb, kind="math")], [gone]]}
+    assert [i for i, _ in text_lines(page)] == [0]
+    seg = text_segment("t_{pHL} = 69.8 ps", "לכן t_{pHL} = 69.8 ps", [heb], [10, 10, 90, 30])
+    assert seg["kind"] == "math" and seg["p_kind"] == 0.7 and "math2" not in seg and seg["text_line"]
+    from tools.reread_lines import second_text_readings
+
+    class Second:                                  # (Uni-MuMER's readings of the two lines, in turn)
+        def __init__(self, texts):
+            self.texts = list(texts)
+
+        def recognize(self, crop, n_best=1):
+            return [type("C", (), {"text": self.texts.pop(0)})()]
+    made = text_segment("V_{DD} = 5 V, V_{Tn} = 0.7 V, t_{pHL} = 3 ps", "x", [heb], [0, 0, 9, 9])
+    kept, dropped = second_text_readings([(1, 0, seg, None), (1, 2, made, None)],
+                                         Second(["t _ { p H L } = 6 9 . 8 p s", "\\alpha \\beta"]))
+    assert dropped == 1 and [(p, i) for p, i, _ in kept] == [(1, 0)] and kept[0][2]["math2"][0][0].startswith("t _")
+    assert numbers("t_{pHL} = 0,32 + 69.8") == [0.32, 69.8]
+    pieces = [("math", "t = 0.69 \\cdot 101.2", ["t = 0.69 \\cdot 701.2"]), ("hebrew", "שלום 12", [])]
+    assert classify(69.8e-12, "69.8 ps", [67.0e-12], pieces) == "near"            # (4 % off: rounded otherwise)
+    assert classify(101.2e-12, "101.2 ps", [], pieces) == "best"
+    assert classify(701.2e-12, "701.2 ps", [], pieces) == "other"
+    assert classify(12e-9, "12 ns", [], pieces) == "text"
+    assert classify(0.1012, "0.1012", [], pieces) == "scaled"
+    assert classify(55e-12, "55 ps", [], pieces) == "nowhere"
+    assert classify(101.2e-12 / 1.13, "89.56 ps", [], pieces, factor=1.13) == "best"   # (the control, moved back)
 
 
 def test_a_size_bar_whose_opening_was_misread_is_no_separator_and_a_matrix_no_crash():
@@ -6753,6 +6807,37 @@ def test_hebrew_pieces_re_read_by_mishkefet_after_the_layout():
         assert r._mishkefet_read(Image.new("RGB", (80, 30), "white"), 3) == [] and r.mishkefet is None
     finally:
         M.recognizer, M.read_nbest = real
+
+
+def test_mishkefets_hebrew_not_replaced_by_the_crnn_in_context():
+    """with Hebrew in context on (the server's exam runs: Dicta-LM there) a piece Mishkefet read keeps its reading - the
+    CRNN's in context (7.0 % CER on the 300 test lines against Mishkefet-HHD's 4.7 %) only where Mishkefet did not
+    read it (5.11: the 8 exams' Hebrew came out letter for letter as without Mishkefet)"""
+    from PIL import Image
+    from recog.mixed_reader import MixedReader, MkCandidate
+
+    class Read:
+        def __init__(self, text):
+            self.text, self.logp, self.min_token_p = text, -1.0, 1.0
+
+    class Stub:
+        def __init__(self, text):
+            self.text = text
+
+        def recognize(self, crop, n_best=3, tta=False):
+            return [Read(self.text)]
+
+    r = MixedReader.__new__(MixedReader)
+    r.heb, r.frm, r.eng, r.hebrew_tta, r.hebrew_context, r.formula2 = Stub("שלוס"), Stub("x"), None, False, True, False
+    r.defer_heavy, r._pending = True, []
+    r.layout_checked = lambda page, bands=None: [[("hebrew", (0, 0, 80, 30), 0.95, "")]]
+    r.mishkefet = "x.pt"
+    r._mishkefet_read = lambda crop, n: [MkCandidate("שלום", -2.0)]
+    (seg,), _ = r.read(Image.new("L", (80, 30), 255))
+    assert seg[0].nbest == [("שלום", -2.0)] and r._pending == []
+    r._mishkefet_read = lambda crop, n: []                       # (Mishkefet failed: the CRNN's, read in context)
+    (seg,), _ = r.read(Image.new("L", (80, 30), 255))
+    assert seg[0].nbest == [("שלוס", -1.0)] and [j[0] for j in r._pending] == ["hebrew"]
 
 
 def test_mishkefet_found_beside_the_other_models():
