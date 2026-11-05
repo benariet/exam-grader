@@ -117,9 +117,36 @@ def prompts(n: int, rng: random.Random) -> list:
 _HEB = re.compile(r"[֐-׿\"'\-]+(?:\s+[֐-׿\"'\-]+)*")
 
 
+_RTL = None
+
+
+def draws_rtl() -> bool:
+    """whether matplotlib lays Hebrew out right to left itself (5.11: 3.11 does - the forms printed with the text
+    reversed twice, left to right): 'וש' drawn, and its thin letter found on the right"""
+    global _RTL
+    if _RTL is None:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import numpy as np
+        fig = plt.figure(figsize=(2, 1), dpi=100)
+        fig.text(0.1, 0.3, "וש", fontsize=40, family="DejaVu Sans")
+        fig.canvas.draw()
+        ink = 255 - np.asarray(fig.canvas.buffer_rgba())[:, :, 0].astype(int)
+        plt.close(fig)
+        cols = np.nonzero(ink.sum(axis=0) > 0)[0]
+        a, b = cols.min(), cols.max()
+        q = (b - a) // 4
+        _RTL = bool(ink[:, b - q:b + 1].sum() < ink[:, a:a + q + 1].sum())
+    return _RTL
+
+
 def visual(t: str) -> str:
-    """Hebrew text in the order a left-to-right renderer draws it: the runs in reverse, the Hebrew ones reversed (a
-    number or a Latin word in it stays as written - 'ה-NMOS')"""
+    """Hebrew text in the order the renderer draws it: as it is when matplotlib lays it out right to left itself
+    (draws_rtl), else the runs in reverse, the Hebrew ones reversed (a number or a Latin word in it stays as written -
+    'ה-NMOS')"""
+    if draws_rtl():
+        return t
     def ltr(r):                                   # (a left-to-right run: the spaces around it change sides)
         core = r.strip()
         return (" " if r[len(r.rstrip()):] else "") + core + (" " if r[:len(r) - len(r.lstrip())] else "") \

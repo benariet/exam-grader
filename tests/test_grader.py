@@ -6315,7 +6315,9 @@ def test_a_page_of_notes_routed_line_by_line_and_mishkefet_loaded_safely():
 
 def test_writing_forms_made_and_cut_back_by_their_corner_squares():
     """tools/writing_forms.py: a page of lines to copy, its number in the squares at its top; a scan of it - turned,
-    pages out of order, a box left empty - cut back into each box with its line as the label"""
+    pages out of order, a box left empty - cut back into each box with its line as the label. Hebrew is given in
+    the order the renderer draws it (5.11: matplotlib 3.11 lays it out right to left itself - reversed again, the
+    printed forms read left to right)"""
     import json
     import os
     import tempfile
@@ -6323,9 +6325,20 @@ def test_writing_forms_made_and_cut_back_by_their_corner_squares():
     import cv2
     import pypdfium2 as pdfium
     from PIL import Image, ImageDraw
+    import tools.writing_forms as WF
     from tools.writing_forms import cut, make, visual
-    assert visual("טופס כתב יד - עמוד 1") == "1 דומע - די בתכ ספוט"
-    assert visual("במצב זה ה-NMOS כבוי") == "יובכ NMOS-ה הז בצמב"
+    rtl = WF.draws_rtl()                                     # (matplotlib 3.11 lays Hebrew out itself)
+    try:
+        WF._RTL = False                                      # (an older one: the text given in drawing order)
+        assert visual("טופס כתב יד - עמוד 1") == "1 דומע - די בתכ ספוט"
+        assert visual("במצב זה ה-NMOS כבוי") == "יובכ NMOS-ה הז בצמב"
+        WF._RTL = True
+        assert visual("במצב זה ה-NMOS כבוי") == "במצב זה ה-NMOS כבוי"
+    finally:
+        WF._RTL = rtl
+    import matplotlib
+    if tuple(int(x) for x in matplotlib.__version__.split(".")[:2]) >= (3, 11):
+        assert rtl
     with tempfile.TemporaryDirectory() as tmp:
         make(os.path.join(tmp, "f"), 2, 3)
         info = json.load(open(os.path.join(tmp, "f.json"), encoding="utf-8"))
