@@ -6668,3 +6668,38 @@ def test_a_printed_grid_taken_out_and_the_writing_kept():
     scraps = [{"text": "עו יד", "confidence": 0.96}] * 20
     lines = [{"text": "גן נעול לא שביל אליו", "confidence": 0.94}] * 5
     assert M.page_quality(scraps) < 0.5 and abs(M.page_quality(lines) - 0.94) < 1e-9
+
+
+def test_roboflow_circuit_exports_mapped_to_the_detectors_classes():
+    """tools/circuit_data: a Roboflow export's classes to the unified ones ('915.R_2' -> resistor, wire corners and
+    junction dots left out, a class not listed -> other), all its images to training; light lines on black inverted"""
+    import json
+    import tempfile
+    from PIL import Image
+    from tools.circuit_data import RF_MAPS, _convert, rf_class, roboflow_items
+    assert rf_class(RF_MAPS["hand_circuit_7"], "915.R_2") == "resistor"
+    assert rf_class(RF_MAPS["hand_circuit_7"], "922.point_3_b_l_r") is None
+    assert rf_class(RF_MAPS["Circuit_V3"], "Conditional Voltage") == "dep_voltage"
+    assert rf_class(RF_MAPS["circuit_diagram"], "tunnel diode") == "other"
+    with tempfile.TemporaryDirectory() as d:
+        part = os.path.join(d, "hand_circuit_7.v5i.coco", "valid")
+        os.makedirs(part)
+        Image.new("RGB", (64, 48), (0, 0, 0)).save(os.path.join(part, "a_jpg.rf.1.jpg"))
+        Image.new("RGB", (64, 48), (255, 255, 255)).save(os.path.join(part, "b.jpg"))
+        json.dump({"categories": [{"id": 0, "name": "circuits"}, {"id": 1, "name": "915.R_2"},
+                                  {"id": 2, "name": "918.point_2_t_r"}],
+                   "images": [{"id": 0, "file_name": "a_jpg.rf.1.jpg"}, {"id": 1, "file_name": "b.jpg"}],
+                   "annotations": [{"image_id": 0, "category_id": 1, "bbox": [2, 3, 10, 5]},
+                                   {"image_id": 0, "category_id": 2, "bbox": [20, 20, 4, 4]},
+                                   {"image_id": 1, "category_id": 2, "bbox": [1, 1, 4, 4]}]},
+                  open(os.path.join(part, "_annotations.coco.json"), "w"))
+        os.makedirs(os.path.join(d, "unknown_project.v1i.coco"))
+        items = list(roboflow_items(d))
+        assert len(items) == 1                                # (b: only wire corners - nothing to learn)
+        split, name, path, objs, meta, draws = items[0]
+        assert (split, objs, meta["source"], draws) == ("train", [("resistor", [2, 3, 12, 8], None)],
+                                                        "roboflow:hand_circuit_7", "invert-if-dark")
+        assert name.startswith("rf_hand_circuit_7_valid_a_jpg")
+        out = os.path.join(d, "o.jpg")
+        k, sc, size = _convert((7, path, out, draws))
+        assert (k, sc, size) == (7, 1.0, (64, 48)) and Image.open(out).convert("L").getpixel((5, 5)) > 200

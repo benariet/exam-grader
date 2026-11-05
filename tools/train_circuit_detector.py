@@ -43,6 +43,9 @@ from torchvision.transforms import v2 as T  # noqa: E402
 from transformers import RTDetrImageProcessor, RTDetrV2ForObjectDetection  # noqa: E402
 
 DEV = a.device or ("cuda" if torch.cuda.is_available() else "cpu")
+# (another model - --out models/circuit-detector-rf - is measured into results/circuit-detector-rf_eval.json)
+EVAL_NAME = "circuit_detector_eval.json" if os.path.basename(os.path.normpath(a.out)) == "circuit-detector" \
+    else os.path.basename(os.path.normpath(a.out)) + "_eval.json"
 LOG = open(os.path.join(HERE, "results", "circuit_detector_train.log"), "a", encoding="utf-8") if os.path.isdir(os.path.join(HERE, "results")) else None
 
 
@@ -243,7 +246,7 @@ def main():
     rep = {"test_AP50_mean": round(m, 4), "test_AP50_by_source": {k: round(v, 4) for k, v in by_src.items()},
            "best_val_AP50": round(best, 4), "per_class": per, "input": a.size,
            "images": {"train": len(train_ds), "val": len(val_ds), "test": len(test_ds)}}
-    json.dump(rep, open(os.path.join(HERE, "results", "circuit_detector_eval.json"), "w", encoding="utf-8"), indent=1)
+    json.dump(rep, open(os.path.join(HERE, "results", EVAL_NAME), "w", encoding="utf-8"), indent=1)
     say(f"TEST (writers never seen): AP50 {m:.3f}  by collection {rep['test_AP50_by_source']}")
     for c, v in sorted(per.items(), key=lambda kv: -kv[1]["true"]):
         say(f"  {c:14s} AP50 {v['AP50']:.3f}  recall {v['recall@0.5']:.3f}  precision {v['precision@0.5']:.3f}  ({v['true']} true)")

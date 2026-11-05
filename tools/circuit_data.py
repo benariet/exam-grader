@@ -60,6 +60,27 @@ DHCD_MAP = {"Resistor": "resistor", "Capacitor": "capacitor", "Inductor": "induc
             "Diode": "diode", "Zener Diode": "zener", "BJT-NPN": "bjt", "BJT-PNP": "bjt", "MOSFET-N": "fet",
             "MOSFET-P": "fet", "Op-Amp": "opamp", "GND": "gnd", "Wire Crossover": "crossover"}
 CGHD_TEST, CGHD_VAL = {1, 5, 10, 15, 20, 25, 30}, {3, 13, 23}     # drafter 1: its 12 circuits come with LTspice netlists
+# Roboflow Universe exports (COCO; CC BY 4.0; --roboflow <folder of *.coco exports>): hand-drawn circuits with their
+# parts boxed - no value labels, terminals or crossovers boxed, so they go to training only, the test staying CGHD's
+# and Digitize-HCD's. A class not listed is 'other'; None: not a part (wire corners, junction dots)
+RF_MAPS = {
+    "circuit_diagram": {"resistor": "resistor", "capacitor": "capacitor", "inductor": "inductor",   # DeepLearning
+                        "voltage_source": "voltage_dc", "current_source": "current_dc", "ground": "gnd",
+                        "dependant_current": "dep_current", "dependant_voltage": "dep_voltage",
+                        "ac_current": "current_ac", "transistor": "bjt"},
+    "Circuit_Component_Detection": {"resistor": "resistor", "inductor": "inductor", "diode": "diode",   # JonathanApps
+                                    "capacitor": "capacitor", "ac": "voltage_ac", "dc": "voltage_dc"},
+    "hand_circuit_7": {"R_2": "resistor", "R": "resistor", "Cap": "capacitor", "L": "inductor", "Diot": "diode",
+                       "U": "voltage_dc", "Udc": "voltage_dc", "Bat": "voltage_dc", "I": "current_dc",
+                       "ac_src": "voltage_ac", "Am": "meter", "V": "meter", "Gnd_1": "gnd", "Gnd_2": "gnd",
+                       "Ip": "other", "Up": "other", "point_*": None},             # Dang (white on black: inverted)
+    "electronic_circuit": {"resistor": "resistor", "inductor": "inductor", "capacitor": "capacitor",   # Amit Kumar
+                           "ground": "gnd", "voltage": "voltage_dc"},
+    "Circuit_V3": {"Current Source": "current_dc", "Voltage Source": "voltage_dc", "Inductor": "inductor",
+                   "Dot": None, "Ground": "gnd", "OpAmp": "opamp", "Conditional Voltage": "dep_voltage",
+                   "Conditional Current": "dep_current", "Capacitor": "capacitor", "Diode": "diode",
+                   "Resistor": "resistor"},
+}
 MAX_SIDE = 1600
 
 
@@ -249,12 +270,54 @@ def dhcd_items(base):
                objs, {"source": "dhcd"}, draws.get(im["id"], []))
 
 
+def rf_class(mapping: dict, name: str):
+    """a Roboflow class name ('915.R_2', 'Conditional Voltage') -> the unified class, None (not a part) or 'other'"""
+    base = re.sub(r"^\d+\.", "", name)
+    if base in mapping:
+        return mapping[base]
+    for k, v in mapping.items():
+        if k.endswith("*") and base.startswith(k[:-1]):
+            return v
+    return "other"
+
+
+def roboflow_items(folder):
+    """the Roboflow COCO exports in folder (each '<project>.v<n>i.coco/{train,valid,test}/_annotations.coco.json'),
+    the projects in RF_MAPS: all of their images to training; an image of light lines on black is inverted"""
+    for d in sorted(glob.glob(os.path.join(folder, "*.coco"))):
+        project = os.path.basename(d).split(".v")[0]
+        if project not in RF_MAPS:
+            continue
+        for ann in sorted(glob.glob(os.path.join(d, "*", "_annotations.coco.json"))):
+            j = json.load(open(ann, encoding="utf-8"))
+            cats = {c["id"]: rf_class(RF_MAPS[project], c["name"]) for c in j["categories"]}
+            by_img = {}
+            for a in j["annotations"]:
+                uni = cats.get(a["category_id"], "other")
+                if uni is None:
+                    continue
+                x, y, w, h = a["bbox"]
+                by_img.setdefault(a["image_id"], []).append((uni, [x, y, x + w, y + h], None))
+            part = os.path.basename(os.path.dirname(ann))
+            for im in j["images"]:
+                if not by_img.get(im["id"]):                 # (a project's whole-image class only: nothing to learn)
+                    continue
+                stem = re.sub(r"[^\w]+", "_", os.path.splitext(im["file_name"])[0])[-60:]
+                yield ("train", f"rf_{project}_{part}_{stem}", os.path.join(os.path.dirname(ann), im["file_name"]),
+                       by_img[im["id"]], {"source": f"roboflow:{project}"}, "invert-if-dark")
+
+
 def _convert(job):
-    """one image: load, scale, redraw the chosen sources as diamonds, save -> (job index, scale, (w, h)) or (job
-    index, None, error)"""
+    """one image: load, scale, redraw the chosen sources as diamonds (or, draws == 'invert-if-dark', turn light lines
+    on black into dark on white), save -> (job index, scale, (w, h)) or (job index, None, error)"""
     k, path, out_path, draws = job
     try:
         im = load_image(path)
+        if draws == "invert-if-dark":
+            draws = []
+            import numpy as np
+            if np.asarray(im.convert("L").resize((64, 64))).mean() < 100:
+                im = ImageOps.invert(im)
         sc = min(1.0, MAX_SIDE / max(im.size))
         if sc < 1.0:
             im = im.resize((round(im.width * sc), round(im.height * sc)), Image.LANCZOS)
@@ -276,8 +339,11 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="at most this many images per source (a quick try)")
     ap.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 2) - 2))
     ap.add_argument("--check", action="store_true", help="exit 0 if --out was made with these classes, else 1")
+    ap.add_argument("--roboflow", default="", help="a folder of Roboflow COCO exports (RF_MAPS' projects): training")
     a = ap.parse_args()
     stamp = {"classes": UNIFIED, "synthetic_dependent_sources": SYNTH_DEP}
+    if a.roboflow:
+        stamp["roboflow"] = sorted(RF_MAPS)
     stamp_path = os.path.join(a.out, "classes.json")
     if a.check:
         ok = os.path.isfile(os.path.join(a.out, "test.json")) and os.path.isfile(stamp_path) and \
@@ -286,7 +352,8 @@ def main():
         sys.exit(0 if ok else 1)
     cghd, dhcd = (a.cghd, a.dhcd) if a.cghd and a.dhcd else download(a.raw)
     jobs = []
-    for items in (cghd_items(cghd) if cghd else [], dhcd_items(dhcd) if dhcd else []):
+    for items in (cghd_items(cghd) if cghd else [], dhcd_items(dhcd) if dhcd else [],
+                  roboflow_items(a.roboflow) if a.roboflow else []):
         for n, item in enumerate(items):
             if a.limit and n >= a.limit:
                 break
