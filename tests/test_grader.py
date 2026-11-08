@@ -1247,6 +1247,13 @@ def test_rails_named_at_their_wires_are_the_supply_and_the_ground():
         assert v.value == (kind if kind != "VDD" else None)
     far = netlist_from_boxes(m, comps, [((200, 0, 245, 27), "+9V")], polarity=False)   # (a note further off: none)
     assert not any(c.type == "voltage_source" for c in far.components)
+    g = np.zeros((300, 500), bool)                  # a gate's own 'VDD' pin written over it (drafter 1's C6): its
+    g[148:152, 20:120] = True                       # supply, not the circuit's
+    g[148:152, 180:300] = True
+    g[130:170, 120:180] = True
+    g[100:130, 148:152] = True
+    net = netlist_from_boxes(g, [("not", (120, 125, 180, 175))], [((132, 72, 168, 96), "VDD")], polarity=False)
+    assert not any(c.type == "voltage_source" for c in net.components)
 
 
 def test_a_part_boxed_whole_and_its_symbol_alone_is_one_part():

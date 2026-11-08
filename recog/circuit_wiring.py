@@ -1634,7 +1634,14 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         if _CURRENT.match(t) and not (comp.type == "current_source" and comp.label is None and dist(pb) < 0.5 * max(pb[2] - pb[0], pb[3] - pb[1])):
             current_texts.append(((cx, cy), t, comp))
             continue
-        if (_SUPPLY.match(t) or _GROUND.match(t)) and wire_px.any():
+        def by_a_gate(tb_):                                         # (a gate's own 'VDD' pin over it: its supply,
+            for c_, g_ in comps:                                    # not the circuit's - drafter 1's C6)
+                if c_ in GATES:
+                    m_ = 0.6 * max(g_[2] - g_[0], g_[3] - g_[1])
+                    if tb_[0] < g_[2] + m_ and tb_[2] > g_[0] - m_ and tb_[1] < g_[3] + m_ and tb_[3] > g_[1] - m_:
+                        return True
+            return False
+        if (_SUPPLY.match(t) or _GROUND.match(t)) and wire_px.any() and not by_a_gate(tb):
             # a rail named at its wire (a CMOS gate's 'VDD' over its top line, 'GND' under its bottom one): the
             # supply a source from that node to ground, the ground node '0'
             r = int(3 * max(tb[2] - tb[0], tb[3] - tb[1])) + 4
