@@ -432,6 +432,100 @@ def unwired_as_labels(net, dbg, mask, comps, texts, wire, read_label, sure: floa
     return net2, dbg2, comps2, texts2, [comps[k] for k in gone]
 
 
+_LETTER = re.compile(r"^\s*([A-Za-z])\s*[,.'`1lI|]?\s*$")
+
+
+def complement_mark(small, box) -> str | None:
+    """a letter written with its complement's mark - a bar over it, or "'" at its top right ('B\'') - as students
+    write an input's complement by a pass transistor's gate: the letter's ink and the strokes around it (each a piece
+    of its own, none running out of the look - a wire does): 'bar' / 'prime' / None. The label reader has no such
+    mark among its characters ('B\'' reads 'B', 'B,')"""
+    from scipy import ndimage as ndi
+    from .gates import ink as ink_of
+    x0, y0, x1, y1 = box
+    bh = y1 - y0
+    if bh < 8:
+        return None
+    cx0, cy0 = max(0, int(x0 - 0.3 * bh)), max(0, int(y0 - 0.6 * bh))
+    cx1, cy1 = min(small.width, int(x1 + 0.7 * bh)), min(small.height, int(y1 + 0.2 * bh))
+    m = ink_of(small.crop((cx0, cy0, cx1, cy1)))
+    lab, n = ndi.label(m, structure=np.ones((3, 3)))
+    if not n:
+        return None
+    h, w = m.shape
+    pieces = []
+    for k, sl in enumerate(ndi.find_objects(lab), 1):
+        a, b, c, d = sl[1].start, sl[0].start, sl[1].stop, sl[0].stop      # (x0, y0, x1, y1) in the look
+        size = int((lab[sl] == k).sum())
+        if size < 4 or a == 0 or b == 0 or c >= w or d >= h:
+            continue                                   # (a speck; a wire, running out of the look)
+        pieces.append([a, b, c, d, size])
+    if not pieces:
+        return None
+    bx = [x0 - cx0, y0 - cy0, x1 - cx0, y1 - cy0]      # the letter: the biggest piece in the box, and the pieces
+    inside = [p for p in pieces if p[0] < bx[2] and p[2] > bx[0] and p[1] < bx[3] and p[3] > bx[1]]
+    if not inside:
+        return None
+    body = list(max(inside, key=lambda p: p[4])[:4])   # over it (two strokes of one letter)
+    rest = [p for p in pieces if p[:4] != body]
+    grown = True
+    while grown:
+        grown = False
+        for p in list(rest):
+            ov_x = min(p[2], body[2]) - max(p[0], body[0])
+            ov_y = min(p[3], body[3]) - max(p[1], body[1])
+            if ov_x >= 0.5 * (p[2] - p[0]) and ov_y >= 0.5 * (p[3] - p[1]):
+                body = [min(body[0], p[0]), min(body[1], p[1]), max(body[2], p[2]), max(body[3], p[3])]
+                rest.remove(p)
+                grown = True
+    lw, lh = body[2] - body[0], body[3] - body[1]
+    if lh < 6:
+        return None
+    for a, b, c, d, _ in rest:
+        pw, ph = c - a, d - b
+        over = min(c, body[2]) - max(a, body[0])
+        if d <= body[1] + 0.15 * lh and d >= body[1] - 0.8 * lh and ph <= 0.3 * lh and pw >= 0.55 * lw and \
+                pw >= 2.5 * ph and over >= 0.5 * lw:
+            return "bar"
+        if body[2] - 0.2 * lw <= a <= body[2] + 0.6 * lh and b <= body[1] + 0.2 * lh and d <= body[1] + 0.65 * lh and \
+                0.12 * lh <= ph <= 0.6 * lh and pw <= 0.45 * lh and ph >= 0.6 * pw:
+            return "prime"
+    return None
+
+
+def with_complements(small, boxes, reads):
+    """the readings of single letters written with a complement's mark (complement_mark) as "B'" -> reads"""
+    out = []
+    for b, (t, conf) in zip(boxes, reads):
+        m = _LETTER.match(t or "")
+        out.append((m.group(1) + "'", conf) if m and complement_mark(small, b) else (t, conf))
+    return out
+
+
+def hinted_letters(texts, letters: str, logp, margin: float = 8.0):
+    """the letters the question names ('ABC': its inputs, 'S' its output): a short reading that is none of them nor
+    '0' / '1' (a constant) - '3', '8', 'D' for a 'B' - read as the one of them the label reader finds nearly as
+    likely (log P within margin); a complement's mark kept ("3'" -> "B'"). logp(box, [text, ...]) -> [log P].
+    -> (texts, [(index, before, after)])"""
+    want = [c for c in dict.fromkeys(letters.upper()) if c.isalpha()]
+    if not want:
+        return texts, []
+    texts, changed = list(texts), []
+    for i, (b, t, *rest) in enumerate(texts):
+        s = (t or "").strip()
+        base, mark = (s[:-1], "'") if s.endswith("'") else (s, "")
+        if not base or len(base) > 2 or base.upper() in want or base in ("0", "1") or \
+                (len(base) == 2 and re.fullmatch(r"[A-Za-z]\d", base) and base[0].upper() not in want):
+            continue
+        cand = [x for c in want for x in (c, c.lower())]
+        sc = logp(b, [base] + cand)
+        per = sorted(((max(sc[1 + 2 * j], sc[2 + 2 * j]), c) for j, c in enumerate(want)), reverse=True)
+        if per[0][0] >= sc[0] - margin and (len(per) == 1 or per[0][0] >= per[1][0] + 1.0):   # (one of them clearly)
+            texts[i] = (b, per[0][1] + mark, *rest)
+            changed.append((i, t, per[0][1] + mark))
+    return texts, changed
+
+
 def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: float = 5.0, name_margin: float = 2.5):
     """the inputs' letters of a CMOS gate drawn with its transistors' gates labelled: each input drives a PMOS and an
     NMOS, so each letter is written an even number of times - a short reading that is no name ('8', 'D', '1B' for a
@@ -446,6 +540,8 @@ def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: flo
 
     def name(t):
         t = (t or "").strip()
+        if re.fullmatch(r"[A-Za-z]'", t):              # (a complement, "B'": a name of its own - kept)
+            return t.upper()
         return t.upper() if len(t) == 1 and t.isalpha() and t.upper() != "I" else None
 
     for _ in range(len(texts)):
@@ -457,10 +553,11 @@ def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: flo
         best = None
         for i, (b, t, *rest) in enumerate(texts):
             s = (t or "").strip()
-            free = len(s) == 1 and not name(s) or len(s) == 2 and not re.match(r"^[A-Za-z]\d$", s) or name(s) in odd
+            free = len(s) == 1 and not name(s) or len(s) == 2 and not re.match(r"^[A-Za-z]\d$", s) and not name(s) or \
+                name(s) in odd and "'" not in s
             # (a part's name - 'T1', 'R1' - only when the letter is nearly as likely: an 'A' read 'T1')
             m_ = margin if free else name_margin if re.match(r"^[A-Za-z]\d$", s) else None
-            targets = sorted(odd - {name(s)})
+            targets = sorted(n for n in odd - {name(s)} if "'" not in n)
             if not s or m_ is None or not targets:
                 continue
             cand = [x for n in targets for x in (n, n.lower())]
@@ -481,7 +578,8 @@ def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: flo
     for _ in range(len(texts)):
         used = {name(t) for _b, t, *_ in texts if name(t)}
         free = [i for i, (_b, t, *_) in enumerate(texts) if (t or "").strip() and
-                (len(t.strip()) == 1 and not name(t) or len(t.strip()) == 2 and not re.match(r"^[A-Za-z]\d$", t.strip()))]
+                (len(t.strip()) == 1 and not name(t) or len(t.strip()) == 2 and not re.match(r"^[A-Za-z]\d$", t.strip())
+                 and not name(t))]
         cand = [x for x in letters if x not in used]
         if len(free) < 2 or not cand:
             break
@@ -538,8 +636,10 @@ def reading_score(net):
 
 
 class CircuitReader:
-    def __init__(self, detector: CircuitDetector | None = None, strokes=None, formula=None, labels=None):
+    def __init__(self, detector: CircuitDetector | None = None, strokes=None, formula=None, labels=None,
+                 letters: str = ""):
         self.detector = detector or CircuitDetector()
+        self.letters = letters                         # the letters the question names ('ABCS'): hinted_letters
         if strokes is None:
             from .strokes import DEFAULT_DIR, StrokeModel
             strokes = StrokeModel() if os.path.isfile(os.path.join(DEFAULT_DIR, "model.safetensors")) else False
@@ -572,6 +672,8 @@ class CircuitReader:
         boxes = [b for c, b, _ in found if c == "text"]
         reads = self._read_labels(small, boxes, comps)
         texts = [(b, t or None, conf) for b, (t, conf) in zip(boxes, reads)]
+        if self.letters and self.labels:               # a letter read as none the question names ('3' for its 'B')
+            texts, _ = hinted_letters(texts, self.letters, lambda b, ts: self.labels.logp(self._label_crop(small, b), ts))
         comps, retyped = retype_by_units(comps, texts)
         before = list(comps)
         comps, renamed = retype_by_names(comps, texts)
@@ -621,7 +723,8 @@ class CircuitReader:
             lambda b: self._read_labels(small, [b], comps)[0])
         for cls, b in unwired:
             found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))] + [("text", b, 0.0)]
-        if self.labels:                                # a CMOS gate's input letters: each written twice
+        if self.labels and {"nmos", "pmos"} <= {c.type for c in net.components}:   # a CMOS gate's input letters:
+            # each written twice (a pass network's - an NMOS each - are not)
             texts2, changed = consistent_letters(texts, comps, lambda b, ts: self.labels.logp(self._label_crop(small, b), ts))
             if changed:
                 net2, dbg2 = netlist_from_boxes(mask, comps, texts2, return_debug=True)
@@ -647,7 +750,7 @@ class CircuitReader:
             return []
         if self.labels:
             from .labels import kind_of
-            return self.labels.read(crops, kinds=[kind_of(b, comps) for b in boxes])
+            return with_complements(small, boxes, self.labels.read(crops, kinds=[kind_of(b, comps) for b in boxes]))
         reads = []
         for crop in crops:
             try:
@@ -655,4 +758,4 @@ class CircuitReader:
                 reads.append((label_text(c.text), float(np.exp(min(0.0, c.logp)))))
             except Exception:                          # noqa: BLE001
                 reads.append(("", 0.0))
-        return reads
+        return with_complements(small, boxes, reads)

@@ -29,6 +29,10 @@ ap.add_argument("--only", default="", help="photos whose names start so, comma-s
 ap.add_argument("--synth", default="", help="a folder of drawings with their netlists (<name>.png + <name>.json: "
                 "tools/cmos_synth.py's CMOS gates) - measured by the full reader alone")
 ap.add_argument("--no-cghd", action="store_true", help="only the --synth drawings")
+ap.add_argument("--letters", default="", help="the letters the drawings' question names ('ABCS'): a letter read as "
+                "none of them ('3' for a 'B') re-read as one (recog.circuit_reader.hinted_letters)")
+ap.add_argument("--inputs", default="", help="the circuits' inputs as the question names them ('ABC'): the Boolean "
+                "functions read in them (tools/ptl_synth.py's pass-transistor networks)")
 ap.add_argument("--details", action="store_true", help="each row with the netlist read, its boxes and labels")
 ap.add_argument("--via-page", action="store_true", help="read as an exam page is (read_page.find_circuits, then each "
                 "drawing found cropped and read) - the largest drawing found is the netlist")
@@ -53,7 +57,7 @@ def main():
     reader = None
     if not a.true_boxes:
         from recog.circuit_reader import CircuitDetector, CircuitReader
-        reader = CircuitReader(CircuitDetector(a.detector) if a.detector else None)
+        reader = CircuitReader(CircuitDetector(a.detector) if a.detector else None, letters=a.letters)
     from recog.circuit_reader import LONG_SIDE
     from recog.circuit_wiring import strokes as classical
     stroke_model = None
@@ -135,11 +139,12 @@ def main():
         rows.append({"image": name, "transistors": transistors,
                      **{k: c[k] for k in ("components", "extra_components", "topology_exact", "polarity", "legs", "kinds")
                         if k in c}})
-        tf = truth.switch_logic() if any(x.type in ("nmos", "pmos") for x in truth.components) else {}
+        hint = a.inputs or None                            # (the question's inputs: 'ABC')
+        tf = truth.switch_logic(inputs=hint) if any(x.type in ("nmos", "pmos") for x in truth.components) else {}
         if tf:                                             # a CMOS gate: the Boolean function read, whatever the layout
             import sympy as sp
             up = lambda e: e.xreplace({x: sp.Symbol(str(x).upper()) for x in e.free_symbols})   # noqa: E731
-            rf = [up(f) for f in net.switch_logic().values()]
+            rf = [up(f) for f in net.switch_logic(inputs=hint).values()]
             rows[-1]["function_right"] = all(any(not sp.satisfiable(sp.Xor(up(f), g)) for g in rf) for f in tf.values())
         if a.details:                                      # (what was read: to sort the failures by their cause)
             rows[-1]["read"] = [(x.id, x.type, x.nodes, x.roles) for x in net.components]
@@ -182,7 +187,7 @@ def main():
         f"kinds right {tc['kinds_right_of_exact']} (of the exact ones)")
     fr = [r["function_right"] for r in rows_t if "function_right" in r]
     if fr:
-        say(f"CMOS gates whose Boolean function was read right: {sum(fr)}/{len(fr)}")
+        say(f"transistor networks (CMOS, pass-transistor) whose Boolean function was read right: {sum(fr)}/{len(fr)}")
 
 
 def picture(page, net, dbg, path, extra=(), true_boxes=()):

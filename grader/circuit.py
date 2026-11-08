@@ -74,6 +74,16 @@ class Netlist:
     ports_marked: bool = False                          # the port's '+' / '-' drawn by its terminals: ports[0] is '+'
 
     @staticmethod
+    def from_dict(d: dict) -> "Netlist":
+        """a Netlist saved whole (dataclasses.asdict: tools/read_exam_circuits.py) -> the Netlist"""
+        d = dict(d)
+        d["components"] = [Component(**c) for c in d.get("components", [])]
+        d["currents"] = [Current(**c) for c in d.get("currents", [])]
+        d["voltages"] = [Voltage(**v) for v in d.get("voltages", [])]
+        d["terminals"] = [(n, tuple(xy)) if isinstance(xy, (list, tuple)) else (n, xy) for n, xy in d.get("terminals", [])]
+        return Netlist(**{k: v for k, v in d.items() if k in Netlist.__dataclass_fields__})
+
+    @staticmethod
     def from_json(d) -> "Netlist":
         """a dict, or text holding one (a model's answer with prose around its JSON)"""
         if isinstance(d, str):
@@ -967,10 +977,11 @@ class Netlist:
                and gnd in c.nodes and c.plus != gnd}
         channel = {n for _, _, d, s_ in fets for n in (d, s_)}
         gates = {g for _, g, _, _ in fets}
-        if gnd is None or gnd not in channel:
+        cmos = {t for t, _, _, _ in fets} == {"nmos", "pmos"}   # (a pass network's sources say nothing of its rails:
+        if (gnd is None or gnd not in channel) and cmos:          #  its transistors' ends are either way round)
             g_ = only("nmos")
             gnd = g_.pop() if len(g_) == 1 else gnd
-        if not vdd:
+        if not vdd and cmos:
             vdd = only("pmos") - {gnd}
         rails = set(vdd) | ({gnd} if gnd is not None else set())
 
@@ -992,6 +1003,17 @@ class Netlist:
                 drive[n] = v or (str(n), False)
             elif v and (v[0] in want if want is not None else len(near[n] - {n}) == 1):
                 drive[n] = v
+        if want is not None:                         # an input wire whose letter was not read (one transistor's end
+            ends = {}                                # on it, nothing else), and one input the question names that no
+            for _, _, d, s_ in fets:                 # node shows: that input
+                for n in (d, s_):
+                    ends[n] = ends.get(n, 0) + 1
+            loose = [n for n in channel - rails - set(drive) - gates if var(n) is None and ends.get(n) == 1
+                     and n not in others]
+            shown = {var(n)[0] for n in self.node_labels if var(n) and not var(n)[1]}
+            missing = sorted(want - shown)
+            if len(loose) == 1 and len(missing) == 1:
+                drive[loose[0]] = (missing[0], False)
         names = sorted({v[0] for v in drive.values()})
         if not names or len(names) > most_inputs:
             return nothing
@@ -1349,6 +1371,10 @@ def _same_legs(rc, tc, nodes: dict) -> bool:
     each by name; a gate's output, and its inputs in any order"""
     if not rc.roles:
         return False
+    if tc.type in ("nmos", "pmos") and {"Gate", "Drain", "Source"} <= set(tc.roles):   # (a MOSFET's channel ends:
+        return rc.roles.get("Gate") == nodes.get(tc.roles["Gate"]) and \
+            sorted(str(rc.roles.get(k)) for k in ("Drain", "Source")) == \
+            sorted(str(nodes.get(tc.roles[k])) for k in ("Drain", "Source"))      # either way round, as it conducts)
     if "out" in tc.roles:
         ins = lambda roles: sorted(v for k, v in roles.items() if k.startswith("in"))
         return rc.roles.get("out") == nodes.get(tc.roles["out"]) and \

@@ -2322,6 +2322,9 @@ def test_a_pass_transistor_network_gives_its_boolean_function():
                     node_labels={"a": "A", "b": "B", "bn": "B'", "c": "C", "cn": "C'", "s": "S"})
     sw = named.switch_logic(inputs="ABC")
     assert not sp.satisfiable(sp.Xor(sw["s"], A | B | C))
+    unread = Netlist(named.components, node_labels={"b": "B", "bn": "B'", "c": "C", "cn": "C'"})   # 'A' not read:
+    assert unread.switch_logic() == {}                                     # the one input wire without a letter is
+    assert not sp.satisfiable(sp.Xor(unread.switch_logic(inputs="ABC")["s"], A | B | C))   # the one input not shown
     from grader.circuit_check import check_against, circuit_statements      # the answer against the drawing
     for n_, (tex, verdict, sure) in ((named, ("S = A + B + C", "right", True)), (named, ("S = A B C", "wrong", True)),
                                      (net, ("S = A + B + C", "right", True)), (net, ("S = A B", "wrong", False))):
@@ -7430,3 +7433,93 @@ def test_mishkefet_found_beside_the_other_models():
             os.environ.pop("HEBOCR_SRC", None)
         else:
             os.environ["HEBOCR_SRC"] = old_env
+
+
+def test_a_letters_complement_mark_is_read():
+    """a pass transistor's gate letter written with its complement's mark - a bar over it, or "'" at its top right -
+    reads "B'" (the label reader has no such character); a wire leaving the letter, a gate's stub under it, no mark"""
+    from PIL import Image, ImageDraw
+    from recog.circuit_reader import complement_mark, with_complements
+
+    def page(mark=None, wire=False, stub=False):
+        img = Image.new("RGB", (400, 300), (240, 240, 240))
+        d = ImageDraw.Draw(img)
+        x, y, h = 150, 120, 40                         # a 'B': its spine and two bumps
+        d.line([(x, y), (x, y + h)], fill=(20, 20, 20), width=4)
+        d.arc((x - 14, y, x + 20, y + h / 2), 270, 90, fill=(20, 20, 20), width=4)
+        d.arc((x - 14, y + h / 2, x + 24, y + h), 270, 90, fill=(20, 20, 20), width=4)
+        if mark == "bar":
+            d.line([(x - 4, y - 12), (x + 26, y - 13)], fill=(20, 20, 20), width=4)
+        elif mark == "prime":
+            d.line([(x + 34, y - 1), (x + 30, y + 13)], fill=(20, 20, 20), width=4)
+        if wire:                                       # an input's wire from beside the letter, far to the right
+            d.line([(x + 36, y + h / 2), (x + 300, y + h / 2)], fill=(20, 20, 20), width=4)
+        if stub:                                       # a gate's stub under it, down to the transistor
+            d.line([(x + 6, y + h + 8), (x + 6, y + h + 120)], fill=(20, 20, 20), width=4)
+        return img, (x - 4, y - 2, x + 26, y + h + 2)
+    for mark in ("bar", "prime"):
+        img, box = page(mark)
+        assert complement_mark(img, box) == mark
+        img, box = page(mark, stub=True)
+        assert complement_mark(img, box) == mark
+        assert with_complements(img, [box], [("B", 0.9)]) == [("B'", 0.9)]
+    for kw in ({}, {"wire": True}, {"stub": True}, {"wire": True, "stub": True}):
+        img, box = page(**kw)
+        assert complement_mark(img, box) is None, kw
+        assert with_complements(img, [box], [("B", 0.9)]) == [("B", 0.9)]
+    img, box = page("prime")
+    assert with_complements(img, [box], [("AB", 0.9)]) == [("AB", 0.9)]      # (two letters, no complement: as read)
+    assert with_complements(img, [box], [("B,", 0.9)]) == [("B'", 0.9)]      # (its mark read as a comma)
+
+
+def test_a_drawn_circuit_is_judged_against_the_key(tmp_path):
+    """tools/read_exam_circuits.py's netlists, saved whole and read back, judged against the solution's function
+    (tools/circuit_key.py): Moed C 2.1's four pass transistors give S = A + B + C; B for B' gives another function or
+    none; the question's pages from the booklet's"""
+    import json
+    import subprocess
+    import sys
+    from grader.circuit import Component, Netlist
+    from tools.read_exam_circuits import netlist_dict
+
+    def q(i, g, d, s_):
+        return Component(i, "nmos", [g, d, s_], roles={"Gate": g, "Drain": d, "Source": s_})
+    good = Netlist([q("M1", "bn", "x", "a"), q("M2", "b", "x", "b"), q("M3", "cn", "s", "x"), q("M4", "c", "s", "c")],
+                   node_labels={"a": "A", "b": "B", "bn": "B'", "c": "C", "cn": "C'"}, terminals=[("s", (1.0, 2.0))])
+    assert Netlist.from_dict(json.loads(json.dumps(netlist_dict(good)))) == good
+    bad = Netlist([q("M1", "b", "x", "a"), q("M2", "b", "x", "b"), q("M3", "cn", "s", "x"), q("M4", "c", "s", "c")],
+                  node_labels={"a": "A", "b": "B", "c": "C", "cn": "C'"})
+    for name, net, page in (("1", good, 7), ("2", bad, 7), ("3", good, 3), ("4", None, 7)):
+        pages = [{"page": p, "booklet": p, "circuits": []} for p in range(1, 15)]
+        if net is not None:
+            pages[page - 1]["circuits"].append({"box": [0, 0, 1, 1], "netlist": netlist_dict(net), "found": []})
+        json.dump({"exam": name, "pages_in_scan": 14, "booklet_used": True, "pages": pages},
+                  open(tmp_path / f"{name}.circuits.json", "w"))
+    qp = {"9": {str(p): {"booklet": p, "question": 2 if p in (7, 8, 9) else 1} for p in range(1, 15)}}
+    json.dump(qp, open(tmp_path / "pages.json", "w"))
+    json.dump([{"q": 2, "function": "S = A + B + C", "inputs": "ABC", "fewest": 4}], open(tmp_path / "key.json", "w"))
+    out = subprocess.run([sys.executable, "tools/circuit_key.py", str(tmp_path), "--key", str(tmp_path / "key.json"),
+                          "--pages", str(tmp_path / "pages.json"), "--remarks"], capture_output=True, text=True, check=True).stdout
+    assert "4 exams - right: 1, other: 0, none: 1, no drawing: 2" in out, out
+    assert "with the fewest transistors (4): 1" in out
+    got = {r["exam"]: r["verdict"] for r in json.load(open(tmp_path / "circuit_key.json"))["2"]}
+    assert got == {"1": "right", "2": "none", "3": "no drawing", "4": "no drawing"}
+    assert "המינימלי" in open(tmp_path / "1_circuit_remarks.txt", encoding="utf-8").read()
+
+
+def test_letters_the_question_names_are_preferred():
+    """a pass network's 'B' read '3' (CGHD's drafters' B's: '3', '8', 'D'): with the question's letters known
+    ('ABCS'), read as the one of them nearly as likely - its complement's mark kept; a constant '1', a letter
+    the question names, a part's name, a clear other letter kept"""
+    from recog.circuit_reader import hinted_letters
+    table = {"3": {"3": -1.0, "B": -3.0}, "8'": {"8": -0.5, "B": -4.0}, "X": {"X": -0.2, "A": -20.0},
+             "1": {"1": -0.1}, "R1": {"R1": -0.1}, "A": {"A": -0.1}, "?": {"?": -0.1}}
+
+    def logp(b, ts):
+        own = table[b]
+        return [own.get(t.upper() if t != ts[0] else t, own.get(t, -30.0)) for t in ts]
+    texts = [(k, k, 0.9) for k in ("3", "8'", "X", "1", "R1", "A")]
+    got, changed = hinted_letters(texts, "ABCS", logp)
+    assert [t for _, t, _ in got] == ["B", "B'", "X", "1", "R1", "A"], got
+    assert [(i, a, b) for i, a, b in changed] == [(0, "3", "B"), (1, "8'", "B'")]
+    assert hinted_letters([("?", "?", 0.9)], "ABCS", logp)[1] == []      # (none of them likelier than another: kept)

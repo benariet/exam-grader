@@ -223,8 +223,21 @@ def letters(cghd, rnd, want=("A", "B", "C"), n_each=40, drafters=(1, 5, 10, 15, 
             if any(sl[0].stop <= 0.3 * hh and (sl[0].stop - sl[0].start) < 0.2 * hh
                    and (sl[1].stop - sl[1].start) > 0.4 * kept.shape[1] for sl in ndi.find_objects(lab)):
                 continue                               # (a bar over it: 'not A' - another input)
+            if marked_glyph(kept):
+                continue                               # (a bar or a "'" by the circuit reader's own test: 8.11, five
+                #                                        of the 70 test drawings' 'A's had the drafter's bar over them)
             out[t].append(kept)
     return out
+
+
+def marked_glyph(kept) -> bool:
+    """a letter's ink with a complement's mark beside it (recog.circuit_reader.complement_mark)"""
+    from recog.circuit_reader import complement_mark
+    h, w = kept.shape
+    p = max(h, w)
+    canvas = np.full((h + 2 * p, w + 2 * p), 255, np.uint8)
+    canvas[p:p + h, p:p + w][kept] = 0
+    return complement_mark(Image.fromarray(canvas).convert("RGB"), (p, p, p + w, p + h)) is not None
 
 
 SUPPLY_WORDS, GROUND_WORDS = ("VDD", "VCC", "+5V", "V+", "+12V", "+9V"), ("GND", "VSS", "0V")

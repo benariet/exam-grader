@@ -28,6 +28,8 @@ ap.add_argument("--out", default=os.path.join(HERE, "models", "roles"))
 ap.add_argument("--epochs", type=int, default=30)   # (8.11: 10 left the MOSFETs at 70 % all legs right, 30: 99 %)
 ap.add_argument("--limit", type=int, default=0)
 ap.add_argument("--device", default=None)
+ap.add_argument("--hat", type=int, default=0, help="also this many MOSFETs of each kind drawn as the course draws them "
+                "(tools/ptl_synth.py's hat_symbol: a raised step, a bar over it, a bubble on a P-channel one's gate)")
 ap.add_argument("--families", default="", help="only these, comma-separated ('fet'): the others' models kept as they are")
 a = ap.parse_args()
 
@@ -111,9 +113,13 @@ def sample(item, fam, rnd):
     return sq, q, role, (KINDS[fam].index(kind) if kind else -1)
 
 
+HATS = set()                                           # (ids of the hat-drawn MOSFETs: held out, reported apart)
+
+
 def train(fam, items):
     tr = [x for x in items if not x[3]]
-    te = [x for x in items if x[3]]
+    te = [x for x in items if x[3] and id(x) not in HATS]
+    te_hat = [x for x in items if x[3] and id(x) in HATS]
     net, knet = Net(2, 3).to(DEV), (Net(1, 2).to(DEV) if fam in KINDS else None)
     params = list(net.parameters()) + (list(knet.parameters()) if knet else [])
     opt = torch.optim.AdamW(params, lr=2e-3, weight_decay=1e-4)
@@ -158,6 +164,19 @@ def train(fam, items):
            "each_leg_right": {r: round(by_role[i] / max(1, len(te)), 4) for i, r in enumerate(ROLES[fam])}}
     if knet is not None:
         rep["kind_right"] = round(kind_right / max(1, len(te)), 4)
+    if te_hat:                                           # the course's MOSFETs: the gate found, the kind (the drain
+        g_right = k_right = 0                            # and source: not told apart by the symbol)
+        with torch.no_grad():
+            for ink, pts, kind, _ in te_hat:
+                sq, ps = square(ink, [pts[r] for r in ROLES[fam]])
+                x = torch.from_numpy(np.stack([np.stack([sq, marker(p)]) for p in ps])).to(DEV)
+                lp = torch.log_softmax(net(x), -1).cpu().numpy()
+                pred = max(__import__("itertools").permutations(range(3)), key=lambda pm: sum(lp[i, pm[i]] for i in range(3)))
+                g_right += pred[0] == 0
+                if knet is not None:
+                    k_right += int(knet(torch.from_numpy(sq)[None, None].to(DEV)).argmax()) == KINDS[fam].index(kind)
+        rep["hat"] = {"held_out": len(te_hat), "gate_right": round(g_right / len(te_hat), 4),
+                      "kind_right": round(k_right / len(te_hat), 4)}
     return net, knet, rep
 
 
@@ -170,6 +189,13 @@ def main():
     for fam in [f for f in FOLDERS if not a.families or f in a.families.split(",")]:
         items = load(z, fam)
         say(f"{fam}: {len(items)} crops")
+        if fam == "fet" and a.hat:                       # (each tenth held out, as Digitize-HCD's blocks are)
+            from tools.ptl_synth import hat_symbol
+            rnd = random.Random(7)
+            hats = [(*hat_symbol(rnd, kind), kind, k % 10 == 0) for kind in ("nmos", "pmos") for k in range(a.hat)]
+            HATS.update(id(x) for x in hats)
+            items = items + hats
+            say(f"fet: + {len(hats)} drawn as the course draws them")
         net, knet, r = train(fam, items)
         save_file({k: v.detach().cpu().contiguous() for k, v in net.state_dict().items()}, os.path.join(a.out, f"{fam}_roles.safetensors"))
         if knet is not None:

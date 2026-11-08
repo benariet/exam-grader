@@ -63,7 +63,7 @@ def _label_kinds(t: str, is_value: bool):
         m = re.search(r"(Ω|ohm|V|A|F|H)\s*$", t)
         return _UNIT_KINDS.get(m.group(1), ()) if m else ()
     return _NAME_KINDS.get(t[0].upper(), ())
-_NODE = re.compile(r"^[A-HJ-Za-hj-z]$")
+_NODE = re.compile(r"^[A-HJ-Za-hj-z]'?$")          # a node's letter - or its complement, "B'" (a pass network's gate)
 # a rail named at its wire: the supply ('VDD', 'Vcc', 'V+', '+5V' - a bare '9V' is a battery's value) and the ground
 _SUPPLY = re.compile(r"^(?:V_?\{?(?:DD|CC|dd|cc|Dd|Cc)\}?|V\+|\+\d+(?:[.,]\d+)?\s?V)$")
 _GROUND = re.compile(r"^(?:GND|gnd|Gnd|V_?\{?(?:SS|ss|Ss)\}?|0\s?V)$")
