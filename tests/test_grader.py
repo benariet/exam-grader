@@ -6418,6 +6418,12 @@ def test_writing_forms_made_and_cut_back_by_their_corner_squares():
         rows = [json.loads(r) for r in open(os.path.join(tmp, "out", "labels.jsonl"), encoding="utf-8")]
     assert len(rows) == 14 and {r["page"] for r in rows} == {1, 2} and all(r["slot"] != 3 for r in rows)
     assert rows[0]["text"] == info["pages"][1]["slots"][0]["text"]
+    import random
+    from tools.writing_forms import fill, prompts                # (6.11: a form of formulas only; a LaTeX group no name)
+    assert {p["kind"] for p in prompts(20, random.Random(1), ("math", "mixed"))} == {"math", "mixed"}
+    vals = {"p0": "6.9", "pp": "1", "g": "0.4", "f": "2", "fh": "3.1"}
+    assert fill("t_{pd} = t_{p0}(p + g h) = {p0} ps \\cdot ({pp} + 1)", vals) == "t_{pd} = t_{p0}(p + g h) = 6.9 ps \\cdot (1 + 1)"
+    assert fill("\\hat{f} = F^{1/N} = {fh}", vals) == "\\hat{f} = F^{1/N} = 3.1" and fill("C_{g} = {g}", vals) == "C_{g} = 0.4"
 
 
 def test_a_lines_readings_n_best_and_chosen_by_a_hebrew_language_model():

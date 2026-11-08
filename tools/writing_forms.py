@@ -93,15 +93,22 @@ def numbers(rng: random.Random) -> dict:
 
 
 def fill(t: str, vals: dict) -> str:
-    return re.sub(r"\{(\w+)\}", lambda m: vals.get(m.group(1), m.group(0)), t)
+    """a template's {name}s -> its values; a LaTeX group is no name ('t_{p0}', 'C_{g}', '\\hat{f}': after '_', '^' or
+    a command - they were taken for values)"""
+    return re.sub(r"(?<![_^A-Za-z\\])\{(\w+)\}", lambda m: vals.get(m.group(1), m.group(0)), t)
 
 
-def prompts(n: int, rng: random.Random) -> list:
+CYCLE = ("hebrew", "mixed", "hebrew", "math", "hebrew", "mixed", "hebrew", "math", "hebrew", "mixed")
+
+
+def prompts(n: int, rng: random.Random, kinds: tuple = ()) -> list:
     """n lines to copy: half Hebrew sentences (the reading that fails most), the rest formulas and the two mixed -
-    shuffled"""
+    shuffled; kinds: only these ('math', 'mixed': a form of the course's formulas - the reading that limits the
+    exams' checks, 6.11)"""
+    cycle = [k for k in CYCLE if k in kinds] if kinds else list(CYCLE)
     out = []
     for k in range(n):
-        kind = ("hebrew", "mixed", "hebrew", "math", "hebrew", "mixed", "hebrew", "math", "hebrew", "mixed")[k % 10]
+        kind = cycle[k % len(cycle)]
         vals = numbers(rng)
         if kind == "hebrew":
             out.append({"kind": kind, "text": rng.choice(HEBREW)})
@@ -179,7 +186,7 @@ def layout() -> list:
     return out
 
 
-def make(out: str, pages: int, seed: int):
+def make(out: str, pages: int, seed: int, kinds: tuple = ()):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -210,7 +217,7 @@ def make(out: str, pages: int, seed: int):
                     visual("העתיקו כל שורה במסגרת שמתחתיה, בכתב היד הרגיל שלכם, כמו במבחן. אין צורך בדיוק מושלם."),
                     ha="right", va="center", fontsize=8.5, family="DejaVu Sans", color="#444444")
             slots = []
-            for (pr, box), p in zip(layout(), prompts(SLOTS, rng)):
+            for (pr, box), p in zip(layout(), prompts(SLOTS, rng, kinds)):
                 yc = (pr[1] + pr[3]) / 2
                 if p["kind"] == "hebrew":
                     ax.text(pr[2], yc, visual(p["text"]), ha="right", va="center", fontsize=12, family="DejaVu Sans")
@@ -308,6 +315,7 @@ def main():
     m.add_argument("--out", default=os.path.join(HERE, "forms", "writing"))
     m.add_argument("--pages", type=int, default=12)
     m.add_argument("--seed", type=int, default=1)
+    m.add_argument("--kinds", default="", help="only these kinds of line, 'math,mixed': a form of the course's formulas")
     c = sub.add_parser("cut")
     c.add_argument("form")
     c.add_argument("scan")
@@ -315,7 +323,7 @@ def main():
     c.add_argument("--dpi", type=int, default=200)
     a = ap.parse_args()
     if a.cmd == "make":
-        make(a.out, a.pages, a.seed)
+        make(a.out, a.pages, a.seed, tuple(k for k in a.kinds.split(",") if k))
     else:
         cut(a.form, a.scan, a.out, a.dpi)
 
