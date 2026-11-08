@@ -26,11 +26,35 @@ def netlist_dict(net) -> dict:
     return _plain(dataclasses.asdict(net))
 
 
+def hires_page(pdf: str, pno: int, dpi: int, page, clean, hand):
+    """the page again at the scan's own resolution (the exams' scans are 300 dpi: their drawings, small, read sharper
+    enlarged), the booklet's print found at the reading resolution erased from it too -> RGB image or None"""
+    import numpy as np
+    from PIL import Image
+    from scipy import ndimage as ndi
+    try:
+        import pypdfium2 as pdfium
+        hi = pdfium.PdfDocument(pdf)[pno - 1].render(scale=dpi / 72).to_pil().convert("RGB")
+    except Exception:                                  # noqa: BLE001  (no renderer: the reading resolution only)
+        return None
+    if hand is not None:
+        printed = (np.asarray(clean.convert("L")) < 128) & ~hand
+        k = hi.width / page.width
+        big = np.asarray(Image.fromarray(printed.astype(np.uint8) * 255).resize(hi.size, Image.NEAREST)) > 0
+        big = ndi.binary_dilation(big, iterations=max(1, int(round(k))))
+        arr = np.asarray(hi).copy()
+        arr[big] = 255
+        hi = Image.fromarray(arr)
+    return hi
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("folder")
     ap.add_argument("--out", required=True)
     ap.add_argument("--dpi", type=int, default=150)
+    ap.add_argument("--hires", type=int, default=300, help="the drawings read from the page rendered at this resolution "
+                    "(the scans' own; 0: at --dpi)")
     ap.add_argument("--booklet", default="", help="the printed booklet's templates (tools/build_booklet.py): the print erased")
     ap.add_argument("--only", default="", help="comma-separated student numbers (the file names)")
     ap.add_argument("--pages", default="", help="a-b: only these pages of each exam")
@@ -66,6 +90,7 @@ def main():
             if rng is not None and pno not in rng:
                 continue
             page, info = clean_scan(img)
+            clean, hand = page, None
             rec = {"page": pno, "booklet": None, "circuits": []}
             if use_book and pno in book["pages"]:
                 page, hand, binfo = handwriting_only(page, book["pages"][pno])
@@ -78,7 +103,16 @@ def main():
                         continue
             try:
                 regions = find_circuits(page, cr)
-                circs = read_circuits(page, regions, cr) if regions else []
+                circs, k = [], 1.0
+                hi = hires_page(pdf, pno, args.hires, page, clean, hand) if regions and args.hires > args.dpi else None
+                if hi is not None:
+                    k = hi.width / page.width
+                    circs = read_circuits(hi, [tuple(int(v * k) for v in r) for r in regions], cr)
+                    for c in circs:                  # (back to the reading resolution's coordinates)
+                        c["box"] = tuple(v / k for v in c["box"])
+                        c["found"] = [(t, tuple(v / k for v in b), sc) for t, b, sc in c["found"]]
+                elif regions:
+                    circs = read_circuits(page, regions, cr)
             except Exception as e:                   # noqa: BLE001 - one page's failure: the next one
                 rec["failed"] = f"{type(e).__name__}: {e}"
                 circs = []

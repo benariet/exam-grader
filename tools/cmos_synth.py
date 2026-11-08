@@ -134,7 +134,20 @@ def _upright(ink, ports):
     return min(left, right) >= 0.4 * max(left, right, 1) and abs(xs.mean() - px) < 0.12 * w
 
 
-def symbols(zip_path, rnd, n_each=60, train=False):
+def hat_standing(rnd, kind):
+    """tools/ptl_synth.py's hat_symbol (the course's MOSFET: a raised step, a bar over it, a bubble on a P-channel
+    one's gate) stood up as this layout's are: gate on the left; an NMOS's drain up, a PMOS's source up"""
+    from tools.ptl_synth import hat_symbol
+    ink, ports = hat_symbol(rnd, kind)
+    h, w = ink.shape
+    ink2 = np.ascontiguousarray(np.rot90(ink, 1))      # (a quarter turn counter-clockwise: the gate to the left)
+    p = {k: (y, w - 1 - x) for k, (x, y) in ports.items()}
+    ends = sorted((p["Drain"], p["Source"]), key=lambda q: q[1])
+    up, down = ("Drain", "Source") if kind == "nmos" else ("Source", "Drain")
+    return ink2, {"Gate": p["Gate"], up: ends[0], down: ends[1]}
+
+
+def symbols(zip_path, rnd, n_each=60, train=False, hat=0.0):
     """the stamps: NMOS / PMOS standing (gate on the left; NMOS drain up, source down; PMOS source up, drain down),
     grounds (pin up), supply arrows (pin down) - [(ink, ports)] each"""
     z = zipfile.ZipFile(zip_path)
@@ -155,6 +168,10 @@ def symbols(zip_path, rnd, n_each=60, train=False):
                 out[kind].append(_clean(ink, ports, 0.03))
             if len(out[kind]) >= n_each:
                 break
+    if hat:                                            # (the course's own symbol: that share of each kind's)
+        for kind in ("nmos", "pmos"):
+            k = int(round(hat / max(1e-6, 1 - hat) * len(out[kind]))) if hat < 1 else len(out[kind])
+            out[kind] = (out[kind] if hat < 1 else []) + [hat_standing(rnd, kind) for _ in range(max(k, 1))]
     for kind, fam, stem, want in (("gnd", "GND", "gnd", {"pin": (.5, 0)}), ("vdd", "V-DC (one-port)", "vdc_1p", {"pin": (.5, 1)})):
         pool = range(4000, 7300 if kind == "gnd" else 4500) if train else range(4000)   # (the test's never drawn)
         for k in rnd.sample(pool, min(600, len(pool))):
@@ -542,12 +559,14 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--words", type=float, default=0.0, help="the share of supplies / grounds drawn as their names "
                     "('VDD' over a bar or at the wire's end, 'GND' under) instead of a symbol")
+    ap.add_argument("--hat", type=float, default=0.0, help="the share of the transistors drawn as the course draws "
+                    "them (tools/ptl_synth.py's hat_symbol) instead of Digitize-HCD's")
     ap.add_argument("--train", action="store_true", help="drawings for training the detector: symbols the test's are "
                     "never drawn from, letters of CGHD's training drafters; --coco writes their boxes as COCO")
     ap.add_argument("--coco", default="", help="with --train: <out>/<this>.json, the boxes in the detector's classes")
     a = ap.parse_args()
     rnd = random.Random(a.seed)
-    syms = symbols(a.zip, rnd, n_each=200 if a.train else 60, train=a.train)
+    syms = symbols(a.zip, rnd, n_each=200 if a.train else 60, train=a.train, hat=a.hat)
     hands = tuple(d for d in range(-1, 40) if d not in (1, 5, 10, 15, 20, 25, 30, 3, 13, 23)) if a.train else \
         (1, 5, 10, 15, 20, 25, 30)
     syms["letters"] = letters(a.cghd, rnd, n_each=150 if a.train else 40, drafters=hands)

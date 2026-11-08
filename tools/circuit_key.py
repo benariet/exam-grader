@@ -35,7 +35,7 @@ def judge(net, want, inputs):
     'none' (transistors, no function: a network read wrong or drawn wrong)"""
     import sympy as sp
     from sympy.logic.boolalg import Xor
-    fets = sum(1 for c in net.components if c.type in ("nmos", "pmos"))
+    fets = sum(1 for c in net.components if c.type in ("nmos", "pmos", "fet"))
     if not fets:
         return None, 0, {}
     funcs = net.switch_logic(inputs=inputs)

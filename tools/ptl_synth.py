@@ -119,6 +119,7 @@ class Drawing:
         self.comps, self.n = [], 0
         self.labels = {}                                # node -> the letter written at it
         self.hgt = rnd.uniform(30, 44)                  # the student's letters' height
+        self.row = ROW
 
     def node(self):
         self.n += 1
@@ -187,10 +188,10 @@ class Drawing:
             if isinstance(src, tuple):
                 xs_bus = x_bus - COLW
                 src_node, yt = self.place(src, xs_bus, y)
-                y += rows(src) * ROW
+                y += rows(src) * self.row
             else:
-                src_node, yt = None, y + ROW / 2
-                y += ROW
+                src_node, yt = None, y + self.row / 2
+                y += self.row
             g, left, right = self.fet(x_bus - rnd.uniform(0.42, 0.55) * COLW, yt)
             n = f"M{len(self.comps) + 1}"
             p.line([right, (x_bus, right[1]), (x_bus, yt)] if abs(right[1] - yt) > 3 else [right, (x_bus, yt)])
@@ -227,12 +228,35 @@ class Drawing:
         return out, yc
 
 
-def draw(kind, syms, rnd, p_hat=0.0):
+def on_exam_page(page, scale, rnd, dpi=150):
+    """the drawing as an exam scan shows it: its ink shrunk by scale onto an A4 page at 150 dpi (1240 x 1754 - the
+    exam reader's rendering: 8.11, the students' transistors 50 - 90 pixels long there, half tools/ptl_synth.py's) at
+    a random place, the pen kept about as thick as a pen is there; the boxes moved along (page: cmos_synth's Page,
+    before it is rendered)"""
+    from PIL import ImageFilter
+    k = dpi / 150                                        # (the scans themselves are 300 dpi: --exam-dpi 300)
+    W, H, scale = int(1240 * k), int(1754 * k), scale * k
+    small = page.ink.resize((max(1, int(page.w * scale)), max(1, int(page.h * scale))), Image.BILINEAR)
+    if page.pen * scale < 2.2 * k:                       # (a 3-pixel pen at a half: thickened back to about 2)
+        small = small.filter(ImageFilter.MaxFilter(3 if k < 1.5 else 5))
+    ox, oy = rnd.randint(0, max(0, W - small.width)), rnd.randint(0, max(0, H - small.height))
+    ink = Image.new("L", (W, H), 0)
+    ink.paste(small, (ox, oy))
+    page.ink, page.w, page.h = ink, W, H
+    page.d = ImageDraw.Draw(page.ink)
+    page.boxes = [(w, tuple(v * scale + (ox if i % 2 == 0 else oy) for i, v in enumerate(b))) for w, b in page.boxes]
+
+
+def draw(kind, syms, rnd, p_hat=0.0, exam_scale=0.0, exam_dpi=150):
     net = NETS[kind]
     W, H = 1450, 1100
-    need_w, need_h = depth(net) * COLW + 260, rows(net) * ROW + 120
     page = Page(W, H, rnd)
     d = Drawing(page, syms, rnd, rnd.choice(["prime", "bar"]), rnd.random() < 0.75, hat=p_hat > 0 and rnd.random() < p_hat)
+    if exam_scale:                                       # (in the exams the letters are big beside the transistors:
+        grow = rnd.uniform(1.5, 2.0)                     #  25 - 55 pixels high by transistors 50 - 90 long - the
+        d.row += 1.6 * (grow - 1) * d.hgt                #  rows apart enough for them)
+        d.hgt *= grow
+    need_w, need_h = depth(net) * COLW + 260, rows(net) * d.row + 120
     x_bus = rnd.uniform(need_w - 120, W - 260)
     y0 = rnd.uniform(80, max(90, H - need_h))
     out, yc = d.place(net, x_bus, y0)
@@ -243,6 +267,9 @@ def draw(kind, syms, rnd, p_hat=0.0):
     if rnd.random() < 0.75:                              # the output named, as the question names it
         d.letter(net[0], xe + rnd.uniform(10, 18), yc + rnd.uniform(-5, 5), anchor="c")
         d.labels[out] = net[0]
+    if exam_scale:
+        on_exam_page(page, exam_scale, rnd, exam_dpi)
+        W, H = page.w, page.h
     img = page.render()
     comps = []
     for c in d.comps:
@@ -264,21 +291,58 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--kinds", default="", help="only these networks, comma-separated ('moedc,moedc_b,moedc_a': the "
                     "exam question's)")
+    ap.add_argument("--exam-scale", type=float, default=0.0, help="the drawing shrunk by this onto an A4 page at 150 "
+                    "dpi, as an exam scan shows students' drawings (0.5: transistors 50 - 90 pixels long)")
+    ap.add_argument("--exam-dpi", type=int, default=150, help="with --exam-scale: the page at this resolution (the "
+                    "exams' scans are 300 dpi; the exam reader renders them at 150)")
     ap.add_argument("--hat", type=float, default=0.0, help="the share of drawings whose transistors are drawn as the "
                     "course's solution draws them (a raised step, a bar over it) instead of Digitize-HCD's symbols")
+    ap.add_argument("--train", action="store_true", help="drawings for training the detector: symbols and letters the "
+                    "test drawings are never drawn from (tools/cmos_synth.py --train's), a share of them shrunk onto an "
+                    "exam page (--exam-scale 0.4 - 0.7) - --coco writes their boxes as COCO")
+    ap.add_argument("--coco", default="", help="with --train: <out>/<this>.json, the boxes in the detector's classes")
     a = ap.parse_args()
     rnd = random.Random(a.seed)
-    syms = symbols(a.zip, rnd, n_each=60)
-    syms["letters"] = letters(a.cghd, rnd, want=("A", "B", "C", "S", "X", "Y"), n_each=40)
+    syms = symbols(a.zip, rnd, n_each=200 if a.train else 60, train=a.train)
+    hands = tuple(d for d in range(-1, 40) if d not in (1, 5, 10, 15, 20, 25, 30, 3, 13, 23)) if a.train else \
+        (1, 5, 10, 15, 20, 25, 30)
+    syms["letters"] = letters(a.cghd, rnd, want=("A", "B", "C", "S", "X", "Y"), n_each=150 if a.train else 40,
+                              drafters=hands)
     print({k: len(v) for k, v in syms.items() if k != "letters"}, {k: len(v) for k, v in syms["letters"].items()}, flush=True)
     os.makedirs(a.out, exist_ok=True)
     kinds = [k for k in a.kinds.split(",") if k] or list(NETS)
+    coco = None
+    if a.coco:
+        classes = json.load(open(os.path.join(HERE, "data", "circuits", "classes.json"), encoding="utf-8"))["classes"]
+        cat = {c: i + 1 for i, c in enumerate(classes)}
+        coco = {"images": [], "annotations": [], "categories": [{"id": i + 1, "name": c} for i, c in enumerate(classes)]}
     for k in range(a.n):
         kind = kinds[k % len(kinds)]
         name = f"ptl_{k:03d}_{kind}"
-        img, truth = draw(kind, syms, random.Random(a.seed * 100003 + k), a.hat)
-        img.save(os.path.join(a.out, name + ".png"))
-        json.dump(truth, open(os.path.join(a.out, name + ".json"), "w"), indent=1)
+        rk = random.Random(a.seed * 100003 + k)
+        scale = a.exam_scale or (rk.uniform(0.4, 0.7) if a.train and rk.random() < 0.4 else 0.0)
+        img, truth = draw(kind, syms, rk, a.hat, scale, a.exam_dpi)
+        if coco is None:
+            img.save(os.path.join(a.out, name + ".png"))
+            json.dump(truth, open(os.path.join(a.out, name + ".json"), "w"), indent=1)
+            continue
+        sc = 1600 / max(img.size)                      # (as the detector's images: the long side 1600, JPEG)
+        img = img.resize((round(img.width * sc), round(img.height * sc)), Image.BILINEAR)
+        fn = f"{name}_{a.seed}.jpg"
+        img.save(os.path.join(a.out, fn), quality=92)
+        iid = len(coco["images"]) + 1
+        coco["images"].append({"id": iid, "file_name": fn, "width": img.width, "height": img.height, "source": "ptl_synth"})
+        for what, b in truth["boxes"]:
+            cls = {"fet": "fet", "gnd": "gnd", "text": "text"}[what.split()[0]]
+            x0, y0, x1, y1 = (v * sc for v in b)
+            an = {"id": len(coco["annotations"]) + 1, "image_id": iid, "category_id": cat[cls],
+                  "bbox": [round(x0, 1), round(y0, 1), round(x1 - x0, 1), round(y1 - y0, 1)],
+                  "area": round((x1 - x0) * (y1 - y0), 1), "iscrowd": 0}
+            if cls == "text":
+                an["text"] = what.split(maxsplit=1)[1]
+            coco["annotations"].append(an)
+    if coco is not None:
+        json.dump(coco, open(os.path.join(a.out, a.coco + ".json"), "w", encoding="utf-8"))
     print(f"{a.n} drawings -> {a.out}")
 
 

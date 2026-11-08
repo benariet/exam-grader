@@ -156,9 +156,42 @@ def find_circuits(img, reader):
     return out
 
 
-def read_circuits(img, figures, reader):
+ZOOM_TO = 150          # a drawing whose parts come out smaller than this (pixels, at the circuit reader's size) is
+#                        read again enlarged towards it (8.11: the students' transistors on a 150-dpi exam page are
+#                        about 50 - 90 pixels long - half the size the detector and the wiring are at home with)
+
+
+def _zoomed(img, crop, bx, found, reader, zoom_to):
+    """the drawing read again enlarged: pasted at the middle of a canvas of the page's shape but z times smaller (the
+    reader brings it to its own size: the drawing comes out z times bigger, nothing stretched), z bringing its
+    parts' middle size to zoom_to -> (net, found in page coordinates) or None (no need, or no room)"""
+    from recog.circuit_reader import LONG_SIDE
+    parts = [b for c, b, _ in found if c not in ("text", "crossover", "junction")]
+    if not parts:
+        return None
+    med = float(np.median([max(b[2] - b[0], b[3] - b[1]) for b in parts])) * LONG_SIDE / max(img.size)
+    if med >= 0.75 * zoom_to:
+        return None
+    cw, ch = crop.size                                 # (room round it: a drawing filling its canvas to the edges
+    z = min(2.5, zoom_to / max(med, 1.0), 0.85 * img.width / max(cw, 1), 0.85 * img.height / max(ch, 1))   # reads worse)
+    if z < 1.25:
+        return None
+    W, H = int(img.width / z), int(img.height / z)
+    ox, oy = (W - cw) // 2, (H - ch) // 2
+    edge = np.concatenate([np.asarray(crop)[[0, -1]].reshape(-1, 3), np.asarray(crop)[:, [0, -1]].reshape(-1, 3)])
+    canvas = Image.new("RGB", (W, H), tuple(int(v) for v in np.median(edge, axis=0)))
+    canvas.paste(crop, (ox, oy))
+    net, got = reader.read(canvas)
+    dx, dy = bx[0] - ox, bx[1] - oy
+    from recog.circuit_reader import shift_notes
+    shift_notes(net, 1.0, dx, dy)
+    return net, [(c, (b[0] + dx, b[1] + dy, b[2] + dx, b[3] + dy), sc) for c, b, sc in got]
+
+
+def read_circuits(img, figures, reader, zoom_to: float | None = ZOOM_TO):
     """the figures that are circuits: [{"box", "netlist", "found": [(cls, box, score)] in page coordinates}];
-    figures close together are read as one drawing"""
+    figures close together are read as one drawing; one drawn small read again enlarged (zoom_to), the sounder
+    reading kept"""
     out = []
     for x0, y0, x1, y1 in merge_boxes(figures, 0.03 * max(img.size)):
         m = max(20, int(0.08 * max(x1 - x0, y1 - y0)))
@@ -175,10 +208,19 @@ def read_circuits(img, figures, reader):
         except Exception as e:                       # noqa: BLE001  (a reader failure leaves the figure to a human)
             print(f"circuit reader failed on the figure at {bx}: {e}")
             continue
+        big = None
+        if zoom_to:
+            try:
+                big = _zoomed(img, crop, bx, found, reader, zoom_to)
+            except Exception as e:                   # noqa: BLE001
+                print(f"circuit reader failed on the enlarged figure at {bx}: {e}")
+        if big is not None:                            # enlarged, unless it reads much less soundly (8.11: drawings
+            from recog.circuit_reader import reading_score   # at an exam's size read at it: none of 48 right - a reading
+            if reading_score(big[0])[0] <= reading_score(net)[0] + 2:   # of parts that small has few 'problems' to show)
+                net, found = big
+                net.notes.append("read enlarged: drawn small on its page")
         bx = (0, 0, bx[2], bx[3])                      # (the boxes found: in the page's own coordinates already)
         if sum(c.type != "other" for c in net.components) >= CIRCUIT_MIN_PARTS:
-            from recog.circuit_reader import shift_notes
-            shift_notes(net, 1.0, bx[0], bx[1])          # a doubtful spot the wiring noted, in page coordinates
             out.append({"box": (x0, y0, x1, y1), "netlist": net,
                         "found": [(c, (b[0] + bx[0], b[1] + bx[1], b[2] + bx[0], b[3] + bx[1]), sc) for c, b, sc in found]})
     return out

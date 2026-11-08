@@ -34,6 +34,7 @@ ap.add_argument("--letters", default="", help="the letters the drawings' questio
 ap.add_argument("--inputs", default="", help="the circuits' inputs as the question names them ('ABC'): the Boolean "
                 "functions read in them (tools/ptl_synth.py's pass-transistor networks), a gate's letter one of them")
 ap.add_argument("--details", action="store_true", help="each row with the netlist read, its boxes and labels")
+ap.add_argument("--no-zoom", action="store_true", help="with --via-page: a drawing drawn small not read again enlarged")
 ap.add_argument("--via-page", action="store_true", help="read as an exam page is (read_page.find_circuits, then each "
                 "drawing found cropped and read) - the largest drawing found is the netlist")
 ap.add_argument("--pictures", default="", help="a folder: what the reader saw on each photo not read exactly "
@@ -97,7 +98,7 @@ def main():
         if reader is not None and a.via_page:                 # as an exam page is read: the drawing found, cropped
             from read_page import find_circuits, read_circuits
             regions = find_circuits(img, reader)
-            circs = read_circuits(img, regions, reader) if regions else []
+            circs = read_circuits(img, regions, reader, **({"zoom_to": None} if a.no_zoom else {})) if regions else []
             if circs:
                 net = max(circs, key=lambda c: len(c["netlist"].components))["netlist"]
             else:

@@ -2097,7 +2097,7 @@ def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
         for n, f in net.logic().items():
             if n in net.node_labels:
                 logic[_canon(net.node_labels[n])] = f
-    if any(c.type in ("nmos", "pmos") for c in net.components):     # a CMOS gate drawn with its transistors
+    if any(c.type in ("nmos", "pmos", "fet") for c in net.components):   # a CMOS gate drawn with its transistors
         sw = drawn.switch_logic()
         for n, f in sw.items():
             if n in net.node_labels:

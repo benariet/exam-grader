@@ -1320,9 +1320,35 @@ def test_a_drawing_cut_from_a_page_is_read_at_the_pages_scale():
             seen.append((img.size, img.getpixel((550, 750)), img.getpixel((120, 120))))
             net = Netlist([Component("R1", "resistor", ["a", "b"]), Component("R2", "resistor", ["b", "0"])], ground="0")
             return net, [("resistor", (540, 740, 560, 760), 0.9)]
-    res, = read_circuits(page, [(400, 600, 700, 900)], Reader())
+    res, = read_circuits(page, [(400, 600, 700, 900)], Reader(), zoom_to=None)
     assert seen == [((1240, 1754), (0, 0, 0), (250, 250, 250))]
     assert res["found"] == [("resistor", (540, 740, 560, 760), 0.9)]
+
+
+def test_a_drawing_drawn_small_is_read_again_enlarged():
+    """a student's circuit drawn small on its exam page (its parts some 50 pixels long at 150 dpi): read again on a
+    canvas of the page's shape but smaller - the reader brings it to its own size, so the drawing comes out bigger,
+    nothing stretched - and kept when it reads no less soundly; the parts found back in the page's coordinates"""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from grader.circuit import Component, Netlist
+    from read_page import read_circuits
+    page = Image.new("RGB", (1240, 1754), (250, 250, 250))
+    ImageDraw.Draw(page).rectangle((540, 740, 590, 760), fill=(0, 0, 0))     # a part 50 px long
+    seen = []
+
+    class Reader:
+        def read(self, img):
+            a = np.asarray(img.convert("L")) < 128
+            ys, xs = np.nonzero(a)
+            seen.append(img.size)
+            net = Netlist([Component("R1", "resistor", ["a", "b"]), Component("R2", "resistor", ["b", "0"])], ground="0")
+            return net, [("resistor", (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1), 0.9)]
+    res, = read_circuits(page, [(530, 730, 600, 770)], Reader())
+    assert seen[0] == (1240, 1754) and len(seen) == 2 and seen[1][0] < 1240 / 1.25
+    assert abs(seen[1][0] / seen[1][1] - 1240 / 1754) < 0.01                 # (the page's shape: nothing stretched)
+    assert res["found"] == [("resistor", (540, 740, 591, 761), 0.9)], res["found"]
+    assert any("enlarged" in n for n in res["netlist"].notes)
 
 
 def test_a_transistors_leg_meeting_a_wire_just_past_its_box_is_a_leg():
@@ -2322,6 +2348,11 @@ def test_a_pass_transistor_network_gives_its_boolean_function():
                     node_labels={"a": "A", "b": "B", "bn": "B'", "c": "C", "cn": "C'", "s": "S"})
     sw = named.switch_logic(inputs="ABC")
     assert not sp.satisfiable(sp.Xor(sw["s"], A | B | C))
+    from grader.circuit import Component as Cm                           # a transistor read with no kind ('fet':
+    half = Netlist([Cm("M1", "fet", ["bn", "x", "a"], roles={"Gate": "bn", "Drain": "x", "Source": "a"}),   # N), one
+                    Cm("M2", "nmos", ["x", "b", "b"], roles={"Drain": "x", "Source": "b"})] + named.components[2:],
+                   node_labels=named.node_labels)                         # with two of its legs named: the third, the
+    assert not sp.satisfiable(sp.Xor(half.switch_logic(inputs="ABC")["s"], A | B | C))   # other node
     unread = Netlist(named.components, node_labels={"b": "B", "bn": "B'", "c": "C", "cn": "C'"})   # 'A' not read:
     assert unread.switch_logic() == {}                                     # the one input wire without a letter is
     assert not sp.satisfiable(sp.Xor(unread.switch_logic(inputs="ABC")["s"], A | B | C))   # the one input not shown
@@ -7521,6 +7552,8 @@ def test_letters_the_question_names_are_preferred():
     texts = [(k, k, 0.9) for k in ("3", "8'", "X", "1", "R1", "A")]
     got, changed = hinted_letters(texts, "ABCS", logp)
     assert [t for _, t, _ in got] == ["B", "B'", "X", "1", "R1", "A"], got
+    table["D"] = {"D": -1.0, "B": -2.0}                                      # (a letter of another kind: left as read)
+    assert hinted_letters([("D", "D", 0.9)], "ABCS", logp)[1] == []
     assert [(i, a, b) for i, a, b in changed] == [(0, "3", "B"), (1, "8'", "B'")]
     assert hinted_letters([("?", "?", 0.9)], "ABCS", logp)[1] == []      # (none of them likelier than another: kept)
     table["3m"] = {"3": -0.1, "B": -20.0, "A": -25.0}                       # a '3' with a "'" by it: a letter's complement
@@ -7613,15 +7646,42 @@ def test_exam_circuits_are_read_and_saved(tmp_path, monkeypatch):
     calls = []
     monkeypatch.setattr(cr, "CircuitReader", Stub)
     monkeypatch.setattr(read_page, "find_circuits", lambda page, reader: calls.append(1) or ([(1, 1, 50, 50)] if len(calls) == 2 else []))
-    monkeypatch.setattr(read_page, "read_circuits", lambda page, regions, reader: [{"box": regions[0], "netlist": net,
-                                                                                    "found": [("fet", (1, 1, 50, 50), 0.9)]}])
+    sizes = []
+    monkeypatch.setattr(read_page, "read_circuits", lambda page, regions, reader: sizes.append((page.size, regions[0])) or
+                        [{"box": regions[0], "netlist": net, "found": [("fet", (2, 2, 100, 100), 0.9)]}])
     out = tmp_path / "out"
     monkeypatch.setattr(sys, "argv", ["read_exam_circuits.py", str(tmp_path), "--out", str(out)])
     rec.main()
     d = json.load(open(out / "7.circuits.json"))
     assert [len(p["circuits"]) for p in d["pages"]] == [0, 1, 0] and d["pages_in_scan"] == 3
+    (size, region), = sizes                            # (the drawing read from the page at 300 dpi, twice the reading's
+    assert abs(size[0] - 1667) <= 2 and all(abs(a - 2 * b) <= 2 for a, b in zip(region, (1, 1, 50, 50))), sizes
+    got = d["pages"][1]["circuits"][0]["found"][0][1]       # (150: its boxes back at the reading's)
+    assert all(abs(a - b) <= 1.5 for a, b in zip(got, (1, 1, 50, 50))), got
     assert Netlist.from_dict(d["pages"][1]["circuits"][0]["netlist"]) == net
     assert not (out / "7_checked.circuits.json").exists()
     calls.clear()
     rec.main()                                         # (read already: skipped)
     assert calls == []
+
+
+def test_a_pass_networks_input_letter_boxed_as_a_supply_is_read_as_the_letter():
+    """an 'A' at an input wire's end boxed as a supply arrow (8.11: the exam-sized pass networks): with the
+    question's letters known and only NMOS transistors in the drawing, read as the letter - the supply gone; not
+    with a P-channel transistor there (a CMOS gate needs its supply), nor a reading that is none of the letters"""
+    from grader.circuit import Component, Netlist
+    from recog.circuit_reader import rails_as_letters
+
+    def wire(mask, comps, texts):
+        cs = [Component(f"Q{k}", "nmos", ["g", "a", "x"]) for k, (c, _) in enumerate(comps) if c == "fet"]
+        cs += [Component(f"V{k}", "voltage_source", ["a", "0"], plus="a") for k, (c, _) in enumerate(comps) if c == "voltage_rail"]
+        return Netlist(cs, ground="0" if any(c.type == "voltage_source" for c in cs) else None,
+                       node_labels={"a": t for _, t, _ in texts if t == "A"}), {}
+    comps = [("fet", (100, 100, 150, 140)), ("voltage_rail", (20, 110, 50, 140))]
+    net, dbg = wire(None, comps, [])
+    net2, _, comps2, texts2, gone = rails_as_letters(net, dbg, None, comps, [], wire, lambda b: ("A", 0.9), "ABCS")
+    assert gone == [comps[1]] and comps2 == comps[:1] and texts2[-1][1] == "A"
+    assert not any(c.type == "voltage_source" for c in net2.components) and net2.node_labels == {"a": "A"}
+    assert rails_as_letters(net, dbg, None, comps, [], wire, lambda b: ("T", 0.9), "ABCS")[4] == []
+    cmos = Netlist(net.components + [Component("P1", "pmos", ["g", "a", "y"])])
+    assert rails_as_letters(cmos, dbg, None, comps, [], wire, lambda b: ("A", 0.9), "ABCS")[4] == []

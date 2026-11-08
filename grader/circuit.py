@@ -121,9 +121,13 @@ class Netlist:
                 out.append(f"{c.id}: a coil's two ends on the same node (shorted)")
             elif c.type in ("nmos", "pmos") and len(c.nodes) == 3:
                 ends = (c.roles.get("Drain"), c.roles.get("Source")) if c.roles and {"Drain", "Source"} <= set(c.roles) \
-                    else tuple(c.nodes[1:])        # (a gate tied to a channel end is a design - a diode-connected
-                if ends[0] == ends[1]:             #  transistor, B passed by B in pass-transistor logic - not a short)
-                    out.append(f"{c.id}: both ends on the same node (shorted)")
+                    else tuple(c.nodes[1:])        # (a gate tied to a channel end is a design - B passed by B in
+                gate = c.roles.get("Gate") if c.roles and "Gate" in c.roles else c.nodes[0]   # pass-transistor logic -
+                if ends[0] == ends[1]:             # but not on a rail: a gate on the supply its source is on reads a
+                    out.append(f"{c.id}: both ends on the same node (shorted)")   # supply's wire run into the gate's)
+                elif gate in ends and (gate == self.ground or any(gate in o.nodes for o in self.components
+                                                                  if o.type == "voltage_source")):
+                    out.append(f"{c.id}: its gate on its own channel's end at a rail (shorted to the supply?)")
             elif c.type != "transformer" and len(set(c.nodes)) < len(c.nodes):
                 out.append(f"{c.id}: both ends on the same node (shorted)")
             if c.type in ("voltage_source", "current_source", "dependent_voltage_source", "dependent_current_source") \
@@ -955,20 +959,28 @@ class Netlist:
         nothing = ({}, 0) if report else {}
         fets, legs = [], {}
         for c in self.components:
-            if c.type not in ("nmos", "pmos"):
+            if c.type not in ("nmos", "pmos", "fet"):
                 continue
+            kind = "nmos" if c.type == "fet" else c.type   # (a MOSFET read with no kind: no bubble seen - N-channel)
             g, d, s_ = (c.roles.get(k) for k in ("Gate", "Drain", "Source")) if c.roles else (None, None, None)
             if None in (g, d, s_):
                 if len(c.nodes) != 3:
                     continue
-                g, d, s_ = c.nodes
-            fets.append((c.type, g, d, s_))
+                if c.roles and sum(x is not None for x in (g, d, s_)) == 2:   # two legs named: the third the other
+                    rest = list(c.nodes)
+                    for x in (g, d, s_):
+                        if x is not None and x in rest:
+                            rest.remove(x)
+                    g, d, s_ = (x if x is not None else rest[0] for x in (g, d, s_))
+                else:
+                    g, d, s_ = c.nodes
+            fets.append((kind, g, d, s_))
             if c.roles:
-                legs.setdefault(d, set()).add((c.type, "D"))
-                legs.setdefault(s_, set()).add((c.type, "S"))
+                legs.setdefault(d, set()).add((kind, "D"))
+                legs.setdefault(s_, set()).add((kind, "S"))
         if not fets:
             return nothing
-        others = {n for c in self.components if c.type not in ("nmos", "pmos") for n in c.nodes}
+        others = {n for c in self.components if c.type not in ("nmos", "pmos", "fet") for n in c.nodes}
 
         def only(kind):                              # nodes only that kind's sources reach, nothing else
             return {n for n, ls in legs.items() if ls == {(kind, "S")} and n not in others}

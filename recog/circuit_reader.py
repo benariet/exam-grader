@@ -435,6 +435,30 @@ def unwired_as_labels(net, dbg, mask, comps, texts, wire, read_label, sure: floa
     return net2, dbg2, comps2, texts2, [comps[k] for k in gone]
 
 
+def rails_as_letters(net, dbg, mask, comps, texts, wire, read_label, letters: str, sure: float = 0.5):
+    """a pass network's input letter boxed as a supply or a ground (an 'A' at its wire's end looks like an arrow):
+    one that reads as a letter the question names ('ABCS'), with no P-channel transistor or other part in the
+    drawing to need a rail, read as that letter -> (net, dbg, comps, texts, [(cls, box) left out])"""
+    want = {c for c in letters.upper() if c.isalpha()}
+    kinds = {c.type for c in net.components}
+    if not want or "nmos" not in kinds or kinds - {"nmos", "fet", "voltage_source"}:
+        return net, dbg, comps, texts, []
+    gone, new = [], []
+    for k, (cls, b) in enumerate(comps):
+        if cls not in ("voltage_rail", "gnd"):
+            continue
+        t, conf = read_label(b)
+        t = (t or "").strip()
+        if len(t.rstrip("'")) == 1 and t.rstrip("'").upper() in want and conf >= sure:
+            gone.append(k)
+            new.append((b, t.upper(), conf))
+    if not gone:
+        return net, dbg, comps, texts, []
+    comps2 = [c for k, c in enumerate(comps) if k not in gone]
+    net2, dbg2 = wire(mask, comps2, list(texts) + new)
+    return net2, dbg2, comps2, list(texts) + new, [comps[k] for k in gone]
+
+
 _LETTER = re.compile(r"^\s*([A-Za-z])\s*[,.'`1lI|]?\s*$")
 
 
@@ -506,8 +530,8 @@ def with_complements(small, boxes, reads):
 
 
 def hinted_letters(texts, letters: str, logp, margin: float = 8.0, mark=None):
-    """the letters the question names ('ABC': its inputs, 'S' its output): a short reading that is none of them nor
-    '0' / '1' (a constant) - '3', '8', 'D' for a 'B' - read as the one of them the label reader finds nearly as
+    """the letters the question names ('ABC': its inputs, 'S' its output): a short reading that is no letter nor
+    '0' / '1' (a constant) - '3', '8' for a 'B' - read as the one of them the label reader finds nearly as
     likely (log P within margin); a complement's mark kept ("3'" -> "B'"). A reading with a complement's mark by it
     (mark(box) -> True: a bar over it, a "'") is a letter whatever it looks like - the likeliest of them, clearly.
     logp(box, [text, ...]) -> [log P]. -> (texts, [(index, before, after)])"""
@@ -519,8 +543,10 @@ def hinted_letters(texts, letters: str, logp, margin: float = 8.0, mark=None):
         s = (t or "").strip()
         base, mark_ = (s[:-1], "'") if s.endswith("'") else (s, "")
         if not base or len(base) > 2 or base.upper() in want or base in ("0", "1") or \
+                (len(base) == 1 and base.isalpha()) or \
                 (len(base) == 2 and re.fullmatch(r"[A-Za-z]\d", base) and base[0].upper() not in want):
-            continue
+            continue                                 # (a letter of another kind stays: the 'X' a student names a node
+            #                                          by read 'A' joined that node to the input A - 8.11)
         cand = [x for c in want for x in (c, c.lower())]
         sc = logp(b, [base] + cand)
         per = sorted(((max(sc[1 + 2 * j], sc[2 + 2 * j]), c) for j, c in enumerate(want)), reverse=True)
@@ -776,6 +802,12 @@ class CircuitReader:
             lambda b: self._read_labels(small, [b], comps)[0])
         for cls, b in unwired:
             found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))] + [("text", b, 0.0)]
+        if self.letters:                               # a pass network's input letter boxed as a supply / a ground
+            net, dbg, comps, texts, as_letters = rails_as_letters(
+                net, dbg, mask, comps, texts, lambda m, c, t: netlist_from_boxes(m, c, t, return_debug=True),
+                lambda b: self._read_labels(small, [b], comps)[0], self.letters)
+            for cls, b in as_letters:
+                found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))] + [("text", b, 0.0)]
         if self.labels and {"nmos", "pmos"} <= {c.type for c in net.components}:   # a CMOS gate's input letters:
             # each written twice (a pass network's - an NMOS each - are not)
             texts2, changed = consistent_letters(texts, comps, lambda b, ts: self.labels.logp(self._label_crop(small, b), ts))
