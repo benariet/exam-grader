@@ -4,7 +4,10 @@
 #
 #   sbatch --export=ALL,EXAMS="1 3 5",IN=$HOME/eg-runs/in,READ=$HOME/eg-runs/read,OUT=$HOME/eg-runs/lines tools/server_reread_lines.sbatch
 #
-# IN holds <n>.pdf, READ the exams' merged readings <n>.json; results: OUT/<n>.json (judge with tools/recheck_exams.py)
+# IN holds <n>.pdf, READ the exams' merged readings <n>.json; results: OUT/<n>.json (judge with tools/recheck_exams.py).
+# VIEWS: each math line read at this many scales of its image, the reading most like the others kept (default 3 -
+# 6.11, the 8 graded exams: 51 steps checked right against 44, 25 values agreeing with the solution against 22; three
+# times the reading time, 4-10 minutes an exam on one GPU; VIEWS=1: one look)
 #SBATCH -J eg-lines
 #SBATCH -p shared_a6000,shared_a5000
 #SBATCH --gres=gpu:1
@@ -19,6 +22,6 @@ export PYTHONNOUSERSITE=1 OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK:-8}
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
 mkdir -p "$OUT"
 for n in $EXAMS; do
-  .venv/bin/python tools/reread_lines.py "$IN/$n.pdf" "$READ/$n.json" "$OUT/$n.json" || echo "FAILED $n"
+  .venv/bin/python tools/reread_lines.py "$IN/$n.pdf" "$READ/$n.json" "$OUT/$n.json" --views "${VIEWS:-3}" || echo "FAILED $n"
 done
 echo "ALL DONE"
