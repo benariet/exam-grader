@@ -32,7 +32,7 @@ ap.add_argument("--no-cghd", action="store_true", help="only the --synth drawing
 ap.add_argument("--letters", default="", help="the letters the drawings' question names ('ABCS'): a letter read as "
                 "none of them ('3' for a 'B') re-read as one (recog.circuit_reader.hinted_letters)")
 ap.add_argument("--inputs", default="", help="the circuits' inputs as the question names them ('ABC'): the Boolean "
-                "functions read in them (tools/ptl_synth.py's pass-transistor networks)")
+                "functions read in them (tools/ptl_synth.py's pass-transistor networks), a gate's letter one of them")
 ap.add_argument("--details", action="store_true", help="each row with the netlist read, its boxes and labels")
 ap.add_argument("--via-page", action="store_true", help="read as an exam page is (read_page.find_circuits, then each "
                 "drawing found cropped and read) - the largest drawing found is the netlist")
@@ -57,7 +57,7 @@ def main():
     reader = None
     if not a.true_boxes:
         from recog.circuit_reader import CircuitDetector, CircuitReader
-        reader = CircuitReader(CircuitDetector(a.detector) if a.detector else None, letters=a.letters)
+        reader = CircuitReader(CircuitDetector(a.detector) if a.detector else None, letters=a.letters, inputs=a.inputs)
     from recog.circuit_reader import LONG_SIDE
     from recog.circuit_wiring import strokes as classical
     stroke_model = None

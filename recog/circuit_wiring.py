@@ -295,6 +295,38 @@ def _polarity_model():
     return _POLARITY[0]
 
 
+def _letter_leg(b, cls, e, lab, h, w, texts, taken):
+    """a transistor with two wires found leaving its box: a node's letter just outside the box on a side neither wire
+    leaves by, across from the part's middle - its third leg, whose short stub the box took in (a pass network's
+    gate letter under its stub) -> (the text's index, the point on the box's edge nearest it) or None"""
+    real = [v for v in e if v is not None]
+    if len(real) != 2:
+        return None
+    pts = _end_points(b, lab, real, h, w)
+    if pts is None:
+        return None
+    x0, y0, x1, y1 = b
+    bw, bh = x1 - x0, y1 - y0
+
+    def side(p):
+        return min((p[0] - x0, "left"), (x1 - p[0], "right"), (p[1] - y0, "top"), (y1 - p[1], "bottom"))[1]
+    used = {side(p) for p in pts}
+    best = None
+    for k, (tb, t, _c) in enumerate(texts):
+        if k in taken or not _NODE.match((t or "").strip()):
+            continue
+        cx, cy = (tb[0] + tb[2]) / 2, (tb[1] + tb[3]) / 2
+        th = max(tb[2] - tb[0], tb[3] - tb[1])
+        for sd, gap, off, span in (("top", y0 - tb[3], cx - (x0 + x1) / 2, bw), ("bottom", tb[1] - y1, cx - (x0 + x1) / 2, bw),
+                                   ("left", x0 - tb[2], cy - (y0 + y1) / 2, bh), ("right", tb[0] - x1, cy - (y0 + y1) / 2, bh)):
+            if sd in used or not (-0.3 * th <= gap <= max(1.2 * th, 0.35 * max(bw, bh))) or abs(off) > 0.35 * span:
+                continue
+            edge = {"top": (cx, y0), "bottom": (cx, y1), "left": (x0, cy), "right": (x1, cy)}[sd]
+            if best is None or gap < best[0]:
+                best = (gap, k, (min(max(edge[0], x0), x1), min(max(edge[1], y0), y1)))
+    return None if best is None else (best[1], best[2])
+
+
 def _end_points(b, lab, e, h, w):
     """where each end's wire meets the component's box: (x, y) per end, None if not found"""
     x0, y0, x1, y1 = _clip(b, h, w)
@@ -1492,6 +1524,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         return names.setdefault(rv, f"n{len(names) + 1}")
     netlist = Netlist(ground="0" if root0 is not None else None)
     placed = []
+    leg_texts = {}                                                  # (a letter that is a transistor's leg: index -> node)
     for (cls, b), e in zip(comps, ends):
         if e is None or cls == "gnd":
             continue
@@ -1510,7 +1543,26 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         counter[kind] = counter.get(kind, 0) + 1
         comp = Component(f"{PREFIX[kind]}{counter[kind]}", kind, [node(v) for v in e if v is not None])
         comp.ac = cls in ("voltage_ac", "current_ac")
-        if cls in ("bjt", "fet", "opamp") and polarity is not False and e and None not in e:
+        lettered = _letter_leg(b, cls, e, lab, h, w, texts, leg_texts) if cls == "fet" and None not in e else None
+        if lettered is not None:                                    # a gate whose stub the box swallowed: the letter
+            k_t, edge = lettered                                    # by its side names it (a pass network's 'B\'')
+            leg_texts[k_t] = f"g{k_t}"
+            comp.nodes = [f"g{k_t}"] + comp.nodes                    # (its gate, most likely: as a part's legs are
+            #                                                         listed with no roles - the gate first)
+            if polarity is not False and _roles_model() is not None:
+                pts = _end_points(b, lab, e, h, w)
+                if pts is not None:
+                    rm = _roles_model()
+                    roles, kind_ = rm.assign(mask, b, pts + [edge], cls)
+                    if roles:
+                        comp.roles = {r: n_ for r, n_ in zip(roles, [node(v) for v in e] + [f"g{k_t}"]) if r}
+                        comp.nodes = [comp.roles[r] for r in rm.roles[cls] if r in comp.roles] + \
+                            [n_ for r, n_ in zip(roles, [node(v) for v in e] + [f"g{k_t}"]) if not r]
+                        if kind_:
+                            comp.type = kind_
+            netlist.notes.append(f"{comp.id}: a leg found by its letter '{texts[k_t][1]}' alone (no wire seen leaving "
+                                 "the part's box there)")
+        elif cls in ("bjt", "fet", "opamp") and polarity is not False and e and None not in e:
             rm = _roles_model()                                     # which leg is which (In+ / In- / Out, B C E ...)
             pts = _end_points(b, lab, e, h, w) if rm is not None else None
             if pts is not None:
@@ -1618,10 +1670,15 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         netlist.ports_marked = True
         used_texts |= pm[1]
     current_texts = []
+    named_by = {}                                                   # (a text that names a node: its index -> the name)
     to_ground = set()                                               # (nodes a 'GND' label names)
     ends_at = None                                                  # (node -> parts' ends on it, when needed)
     for k_text, (tb, text, tconf) in enumerate(texts):              # a label belongs to the nearest component
         t = (text or "").strip()
+        if k_text in leg_texts:                                     # (a transistor's leg found by its letter)
+            netlist.node_labels[leg_texts[k_text]] = t
+            named_by[k_text] = t
+            continue
         if not placed or not t or k_text in used_texts:
             continue
         cx, cy = (tb[0] + tb[2]) / 2, (tb[1] + tb[3]) / 2
@@ -1676,6 +1733,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
             term = min(((dist((px, py, px, py)), nd) for nd, (px, py) in netlist.terminals), default=None)
             if term is not None and term[0] < 1.2 * size and term[0] < dist(pb) and term[1] is not None:
                 netlist.node_labels[term[1]] = t
+                named_by[k_text] = t
                 continue
             r = int(3 * size) + 4
             y0, x0 = max(0, int(cy) - r), max(0, int(cx) - r)
@@ -1699,6 +1757,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                     nd = node(int(lab[ys[j] + y0, xs[j] + x0]))
                     if nd is not None:
                         netlist.node_labels[nd] = t
+                        named_by[k_text] = t
                         continue
         from grader.circuit import _AC, _BETA, _PARAM, complex_value, turns_ratio
         if complex_value(t) is not None:                            # 'j4Ω', '3+j4', '120∠0°V': a phasor-domain label
@@ -1881,5 +1940,5 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
     join_named_nodes(netlist)
     if return_debug:
         return netlist, {"labels": lab, "stroke_width": sw, "gap": gap, "ends": ends, "arrows": arrows,
-                         "arrow_parts": [(f[1].id, f[2], f[3]) for f in found]}
+                         "arrow_parts": [(f[1].id, f[2], f[3]) for f in found], "named_by": named_by}
     return netlist

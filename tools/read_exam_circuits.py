@@ -34,10 +34,13 @@ def main():
     ap.add_argument("--booklet", default="", help="the printed booklet's templates (tools/build_booklet.py): the print erased")
     ap.add_argument("--only", default="", help="comma-separated student numbers (the file names)")
     ap.add_argument("--pages", default="", help="a-b: only these pages of each exam")
+    ap.add_argument("--inputs", default="", help="the questions' inputs ('ABC'): a transistor's gate that nothing drives "
+                    "has one of their letters")
     ap.add_argument("--letters", default="", help="the letters the questions name ('ABCS'): a letter read as none of "
                     "them ('3' for a 'B') re-read as one")
     args = ap.parse_args()
-    from read_page import booklet_pages, clean_scan, find_circuits, handwriting_only, has_writing, load_pages, read_circuits
+    from read_page import booklet_pages, find_circuits, handwriting_only, has_writing, load_pages, read_circuits
+    from recog.page import clean_scan
     from recog.circuit_reader import CircuitReader
     os.makedirs(args.out, exist_ok=True)
     only = {x.strip() for x in args.only.split(",") if x.strip()}
@@ -48,7 +51,7 @@ def main():
     pdfs = [p for p in glob.glob(os.path.join(args.folder, "*.pdf")) if not re.search(r"_checked\.pdf$", p, re.I)]
     pdfs.sort(key=lambda p: (int(re.sub(r"\D", "", os.path.basename(p)) or 0), p))
     book = booklet_pages(args.booklet)
-    cr = CircuitReader(letters=args.letters)
+    cr = CircuitReader(letters=args.letters, inputs=args.inputs)
     t_all = time.time()
     for pdf in pdfs:
         name = os.path.splitext(os.path.basename(pdf))[0]

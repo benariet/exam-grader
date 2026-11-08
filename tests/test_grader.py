@@ -7523,3 +7523,105 @@ def test_letters_the_question_names_are_preferred():
     assert [t for _, t, _ in got] == ["B", "B'", "X", "1", "R1", "A"], got
     assert [(i, a, b) for i, a, b in changed] == [(0, "3", "B"), (1, "8'", "B'")]
     assert hinted_letters([("?", "?", 0.9)], "ABCS", logp)[1] == []      # (none of them likelier than another: kept)
+    table["3m"] = {"3": -0.1, "B": -20.0, "A": -25.0}                       # a '3' with a "'" by it: a letter's complement
+    assert hinted_letters([("3m", "3", 0.9)], "ABCS", logp, mark=lambda b: b == "3m")[0][0][1] == "B'"
+    assert hinted_letters([("3m", "3", 0.9)], "ABCS", logp)[1] == []         # (no mark: '3' as read)
+
+
+def test_a_gate_nothing_drives_has_an_inputs_letter():
+    """Moed C 2.1's network with its 'B' gate's letter read 'S' (a B written like one; S is the question's output):
+    the inputs known ('ABC'), that letter is read as the input the label reader finds nearly as likely when more
+    nodes then get functions of the inputs alone - not the output's own 'S' (that would make it an input), not a
+    clearly written 'S'"""
+    from grader.circuit import Component, Netlist
+    from recog.circuit_reader import gate_letters
+
+    def q(i, g, d, s_):
+        return Component(i, "nmos", [g, d, s_], roles={"Gate": g, "Drain": d, "Source": s_})
+    comps = [q("M1", "bn", "x", "a"), q("M2", "g2", "x", "b"), q("M3", "cn", "s", "x"), q("M4", "c", "s", "c")]
+    where = {"A": "a", "B": "b", "B'": "bn", "C": "c", "C'": "cn"}
+
+    def rewire(texts):                                 # (the wiring: each letter names its node; same letter, one node)
+        labels = {"a": texts[0][1], "b": texts[1][1], "bn": texts[2][1], "g2": texts[3][1], "c": texts[4][1],
+                  "cn": texts[5][1], "s": texts[6][1]}
+        ren = {}
+        for n, t in labels.items():
+            ren.setdefault(t, n)
+        f = lambda n: ren.get(labels.get(n), n)        # noqa: E731
+        cs = [Component(c.id, c.type, [f(x) for x in c.nodes], roles={k: f(v) for k, v in c.roles.items()}) for c in comps]
+        return Netlist(cs, node_labels={f(n): t for n, t in labels.items()}), {}
+    texts = [((0, 0, 1, k + 1), t, 0.9) for k, t in enumerate(["A", "B", "B'", "S", "C", "C'", "S"])]
+    named_by = {k: t for k, (_, t, _) in enumerate(texts)}
+    lp = {"S": -0.5, "B": -3.0, "A": -15.0, "C": -12.0}
+
+    def logp(b, ts):
+        return [lp.get(t.upper(), -30.0) for t in ts]
+    net, _ = rewire(texts)
+    net2, _, got, changed = gate_letters(net, texts, named_by, "ABC", logp, rewire)
+    assert changed == [(3, "S", "B")] and got[3][1] == "B" and got[6][1] == "S", changed
+    import sympy as sp
+    A, B, C = sp.symbols("A B C")
+    assert any(not sp.satisfiable(sp.Xor(f, A | B | C)) for f in net2.switch_logic(inputs="ABC").values())
+    lp.update({"S": -0.1, "B": -14.0})                 # (an 'S' clearly written: left)
+    assert gate_letters(net, texts, named_by, "ABC", logp, rewire)[3] == []
+
+
+def test_a_gates_letter_by_a_box_that_took_in_its_stub_is_its_leg():
+    """a pass transistor lying on its side, its gate's stub short and inside the detector's box, its letter "B'" just
+    under the box: the wires leave by the left and the right - the letter names the third leg (noted); a letter off
+    to the side, or past a wire's side, is not taken"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 600), bool)
+    box = (250, 150, 350, 230)
+    m[199:201, 100:262] = True                      # the input wire, from the left into the channel
+    m[199:201, 338:500] = True                      # the output, on to the right
+    m[180:200, 262:264] = True                      # the hat: up, across, down
+    m[180:182, 262:338] = True
+    m[180:200, 336:338] = True
+    m[205:207, 255:345] = True                      # the gate's bar under the channel, its stub inside the box
+    m[205:228, 299:301] = True
+    letter = (288, 236, 312, 266)
+    net = netlist_from_boxes(m, [("fet", box)], [(letter, "B'")], polarity=False)
+    q, = net.components
+    assert len(q.nodes) == 3 and len(set(q.nodes)) == 3, q.nodes
+    assert net.node_labels.get(q.nodes[0]) == "B'" and any("its letter" in n for n in net.notes)
+    for far in ((420, 236, 444, 266), (288, 330, 312, 360)):      # (beside the output's wire; far under the box)
+        net = netlist_from_boxes(m, [("fet", box)], [(far, "B'")], polarity=False)
+        assert len(net.components[0].nodes) == 2, far
+
+
+def test_exam_circuits_are_read_and_saved(tmp_path, monkeypatch):
+    """tools/read_exam_circuits.py over a folder of scans (the circuit reader stubbed: a drawing found on page 2):
+    each exam's pages saved with their drawings' netlists, the lecturer's marked copies left out, resumable"""
+    import json
+    import sys
+    from PIL import Image
+    import read_page
+    import recog.circuit_reader as cr
+    from grader.circuit import Component, Netlist
+    from tools import read_exam_circuits as rec
+    pages = [Image.new("RGB", (400, 560), "white") for _ in range(3)]
+    pages[0].save(tmp_path / "7.pdf", save_all=True, append_images=pages[1:])
+    pages[0].save(tmp_path / "7_checked.pdf")
+
+    class Stub:
+        def __init__(self, **kw):
+            pass
+    net = Netlist([Component("M1", "nmos", ["g", "d", "s"], roles={"Gate": "g", "Drain": "d", "Source": "s"})],
+                  node_labels={"g": "B'"})
+    calls = []
+    monkeypatch.setattr(cr, "CircuitReader", Stub)
+    monkeypatch.setattr(read_page, "find_circuits", lambda page, reader: calls.append(1) or ([(1, 1, 50, 50)] if len(calls) == 2 else []))
+    monkeypatch.setattr(read_page, "read_circuits", lambda page, regions, reader: [{"box": regions[0], "netlist": net,
+                                                                                    "found": [("fet", (1, 1, 50, 50), 0.9)]}])
+    out = tmp_path / "out"
+    monkeypatch.setattr(sys, "argv", ["read_exam_circuits.py", str(tmp_path), "--out", str(out)])
+    rec.main()
+    d = json.load(open(out / "7.circuits.json"))
+    assert [len(p["circuits"]) for p in d["pages"]] == [0, 1, 0] and d["pages_in_scan"] == 3
+    assert Netlist.from_dict(d["pages"][1]["circuits"][0]["netlist"]) == net
+    assert not (out / "7_checked.circuits.json").exists()
+    calls.clear()
+    rec.main()                                         # (read already: skipped)
+    assert calls == []

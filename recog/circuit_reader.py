@@ -145,6 +145,9 @@ def recover_supply(net, dbg, mask, comps, texts, spares, wire, least: float = 0.
     is boxed: taken when the wiring reads it as a supply joined to the circuit (its node another part's too) and
     the reading has no more problems -> (net, dbg, comps, taken)"""
     taken = []
+    if net.components and all(c.type == "nmos" for c in net.components):
+        return net, dbg, comps, taken                  # (a pass network - NMOS alone - has no supply: an output's
+    #                                                    letter at its wire's end, 'Y', looks like an arrow to the detector)
 
     def inside(b, o):                                  # how much of b lies in o
         ix = max(0.0, min(b[2], o[2]) - max(b[0], o[0])) * max(0.0, min(b[3], o[3]) - max(b[1], o[1]))
@@ -502,28 +505,76 @@ def with_complements(small, boxes, reads):
     return out
 
 
-def hinted_letters(texts, letters: str, logp, margin: float = 8.0):
+def hinted_letters(texts, letters: str, logp, margin: float = 8.0, mark=None):
     """the letters the question names ('ABC': its inputs, 'S' its output): a short reading that is none of them nor
     '0' / '1' (a constant) - '3', '8', 'D' for a 'B' - read as the one of them the label reader finds nearly as
-    likely (log P within margin); a complement's mark kept ("3'" -> "B'"). logp(box, [text, ...]) -> [log P].
-    -> (texts, [(index, before, after)])"""
+    likely (log P within margin); a complement's mark kept ("3'" -> "B'"). A reading with a complement's mark by it
+    (mark(box) -> True: a bar over it, a "'") is a letter whatever it looks like - the likeliest of them, clearly.
+    logp(box, [text, ...]) -> [log P]. -> (texts, [(index, before, after)])"""
     want = [c for c in dict.fromkeys(letters.upper()) if c.isalpha()]
     if not want:
         return texts, []
     texts, changed = list(texts), []
     for i, (b, t, *rest) in enumerate(texts):
         s = (t or "").strip()
-        base, mark = (s[:-1], "'") if s.endswith("'") else (s, "")
+        base, mark_ = (s[:-1], "'") if s.endswith("'") else (s, "")
         if not base or len(base) > 2 or base.upper() in want or base in ("0", "1") or \
                 (len(base) == 2 and re.fullmatch(r"[A-Za-z]\d", base) and base[0].upper() not in want):
             continue
         cand = [x for c in want for x in (c, c.lower())]
         sc = logp(b, [base] + cand)
         per = sorted(((max(sc[1 + 2 * j], sc[2 + 2 * j]), c) for j, c in enumerate(want)), reverse=True)
-        if per[0][0] >= sc[0] - margin and (len(per) == 1 or per[0][0] >= per[1][0] + 1.0):   # (one of them clearly)
-            texts[i] = (b, per[0][1] + mark, *rest)
-            changed.append((i, t, per[0][1] + mark))
+        m_ = margin
+        if not mark_ and len(base) == 1 and not base.isalpha() and mark is not None and mark(b):
+            mark_, m_ = "'", float("inf")            # ('3' with a "'" by it: a complement - of a letter)
+        if per[0][0] >= sc[0] - m_ and (len(per) == 1 or per[0][0] >= per[1][0] + 1.0):   # (one of them clearly)
+            texts[i] = (b, per[0][1] + mark_, *rest)
+            changed.append((i, t, per[0][1] + mark_))
     return texts, changed
+
+
+def input_score(net, inputs: str) -> int:
+    """how many of a transistor network's nodes get a Boolean function of the question's inputs alone"""
+    want = {c.upper() for c in inputs if c.isalpha()}
+    return sum(1 for f in net.switch_logic(inputs=inputs).values() if {str(x).upper() for x in f.free_symbols} <= want)
+
+
+def gate_letters(net, texts, named_by, inputs: str, logp, rewire, margin: float = 8.0):
+    """a transistor's gate is driven by one of the inputs the question names ('ABC') or its complement - a letter at
+    a gate read as another ('S', the question's output, for a 'B' written like one) read as the input the label
+    reader finds nearly as likely (log P within margin, one of them clearly), when more of the network's nodes then
+    get functions of the inputs alone (input_score) and the reading is no less sound - one letter at a time, the
+    likeliest first. named_by: {text index: the node name it gave} (the wiring's); rewire(texts) -> (net, dbg).
+    -> (net, dbg or None, texts, [(index, before, after)])"""
+    want = [c for c in dict.fromkeys(inputs.upper()) if c.isalpha()]
+    fets = [c for c in net.components if c.type in ("nmos", "pmos") and c.roles.get("Gate")]
+    if not want or not fets:
+        return net, None, texts, []
+    gates = {c.roles["Gate"] for c in fets}
+    at_gate = {str(net.node_labels[n]).strip() for n in gates if n in net.node_labels}
+    cand = []
+    for i, name in named_by.items():
+        s_ = (texts[i][1] or "").strip()
+        base, mark_ = (s_[:-1], "'") if s_.endswith("'") else (s_, "")
+        if name.strip() not in at_gate or len(base) != 1 or base.upper() in want or base in ("0", "1"):
+            continue
+        opts = [x for c in want for x in (c, c.lower())]
+        sc = logp(texts[i][0], [base] + opts)
+        per = sorted(((max(sc[1 + 2 * j], sc[2 + 2 * j]), c) for j, c in enumerate(want)), reverse=True)
+        if per[0][0] >= sc[0] - margin and (len(per) == 1 or per[0][0] >= per[1][0] + 1.0):
+            cand.append((per[0][0] - sc[0], i, per[0][1] + mark_))
+    dbg, changed = None, []
+    score = input_score(net, inputs)
+    for _, i, new in sorted(cand, reverse=True):
+        b, t, *rest = texts[i]
+        texts2 = list(texts)
+        texts2[i] = (b, new, *rest)
+        net2, dbg2 = rewire(texts2)
+        s2 = input_score(net2, inputs)
+        if s2 > score and reading_score(net2) <= reading_score(net):
+            net, dbg, texts, score = net2, dbg2, texts2, s2
+            changed.append((i, t, new))
+    return net, dbg, texts, changed
 
 
 def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: float = 5.0, name_margin: float = 2.5):
@@ -637,9 +688,10 @@ def reading_score(net):
 
 class CircuitReader:
     def __init__(self, detector: CircuitDetector | None = None, strokes=None, formula=None, labels=None,
-                 letters: str = ""):
+                 letters: str = "", inputs: str = ""):
         self.detector = detector or CircuitDetector()
         self.letters = letters                         # the letters the question names ('ABCS'): hinted_letters
+        self.inputs = inputs                           # its inputs ('ABC'): a gate's letter one of them (gate_letters)
         if strokes is None:
             from .strokes import DEFAULT_DIR, StrokeModel
             strokes = StrokeModel() if os.path.isfile(os.path.join(DEFAULT_DIR, "model.safetensors")) else False
@@ -673,7 +725,8 @@ class CircuitReader:
         reads = self._read_labels(small, boxes, comps)
         texts = [(b, t or None, conf) for b, (t, conf) in zip(boxes, reads)]
         if self.letters and self.labels:               # a letter read as none the question names ('3' for its 'B')
-            texts, _ = hinted_letters(texts, self.letters, lambda b, ts: self.labels.logp(self._label_crop(small, b), ts))
+            texts, _ = hinted_letters(texts, self.letters, lambda b, ts: self.labels.logp(self._label_crop(small, b), ts),
+                                      mark=lambda b: complement_mark(small, b) is not None)
         comps, retyped = retype_by_units(comps, texts)
         before = list(comps)
         comps, renamed = retype_by_names(comps, texts)
@@ -730,6 +783,13 @@ class CircuitReader:
                 net2, dbg2 = netlist_from_boxes(mask, comps, texts2, return_debug=True)
                 if reading_score(net2) <= reading_score(net):
                     net, dbg, texts = net2, dbg2, texts2
+        if self.inputs and self.labels:                # a transistor's gate: an input's letter by it
+            net2, dbg2, texts, changed = gate_letters(
+                net, texts, dbg.get("named_by") or {}, self.inputs,
+                lambda b, ts: self.labels.logp(self._label_crop(small, b), ts),
+                lambda t: netlist_from_boxes(mask, comps, t, return_debug=True))
+            if changed:
+                net, dbg = net2, dbg2
         complementary_kinds(net)                       # a CMOS gate's PMOS read as an NMOS (or the other way)
         back = [(c, tuple(v / s for v in b), sc) for c, b, sc in found]
         if not return_debug:
