@@ -931,10 +931,11 @@ class Netlist:
         no transistor drives: a node's letter, else the node). Switch level: an NMOS conducts with its gate at 1, a
         PMOS at 0; a node joined through conducting transistors to the supply is 1, to ground 0 - a node joined to
         both or to neither in some row (a short, a floating output: a wrong network) gets no function. The supply:
-        a source's '+' with its other end at ground. report: -> (that, how many outputs got no function)"""
+        a source's '+' with its other end at ground; none drawn (its arrow missed), the node only PMOS sources reach
+        (only NMOS sources: the ground). report: -> (that, how many outputs got no function)"""
         from sympy.logic.boolalg import SOPform
         nothing = ({}, 0) if report else {}
-        fets = []
+        fets, legs = [], {}
         for c in self.components:
             if c.type not in ("nmos", "pmos"):
                 continue
@@ -944,12 +945,24 @@ class Netlist:
                     continue
                 g, d, s_ = c.nodes
             fets.append((c.type, g, d, s_))
+            if c.roles:
+                legs.setdefault(d, set()).add((c.type, "D"))
+                legs.setdefault(s_, set()).add((c.type, "S"))
+        others = {n for c in self.components if c.type not in ("nmos", "pmos") for n in c.nodes}
+
+        def only(kind):                              # nodes only that kind's sources reach, nothing else
+            return {n for n, ls in legs.items() if ls == {(kind, "S")} and n not in others}
         gnd = self.ground
         vdd = {c.plus for c in self.components if c.type == "voltage_source" and c.plus is not None and gnd is not None
                and gnd in c.nodes and c.plus != gnd}
+        channel = {n for _, _, d, s_ in fets for n in (d, s_)}
+        if gnd is None or gnd not in channel:
+            g_ = only("nmos")
+            gnd = g_.pop() if len(g_) == 1 else gnd
+        if not vdd:
+            vdd = only("pmos") - {gnd}
         if not fets or not vdd or gnd is None:
             return nothing
-        channel = {n for _, _, d, s_ in fets for n in (d, s_)}
         inputs = sorted({g for _, g, _, _ in fets if g not in channel and g not in vdd and g != gnd})
         if not inputs or len(inputs) > most_inputs:
             return nothing

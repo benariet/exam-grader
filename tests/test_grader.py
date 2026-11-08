@@ -2242,6 +2242,10 @@ def test_a_cmos_gate_drawn_with_its_transistors_gives_its_boolean_function():
     two = Netlist(nand_inv, ground="0", node_labels={"a": "A", "b": "B", "y": "Y"})
     sw = two.switch_logic()
     assert not sp.satisfiable(sp.Xor(sw["y"], A & B)) and not sp.satisfiable(sp.Xor(sw["x"], ~(A & B)))
+    for bare in (Netlist(aoi[:-1], ground="0", node_labels={"a": "A", "b": "B", "c": "C"}),   # (the supply's arrow
+                 Netlist(aoi[:-1], node_labels={"a": "A", "b": "B", "c": "C"})):           # missed, the ground too:
+        (_, f2), = bare.switch_logic().items()                                             # the nodes only PMOS /
+        assert not sp.satisfiable(sp.Xor(f2, ~((A & B) | C)))                              # NMOS sources reach)
     broken = Netlist(aoi[1:], ground="0", node_labels={"a": "A", "b": "B", "c": "C"})
     assert broken.switch_logic() == {} and broken.switch_logic(report=True)[1] == 1
     misread = Netlist(aoi, ground="0", node_labels={"a": "A", "b": "T", "c": "C"})   # its 'B' read 'T': no sure wrong
