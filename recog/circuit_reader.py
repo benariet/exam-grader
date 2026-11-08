@@ -210,7 +210,8 @@ def retype_by_shape(small, comps, classifier, skip=(), sure: float = 0.8, margin
     """a gate's class by the gate classifier's look at its box (recog/gates.py) where it is sure and differs from the
     detector's - not a box whose class its written name set (skip) -> (comps, [(old, new)])"""
     from .circuit_wiring import GATES
-    idx = [k for k, (c, b) in enumerate(comps) if c in GATES and tuple(b) not in skip]
+    kinds = set(getattr(classifier, "kinds", ())) or GATES
+    idx = [k for k, (c, b) in enumerate(comps) if c in (GATES | {"opamp"}) & (kinds | GATES) and tuple(b) not in skip]
     if not idx or classifier is None:
         return comps, []
     crops = []

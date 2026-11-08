@@ -5,7 +5,8 @@ gates, 150 of each of 8 kinds, CC BY-SA 4.0) and the detector's own training box
 
     from recog.gates import GateClassifier
     gc = GateClassifier()
-    gc.classify([crop, ...])     # -> [(kind, p), ...]: 'and', 'or', 'not', 'nand', 'nor', 'xor', 'xnor', 'buffer'
+    gc.classify([crop, ...])     # -> [(kind, p), ...]: 'and', 'or', 'not', 'nand', 'nor', 'xor', 'xnor', 'buffer',
+                                 #    'opamp' (a triangle that is no gate)
 """
 from __future__ import annotations
 
@@ -15,7 +16,7 @@ import numpy as np
 
 PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_DIR = os.path.join(PROJECT, "models", "gates")
-KINDS = ["and", "or", "not", "nand", "nor", "xor", "xnor", "buffer"]
+KINDS = ["and", "or", "not", "nand", "nor", "xor", "xnor", "buffer", "opamp"]   # (an op-amp's triangle: told apart)
 SIZE = 64
 
 
@@ -60,10 +61,13 @@ def net(n_classes: int = len(KINDS)):
 
 class GateClassifier:
     def __init__(self, model_dir: str = DEFAULT_DIR, device: str = "cpu"):
+        import json
         import torch
         from safetensors.torch import load_file
         self.torch = torch
-        self.model = net()
+        cfg = os.path.join(model_dir, "config.json")
+        self.kinds = json.load(open(cfg, encoding="utf-8"))["kinds"] if os.path.isfile(cfg) else KINDS
+        self.model = net(len(self.kinds))
         self.model.load_state_dict(load_file(os.path.join(model_dir, "gates.safetensors")))
         self.model.eval().to(device)
         self.device = device
@@ -76,4 +80,4 @@ class GateClassifier:
         x = torch.from_numpy(np.stack([square(ink(c)) for c in crops]))[:, None].to(self.device)
         with torch.no_grad():
             p = torch.softmax(self.model(x), -1).cpu().numpy()
-        return [(KINDS[int(r.argmax())], float(r.max())) for r in p]
+        return [(self.kinds[int(r.argmax())], float(r.max())) for r in p]

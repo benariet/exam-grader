@@ -44,6 +44,8 @@ def hdl_items():
     tr, te = [], []
     for kind in KINDS:
         folder = os.path.join(a.hdl, kind.upper())
+        if not os.path.isdir(folder):                      # (op-amps: CGHD's boxes only)
+            continue
         files = sorted(f for f in os.listdir(folder) if f.lower().endswith((".jpg", ".jpeg", ".png")))
         for i, f in enumerate(files):
             (te if i % 7 == 0 else tr).append(("hdl", os.path.join(folder, f), None, KINDS.index(kind)))

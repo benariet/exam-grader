@@ -1171,12 +1171,27 @@ def _arrow_part(arrow, parts):
     return None if best is None else best[1:]
 
 
+def _gate_supply(comps) -> set:
+    """the grounds and supply rails drawn on a gate's box (drafter 1's C6: each gate's own 'VDD' stub above it, a
+    ground below - the T of a 'VDD' stub boxed as a ground too): the gate's supply, not the logic - their indices,
+    left unwired, so such a ground does not tie the wires it touches to the circuit's ground"""
+    gates = [b for c, b in comps if c in GATES]
+    if not gates:
+        return set()
+
+    def on(b, g):
+        m = 0.1 * max(g[2] - g[0], g[3] - g[1])
+        return b[0] < g[2] + m and b[2] > g[0] - m and b[1] < g[3] + m and b[3] > g[1] - m
+    return {k for k, (c, b) in enumerate(comps) if c in ("gnd", "voltage_rail") and any(on(b, g) for g in gates)}
+
+
 def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = None, repair: float = 8.0,
                        polarity=None, return_debug: bool = False, bridge: float = 60.0, guard: bool = True):
     """-> grader.circuit.Netlist (+ debug dict: wire labels, per-component end labels)
     polarity: a recog.polarity.PolarityModel, None = models/polarity if trained, False = leave polarity unread;
     guard: look for a part's symbol left in the wires (Netlist.notes, so its problems) - a part not detected"""
     from grader.circuit import Component, Netlist
+    supply = _gate_supply(comps)
     h, w = mask.shape
     sw = stroke_width(mask)
     gap = gap if gap is not None else max(2.0, 1.2 * sw)          # a pen lifted for this long still joins
@@ -1215,7 +1230,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
     ends = []
     objs = ndi.find_objects(lab)
     for k, (cls, b) in enumerate(comps):
-        if cls in ("crossover", "text"):
+        if cls in ("crossover", "text") or k in supply:
             ends.append(None)
             continue
         x0, y0, x1, y1 = _clip(b, h, w)

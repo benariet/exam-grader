@@ -1164,6 +1164,9 @@ def test_a_gates_supply_wires_are_not_its_inputs():
     net = netlist_from_boxes(m, [("and", box), ("gnd", (225, 300, 255, 320))], polarity=False)
     g, = net.components
     assert len(g.nodes) == 3 and set(g.roles) == {"out", "in1", "in2"} and "0" not in g.nodes
+    m[90:180, 150:154] = True                       # (an input brought down past the gate's top-left corner)
+    net = netlist_from_boxes(m, [("and", box), ("gnd", (225, 135, 255, 155))], polarity=False)   # ('VDD' boxed as a ground)
+    assert net.ground is None and "0" not in net.components[0].nodes
 
 
 def test_wiring_from_strokes_and_boxes():
