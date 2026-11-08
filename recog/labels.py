@@ -215,6 +215,25 @@ class LabelReader:
                 self.kind_lm = CharLM(d["kind_texts"], d.get("kind_n", 5))
 
     @torch.no_grad()
+    def logp(self, crop, texts) -> list[float]:
+        """log P(text | crop) under the network for each text - every CTC alignment summed, no character model
+        (to weigh readings against each other: is this '8' a 'B'?); -inf for a text it cannot spell"""
+        arr = prep(crop)
+        lp = self.net(batch([arr]).to(self.device)).float().log_softmax(-1).cpu()
+        n = -(-arr.shape[1] // 4)
+        lp = lp[:, :n].permute(1, 0, 2)                       # [frames, 1, classes]
+        out = []
+        for t in texts:
+            idx = [self.chars.index(c) + 1 for c in t] if t and all(c in self.chars for c in t) else []
+            if not idx or len(idx) > n:
+                out.append(-math.inf)
+                continue
+            loss = torch.nn.functional.ctc_loss(lp, torch.tensor([idx]), torch.tensor([n]), torch.tensor([len(idx)]),
+                                                blank=0, reduction="sum")
+            out.append(-float(loss))
+        return out
+
+    @torch.no_grad()
     def read(self, crops, kinds=None) -> list[tuple[str, float]]:
         """kinds: the kind of the part each label stands by (kind_of), when known - read with the model of labels
         by such parts"""

@@ -847,6 +847,57 @@ def _wire_arrows(wires: np.ndarray, sw: float) -> list:
     return out
 
 
+def _end_arrows(wires: np.ndarray, sw: float) -> list:
+    """arrowheads at a wire's end (a CMOS gate's VDD drawn as an arrow up from its supply's wire, unboxed):
+    [((head x, y), (ux, uy) the way it points)] - a point where the wire stops and two short strokes leave it
+    backwards, one on either side (and maybe the wire's own short tip past them)"""
+    try:
+        from skimage.morphology import skeletonize
+    except ImportError:
+        return []
+    if not wires.any():
+        return []
+    ys, xs = np.nonzero(wires)
+    pad = 4
+    y0, x0 = max(0, ys.min() - pad), max(0, xs.min() - pad)
+    sub = wires[y0:ys.max() + pad + 1, x0:xs.max() + pad + 1]
+    sk = _prune(skeletonize(sub), max(2, int(round(0.6 * sw))))
+    cn = _crossings(sk)
+    # (a hand's two strokes often leave the wire a little apart: junctions within 1.5 pen widths are one head)
+    near = ndi.binary_dilation(sk & (cn >= 3), iterations=max(1, int(round(1.5 * sw))))
+    jl, nj = ndi.label(near, structure=np.ones((3, 3)))
+    out = []
+    for k, sl in enumerate(ndi.find_objects(jl)):
+        pix = {(int(a) + sl[0].start, int(b) + sl[1].start) for a, b in np.argwhere((jl[sl] == k + 1) & sk[sl])}
+        if not pix:
+            continue
+        cy, cx = np.mean([p[0] for p in pix]), np.mean([p[1] for p in pix])
+        spurs, longs = [], []
+        for path, stop in _branches(sk, cn, pix, int(20 * sw)):
+            far = np.hypot(path[-1][0] - cy, path[-1][1] - cx)
+            vec = np.array([path[-1][1] - cx, path[-1][0] - cy], float)
+            if stop == "end" and far <= 16.0 * sw:              # (a hand's arrowhead: its strokes 1 - 16 pen widths)
+                spurs.append((vec / max(np.hypot(*vec), 1e-6), far))
+            elif stop != "end" and far >= 4.0 * sw:
+                longs.append(vec / max(np.hypot(*vec), 1e-6))
+        if len(longs) != 1 or not 2 <= len(spurs) <= 3:
+            continue                                           # (a wire running on through it: _wire_arrows)
+        u = -longs[0]
+        barbs = sorted(spurs, key=lambda sp_: float(sp_[0] @ u))[:2]
+        if any(f < 1.0 * sw for _, f in barbs):
+            continue
+        if len(spurs) == 3:                                    # the third: the wire's tip, on along u
+            tip = max(spurs, key=lambda sp_: float(sp_[0] @ u))
+            if tip[0] @ u < 0.7:
+                continue
+        side = [u[0] * b_[1] - u[1] * b_[0] for b_, _ in barbs]
+        ang = [np.degrees(np.arccos(np.clip(-(b_ @ u), -1, 1))) for b_, _ in barbs]
+        if side[0] * side[1] >= 0 or not all(10 <= a <= 80 for a in ang):
+            continue
+        out.append(((float(cx + x0), float(cy + y0)), (float(u[0]), float(u[1]))))
+    return out
+
+
 def _walk_wire(skp: np.ndarray, start, u, stop_at, limit: int):
     """from a point of a wire's (pruned) skeleton, along it the way u points: the first index stop_at gives (> 0: a
     part's box reached), or None at a junction / the stroke's end"""
@@ -1171,6 +1222,36 @@ def _arrow_part(arrow, parts):
     return None if best is None else best[1:]
 
 
+def join_named_nodes(net):
+    """nodes written with the same letter are one net (a student labels a CMOS gate's inputs 'A', 'B' at each gate
+    instead of wiring them; a logic diagram's inputs by their names) -> net, its nodes renamed in place"""
+    by = {}
+    for n, t in net.node_labels.items():
+        by.setdefault(str(t).upper(), []).append(n)
+    ren = {}
+    for ns in by.values():
+        if len(ns) > 1:
+            keep = "0" if "0" in ns else sorted(ns)[0]
+            ren.update({n: keep for n in ns if n != keep})
+    if not ren:
+        return net
+    f = lambda n: ren.get(n, n)                        # noqa: E731
+    for c in net.components:
+        c.nodes = [f(n) for n in c.nodes]
+        c.roles = {k: f(v) for k, v in c.roles.items()}
+        c.plus = f(c.plus) if c.plus is not None else None
+    for cur in net.currents:
+        cur.frm = f(cur.frm) if cur.frm is not None else None
+        cur.to = f(cur.to) if cur.to is not None else None
+    for v in net.voltages:
+        v.plus = f(v.plus) if v.plus is not None else None
+        v.minus = f(v.minus) if v.minus is not None else None
+    net.node_labels = {f(n): t for n, t in net.node_labels.items()}
+    net.ports = list(dict.fromkeys(f(n) for n in net.ports))
+    net.terminals = [(f(n), pt) for n, pt in net.terminals]
+    return net
+
+
 def _gate_supply(comps) -> set:
     """the grounds and supply rails drawn on a gate's box (drafter 1's C6: each gate's own 'VDD' stub above it, a
     ground below - the T of a 'VDD' stub boxed as a ground too): the gate's supply, not the logic - their indices,
@@ -1227,7 +1308,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
             la, lb = labels_in(*side_a), labels_in(*side_b)
             if la and lb:
                 uf.join(max(la, key=la.get), max(lb, key=lb.get))
-    ends = []
+    ends, flipped = [], set()
     objs = ndi.find_objects(lab)
     for k, (cls, b) in enumerate(comps):
         if cls in ("crossover", "text") or k in supply:
@@ -1252,9 +1333,18 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                 reach = max(x0 - o[1].start, o[1].stop - x1, y0 - o[0].start, o[0].stop - y1, 0)
                 touch = near is not None and bool((near[o] & (lab[o] == v)).any())
                 ys, xs = np.nonzero(strip == v)
-                out_ = outward(ys, xs, strip.shape[1] if along_x else strip.shape[0]).max() if len(xs) else 0
-                along = np.ptp(xs if along_x == 0 else ys) if len(xs) else 0
+                o_ = outward(ys, xs, strip.shape[1] if along_x else strip.shape[0]) if len(xs) else np.zeros(1)
+                out_ = o_.max()
+                ax = xs if along_x == 0 else ys
+                along = np.ptp(ax) if len(xs) else 0
+                if cls in ("bjt", "fet") and len(xs):
+                    # a transistor's leg may meet a wire just past the box (a CMOS network's bus right under a
+                    # drain, a series neighbour's stub): only the stretch by the box tells a wire passing along it
+                    nb = o_ <= band
+                    along = np.ptp(ax[nb]) if nb.any() else along
                 square = out_ / max(1.0, out_ + along)
+                if touch and cls in ("bjt", "fet"):            # (the leg's own stroke runs on into the wire)
+                    square = max(square, 0.6)
                 d[v] = d[v] * square ** 2 * (1.5 if touch else 1.0) * min(1.0, reach / (3.0 * band))
         best = {s: (max(d, key=d.get) if d else None) for s, d in sides.items()}
         weight = {s: (max(d.values()) if d else 0) for s, d in sides.items()}
@@ -1280,6 +1370,10 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         elif cls in ONE_END:
             s = max(weight, key=weight.get)
             ends.append([best[s]] if weight[s] else [None])
+            # a ground hangs below its wire: one whose wire comes up into it from below is a supply drawn as an
+            # arrow or a bar (Digitize-HCD's one-port supplies, a CMOS gate's VDD on top - boxed as grounds)
+            if cls == "gnd" and weight[s] and s == "bottom" and weight["top"] < 0.25 * weight[s]:
+                flipped.add(k)
         else:                                                      # transistors, op-amps, ICs: every wire reaching them
             allv = {}
             for d in sides.values():
@@ -1299,17 +1393,24 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                 uf.join(ev[i], ev[j])
                 ev.pop(j)
             ends.append(ev)
+    comps = [("voltage_rail", b) if k in flipped else (cls, b) for k, (cls, b) in enumerate(comps)]
     touches = {}
     for e in ends:
         for v in (e or []):
             if v is not None:
                 touches[uf.find(v)] = touches.get(uf.find(v), 0) + 1
     reach = repair * sw
+    # a wire that ends at a letter is an input named there (a CMOS gate's 'A' at its gate's stub), not a wire that
+    # stopped short of its node: the letters' boxes, grown by half their size
+    letters = [_clip(tb, h, w, grow=0.5 * max(tb[2] - tb[0], tb[3] - tb[1])) for tb, t, _ in texts
+               if _NODE.match((t or "").strip())]
     if reach > 0:
         for v, k in sorted(touches.items()):
             if k != 1 or uf.find(v) != v:
                 continue                                           # only a node that one component end reaches
             members = [x for x in range(1, n + 1) if uf.find(x) == v]
+            if letters and any((lab[y0:y1, x0:x1] == x).any() for x in members for x0, y0, x1, y1 in letters):
+                continue
             others = [x for x in range(1, n + 1) if uf.find(x) != v and uf.find(x) in touches]
             if not others:
                 continue
@@ -1443,6 +1544,24 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         placed.append((comp, b, e, cls))
     in_circuit = {uf.find(v) for e in ends for v in (e or []) if v is not None}
     wire_px = np.isin(lab, [x for x in range(1, n + 1) if uf.find(x) in in_circuit]) if in_circuit else np.zeros_like(wires)
+    # a supply drawn as an arrow up at the end of its wire, no box holding it (a CMOS gate's VDD the detector
+    # missed): a source from that wire's node to ground
+    if wire_px.any():
+        held = [_clip(b, h, w, grow=band) for _, b in comps]
+        for (tx, ty), (ux, uy) in _end_arrows(wire_px, sw):
+            if uy > -0.8 or any(x0_ <= tx <= x1_ and y0_ <= ty <= y1_ for x0_, y0_, x1_, y1_ in held):
+                continue
+            r_ = int(np.ceil(2 * sw)) + 1
+            win = lab[max(0, int(ty) - r_):int(ty) + r_ + 1, max(0, int(tx) - r_):int(tx) + r_ + 1]
+            vs = [int(v) for v in np.unique(win[win > 0]) if uf.find(int(v)) in in_circuit]
+            nd = node(vs[0]) if vs else None
+            if nd is None or nd == "0" or any(c.type == "voltage_source" and nd in c.nodes for c in netlist.components):
+                continue
+            counter["voltage_source"] = counter.get("voltage_source", 0) + 1
+            comp = Component(f"V{counter['voltage_source']}", "voltage_source", [nd, "0"])
+            comp.plus, comp.state = nd, "a supply arrow"
+            netlist.components.append(comp)
+            netlist.ground = "0"
     if guard:                                                       # a part's symbol left in the wires: not detected?
         boxes_g = [_clip(b, h, w, grow=band + gap) for _, b in comps] + [_clip(t[0], h, w, grow=gap) for t in texts]
         keep_g = {x for x in range(1, n + 1) if uf.find(x) in in_circuit}
@@ -1480,6 +1599,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         netlist.ports_marked = True
         used_texts |= pm[1]
     current_texts = []
+    ends_at = None                                                  # (node -> parts' ends on it, when needed)
     for k_text, (tb, text, tconf) in enumerate(texts):              # a label belongs to the nearest component
         t = (text or "").strip()
         if not placed or not t or k_text in used_texts:
@@ -1495,13 +1615,32 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
             current_texts.append(((cx, cy), t, comp))
             continue
         if _NODE.match(t) and wire_px.any():
-            r = int(3 * max(tb[2] - tb[0], tb[3] - tb[1])) + 4
+            size = max(tb[2] - tb[0], tb[3] - tb[1])
+            # a letter by a port's terminal names its node (a CMOS gate's input 'A' at the end of the gate's stub:
+            # the bus passing nearer to the letter's middle is another node)
+            term = min(((dist((px, py, px, py)), nd) for nd, (px, py) in netlist.terminals), default=None)
+            if term is not None and term[0] < 1.2 * size and term[0] < dist(pb) and term[1] is not None:
+                netlist.node_labels[term[1]] = t
+                continue
+            r = int(3 * size) + 4
             y0, x0 = max(0, int(cy) - r), max(0, int(cx) - r)
             ys, xs = np.nonzero(wire_px[y0:int(cy) + r, x0:int(cx) + r])
             if len(xs):
                 d2 = (xs + x0 - cx) ** 2 + (ys + y0 - cy) ** 2
-                j = int(np.argmin(d2))
-                if d2[j] ** 0.5 < dist(pb):
+                bx = np.maximum(0, np.maximum(tb[0] - (xs + x0), (xs + x0) - tb[2]))
+                by = np.maximum(0, np.maximum(tb[1] - (ys + y0), (ys + y0) - tb[3]))
+                db = bx.astype(float) ** 2 + by.astype(float) ** 2
+                # an open wire (one part's end on its node: an input) ending by the letter is the one it names,
+                # before a wire of the circuit passing nearer
+                if ends_at is None:
+                    ends_at = {}
+                    for c_ in netlist.components:
+                        for n_ in c_.nodes:
+                            ends_at[n_] = ends_at.get(n_, 0) + 1
+                is_open = np.array([ends_at.get(node(int(v_)), 0) == 1 for v_ in lab[ys + y0, xs + x0]])
+                near_open = is_open & (db <= size ** 2)
+                j = int(np.argmin(np.where(near_open, db, np.inf))) if near_open.any() else int(np.argmin(db))
+                if float(d2.min()) ** 0.5 < dist(pb):
                     nd = node(int(lab[ys[j] + y0, xs[j] + x0]))
                     if nd is not None:
                         netlist.node_labels[nd] = t
@@ -1681,6 +1820,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                 netlist.currents.append(Current(t, found[k][1].id, found[k][2], found[k][3]))
                 continue
         netlist.currents.append(Current(t, comp.id, None, None))
+    join_named_nodes(netlist)
     if return_debug:
         return netlist, {"labels": lab, "stroke_width": sw, "gap": gap, "ends": ends, "arrows": arrows,
                          "arrow_parts": [(f[1].id, f[2], f[3]) for f in found]}

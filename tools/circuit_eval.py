@@ -26,6 +26,10 @@ ap.add_argument("--detector", default=None, help="the detector's folder (default
 ap.add_argument("--limit", type=int, default=0, help="at most this many photos (a quick try)")
 ap.add_argument("--report", default=os.path.join(HERE, "results", "circuit_eval.json"))
 ap.add_argument("--only", default="", help="photos whose names start so, comma-separated ('C10,C3_D1_P2')")
+ap.add_argument("--synth", default="", help="a folder of drawings with their netlists (<name>.png + <name>.json: "
+                "tools/cmos_synth.py's CMOS gates) - measured by the full reader alone")
+ap.add_argument("--no-cghd", action="store_true", help="only the --synth drawings")
+ap.add_argument("--details", action="store_true", help="each row with the netlist read, its boxes and labels")
 ap.add_argument("--pictures", default="", help="a folder: what the reader saw on each photo not read exactly "
                 "(boxes, wire pieces by node, the netlist read and the schematic's)")
 a = ap.parse_args()
@@ -67,6 +71,10 @@ def main():
         d = os.path.join(a.cghd, os.path.basename(os.path.dirname(tf)))
         circ = os.path.basename(tf)[:-5]
         todo += [(os.path.basename(x)[:-4], x, d, tf) for x in sorted(glob.glob(os.path.join(d, "annotations", circ + "_*.xml")))]
+    if a.no_cghd:
+        todo = []
+    if a.synth and not a.true_boxes:                       # (drawings with no boxes: the full reader only)
+        todo += [(os.path.basename(x)[:-5], None, a.synth, x) for x in sorted(glob.glob(os.path.join(a.synth, "*.json")))]
     for name, xml, folder, truth_file in todo[: a.limit or None]:
         if a.only and not any(name.startswith(x) for x in a.only.split(",") if x):
             continue
@@ -77,10 +85,11 @@ def main():
             if truth.unknown_symbols or any(c.type == "other" for c in truth.components):
                 continue                                   # an IC, a switch: not in the schematics' reader
         transistors = sum(1 for c in truth.components if c.roles)
-        img = ImageOps.exif_transpose(Image.open(glob.glob(os.path.join(folder, "images", name + ".*"))[0])).convert("RGB")
+        path = os.path.join(folder, name + ".png") if xml is None else glob.glob(os.path.join(folder, "images", name + ".*"))[0]
+        img = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
         dbg = None
         if reader is not None:
-            if a.pictures:
+            if a.pictures or a.details:
                 net, _, dbg = reader.read(img, return_debug=True)
             else:
                 net, _ = reader.read(img)
@@ -109,12 +118,19 @@ def main():
             k = LONG_SIDE / max(img.size)
             true_boxes = [(CGHD_MAP.get(o.findtext("name"), "other") or o.findtext("name"),
                            [float(o.find("bndbox").findtext(v)) * k for v in ("xmin", "ymin", "xmax", "ymax")])
-                          for o in ET.parse(xml).getroot().findall("object")]
+                          for o in ET.parse(xml).getroot().findall("object")] if xml else []
             picture(img, net, dbg, os.path.join(a.pictures, name + ".png"),
                     ["schematic:"] + [f"{x.id} {x.type} {x.nodes}" for x in truth.components], true_boxes)
         rows.append({"image": name, "transistors": transistors,
                      **{k: c[k] for k in ("components", "extra_components", "topology_exact", "polarity", "legs", "kinds")
                         if k in c}})
+        if a.details:                                      # (what was read: to sort the failures by their cause)
+            rows[-1]["read"] = [(x.id, x.type, x.nodes, x.roles) for x in net.components]
+            rows[-1]["labels"] = net.node_labels
+            rows[-1]["truth"] = [(x.id, x.type, x.nodes) for x in truth.components]
+            if dbg is not None:
+                rows[-1]["boxes"] = [(cls, [round(v) for v in b]) for cls, b in dbg["comps"]]
+                rows[-1]["texts"] = [(item[1], [round(v) for v in item[0]]) for item in dbg["texts"]]
         say(name, c["topology_exact"], c["components"], "polarity", c["polarity"],
             *(("legs", c["legs"], "kinds", c["kinds"]) if transistors else ()))
     with_t = [r for r in rows if r["transistors"]]

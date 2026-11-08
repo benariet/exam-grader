@@ -22,6 +22,7 @@ models/*
 !models/polarity/
 !models/roles/
 !models/gates/
+!models/label-reader/
 
 # data: the large sets are downloaded or generated again; the small evaluation sets are kept
 data/*

@@ -132,6 +132,32 @@ def recover_missed(net, dbg, mask, comps, texts, spares, wire, most: int = 3):
     return net, dbg, comps, taken
 
 
+def recover_supply(net, dbg, mask, comps, texts, spares, wire, least: float = 0.15, most: int = 2):
+    """a supply drawn at a wire's end (a CMOS gate's VDD arrow on top: Digitize-HCD's one-port supplies, which the
+    detector scores 0.2 - 0.4 there, or takes for a ground) that the detector saw below its threshold where no part
+    is boxed: taken when the wiring reads it as a supply joined to the circuit (its node another part's too) and
+    the reading has no more problems -> (net, dbg, comps, taken)"""
+    taken = []
+
+    def inside(b, o):                                  # how much of b lies in o
+        ix = max(0.0, min(b[2], o[2]) - max(b[0], o[0])) * max(0.0, min(b[3], o[3]) - max(b[1], o[1]))
+        return ix / max(1.0, (b[2] - b[0]) * (b[3] - b[1]))
+    # (a 'ground' the detector half saw there too: the wiring takes one fed from below for a supply)
+    cand = sorted((s for s in spares if (s[0] == "voltage_rail" and s[2] >= least or s[0] == "gnd" and s[2] >= 2 * least)
+                   and all(inside(s[1], b) < 0.2 and inside(b, s[1]) < 0.5 for _, b in comps)), key=lambda s: -s[2])
+    for best in cand[:most]:
+        comps2 = comps + [(best[0], best[1])]
+        net2, dbg2 = wire(mask, comps2, texts)
+        before = sum(c.type == "voltage_source" for c in net.components)
+        new = [c for c in net2.components if c.type == "voltage_source"]
+        joined = len(new) > before and any(
+            any(n in o.nodes for o in net2.components if o is not c) for c in new for n in c.nodes if n != "0")
+        if joined and len(net2.problems()) <= len(net.problems()):
+            net, dbg, comps = net2, dbg2, comps2
+            taken.append(best)
+    return net, dbg, comps, taken
+
+
 def retry_darker(small, net, dbg, mask, comps, texts, wire, strokes_fn, darks=(170.0, 140.0)):
     """a reading with problems - the strokes may have taken in a table, a shadow, a stain round the drawing: the
     classical strokes again with a darker threshold, kept when the reading is sounder (reading_score; a pale wire
@@ -373,6 +399,102 @@ def drop_one_ended(net, dbg, mask, comps, texts, wire, read_label):
         dropped.append(better[4])
 
 
+_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,3}$")
+
+
+def unwired_as_labels(net, dbg, mask, comps, texts, wire, read_label, sure: float = 0.5):
+    """a ground or a supply that no wire reaches, read as a name ('A', 'V1', 'Vout' - a CMOS gate's input letter 'A'
+    boxed as a ground: its triangle) - a label, when the reading then is no less sound (reading_score)
+    -> (net, dbg, comps, texts, [(cls, box) left out])"""
+    ends = dbg.get("ends") or []
+    cand = [k for k, (cls, _) in enumerate(comps) if cls in ("gnd", "voltage_rail") and k < len(ends)
+            and not any(v is not None for v in (ends[k] or []))]
+    new_texts, gone = [], []
+    for k in cand:
+        t, conf = read_label(comps[k][1])
+        if t and _NAME.match(t.strip()) and conf >= sure:
+            new_texts.append((comps[k][1], t.strip(), conf))
+            gone.append(k)
+    if not gone:
+        return net, dbg, comps, texts, []
+    comps2 = [c for k, c in enumerate(comps) if k not in gone]
+    texts2 = list(texts) + new_texts
+    net2, dbg2 = wire(mask, comps2, texts2)
+    if reading_score(net2) > reading_score(net):
+        return net, dbg, comps, texts, []
+    return net2, dbg2, comps2, texts2, [comps[k] for k in gone]
+
+
+def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: float = 5.0, name_margin: float = 2.5):
+    """the inputs' letters of a CMOS gate drawn with its transistors' gates labelled: each input drives a PMOS and an
+    NMOS, so each letter is written an even number of times - a short reading that is no name ('8', 'D', '1B' for a
+    'B') or a letter written once is read as the letter written an odd number of times that the label reader finds
+    nearly as likely (log P within margin), one at a time, the likeliest first; two readings that are no names, as
+    the letter not yet written that both are nearly as likely to be. Only with two MOSFETs or more.
+    logp(box, [text, ...]) -> [log P]. -> (texts, [(index, before, after)])"""
+    if sum(1 for c, _ in comps if c == "fet") < 2:
+        return texts, []
+    texts = list(texts)
+    changed = []
+
+    def name(t):
+        t = (t or "").strip()
+        return t.upper() if len(t) == 1 and t.isalpha() and t.upper() != "I" else None
+
+    for _ in range(len(texts)):
+        counts = {}
+        for _b, t, *_ in texts:
+            if name(t):
+                counts[name(t)] = counts.get(name(t), 0) + 1
+        odd = {n for n, k in counts.items() if k % 2}
+        best = None
+        for i, (b, t, *rest) in enumerate(texts):
+            s = (t or "").strip()
+            free = len(s) == 1 and not name(s) or len(s) == 2 and not re.match(r"^[A-Za-z]\d$", s) or name(s) in odd
+            # (a part's name - 'T1', 'R1' - only when the letter is nearly as likely: an 'A' read 'T1')
+            m_ = margin if free else name_margin if re.match(r"^[A-Za-z]\d$", s) else None
+            targets = sorted(odd - {name(s)})
+            if not s or m_ is None or not targets:
+                continue
+            cand = [x for n in targets for x in (n, n.lower())]
+            scores = logp(b, [s] + cand)
+            own, k = scores[0], int(np.argmax(scores[1:]))
+            gain = scores[1 + k] - own
+            if gain >= -m_ and (best is None or gain > best[0]):
+                best = (gain, i, cand[k].upper())
+        if best is None:
+            break
+        _, i, new = best
+        b, t, *rest = texts[i]
+        texts[i] = (b, new, *rest)
+        changed.append((i, t, new))
+    # two readings that are no names ('3' and '8' for both 'B's): the one letter not yet written that both are
+    # nearly as likely to be
+    letters = list("ABCDEFGHJKLMNOPQRSTUVWXYZ")
+    for _ in range(len(texts)):
+        used = {name(t) for _b, t, *_ in texts if name(t)}
+        free = [i for i, (_b, t, *_) in enumerate(texts) if (t or "").strip() and
+                (len(t.strip()) == 1 and not name(t) or len(t.strip()) == 2 and not re.match(r"^[A-Za-z]\d$", t.strip()))]
+        cand = [x for x in letters if x not in used]
+        if len(free) < 2 or not cand:
+            break
+        gains = {}
+        for i in free:
+            b, t = texts[i][0], texts[i][1].strip()
+            sc = logp(b, [t] + [y for x in cand for y in (x, x.lower())])
+            gains[i] = {x: max(sc[1 + 2 * k], sc[2 + 2 * k]) - sc[0] for k, x in enumerate(cand)}
+        best = max(((gains[i][x] + gains[j][x], i, j, x) for a_, i in enumerate(free) for j in free[a_ + 1:] for x in cand
+                    if gains[i][x] >= -pair_margin and gains[j][x] >= -pair_margin), default=None)
+        if best is None:
+            break
+        _, i, j, x = best
+        for k in (i, j):
+            b, t, *rest = texts[k]
+            texts[k] = (b, x, *rest)
+            changed.append((k, t, x))
+    return texts, changed
+
+
 def reading_score(net):
     """how sound a reading looks, lower better: its problems (loose wires, a part with one end, an unread
     polarity ...), then fewer two-terminal parts with two distinct ends"""
@@ -445,6 +567,10 @@ class CircuitReader:
                 net, dbg, mask, comps, texts, spares,
                 lambda m, c, t: netlist_from_boxes(m, c, t, return_debug=True))
             found = found + taken
+        if spares:                                     # a supply arrow at a wire's end, seen below the threshold
+            net, dbg, comps, taken = recover_supply(
+                net, dbg, mask, comps, texts, spares, lambda m, c, t: netlist_from_boxes(m, c, t, return_debug=True))
+            found = found + taken
         net, dbg, comps, doubles = drop_doubles(       # one part boxed twice: once
             net, dbg, mask, comps, {tuple(b): sc for _, b, sc in found},
             lambda m, c, _: netlist_from_boxes(m, c, texts, return_debug=True))
@@ -456,6 +582,17 @@ class CircuitReader:
                 lambda b: self._read_labels(small, [b], comps)[0])
             for cls, b in dropped:
                 found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))]
+        net, dbg, comps, texts, unwired = unwired_as_labels(   # a letter boxed as a ground: a label
+            net, dbg, mask, comps, texts, lambda m, c, t: netlist_from_boxes(m, c, t, return_debug=True),
+            lambda b: self._read_labels(small, [b], comps)[0])
+        for cls, b in unwired:
+            found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))] + [("text", b, 0.0)]
+        if self.labels:                                # a CMOS gate's input letters: each written twice
+            texts2, changed = consistent_letters(texts, comps, lambda b, ts: self.labels.logp(self._label_crop(small, b), ts))
+            if changed:
+                net2, dbg2 = netlist_from_boxes(mask, comps, texts2, return_debug=True)
+                if reading_score(net2) <= reading_score(net):
+                    net, dbg, texts = net2, dbg2, texts2
         back = [(c, tuple(v / s for v in b), sc) for c, b, sc in found]
         if not return_debug:
             shift_notes(net, 1.0 / s)                  # the notes' spots in img's pixels, as the boxes returned
@@ -463,12 +600,14 @@ class CircuitReader:
             return net, back, {**dbg, "mask": mask, "scale": s, "texts": texts, "comps": comps}
         return net, back
 
+    def _label_crop(self, small, box):
+        x0, y0, x1, y1 = box
+        m = 0.15 * (y1 - y0) if self.labels else 0.2 * (y1 - y0)
+        return small.crop((max(0, int(x0 - m)), max(0, int(y0 - m)), int(x1 + m), int(y1 + m)))
+
     def _read_labels(self, small, boxes, comps):
         """each label box's reading -> [(text, how sure)], read knowing the kind of part beside it"""
-        crops = []
-        for x0, y0, x1, y1 in boxes:
-            m = 0.15 * (y1 - y0) if self.labels else 0.2 * (y1 - y0)
-            crops.append(small.crop((max(0, int(x0 - m)), max(0, int(y0 - m)), int(x1 + m), int(y1 + m))))
+        crops = [self._label_crop(small, b) for b in boxes]
         if not crops:
             return []
         if self.labels:

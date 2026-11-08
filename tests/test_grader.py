@@ -1148,6 +1148,215 @@ def test_a_transistors_leg_split_at_its_boxs_corner_is_one_leg():
     assert len(netlist_from_boxes(m, [("ic", box)], polarity=False).components[0].nodes) == 4   # (an IC: every wire)
 
 
+def test_a_supply_boxed_as_a_ground_is_told_by_its_wire_from_below():
+    """a CMOS gate's VDD arrow on top boxed as a ground (tools/cmos_synth.py: 44 of 70): a ground hangs below its
+    wire, so a 'ground' its wire comes up into from below is a supply - a source from its node to the ground"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 300), bool)
+    m[60:340, 148:152] = True                       # one wire, top to bottom
+    m[180:220, 140:160] = True                      # a resistor's ink on it
+    comps = [("gnd", (130, 30, 170, 62)), ("resistor", (130, 170, 170, 230)), ("gnd", (130, 338, 170, 370))]
+    m[35:58, 140:160] = True                        # the arrow's ink
+    m[340:360, 135:165] = True                      # the ground's
+    net = netlist_from_boxes(m, comps, polarity=False)
+    kinds = sorted((c.type, tuple(sorted(c.nodes))) for c in net.components)
+    assert net.ground == "0" and len(kinds) == 2
+    (r_type, r_nodes), (v_type, v_nodes) = sorted(kinds, key=lambda k: k[0] != "resistor")
+    assert v_type == "voltage_source" and "0" in v_nodes and set(r_nodes) == set(v_nodes)
+
+
+def test_a_supply_seen_below_the_threshold_at_a_wires_end_is_taken():
+    """the detector scores a CMOS gate's VDD arrow 0.2 - 0.4: a supply it saw below its threshold where a circuit's
+    wire ends and no part is boxed is taken (a source to ground); one where nothing joins it to the circuit is not"""
+    import numpy as np
+    from recog.circuit_reader import recover_supply
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 300), bool)
+    m[60:340, 148:152] = True                       # a wire from the arrow down through a resistor to a ground
+    m[180:220, 140:160] = True                      # the resistor's ink
+    m[35:58, 140:160] = True                        # the arrow's (unboxed)
+    m[340:360, 135:165] = True                      # the ground's
+    m[30:60, 250:254] = True                        # a stray stroke far from the circuit
+    comps = [("resistor", (130, 170, 170, 230)), ("gnd", (130, 338, 170, 370))]
+
+    def wire(mk, c, t):
+        return netlist_from_boxes(mk, c, t, polarity=False, return_debug=True)
+    net, dbg = wire(m, comps, [])
+    spares = [("voltage_rail", (130, 28, 170, 62), 0.3), ("voltage_rail", (235, 25, 270, 65), 0.35)]
+    net2, _, comps2, taken = recover_supply(net, dbg, m, comps, [], spares, wire)
+    assert [t[1] for t in taken] == [(130, 28, 170, 62)] and len(comps2) == 3
+    v, = [c for c in net2.components if c.type == "voltage_source"]
+    r, = [c for c in net2.components if c.type == "resistor"]
+    assert set(v.nodes) == set(r.nodes) and "0" in v.nodes
+    for score, kept in ((0.4, True), (0.2, False)):     # (half seen as a ground: fed from below, a supply)
+        net3, _, _, taken = recover_supply(net, dbg, m, comps, [], [("gnd", (130, 28, 170, 62), score)], wire)
+        assert bool(taken) == kept and any(c.type == "voltage_source" for c in net3.components) == kept
+
+
+def test_an_arrow_up_at_a_wires_end_is_a_supply():
+    """a CMOS gate's VDD drawn as an arrow up at the end of its wire, which the detector did not box: a source from
+    that wire's node to ground; an arrow pointing sideways at a wire's end (an output 'Y ->') is no supply"""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from recog.circuit_wiring import netlist_from_boxes
+
+    def drawing(up):
+        im = Image.new("L", (300, 400), 0)
+        d = ImageDraw.Draw(im)
+        d.line([(150, 60), (150, 340)], fill=255, width=3)            # one wire, through a resistor, to a ground
+        d.rectangle((140, 180, 160, 220), fill=255)
+        d.rectangle((135, 340, 165, 352), fill=255)
+        if up:
+            d.line([(150, 60), (132, 82)], fill=255, width=3)          # the arrow's two strokes, at its top
+            d.line([(150, 60), (168, 82)], fill=255, width=3)
+        else:
+            d.line([(150, 60), (220, 60)], fill=255, width=3)          # on to the right, an arrow there
+            d.line([(220, 60), (198, 44)], fill=255, width=3)
+            d.line([(220, 60), (198, 76)], fill=255, width=3)
+        return np.asarray(im) > 0
+    comps = [("resistor", (130, 170, 170, 230)), ("gnd", (130, 338, 170, 370))]
+    net = netlist_from_boxes(drawing(True), comps, polarity=False)
+    v, = [c for c in net.components if c.type == "voltage_source"]
+    r, = [c for c in net.components if c.type == "resistor"]
+    assert set(v.nodes) == set(r.nodes) and v.plus != "0" and v.state == "a supply arrow"
+    assert not any(c.type == "voltage_source" for c in netlist_from_boxes(drawing(False), comps, polarity=False).components)
+
+
+def test_a_transistors_leg_meeting_a_wire_just_past_its_box_is_a_leg():
+    """a CMOS network: a drain's short stub meets the bus a few pixels under the transistor's box and the bus runs
+    on along the box - the leg is the bus's (three legs, not two)"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (200, 150, 280, 250)
+    m[198:202, 60:200] = True                       # gate, from the left
+    m[40:150, 258:262] = True                       # source, up
+    m[250:266, 258:262] = True                      # drain: a short stub down ...
+    m[264:268, 120:460] = True                      # ... into a bus running along under the box
+    m[160:250, 220:262] = True                      # the symbol's own ink, its drain leg reaching the box's edge
+    q, = netlist_from_boxes(m, [("fet", box)], polarity=False).components
+    assert len(q.nodes) == 3 and len(set(q.nodes)) == 3
+
+
+def test_a_letter_by_a_terminal_names_its_node_not_a_wire_passing_nearer():
+    """a CMOS gate's input letter at the end of its gate's stub (a terminal boxed there), the network's bus passing
+    just above the letter - nearer its middle than the stub's end: the letter names the stub's node"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (300, 150, 380, 250)                      # the transistor
+    m[199:201, 199:300] = True                      # its gate's stub, from a terminal at x 190
+    m[40:150, 359:361] = True                       # source, up ...
+    m[40:42, 100:361] = True                        # ... to a bus running left
+    m[40:178, 100:102] = True                       # ... down ...
+    m[176:178, 100:250] = True                      # ... and right again, just over the letter
+    m[250:330, 359:361] = True                      # drain, down
+    m[160:250, 320:322] = True                      # the symbol's strokes
+    for y in range(160, 250, 6):
+        m[y:y + 2, 320:361] = True
+    letter = (140, 182, 172, 218)                   # 'A' left of the terminal, 4 px under the bus
+    net = netlist_from_boxes(m, [("fet", box), ("terminal", (184, 193, 197, 207))], [(letter, "A")], polarity=False)
+    q, = net.components
+    (gate, _), = net.terminals
+    assert gate in q.nodes and net.node_labels == {gate: "A"}
+
+
+def test_a_wire_ending_at_a_letter_is_an_input_not_a_wire_stopped_short():
+    """no terminal boxed at the gate's stub: the stub ends at its letter, a bus passing a few pixels from it - not
+    joined to the bus as a wire that stopped short of it (the repair), and the letter names the stub's node"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (300, 150, 380, 250)
+    m[199:201, 180:300] = True                      # the gate's stub, ending 8 px right of the letter
+    m[40:150, 359:361] = True                       # source, up, to a bus ...
+    m[40:42, 100:361] = True
+    m[40:188, 100:102] = True
+    m[186:188, 100:250] = True                      # ... passing 11 px over the stub, 4 px over the letter
+    m[250:330, 359:361] = True                      # drain, down
+    m[160:250, 320:322] = True                      # the symbol's strokes
+    for y in range(160, 250, 6):
+        m[y:y + 2, 320:361] = True
+    letter = (140, 192, 172, 228)
+    net = netlist_from_boxes(m, [("fet", box)], [(letter, "A")], polarity=False)
+    q, = net.components
+    assert len(set(q.nodes)) == 3
+    (named, t), = net.node_labels.items()
+    assert t == "A" and sum(named in c.nodes for c in net.components) == 1 and q.nodes.count(named) == 1
+
+
+def test_a_letter_boxed_as_an_unwired_ground_is_read_as_a_label():
+    """a CMOS gate's input 'A' boxed as a ground (its triangle; tools/cmos_synth.py with the r50t detector): a ground
+    no wire reaches is read as a label when the reading is a name - here the gate's input; a wired one stays"""
+    import numpy as np
+    from recog.circuit_reader import unwired_as_labels
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (300, 150, 380, 250)
+    m[199:201, 199:300] = True                      # the gate's stub, from a terminal at x 190
+    m[40:150, 359:361] = True                       # source, up
+    m[250:330, 359:361] = True                      # drain, down to a ground
+    m[330:345, 345:375] = True
+    m[160:250, 320:322] = True
+    for y in range(160, 250, 6):
+        m[y:y + 2, 320:361] = True
+    comps = [("fet", box), ("terminal", (184, 193, 197, 207)), ("gnd", (140, 182, 172, 218)), ("gnd", (340, 328, 380, 350))]
+
+    def wire(mk, c, t):
+        return netlist_from_boxes(mk, c, t, polarity=False, return_debug=True)
+    net, dbg = wire(m, comps, [])
+    net2, _, comps2, texts2, gone = unwired_as_labels(net, dbg, m, comps, [], wire, lambda b: ("A", 0.9))
+    assert gone == [("gnd", (140, 182, 172, 218))] and len(comps2) == 3 and net2.ground == "0"
+    (gate, _), = net2.terminals
+    assert net2.node_labels == {gate: "A"}
+    assert unwired_as_labels(net, dbg, m, comps, [], wire, lambda b: ("+", 0.9))[4] == []   # (no name: stays)
+
+
+def test_a_cmos_gates_input_letters_read_so_each_is_written_twice():
+    """each input of a CMOS gate drives a PMOS and an NMOS: a reading that is no name ('8' for a 'B') is read as the
+    letter written once that the label reader finds nearly as likely; a clear reading stays; parts' names stay;
+    nothing without two MOSFETs"""
+    from recog.circuit_reader import consistent_letters
+    fets = [("fet", (0, 0, 1, 1))] * 4
+    texts = [((0, 0, 10, 10), "A", 0.9), ((20, 0, 30, 10), "A", 0.9), ((40, 0, 50, 10), "B", 0.9),
+             ((60, 0, 70, 10), "8", 0.6), ((80, 0, 90, 10), "R1", 0.9)]
+    like = {"8": {"8": -1.0, "B": -2.5, "b": -6.0}, "R1": {"R1": -0.5, "B": -9.0, "b": -9.0}}
+
+    def logp(box, ts):
+        k = next(t for b, t, _ in texts if b == box)
+        return [like.get(k, {}).get(t, -20.0) for t in ts]
+    out, changed = consistent_letters(texts, fets, logp)
+    assert [t for _, t, _ in out] == ["A", "A", "B", "B", "R1"] and changed == [(3, "8", "B")]
+    like["8"].update(B=-8.0, b=-9.0)                # (an '8' plainly: stays)
+    assert consistent_letters(texts, fets, logp)[1] == []
+    assert consistent_letters(texts, fets[:1], logp)[1] == []
+    texts[2] = ((40, 0, 50, 10), "3", 0.5)          # both 'B's misread ('3', '8'): the letter both may be
+    like["3"] = {"3": -0.5, "B": -2.0, "b": -7.0, "E": -2.8}
+    like["8"]["B"] = -2.5
+    out, changed = consistent_letters(texts, fets, logp)
+    assert [t for _, t, _ in out] == ["A", "A", "B", "B", "R1"] and len(changed) == 2
+    texts = [((0, 0, 10, 10), "T1", 0.5), ((20, 0, 30, 10), "A", 0.9), ((40, 0, 50, 10), "B", 0.9),
+             ((60, 0, 70, 10), "B", 0.9)]               # an 'A' read as a part's name: only when nearly as likely
+    like["T1"] = {"T1": -1.0, "A": -2.0, "a": -9.0}
+    assert [t for _, t, _ in consistent_letters(texts, fets, logp)[0]] == ["A", "A", "B", "B"]
+    like["T1"]["A"] = -5.0
+    assert consistent_letters(texts, fets, logp)[1] == []
+
+
+def test_nodes_written_with_one_letter_are_one_net():
+    """a CMOS gate's inputs labelled 'A', 'B' at each transistor's gate instead of wired (as students draw them,
+    tools/cmos_synth.py's drawings): the nodes a letter names are one net - its legs and the sources' '+' renamed"""
+    from grader.circuit import Component, Netlist
+    from recog.circuit_wiring import join_named_nodes
+    net = Netlist(components=[Component("Q1", "pmos", ["n1", "n3", "n4"], roles={"Gate": "n1", "Drain": "n3", "Source": "n4"}),
+                              Component("Q2", "nmos", ["n2", "n3", "0"], roles={"Gate": "n2", "Drain": "n3", "Source": "0"})],
+                  ground="0", node_labels={"n1": "A", "n2": "a", "n3": "Y"})
+    join_named_nodes(net)
+    assert net.components[1].nodes[0] == net.components[0].nodes[0] == "n1" and net.components[1].roles["Gate"] == "n1"
+    assert net.node_labels == {"n1": "a", "n3": "Y"} or net.node_labels == {"n1": "A", "n3": "Y"}
+
+
 def test_a_gates_supply_wires_are_not_its_inputs():
     """drafter 1's C6 draws each gate's supply - 'VDD' on a stub above it, a ground below: the inputs are the wires on
     the side across from the output, a wire on a side between them is the supply, left out of the logic"""
