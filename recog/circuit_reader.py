@@ -206,6 +206,41 @@ def retype_by_names(comps, texts, reach: float = 1.0):
     return out, changed
 
 
+def coils_to_transformer(comps):
+    """two coils drawn side by side, facing each other (parallel, overlapping along their length, apart by less than
+    their width - drafter 1's C7) are a transformer: one box round both (its four ends read by the wiring)"""
+    out = list(comps)
+    while True:
+        coils = [k for k, (c, _) in enumerate(out) if c == "inductor"]
+        pair = None
+        for i in coils:
+            for j in coils:
+                if j <= i:
+                    continue
+                a, b = out[i][1], out[j][1]
+                wa, ha, wb, hb = a[2] - a[0], a[3] - a[1], b[2] - b[0], b[3] - b[1]
+                if ha >= 1.5 * wa and hb >= 1.5 * wb:            # upright coils, side by side
+                    along = min(a[3], b[3]) - max(a[1], b[1])
+                    gap = max(a[0], b[0]) - min(a[2], b[2])
+                    if along >= 0.5 * min(ha, hb) and gap <= 1.0 * max(wa, wb):
+                        pair = (i, j)
+                elif wa >= 1.5 * ha and wb >= 1.5 * hb:          # lying coils, one above the other
+                    along = min(a[2], b[2]) - max(a[0], b[0])
+                    gap = max(a[1], b[1]) - min(a[3], b[3])
+                    if along >= 0.5 * min(wa, wb) and gap <= 1.0 * max(ha, hb):
+                        pair = (i, j)
+                if pair:
+                    break
+            if pair:
+                break
+        if pair is None:
+            return out
+        i, j = pair
+        a, b = out[i][1], out[j][1]
+        out[i] = ("transformer", (min(a[0], b[0]), min(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3])))
+        del out[j]
+
+
 def retype_by_shape(small, comps, classifier, skip=(), sure: float = 0.8, margin: float = 0.15):
     """a gate's class by the gate classifier's look at its box (recog/gates.py) where it is sure and differs from the
     detector's - not a box whose class its written name set (skip) -> (comps, [(old, new)])"""
@@ -387,6 +422,12 @@ class CircuitReader:
         named = {tuple(b) for (c0, b), (c1, _) in zip(before, comps) if c0 != c1}
         comps, reshaped = retype_by_shape(small, comps, self.gates, skip=named)
         retyped = retyped + renamed + reshaped
+        paired = coils_to_transformer(comps)
+        if len(paired) != len(comps):                  # (two facing coils: the found boxes say one transformer)
+            sc = {tuple(b): v for _, b, v in found}
+            comps = paired
+            found = [f for f in found if f[0] == "text"] + [(c, b, sc.get(tuple(b), 0.9)) for c, b in comps]
+            retyped = []
         if retyped:                                    # (the boxes returned say the class the reading used)
             fixed = iter(comps)
             found = [(next(fixed)[0], b, sc) if c != "text" else (c, b, sc) for c, b, sc in found]

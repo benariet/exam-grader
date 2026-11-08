@@ -6805,6 +6805,11 @@ def test_a_parts_class_set_by_its_values_unit_a_part_boxed_twice_once_and_a_labe
     gates = [("nor", (10, 10, 60, 40)), ("and", (100, 10, 150, 40)), ("nor", (200, 10, 250, 40)), ("resistor", (300, 10, 340, 30))]
     got, changed = retype_by_shape(Image.new("RGB", (400, 100), "white"), gates, Looks(), skip={(200, 10, 250, 40)})
     assert [c for c, _ in got] == ["or", "and", "nor", "resistor"] and changed == [("nor", "or")]   # (unsure; named)
+    from recog.circuit_reader import coils_to_transformer           # (two coils facing each other: a transformer)
+    coils = [("inductor", (100, 100, 130, 200)), ("inductor", (150, 110, 180, 210)), ("inductor", (400, 100, 430, 200))]
+    assert coils_to_transformer(coils) == [("transformer", (100, 100, 180, 210)), ("inductor", (400, 100, 430, 200))]
+    assert coils_to_transformer([("inductor", (100, 100, 200, 130)), ("inductor", (100, 300, 200, 330))]) == \
+        [("inductor", (100, 100, 200, 130)), ("inductor", (100, 300, 200, 330))]     # (apart: two coils)
 
     def net_of(comps_):
         n = Netlist(components=[Component("R1", "resistor", ["n1", "n2"]), Component("R2", "resistor", ["n2", "n1"])])
