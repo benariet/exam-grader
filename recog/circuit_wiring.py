@@ -1179,8 +1179,8 @@ def _gate_supply(comps) -> set:
     if not gates:
         return set()
 
-    def on(b, g):
-        m = 0.1 * max(g[2] - g[0], g[3] - g[1])
+    def on(b, g):                                       # (on it, or within a short stub of it)
+        m = 0.3 * max(g[2] - g[0], g[3] - g[1])
         return b[0] < g[2] + m and b[2] > g[0] - m and b[1] < g[3] + m and b[3] > g[1] - m
     return {k for k, (c, b) in enumerate(comps) if c in ("gnd", "voltage_rail") and any(on(b, g) for g in gates)}
 
