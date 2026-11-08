@@ -30,6 +30,8 @@ ap.add_argument("--synth", default="", help="a folder of drawings with their net
                 "tools/cmos_synth.py's CMOS gates) - measured by the full reader alone")
 ap.add_argument("--no-cghd", action="store_true", help="only the --synth drawings")
 ap.add_argument("--details", action="store_true", help="each row with the netlist read, its boxes and labels")
+ap.add_argument("--via-page", action="store_true", help="read as an exam page is (read_page.find_circuits, then each "
+                "drawing found cropped and read) - the largest drawing found is the netlist")
 ap.add_argument("--pictures", default="", help="a folder: what the reader saw on each photo not read exactly "
                 "(boxes, wire pieces by node, the netlist read and the schematic's)")
 a = ap.parse_args()
@@ -88,7 +90,16 @@ def main():
         path = os.path.join(folder, name + ".png") if xml is None else glob.glob(os.path.join(folder, "images", name + ".*"))[0]
         img = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
         dbg = None
-        if reader is not None:
+        if reader is not None and a.via_page:                 # as an exam page is read: the drawing found, cropped
+            from read_page import find_circuits, read_circuits
+            regions = find_circuits(img, reader)
+            circs = read_circuits(img, regions, reader) if regions else []
+            if circs:
+                net = max(circs, key=lambda c: len(c["netlist"].components))["netlist"]
+            else:
+                from grader.circuit import Netlist
+                net = Netlist()
+        elif reader is not None:
             if a.pictures or a.details:
                 net, _, dbg = reader.read(img, return_debug=True)
             else:

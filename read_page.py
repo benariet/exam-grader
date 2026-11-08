@@ -148,8 +148,9 @@ def find_circuits(img, reader):
         inside = [b for b in parts if x0 <= (b[0] + b[2]) / 2 <= x1 and y0 <= (b[1] + b[3]) / 2 <= y1]
         if len(inside) < CIRCUIT_MIN_PARTS:
             continue
-        for c, (a, b, cc, d), _ in found:                 # its labels: text boxes touching the region
-            if c == "text" and a < x1 and cc > x0 and b < y1 and d > y0:
+        near = 0.03 * LONG_SIDE                         # its labels: text boxes touching the region, or close by (a
+        for c, (a, b, cc, d), _ in found:               # CMOS gate's input letter a little past its gate's stub)
+            if c == "text" and a < x1 + near and cc > x0 - near and b < y1 + near and d > y0 - near:
                 x0, y0, x1, y1 = min(x0, a), min(y0, b), max(x1, cc), max(y1, d)
         out.append(tuple(int(round(v / s)) for v in (x0, y0, x1, y1)))
     return out
@@ -162,11 +163,19 @@ def read_circuits(img, figures, reader):
     for x0, y0, x1, y1 in merge_boxes(figures, 0.03 * max(img.size)):
         m = max(20, int(0.08 * max(x1 - x0, y1 - y0)))
         bx = (max(0, x0 - m), max(0, y0 - m), min(img.width, x1 + m), min(img.height, y1 + m))
+        crop = img.crop(bx).convert("RGB")
+        # read as the page itself, the rest of it blank: the reader brings its image to a fixed size (and its
+        # detector to a square) - a drawing cut out alone comes out outsize or stretched (8.11: CMOS drawings cut from
+        # their pages read 34 of 70, on a page-sized blank 44 as the whole page)
+        edge = np.concatenate([np.asarray(crop)[[0, -1]].reshape(-1, 3), np.asarray(crop)[:, [0, -1]].reshape(-1, 3)])
+        canvas = Image.new("RGB", img.size, tuple(int(v) for v in np.median(edge, axis=0)))
+        canvas.paste(crop, bx[:2])
         try:
-            net, found = reader.read(img.crop(bx))
+            net, found = reader.read(canvas)
         except Exception as e:                       # noqa: BLE001  (a reader failure leaves the figure to a human)
             print(f"circuit reader failed on the figure at {bx}: {e}")
             continue
+        bx = (0, 0, bx[2], bx[3])                      # (the boxes found: in the page's own coordinates already)
         if sum(c.type != "other" for c in net.components) >= CIRCUIT_MIN_PARTS:
             from recog.circuit_reader import shift_notes
             shift_notes(net, 1.0, bx[0], bx[1])          # a doubtful spot the wiring noted, in page coordinates

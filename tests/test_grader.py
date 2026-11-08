@@ -1295,6 +1295,29 @@ def test_a_part_no_wire_reaches_is_left_out_with_a_note():
     assert len(net.components) == 1 and any("no wire" in p for p in net.problems())
 
 
+def test_a_drawing_cut_from_a_page_is_read_at_the_pages_scale():
+    """an exam page's circuit handed to the circuit reader on a blank of the page's own size, where it is on the page
+    (the reader brings its image to a fixed size, its detector to a square: the drawing alone would come out outsize
+    or stretched); what else is on the page left out; the parts found in the page's coordinates"""
+    from PIL import Image, ImageDraw
+    from grader.circuit import Component, Netlist
+    from read_page import read_circuits
+    page = Image.new("RGB", (1240, 1754), (250, 250, 250))
+    d = ImageDraw.Draw(page)
+    d.rectangle((540, 740, 560, 760), fill=(0, 0, 0))          # the drawing's ink
+    d.rectangle((100, 100, 140, 140), fill=(0, 0, 0))          # writing elsewhere on the page
+    seen = []
+
+    class Reader:
+        def read(self, img):
+            seen.append((img.size, img.getpixel((550, 750)), img.getpixel((120, 120))))
+            net = Netlist([Component("R1", "resistor", ["a", "b"]), Component("R2", "resistor", ["b", "0"])], ground="0")
+            return net, [("resistor", (540, 740, 560, 760), 0.9)]
+    res, = read_circuits(page, [(400, 600, 700, 900)], Reader())
+    assert seen == [((1240, 1754), (0, 0, 0), (250, 250, 250))]
+    assert res["found"] == [("resistor", (540, 740, 560, 760), 0.9)]
+
+
 def test_a_transistors_leg_meeting_a_wire_just_past_its_box_is_a_leg():
     """a CMOS network: a drain's short stub meets the bus a few pixels under the transistor's box and the bus runs
     on along the box - the leg is the bus's (three legs, not two)"""
