@@ -1281,6 +1281,20 @@ def test_two_wires_leaving_a_transistors_box_by_one_side_are_one_leg():
     assert len(q.nodes) == 3 and len(set(q.nodes)) == 3
 
 
+def test_a_part_no_wire_reaches_is_left_out_with_a_note():
+    """an erased gate's ghost boxed by the detector (drafter 10's C117): no wire reaches it - not a part of the
+    circuit (it had been a NOT with no nodes, one part too many), noted"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((300, 500), bool)
+    m[148:152, 20:120] = True                       # input, into a NOT
+    m[148:152, 180:300] = True                      # its output, on
+    m[130:170, 120:180] = True                      # the NOT's ink
+    m[60:100, 380:440] = True                       # a faint ghost far off
+    net = netlist_from_boxes(m, [("not", (120, 125, 180, 175)), ("not", (375, 55, 445, 105))], polarity=False)
+    assert len(net.components) == 1 and any("no wire" in p for p in net.problems())
+
+
 def test_a_transistors_leg_meeting_a_wire_just_past_its_box_is_a_leg():
     """a CMOS network: a drain's short stub meets the bus a few pixels under the transistor's box and the bus runs
     on along the box - the leg is the bus's (three legs, not two)"""

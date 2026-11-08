@@ -1502,6 +1502,11 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                     netlist.ports.append(node(e[0]))
             continue
         kind = KIND.get(cls, "other")
+        if cls not in ONE_END and not any(v is not None for v in e):
+            # a part no wire reaches (an erased gate's ghost, a legend's symbol): not in the circuit - noted
+            netlist.notes.append(f"a {cls} boxed at ({(b[0] + b[2]) / 2:.0f}, {(b[1] + b[3]) / 2:.0f}) that no wire "
+                                 "reaches: left out (erased, or not drawn into the circuit?)")
+            continue
         counter[kind] = counter.get(kind, 0) + 1
         comp = Component(f"{PREFIX[kind]}{counter[kind]}", kind, [node(v) for v in e if v is not None])
         comp.ac = cls in ("voltage_ac", "current_ac")

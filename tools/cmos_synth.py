@@ -134,12 +134,13 @@ def _upright(ink, ports):
     return min(left, right) >= 0.4 * max(left, right, 1) and abs(xs.mean() - px) < 0.12 * w
 
 
-def symbols(zip_path, rnd, n_each=60):
+def symbols(zip_path, rnd, n_each=60, train=False):
     """the stamps: NMOS / PMOS standing (gate on the left; NMOS drain up, source down; PMOS source up, drain down),
     grounds (pin up), supply arrows (pin down) - [(ink, ports)] each"""
     z = zipfile.ZipFile(zip_path)
     out = {"nmos": [], "pmos": [], "gnd": [], "vdd": []}
-    held = [k for k in range(2000) if (k // 50) % 10 == 9]   # (the legs model's held-out crops)
+    held = [k for k in range(2000) if ((k // 50) % 10 == 9) != train]   # (the legs model's held-out crops - for a
+    #                                                        detector's training, the others)
     for kind, fam, stem, want in (("nmos", "MOSFET-N", "mosfet_n", {"Gate": (0, .5), "Drain": (.5, 0), "Source": (.5, 1)}),
                                   ("pmos", "MOSFET-P", "mosfet_p", {"Gate": (0, .5), "Source": (.5, 0), "Drain": (.5, 1)})):
         for k in rnd.sample(held, len(held)):
@@ -155,7 +156,8 @@ def symbols(zip_path, rnd, n_each=60):
             if len(out[kind]) >= n_each:
                 break
     for kind, fam, stem, want in (("gnd", "GND", "gnd", {"pin": (.5, 0)}), ("vdd", "V-DC (one-port)", "vdc_1p", {"pin": (.5, 1)})):
-        for k in rnd.sample(range(4000), 600):
+        pool = range(4000, 7300 if kind == "gnd" else 4500) if train else range(4000)   # (the test's never drawn)
+        for k in rnd.sample(pool, min(600, len(pool))):
             try:
                 got = cut(z, fam, stem, k)
             except KeyError:
@@ -527,22 +529,52 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--words", type=float, default=0.0, help="the share of supplies / grounds drawn as their names "
                     "('VDD' over a bar or at the wire's end, 'GND' under) instead of a symbol")
+    ap.add_argument("--train", action="store_true", help="drawings for training the detector: symbols the test's are "
+                    "never drawn from, letters of CGHD's training drafters; --coco writes their boxes as COCO")
+    ap.add_argument("--coco", default="", help="with --train: <out>/<this>.json, the boxes in the detector's classes")
     a = ap.parse_args()
     rnd = random.Random(a.seed)
-    syms = symbols(a.zip, rnd)
-    syms["letters"] = letters(a.cghd, rnd)
+    syms = symbols(a.zip, rnd, n_each=200 if a.train else 60, train=a.train)
+    hands = tuple(d for d in range(-1, 40) if d not in (1, 5, 10, 15, 20, 25, 30, 3, 13, 23)) if a.train else \
+        (1, 5, 10, 15, 20, 25, 30)
+    syms["letters"] = letters(a.cghd, rnd, n_each=150 if a.train else 40, drafters=hands)
     if a.words:
-        syms["words"] = words(a.cghd, rnd)
+        syms["words"] = words(a.cghd, rnd, n_each=100 if a.train else 30, drafters=hands)
         print({k: len(v) for k, v in syms["words"].items()}, flush=True)
     print({k: len(v) for k, v in syms.items() if k != "letters"}, {k: len(v) for k, v in syms["letters"].items()}, flush=True)
     os.makedirs(a.out, exist_ok=True)
     names = list(GATES)
+    coco = None
+    if a.coco:
+        classes = json.load(open(os.path.join(HERE, "data", "circuits", "classes.json"), encoding="utf-8"))["classes"]
+        cat = {c: i + 1 for i, c in enumerate(classes)}
+        coco = {"images": [], "annotations": [], "categories": [{"id": i + 1, "name": c} for i, c in enumerate(classes)]}
     for k in range(a.n):
         gate = names[k % len(names)]
         name = f"cmos_{k:03d}_{gate}"
         img, truth = draw(name, gate, syms, random.Random(a.seed * 100003 + k), a.words)
-        img.save(os.path.join(a.out, name + ".png"))
-        json.dump(truth, open(os.path.join(a.out, name + ".json"), "w"), indent=1)
+        if coco is None:
+            img.save(os.path.join(a.out, name + ".png"))
+            json.dump(truth, open(os.path.join(a.out, name + ".json"), "w"), indent=1)
+            continue
+        sc = 1600 / max(img.size)                      # (as the detector's images: the long side 1600, JPEG)
+        img = img.resize((round(img.width * sc), round(img.height * sc)), Image.BILINEAR)
+        fn = f"{name}_{a.seed}.jpg"
+        img.save(os.path.join(a.out, fn), quality=92)
+        iid = len(coco["images"]) + 1
+        coco["images"].append({"id": iid, "file_name": fn, "width": img.width, "height": img.height, "source": "cmos_synth"})
+        for what, b in truth["boxes"]:
+            kind = what.split()[0]
+            cls = {"fet": "fet", "voltage_rail": "voltage_rail", "gnd": "gnd", "text": "text", "word": "text"}[kind]
+            x0, y0, x1, y1 = (v * sc for v in b)
+            an = {"id": len(coco["annotations"]) + 1, "image_id": iid, "category_id": cat[cls],
+                  "bbox": [round(x0, 1), round(y0, 1), round(x1 - x0, 1), round(y1 - y0, 1)],
+                  "area": round((x1 - x0) * (y1 - y0), 1), "iscrowd": 0}
+            if cls == "text":
+                an["text"] = what.split(maxsplit=1)[1]
+            coco["annotations"].append(an)
+    if coco is not None:
+        json.dump(coco, open(os.path.join(a.out, a.coco + ".json"), "w", encoding="utf-8"))
     print(f"{a.n} drawings -> {a.out}")
 
 
