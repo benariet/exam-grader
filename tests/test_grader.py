@@ -1129,6 +1129,43 @@ def test_circuit_netlist_kcl_and_solution():
     assert Netlist.from_json(reading).kcl() == {"A": "I1 = I2 + I3"}
 
 
+def test_a_transistors_leg_split_at_its_boxs_corner_is_one_leg():
+    """drafter 1's C2: the emitter's wire leaves the transistor's box at its corner two ways - on to a capacitor and
+    down to a resistor - and the box's edge cuts it in two: two wires close together at a transistor are one leg
+    (three legs, not four); legs far apart stay apart"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (200, 150, 280, 250)
+    m[198:202, 60:200] = True                       # base, from the left
+    m[40:150, 268:272] = True                       # collector, up
+    m[242:246, 262:440] = True                      # emitter: to the right ...
+    m[242:380, 262:266] = True                      # ... and down, from a corner inside the box
+    m[180:240, 220:262] = True                      # the symbol's own ink
+    net = netlist_from_boxes(m, [("bjt", box)], polarity=False)
+    q, = net.components
+    assert len(q.nodes) == 3 and len(set(q.nodes)) == 3
+    assert len(netlist_from_boxes(m, [("ic", box)], polarity=False).components[0].nodes) == 4   # (an IC: every wire)
+
+
+def test_a_gates_supply_wires_are_not_its_inputs():
+    """drafter 1's C6 draws each gate's supply - 'VDD' on a stub above it, a ground below: the inputs are the wires on
+    the side across from the output, a wire on a side between them is the supply, left out of the logic"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (200, 150, 300, 250)
+    m[178:182, 60:200] = True                       # input 1
+    m[218:222, 60:200] = True                       # input 2
+    m[198:202, 300:440] = True                      # output
+    m[90:150, 238:242] = True                       # 'VDD' stub, above
+    m[250:300, 238:242] = True                      # down to a ground
+    m[160:240, 210:290] = True                      # the gate's own ink
+    net = netlist_from_boxes(m, [("and", box), ("gnd", (225, 300, 255, 320))], polarity=False)
+    g, = net.components
+    assert len(g.nodes) == 3 and set(g.roles) == {"out", "in1", "in2"} and "0" not in g.nodes
+
+
 def test_wiring_from_strokes_and_boxes():
     """a drawn loop: source on the left, resistor on the right, a ground below; one wire broken by a lifted pen
     and one wire crossing another without joining it - two nodes, the ground one is 0"""
@@ -6730,6 +6767,100 @@ def test_a_printed_grid_taken_out_and_the_writing_kept():
     scraps = [{"text": "עו יד", "confidence": 0.96}] * 20
     lines = [{"text": "גן נעול לא שביל אליו", "confidence": 0.94}] * 5
     assert M.page_quality(scraps) < 0.5 and abs(M.page_quality(lines) - 0.94) < 1e-9
+
+
+def test_a_parts_class_set_by_its_values_unit_a_part_boxed_twice_once_and_a_label_boxed_as_a_part():
+    """recog/circuit_reader (8.11, CGHD drafter 1 and Tal's drawing): a part the detector confused is set by the unit
+    of the value beside it ('1µF' by two plates taken for a battery: a capacitor; '10nH' by an upright coil taken
+    for a resistor: an inductor) - not when a part of that kind is near enough to own the value; a diode boxed again
+    as a Zener over itself is one part; a 'part' wired at one end ('I1' by its arrow taken for a switch) is read as
+    a label when the reading then has fewer problems"""
+    from grader.circuit import Component, Netlist
+    from recog.circuit_reader import drop_one_ended, drop_siblings, retype_by_units
+    comps = [("voltage_dc", (100, 100, 140, 160)), ("resistor", (300, 100, 380, 130))]
+    got, changed = retype_by_units(comps, [((150, 110, 200, 140), "1µF", 0.9), ((300, 60, 380, 90), "10nH", 0.9)])
+    assert got == [("capacitor", (100, 100, 140, 160)), ("inductor", (300, 100, 380, 130))]
+    assert changed == [("voltage_dc", "capacitor"), ("resistor", "inductor")]
+    near_own = comps + [("capacitor", (210, 110, 250, 150))]           # (a capacitor right there owns the '1µF')
+    assert retype_by_units(near_own, [((150, 110, 200, 140), "1µF", 0.9)])[0] == near_own
+    assert retype_by_units(comps, [((150, 110, 200, 140), "R1", 0.9), ((600, 600, 650, 640), "1µF", 0.9)])[0] == comps
+    found = [("diode", (0, 0, 70, 48), 0.9), ("zener", (53, 6, 105, 52), 0.6), ("diode", (200, 0, 270, 48), 0.5)]
+    assert drop_siblings(found) == [found[0], found[2]]
+
+    def net_of(comps_):
+        n = Netlist(components=[Component("R1", "resistor", ["n1", "n2"]), Component("R2", "resistor", ["n2", "n1"])])
+        ends = [[1, 2], [2, 1]]
+        if any(c == "switch" for c, _ in comps_):
+            n.components.append(Component("S1", "switch", ["n3"]))
+            ends.append([3, None])
+        return n, {"ends": ends}
+    comps = [("resistor", (0, 0, 10, 10)), ("resistor", (20, 0, 30, 10)), ("switch", (40, 0, 50, 10))]
+    net, dbg = net_of(comps)
+    net, dbg, comps2, texts, dropped = drop_one_ended(net, dbg, None, comps, [], lambda m, c, t: net_of(c),
+                                                       lambda b: ("I1", 0.8))
+    assert dropped == [("switch", (40, 0, 50, 10))] and len(comps2) == 2 and texts == [((40, 0, 50, 10), "I1", 0.8)]
+    assert net.problems() == []
+    from recog.circuit_reader import drop_doubles               # (an LED's body and its light arrows, boxed twice)
+
+    def led_net(comps_):
+        n = Netlist(components=[Component("V1", "voltage_source", ["n1", "0"], plus="n1")] +
+                    [Component(f"D{k}", "diode", ["n1", "0"]) for k, (c, _) in enumerate(comps_) if c == "diode"])
+        return n, {"ends": [[1, 2]] * len(comps_)}
+    comps = [("voltage_dc", (0, 0, 20, 40)), ("diode", (100, 0, 140, 30)), ("diode", (130, 5, 160, 35))]
+    net, dbg = led_net(comps)
+    net, dbg, comps2, dropped = drop_doubles(net, dbg, None, comps, {(100, 0, 140, 30): 0.9, (130, 5, 160, 35): 0.5},
+                                            lambda m, c, t: led_net(c))
+    assert dropped == [("diode", (130, 5, 160, 35))] and [c.type for c in net.components] == ["voltage_source", "diode"]
+    apart = [("voltage_dc", (0, 0, 20, 40)), ("diode", (100, 0, 140, 30)), ("diode", (300, 0, 340, 30))]
+    assert drop_doubles(*led_net(apart), None, apart, {}, lambda m, c, t: led_net(c))[3] == []   # (two diodes, apart)
+
+
+def test_transistor_circuits_measured_by_their_legs_and_big_circuits_as_graphs():
+    """tools/ltspice.py: a schematic's transistors with their legs (Base / Collector / Emitter), flags of one name one
+    net ('VDD' here and there); grader.circuit.compare: a circuit with transistors, or too big to try every renaming
+    of its nodes, compared as graphs - exact when isomorphic (a transistor read without its kind still one), then
+    each transistor's legs and kind, the sources' polarity; not exact: the parts found by kind"""
+    import os
+    import sys
+    import tempfile
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "tools"))
+    from ltspice import asc_netlist
+    from grader.circuit import Component, Netlist, compare
+    asc = """Version 4
+SHEET 1 880 680
+WIRE 64 -64 64 -100
+WIRE 0 48 -96 48
+WIRE 64 96 64 140
+FLAG 64 -100 VDD
+FLAG 300 -100 VDD
+FLAG 64 140 0
+FLAG -96 48 IN
+SYMBOL npn 0 0 R0
+SYMATTR InstName Q1
+SYMBOL res 48 -160 R0
+SYMATTR InstName R1
+"""
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, "t.asc")
+        open(path, "w").write(asc)
+        net = asc_netlist(path)
+    q = next(c for c in net.components if c.id == "Q1")
+    assert q.type == "npn" and q.roles["Emitter"] == "0" and q.nodes[0] == q.roles["Base"] != q.roles["Collector"]
+    t = Netlist(ground="0", components=[
+        Component("R1", "resistor", ["N1", "N2"]), Component("V1", "voltage_source", ["N1", "0"], plus="N1"),
+        Component("Q1", "npn", ["N3", "N2", "0"], roles={"Base": "N3", "Collector": "N2", "Emitter": "0"}),
+        Component("R2", "resistor", ["N3", "0"])])
+    r = Netlist(ground="0", components=[
+        Component("R1", "resistor", ["a", "b"]), Component("V1", "voltage_source", ["a", "0"], plus="a"),
+        Component("Q1", "bjt", ["c", "b", "0"], roles={"Base": "c", "Collector": "b", "Emitter": "0"}),
+        Component("R2", "resistor", ["c", "0"])])
+    c = compare(r, t)
+    assert c["topology_exact"] and c["legs"] == "1/1" and c["kinds"] == "0/1" and c["polarity"] == "1/1" and c["ground"]
+    r.components[2].roles = {"Base": "b", "Collector": "c", "Emitter": "0"}
+    assert compare(r, t)["legs"] == "0/1"
+    r.components.pop(3)
+    c = compare(r, t)
+    assert not c["topology_exact"] and c["components"] == "3/4" and c["legs"] == "?/1"
 
 
 def test_roboflow_circuit_exports_mapped_to_the_detectors_classes():

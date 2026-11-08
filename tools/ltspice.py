@@ -16,10 +16,18 @@ PINS = {   # symbol: [(x, y, pin name)]; the first pin is grader.circuit's 'plus
     "ind": [(16, 16, "a"), (16, 96, "b")], "voltage": [(0, 16, "+"), (0, 96, "-")], "current": [(0, 80, "to"), (0, 0, "from")],
     "diode": [(16, 64, "k"), (16, 0, "a")], "LED": [(16, 64, "k"), (16, 0, "a")], "zener": [(16, 64, "k"), (16, 0, "a")],
     "Misc\\\\battery": [(0, 16, "+"), (0, 96, "-")], "battery": [(0, 16, "+"), (0, 96, "-")],
-    "npn": [(64, 0, "c"), (0, 48, "b"), (64, 96, "e")], "pnp": [(64, 0, "e"), (0, 48, "b"), (64, 96, "c")]}
+    "npn": [(64, 0, "c"), (0, 48, "b"), (64, 96, "e")], "pnp": [(64, 0, "e"), (0, 48, "b"), (64, 96, "c")],
+    # digital gates: the output and two inputs (their supply pins, (-16, 32) and (-16, 96), are not the logic: the
+    # supply flags stay on their wires, the sources of named nets go - see asc_netlist)
+    "Digital\\\\and": [(32, 64, "out"), (-32, 48, "in1"), (-32, 80, "in2")],
+    "Digital\\\\or": [(48, 64, "out"), (-32, 48, "in1"), (-32, 80, "in2")],
+    "Digital\\\\xor": [(48, 64, "out"), (-48, 48, "in1"), (-48, 80, "in2")]}
 TYPES = {"res": "resistor", "cap": "capacitor", "polcap": "capacitor", "ind": "inductor", "voltage": "voltage_source",
          "current": "current_source", "diode": "diode", "LED": "diode", "zener": "zener", "Misc\\\\battery": "voltage_source",
-         "battery": "voltage_source", "npn": "other", "pnp": "other"}
+         "battery": "voltage_source", "npn": "npn", "pnp": "pnp",
+         "Digital\\\\and": "and", "Digital\\\\or": "or", "Digital\\\\xor": "xor"}
+GATE_TYPES = {"and", "or", "xor"}
+ROLE_NAMES = {"c": "Collector", "b": "Base", "e": "Emitter"}     # a transistor's legs as recog/roles.py names them
 
 
 def _rot(x, y, r):
@@ -96,6 +104,14 @@ def asc_netlist(path):
     for x, y, name in flags:
         if name == "0":
             ground = find((x, y)) if ground is None else (join((x, y), ground) or find(ground))
+        for w in on_wire((x, y)):                      # a flag on a wire's middle joins it
+            join((x, y), w)
+    named = {}
+    for x, y, name in flags:                          # flags of one name are one net ('VDD' here and there)
+        if name != "0":
+            if name in named:
+                join((x, y), named[name])
+            named.setdefault(name, (x, y))
     names = {}
 
     def node(pt):
@@ -113,6 +129,28 @@ def asc_netlist(path):
             c.ac = True
         elif t in ("voltage_source", "current_source", "diode", "zener"):
             c.plus = node(pts[0][0])
+        if t in ("npn", "pnp"):                        # its legs by name, in recog/roles.py's order
+            c.roles = {ROLE_NAMES[pn]: node(pt) for pt, pn in pts}
+            c.nodes = [c.roles[r] for r in ("Base", "Collector", "Emitter")]
+        if t in GATE_TYPES:                            # a gate: its output, then its inputs (as the reader orders them)
+            c.roles = {pn: node(pt) for pt, pn in pts}
         net.components.append(c)
+    # two coils drawn facing each other (one mirrored, side by side) are a transformer on paper (drafter 1's C7: the
+    # simulation has two inductors) -> one part, its primary's two nodes then its secondary's
+    coils = [(s_, c) for (s_, _), c in zip(comps, net.components) if s_["sym"] == "ind"]
+    for (sa, a), (sb, b) in [(x, y) for i, x in enumerate(coils) for y in coils[i + 1:]]:
+        if a in net.components and b in net.components and sa["y"] == sb["y"] and abs(sa["x"] - sb["x"]) <= 128 and \
+                sa["rot"][1:] == sb["rot"][1:] and sa["rot"][0] != sb["rot"][0]:
+            left, right = (a, b) if sa["x"] < sb["x"] else (b, a)
+            t = Component(f"T{left.id}{right.id}", "transformer", left.nodes + right.nodes, label=None)
+            net.components[net.components.index(left)] = t
+            net.components.remove(right)
+    if any(c.type in GATE_TYPES for c in net.components):
+        # a logic circuit's inputs and supply are named nets ('A', 'VDD') with a source each to ground in the
+        # simulation - not drawn: the sources go, the nets keep their names (a letter at a wire's end on paper)
+        named_nodes = {node(named[nm]): nm for nm in named}
+        net.components = [c for c in net.components if not (c.type == "voltage_source" and
+                                                            any(n in named_nodes for n in c.nodes))]
+        net.node_labels = {n: nm for n, nm in named_nodes.items() if re.fullmatch(r"[A-Za-z]", nm)}
     net.unknown_symbols = unknown
     return net

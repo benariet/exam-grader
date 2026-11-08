@@ -25,6 +25,9 @@ ap.add_argument("--true-boxes", action="store_true")
 ap.add_argument("--detector", default=None, help="the detector's folder (default models/circuit-detector)")
 ap.add_argument("--limit", type=int, default=0, help="at most this many photos (a quick try)")
 ap.add_argument("--report", default=os.path.join(HERE, "results", "circuit_eval.json"))
+ap.add_argument("--only", default="", help="photos whose names start so, comma-separated ('C10,C3_D1_P2')")
+ap.add_argument("--pictures", default="", help="a folder: what the reader saw on each photo not read exactly "
+                "(boxes, wire pieces by node, the netlist read and the schematic's)")
 a = ap.parse_args()
 
 
@@ -59,12 +62,19 @@ def main():
         snapshot_download("lowercaseonly/cghd", repo_type="dataset", local_dir=a.cghd, allow_patterns=["drafter_1/spice/*"])
     for xml in sorted(glob.glob(os.path.join(base, "annotations", "*.xml")))[: a.limit or None]:
         name = os.path.basename(xml)[:-4]
+        if a.only and not any(name.startswith(x) for x in a.only.split(",") if x):
+            continue
         truth = asc_netlist(os.path.join(base, "spice", name.split("_")[0] + ".asc"))
         if truth.unknown_symbols or any(c.type == "other" for c in truth.components):
-            continue                                       # transistors / ICs: their pins' roles are not read yet
+            continue                                       # ICs, digital gates, switches: not in the schematics' reader
+        transistors = sum(1 for c in truth.components if c.roles)
         img = ImageOps.exif_transpose(Image.open(glob.glob(os.path.join(base, "images", name + ".*"))[0])).convert("RGB")
+        dbg = None
         if reader is not None:
-            net, _ = reader.read(img)
+            if a.pictures:
+                net, _, dbg = reader.read(img, return_debug=True)
+            else:
+                net, _ = reader.read(img)
         else:
             small = scale_to(img, LONG_SIDE)
             s = LONG_SIDE / max(img.size)
@@ -76,16 +86,42 @@ def main():
                 if cls is None:
                     continue
                 (texts.append((box, o.findtext("text"))) if cls == "text" else comps.append((cls, box)))
+            trs = [b for c, b in comps if c == "transformer"]  # (CGHD boxes a transformer's coils too: the part's)
+
+            def inside(b, t):
+                ix = max(0.0, min(b[2], t[2]) - max(b[0], t[0])) * max(0.0, min(b[3], t[3]) - max(b[1], t[1]))
+                return ix >= 0.7 * (b[2] - b[0]) * (b[3] - b[1])
+            comps = [(c, b) for c, b in comps if not (c == "inductor" and any(inside(b, t) for t in trs))]
             mask = stroke_model(small) if stroke_model else classical(small)
             net = netlist_from_boxes(mask, comps, texts)
         c = compare(net, truth)
-        rows.append({"image": name, **{k: c[k] for k in ("components", "extra_components", "topology_exact", "polarity")}})
-        say(name, c["topology_exact"], c["components"], "polarity", c["polarity"])
+        if a.pictures and dbg is not None and not c["topology_exact"]:
+            os.makedirs(a.pictures, exist_ok=True)
+            k = LONG_SIDE / max(img.size)
+            true_boxes = [(CGHD_MAP.get(o.findtext("name"), "other") or o.findtext("name"),
+                           [float(o.find("bndbox").findtext(v)) * k for v in ("xmin", "ymin", "xmax", "ymax")])
+                          for o in ET.parse(xml).getroot().findall("object")]
+            picture(img, net, dbg, os.path.join(a.pictures, name + ".png"),
+                    ["schematic:"] + [f"{x.id} {x.type} {x.nodes}" for x in truth.components], true_boxes)
+        rows.append({"image": name, "transistors": transistors,
+                     **{k: c[k] for k in ("components", "extra_components", "topology_exact", "polarity", "legs", "kinds")
+                        if k in c}})
+        say(name, c["topology_exact"], c["components"], "polarity", c["polarity"],
+            *(("legs", c["legs"], "kinds", c["kinds"]) if transistors else ()))
+    with_t = [r for r in rows if r["transistors"]]
+    rows_t, rows = with_t, [r for r in rows if not r["transistors"]]
     exact = sum(r["topology_exact"] for r in rows)
     pol = [r for r in rows if r["topology_exact"]]
     pol_ok = sum(1 for r in pol if r["polarity"].split("/")[0] == r["polarity"].split("/")[1])
+    ex_t = [r for r in rows_t if r["topology_exact"]]
+
+    def frac(key):
+        return f"{sum(int(r[key].split('/')[0]) for r in ex_t)}/{sum(int(r[key].split('/')[1]) for r in ex_t)}"
     out = {"mode": "true boxes" if a.true_boxes else "full reader", "images": len(rows), "exact_netlists": exact,
-           "polarity_right_of_exact": f"{pol_ok}/{len(pol)}", "rows": rows}
+           "polarity_right_of_exact": f"{pol_ok}/{len(pol)}", "rows": rows,
+           "transistor_circuits": {"images": len(rows_t), "exact_netlists": len(ex_t),
+                                   "legs_right_of_exact": frac("legs") if ex_t else "0/0",
+                                   "kinds_right_of_exact": frac("kinds") if ex_t else "0/0", "rows": rows_t}}
     tal = os.path.join(HERE, "data", "my_scans", "tal_circuit.pdf")
     if reader is not None and os.path.isfile(tal):
         page = load_pages(tal, 150)[0]
@@ -99,9 +135,12 @@ def main():
         picture(page, net, dbg, os.path.join(HERE, "results", "tal_circuit_read.png"))
     json.dump(out, open(a.report, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     say(f"exact netlists {exact}/{len(rows)}, polarity right in {pol_ok}/{len(pol)} of them ({out['mode']})")
+    tc = out["transistor_circuits"]
+    say(f"with transistors or gates: exact netlists {tc['exact_netlists']}/{tc['images']}, legs right {tc['legs_right_of_exact']}, "
+        f"kinds right {tc['kinds_right_of_exact']} (of the exact ones)")
 
 
-def picture(page, net, dbg, path):
+def picture(page, net, dbg, path, extra=(), true_boxes=()):
     """what the reader saw: wire pieces coloured by node, the boxes found, the current arrows, the netlist"""
     import numpy as np
     from PIL import Image, ImageDraw
@@ -116,6 +155,10 @@ def picture(page, net, dbg, path):
     arr[lab > 0] = col[lab[lab > 0]]
     pic = Image.fromarray(arr)
     d = ImageDraw.Draw(pic)
+    for cls, b in true_boxes:                      # (the annotation's boxes, green, under the reader's)
+        if cls != "text":
+            d.rectangle(b, outline=(0, 170, 0), width=1)
+            d.text((b[0], b[3] + 2), cls, fill=(0, 140, 0))
     for cls, b in dbg["comps"]:
         d.rectangle(b, outline=(220, 0, 0), width=3)
         d.text((b[0], b[1] - 12), cls, fill=(220, 0, 0))
@@ -129,6 +172,7 @@ def picture(page, net, dbg, path):
     lines = [f"{c.id} {c.type} {c.nodes}" + (f" +{c.plus}" if c.plus else "") + (f" '{c.label}'" if c.label else "")
              for c in net.components]
     lines += [f"{c.label}: {c.through} {c.frm}->{c.to}" for c in net.currents] + [f"nodes {net.node_labels}"]
+    lines += list(extra)
     for k, t in enumerate(lines):
         d.text((10, 10 + 14 * k), t, fill=(0, 0, 0))
     pic.save(path)

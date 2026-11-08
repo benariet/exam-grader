@@ -32,6 +32,9 @@ ap.add_argument("--epochs", type=int, default=60)
 ap.add_argument("--minutes", type=float, default=240, help="stop after this long (the best model so far is kept)")
 ap.add_argument("--workers", type=int, default=4)
 ap.add_argument("--limit", type=int, default=0, help="at most this many images per split (a quick try)")
+ap.add_argument("--turns", type=float, default=0.0, help="the share of training images turned by 90, 180 or 270 "
+                "degrees or mirrored (a part drawn upright or the other way is the same part - 8.11: drafter 1's "
+                "upright inductors went unseen)")
 ap.add_argument("--eval-only", action="store_true")
 ap.add_argument("--device", default=None)
 a = ap.parse_args()
@@ -68,7 +71,11 @@ class Circuits(torch.utils.data.Dataset):
             if an["image_id"] in keep:
                 self.anns.setdefault(an["image_id"], []).append(an)
         self.train = train
-        self.aug = T.Compose([
+        turns = [T.RandomApply([T.RandomChoice([
+            T.RandomRotation((90, 90), expand=True), T.RandomRotation((180, 180), expand=True),
+            T.RandomRotation((270, 270), expand=True), T.RandomHorizontalFlip(1.0), T.RandomVerticalFlip(1.0)])],
+            p=a.turns)] if a.turns > 0 else []
+        self.aug = T.Compose(turns + [
             T.RandomPhotometricDistort(p=0.5),
             T.RandomApply([T.RandomAffine(degrees=4, translate=(0.03, 0.03), scale=(0.8, 1.1), shear=3)], p=0.7),
             T.RandomGrayscale(p=0.2),

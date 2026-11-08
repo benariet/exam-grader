@@ -151,6 +151,131 @@ def retry_darker(small, net, dbg, mask, comps, texts, wire, strokes_fn, darks=(1
     return net, dbg, mask
 
 
+# a value's unit settles a part the detector confuses (8.11, CGHD drafter 1: a capacitor's two plates taken for a
+# battery '1µF' beside it, an upright coil taken for a resistor or a capacitor '10nH' beside it): unit -> (the part it
+# is, the classes taken for it)
+UNIT_PART = {"F": ("capacitor", {"voltage_dc", "inductor", "resistor"}),
+             "H": ("inductor", {"resistor", "capacitor", "diode", "zener"}),
+             "Ω": ("resistor", {"inductor", "capacitor"})}
+SIBLINGS = ({"diode", "zener"},)          # one part boxed twice as both: the surer stays
+
+
+def _gap(tb, pb) -> float:
+    cx, cy = (tb[0] + tb[2]) / 2, (tb[1] + tb[3]) / 2
+    return float(np.hypot(max(pb[0] - cx, 0, cx - pb[2]), max(pb[1] - cy, 0, cy - pb[3])))
+
+
+def retype_by_units(comps, texts, reach: float = 1.5):
+    """[(cls, box)] with a part's class set by its value's unit where the detector confused it: the part nearest a
+    value ('1µF', '10nH', '250Ω'), within `reach` times its size, of a class taken for the unit's part - unless a part
+    of the unit's kind is near enough to be the value's own (the label goes to it) -> (comps, [(old, new)])"""
+    from .circuit_wiring import TWO_ENDS, _VALUE
+    out, changed = list(comps), []
+    for item in texts:
+        b, t = item[0], (item[1] or "").strip()
+        if not t or not _VALUE.match(t):
+            continue
+        m = re.search(r"(Ω|ohm|F|H)\s*$", t)
+        if not m:
+            continue
+        target, taken_for = UNIT_PART["Ω" if m.group(1) == "ohm" else m.group(1)]
+        parts = [(k, c, pb) for k, (c, pb) in enumerate(out) if c in TWO_ENDS]
+        if not parts:
+            continue
+        k, c, pb = min(parts, key=lambda x: _gap(b, x[2]))
+        size = max(pb[2] - pb[0], pb[3] - pb[1])
+        own = [x for x in parts if x[1] == target and _gap(b, x[2]) <= 3 * max(x[2][2] - x[2][0], x[2][3] - x[2][1])]
+        if c in taken_for and _gap(b, pb) <= reach * size and not own:
+            out[k] = (target, pb)
+            changed.append((c, target))
+    return out, changed
+
+
+def drop_siblings(found, share: float = 0.15):
+    """[(cls, box, score)] with a part boxed twice as sibling classes (a diode and a Zener over each other - drafter 1:
+    two diodes in parallel where one is drawn) once: of two such boxes overlapping by `share` of the smaller, the
+    surer"""
+    def over(p, q):
+        ix = max(0.0, min(p[2], q[2]) - max(p[0], q[0]))
+        iy = max(0.0, min(p[3], q[3]) - max(p[1], q[1]))
+        small = min((p[2] - p[0]) * (p[3] - p[1]), (q[2] - q[0]) * (q[3] - q[1]))
+        return ix * iy / small if small > 0 else 0.0
+    keep = []
+    for f in sorted(found, key=lambda f: -f[2]):
+        if not any(f[0] != k[0] and any({f[0], k[0]} <= sib for sib in SIBLINGS) and over(f[1], k[1]) > share
+                   for k in keep):
+            keep.append(f)
+    return [f for f in found if f in keep]
+
+
+def _components_of(comps, ends) -> dict:
+    """box index -> index of its part in the netlist (netlist_from_boxes places the boxes in order, leaving out
+    labels, crossovers, grounds, terminals and a box no wire reaches)"""
+    out, k = {}, 0
+    for i, (cls, _) in enumerate(comps):
+        if i < len(ends) and ends[i] is not None and cls not in ("gnd", "terminal", "text", "crossover"):
+            out[i] = k
+            k += 1
+    return out
+
+
+def drop_doubles(net, dbg, mask, comps, scores, wire):
+    """one part boxed twice (drafter 1: an LED's body and its light arrows, both boxed as diodes): two boxes of one
+    kind (or siblings: a diode and a Zener) that overlap and whose parts join the same two nodes - the less sure
+    left out -> (net, dbg, comps, [(cls, box) left out])"""
+    dropped = []
+    while True:
+        idx = _components_of(comps, dbg.get("ends") or [])
+        if len(idx) != len(net.components):
+            return net, dbg, comps, dropped
+        pair = None
+        for i in idx:
+            for j in idx:
+                if j <= i:
+                    continue
+                (ci, bi), (cj, bj) = comps[i], comps[j]
+                same = ci == cj or any({ci, cj} <= sib for sib in SIBLINGS)
+                a, b = net.components[idx[i]], net.components[idx[j]]
+                touch = min(bi[2], bj[2]) > max(bi[0], bj[0]) and min(bi[3], bj[3]) > max(bi[1], bj[1])
+                if same and touch and len(a.nodes) == len(b.nodes) == 2 and set(a.nodes) == set(b.nodes) and \
+                        len(set(a.nodes)) == 2:
+                    pair = (i, j)
+                    break
+            if pair:
+                break
+        if pair is None:
+            return net, dbg, comps, dropped
+        i, j = pair
+        k = i if scores.get(tuple(comps[i][1]), 0.0) < scores.get(tuple(comps[j][1]), 0.0) else j
+        dropped.append(comps[k])
+        comps = comps[:k] + comps[k + 1:]
+        net, dbg = wire(mask, comps, None)
+
+
+def drop_one_ended(net, dbg, mask, comps, texts, wire, read_label):
+    """a 'part' wired at one end or none - a label or a current's name boxed as a part (Tal's drawing: 'I1' by its
+    arrow taken for a switch) - left out and read as a label, when the reading then has fewer problems
+    (reading_score) -> (net, dbg, comps, texts, [(cls, box) left out])"""
+    from .circuit_wiring import TWO_ENDS
+    dropped = []
+    while True:
+        ends = dbg.get("ends") or []
+        cand = [k for k, (cls, _) in enumerate(comps) if cls in TWO_ENDS and k < len(ends) and ends[k] is not None
+                and sum(1 for v in ends[k] if v is not None) < 2]
+        better = None
+        for k in cand:
+            b = comps[k][1]
+            comps2 = comps[:k] + comps[k + 1:]
+            texts2 = list(texts) + [(b,) + tuple(read_label(b))]
+            net2, dbg2 = wire(mask, comps2, texts2)
+            if reading_score(net2) < reading_score(better[0] if better else net):
+                better = (net2, dbg2, comps2, texts2, comps[k])
+        if better is None:
+            return net, dbg, comps, texts, dropped
+        net, dbg, comps, texts = better[:4]
+        dropped.append(better[4])
+
+
 def reading_score(net):
     """how sound a reading looks, lower better: its problems (loose wires, a part with one end, an unread
     polarity ...), then fewer two-terminal parts with two distinct ends"""
@@ -183,26 +308,16 @@ class CircuitReader:
         img = img.convert("RGB")
         s = LONG_SIDE / max(img.size)
         small = scale_to(img, LONG_SIDE)
-        found = self.detector(small)
+        found = drop_siblings(self.detector(small))
         mask = self.strokes(small) if self.strokes else classical(small)
         comps = [(c, b) for c, b, _ in found if c != "text"]
         boxes = [b for c, b, _ in found if c == "text"]
-        crops = []
-        for x0, y0, x1, y1 in boxes:
-            m = 0.15 * (y1 - y0) if self.labels else 0.2 * (y1 - y0)
-            crops.append(small.crop((max(0, int(x0 - m)), max(0, int(y0 - m)), int(x1 + m), int(y1 + m))))
-        if self.labels:                                # each label read knowing the kind of part beside it
-            from .labels import kind_of
-            reads = self.labels.read(crops, kinds=[kind_of(b, comps) for b in boxes])
-        else:
-            reads = []
-            for crop in crops:
-                try:
-                    c = self.formula.recognize(crop, n_best=1, max_new_tokens=24, grammar=LABEL_GRAMMAR)[0]
-                    reads.append((label_text(c.text), float(np.exp(min(0.0, c.logp)))))
-                except Exception:                      # noqa: BLE001
-                    reads.append(("", 0.0))
+        reads = self._read_labels(small, boxes, comps)
         texts = [(b, t or None, conf) for b, (t, conf) in zip(boxes, reads)]
+        comps, retyped = retype_by_units(comps, texts)
+        if retyped:                                    # (the boxes returned say the class the reading used)
+            fixed = iter(comps)
+            found = [(next(fixed)[0], b, sc) if c != "text" else (c, b, sc) for c, b, sc in found]
         net, dbg = netlist_from_boxes(mask, comps, texts, return_debug=True)
         if self.strokes:                               # the classical strokes too: each misses what the other keeps
             other = classical(small)                   # (a faint wire / a notebook rule) - the reading with fewer
@@ -217,9 +332,40 @@ class CircuitReader:
                 net, dbg, mask, comps, texts, spares,
                 lambda m, c, t: netlist_from_boxes(m, c, t, return_debug=True))
             found = found + taken
+        net, dbg, comps, doubles = drop_doubles(       # one part boxed twice: once
+            net, dbg, mask, comps, {tuple(b): sc for _, b, sc in found},
+            lambda m, c, _: netlist_from_boxes(m, c, texts, return_debug=True))
+        for cls, b in doubles:
+            found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))]
+        if any(p.startswith(c.id + ":") and "ends" in p for c in net.components for p in net.problems()):
+            net, dbg, comps, texts, dropped = drop_one_ended(   # a label boxed as a part: read as a label
+                net, dbg, mask, comps, texts, lambda m, c, t: netlist_from_boxes(m, c, t, return_debug=True),
+                lambda b: self._read_labels(small, [b], comps)[0])
+            for cls, b in dropped:
+                found = [f for f in found if not (f[0] == cls and tuple(f[1]) == tuple(b))]
         back = [(c, tuple(v / s for v in b), sc) for c, b, sc in found]
         if not return_debug:
             shift_notes(net, 1.0 / s)                  # the notes' spots in img's pixels, as the boxes returned
         if return_debug:
             return net, back, {**dbg, "mask": mask, "scale": s, "texts": texts, "comps": comps}
         return net, back
+
+    def _read_labels(self, small, boxes, comps):
+        """each label box's reading -> [(text, how sure)], read knowing the kind of part beside it"""
+        crops = []
+        for x0, y0, x1, y1 in boxes:
+            m = 0.15 * (y1 - y0) if self.labels else 0.2 * (y1 - y0)
+            crops.append(small.crop((max(0, int(x0 - m)), max(0, int(y0 - m)), int(x1 + m), int(y1 + m))))
+        if not crops:
+            return []
+        if self.labels:
+            from .labels import kind_of
+            return self.labels.read(crops, kinds=[kind_of(b, comps) for b in boxes])
+        reads = []
+        for crop in crops:
+            try:
+                c = self.formula.recognize(crop, n_best=1, max_new_tokens=24, grammar=LABEL_GRAMMAR)[0]
+                reads.append((label_text(c.text), float(np.exp(min(0.0, c.logp)))))
+            except Exception:                          # noqa: BLE001
+                reads.append(("", 0.0))
+        return reads

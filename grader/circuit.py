@@ -1213,11 +1213,88 @@ def parse_json(text: str) -> dict:
     return {}
 
 
+FAMILY = {"npn": "bjt", "pnp": "bjt", "nmos": "fet", "pmos": "fet"}   # a transistor read without its kind is still it
+BIG = 7                     # more nodes than this: the renamings are too many to try (compare_big)
+
+
+def _family(t: str) -> str:
+    return FAMILY.get(t, t)
+
+
+def _same_legs(rc, tc, nodes: dict) -> bool:
+    """a part's legs read as in the transcription (nodes: the transcription's node -> the reading's): a transistor's
+    each by name; a gate's output, and its inputs in any order"""
+    if not rc.roles:
+        return False
+    if "out" in tc.roles:
+        ins = lambda roles: sorted(v for k, v in roles.items() if k.startswith("in"))
+        return rc.roles.get("out") == nodes.get(tc.roles["out"]) and \
+            ins(rc.roles) == sorted(nodes.get(v) or "?" for v in [tc.roles[k] for k in tc.roles if k.startswith("in")])
+    return all(rc.roles.get(r) == nodes.get(n) for r, n in tc.roles.items())
+
+
+def compare_graphs(read: Netlist, truth: Netlist) -> dict:
+    """compare() for circuits too big to try every renaming of the nodes, and for transistors' legs: the netlists
+    as graphs (parts and nodes, a part joined to the nodes of its ends) - the topology exact when they are
+    isomorphic (a transistor read without its kind counts as one); then, under that matching, each transistor's legs
+    (Base / Collector / Emitter) and kind, the sources' polarity, ground. Not exact: the parts found by kind only."""
+    import networkx as nx
+    from networkx.algorithms import isomorphism as iso
+
+    def graph(net):
+        g = nx.MultiGraph()
+        for n in net.nodes():
+            g.add_node(("n", n), kind="node")
+        for c in net.components:
+            g.add_node(("c", c.id), kind=_family(c.type))
+            for n in c.nodes:
+                g.add_edge(("c", c.id), ("n", n))
+        return g
+    gr, gt = graph(read), graph(truth)
+    m = iso.MultiGraphMatcher(gt, gr, node_match=iso.categorical_node_match("kind", None))
+    exact = len(read.components) == len(truth.components) and m.is_isomorphic()
+    out = {"extra_components": 0, "topology_exact": exact}
+    from collections import Counter
+    rt, tt = Counter(_family(c.type) for c in read.components), Counter(_family(c.type) for c in truth.components)
+    found = sum(min(rt[k], tt[k]) for k in tt)
+    out["components"] = f"{len(truth.components) if exact else found}/{len(truth.components)}"
+    out["extra_components"] = len(read.components) - (len(truth.components) if exact else found)
+    trans = [c for c in truth.components if c.roles]
+    sources = [c for c in truth.components if c.type in ("voltage_source", "current_source") and c.plus is not None
+               and not c.ac]
+    if not exact:
+        out.update({"ground": None, "polarity": f"?/{len(sources)}", "legs": f"?/{len(trans)}", "kinds": f"?/{len(trans)}",
+                    "problems": read.problems()})
+        return out
+    best = None
+    for k, mp in enumerate(m.isomorphisms_iter()):  # (a symmetric circuit matches several ways: the best of them)
+        if k >= 2000:
+            break
+        nodes = {t[1]: r[1] for t, r in mp.items() if t[0] == "n"}
+        parts = {t[1]: r[1] for t, r in mp.items() if t[0] == "c"}
+        rby = {c.id: c for c in read.components}
+        legs = sum(1 for c in trans if _same_legs(rby[parts[c.id]], c, nodes))
+        kinds = sum(1 for c in trans if rby[parts[c.id]].type == c.type)
+        pol = sum(1 for c in sources if rby[parts[c.id]].plus == nodes.get(c.plus))
+        gnd = truth.ground is not None and nodes.get(truth.ground) == read.ground
+        score = (legs, pol, kinds, gnd)
+        if best is None or score > best:
+            best = score
+        if best == (len(trans), len(sources), len(trans), truth.ground is not None):
+            break
+    legs, pol, kinds, gnd = best
+    out.update({"ground": gnd, "polarity": f"{pol}/{len(sources)}", "legs": f"{legs}/{len(trans)}",
+                "kinds": f"{kinds}/{len(trans)}", "problems": read.problems()})
+    return out
+
+
 def compare(read: Netlist, truth: Netlist) -> dict:
     """how a reading matches the transcription, under the renaming of its nodes that matches best:
     components (type + the two nodes), polarity of the sources (those whose transcription has one and that are not
     drawn as AC sources), the diodes' cathodes, the letters at nodes, ground, currents"""
     rn, tn = read.nodes(), truth.nodes()
+    if any(c.roles for c in truth.components) or len(tn) > BIG or len(rn) > BIG + 3:
+        return compare_graphs(read, truth)         # (transistors' legs; too many renamings to try)
     best = None
     pad = rn + [None] * max(0, len(tn) - len(rn))
     for perm in itertools.permutations(tn + [None] * max(0, len(rn) - len(tn)), len(pad)):

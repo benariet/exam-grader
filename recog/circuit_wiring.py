@@ -1269,7 +1269,20 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
             for d in sides.values():
                 for v, c in d.items():
                     allv[v] = allv.get(v, 0) + c
-            ends.append([v for v, c in allv.items() if c >= 2 * sw] or [None])
+            ev = [v for v, c in allv.items() if c >= 2 * sw] or [None]
+            # a transistor has three legs: two wires leaving its box close together are one leg split by the box's
+            # corner (8.11, drafter 1's C2: the emitter's wire on to a capacitor and down to a resistor)
+            while cls in ("bjt", "fet") and len(ev) > 3 and None not in ev:
+                pts = _end_points(b, lab, ev, h, w)
+                if pts is None:
+                    break
+                d, i, j = min((float(np.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1])), i, j)
+                              for i in range(len(ev)) for j in range(i + 1, len(ev)))
+                if d > 0.3 * max(b[2] - b[0], b[3] - b[1]):
+                    break
+                uf.join(ev[i], ev[j])
+                ev.pop(j)
+            ends.append(ev)
     touches = {}
     for e in ends:
         for v in (e or []):
@@ -1376,10 +1389,19 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
             pts = _end_points(b, lab, e, h, w)
             k = _gate_output(mask, b, pts) if pts is not None else None
             if k is not None:
+                # the inputs come in on the side across from the output; a wire on a side between them is the
+                # gate's supply (drafter 1's C6: 'VDD' above each gate, a ground below) - not the logic
+                def side(p):
+                    return min((p[0] - b[0], "left"), (b[2] - p[0], "right"), (p[1] - b[1], "top"),
+                               (b[3] - p[1], "bottom"))[1]
+                ins = [j for j in range(len(e)) if j != k and side(pts[j]) == _ACROSS[side(pts[k])]] or \
+                    [j for j in range(len(e)) if j != k]
                 comp.roles = {"out": node(e[k])}
-                for j, v in enumerate([v for i, v in enumerate(e) if i != k], 1):
-                    comp.roles[f"in{j}"] = node(v)
-                comp.nodes = [comp.roles["out"]] + [comp.roles[f"in{j}"] for j in range(1, len(e))]
+                for jj, j in enumerate(ins, 1):
+                    comp.roles[f"in{jj}"] = node(e[j])
+                comp.nodes = [comp.roles["out"]] + [comp.roles[f"in{j}"] for j in range(1, len(ins) + 1)]
+                if len(ins) + 1 < len(e):
+                    comp.state = "supply pins left out"
         if cls == "transformer" and e and None not in e and len(e) == 4:
             pts = _end_points(b, lab, e, h, w)
             sides = _transformer_sides(pts, b) if pts is not None else None
