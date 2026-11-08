@@ -1,0 +1,13 @@
+{
+ "kinds": [
+  "and",
+  "or",
+  "not",
+  "nand",
+  "nor",
+  "xor",
+  "xnor",
+  "buffer"
+ ],
+ "size": 64
+}

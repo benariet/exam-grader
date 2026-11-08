@@ -1,0 +1,44 @@
+{
+ "note": "CGHD drafter 10's C117 (a test drafter), transcribed by hand from C117_D1_P1 (8.11.2026): two NOTs into an AND. Inputs and outputs are open wire ends; D1 and D2 are two drawings of the same circuit.",
+ "components": [
+  {
+   "id": "U1",
+   "type": "not",
+   "nodes": [
+    "N1",
+    "a"
+   ],
+   "roles": {
+    "out": "N1",
+    "in1": "a"
+   }
+  },
+  {
+   "id": "U2",
+   "type": "not",
+   "nodes": [
+    "N2",
+    "b"
+   ],
+   "roles": {
+    "out": "N2",
+    "in1": "b"
+   }
+  },
+  {
+   "id": "U3",
+   "type": "and",
+   "nodes": [
+    "y",
+    "N1",
+    "N2"
+   ],
+   "roles": {
+    "out": "y",
+    "in1": "N1",
+    "in2": "N2"
+   }
+  }
+ ],
+ "ground": null
+}

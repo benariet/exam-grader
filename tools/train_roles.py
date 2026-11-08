@@ -25,9 +25,10 @@ sys.path.insert(0, os.path.join(HERE, "tools"))
 ap = argparse.ArgumentParser()
 ap.add_argument("--zip", default=os.path.join(HERE, "data", "circuits_raw", "dhcd", "dhcd.zip"))
 ap.add_argument("--out", default=os.path.join(HERE, "models", "roles"))
-ap.add_argument("--epochs", type=int, default=10)
+ap.add_argument("--epochs", type=int, default=30)   # (8.11: 10 left the MOSFETs at 70 % all legs right, 30: 99 %)
 ap.add_argument("--limit", type=int, default=0)
 ap.add_argument("--device", default=None)
+ap.add_argument("--families", default="", help="only these, comma-separated ('fet'): the others' models kept as they are")
 a = ap.parse_args()
 
 import numpy as np  # noqa: E402
@@ -138,6 +139,7 @@ def train(fam, items):
     if knet is not None:
         knet.eval()
     right, right_all, kind_right = 0, 0, 0                # held out, as they come (no turning)
+    by_role = [0, 0, 0]
     with torch.no_grad():
         for ink, pts, kind, _ in te:
             names = ROLES[fam]
@@ -146,11 +148,14 @@ def train(fam, items):
             lp = torch.log_softmax(net(x), -1).cpu().numpy()
             pred = max(__import__("itertools").permutations(range(3)), key=lambda pm: sum(lp[i, pm[i]] for i in range(3)))
             right += sum(pred[i] == i for i in range(3))
+            for i in range(3):
+                by_role[i] += pred[i] == i
             right_all += all(pred[i] == i for i in range(3))
             if knet is not None:
                 kind_right += int(knet(torch.from_numpy(sq)[None, None].to(DEV)).argmax()) == KINDS[fam].index(kind)
     rep = {"held_out_parts": len(te), "legs_right": round(right / max(1, 3 * len(te)), 4),
-           "parts_all_legs_right": round(right_all / max(1, len(te)), 4), "train_parts": len(tr)}
+           "parts_all_legs_right": round(right_all / max(1, len(te)), 4), "train_parts": len(tr),
+           "each_leg_right": {r: round(by_role[i] / max(1, len(te)), 4) for i, r in enumerate(ROLES[fam])}}
     if knet is not None:
         rep["kind_right"] = round(kind_right / max(1, len(te)), 4)
     return net, knet, rep
@@ -160,8 +165,9 @@ def main():
     from safetensors.torch import save_file
     z = zipfile.ZipFile(a.zip)
     os.makedirs(a.out, exist_ok=True)
-    rep = {}
-    for fam in FOLDERS:
+    rep_path = os.path.join(HERE, "results", "roles_eval.json")
+    rep = json.load(open(rep_path, encoding="utf-8")) if a.families and os.path.isfile(rep_path) else {}
+    for fam in [f for f in FOLDERS if not a.families or f in a.families.split(",")]:
         items = load(z, fam)
         say(f"{fam}: {len(items)} crops")
         net, knet, r = train(fam, items)
@@ -173,7 +179,7 @@ def main():
     json.dump({"families": list(FOLDERS), "roles": ROLES, "kinds": KINDS, "size": SIZE},
               open(os.path.join(a.out, "config.json"), "w"), indent=1)
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
-    json.dump(rep, open(os.path.join(HERE, "results", "roles_eval.json"), "w"), indent=1)
+    json.dump(rep, open(rep_path, "w"), indent=1)
 
 
 if __name__ == "__main__":

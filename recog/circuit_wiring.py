@@ -33,13 +33,14 @@ KIND = {"resistor": "resistor", "capacitor": "capacitor", "inductor": "inductor"
         "dep_voltage": "dependent_voltage_source", "dep_current": "dependent_current_source",
         "diode": "diode", "zener": "zener", "voltage_rail": "voltage_source", "switch": "switch", "meter": "meter", "lamp": "lamp",
         "bjt": "bjt", "fet": "fet", "opamp": "opamp", "thyristor": "thyristor", "transformer": "transformer",
-        "and": "and", "or": "or", "not": "not", "nand": "nand", "nor": "nor", "xor": "xor", "ic": "ic",
-        "other": "other"}
+        "and": "and", "or": "or", "not": "not", "nand": "nand", "nor": "nor", "xor": "xor", "xnor": "xnor",
+        "buffer": "buffer", "ic": "ic", "other": "other"}
 PREFIX = {"resistor": "R", "capacitor": "C", "inductor": "L", "voltage_source": "V", "current_source": "I", "zener": "DZ",
           "dependent_voltage_source": "E", "dependent_current_source": "G", "diode": "D", "switch": "S",
           "meter": "M", "lamp": "LP", "bjt": "Q", "fet": "Q", "opamp": "OA", "thyristor": "TH", "transformer": "T",
-          "and": "U", "or": "U", "not": "U", "nand": "U", "nor": "U", "xor": "U", "ic": "U", "other": "X"}
-GATES = {"and", "or", "not", "nand", "nor", "xor"}
+          "and": "U", "or": "U", "not": "U", "nand": "U", "nor": "U", "xor": "U", "xnor": "U", "buffer": "U", "ic": "U",
+          "other": "X"}
+GATES = {"and", "or", "not", "nand", "nor", "xor", "xnor", "buffer"}
 POLAR = {"voltage_dc": "voltage_dc", "current_dc": "current_dc", "diode": "diode", "zener": "diode",   # polarity read,
          "dep_voltage": "voltage_dc", "dep_current": "current_dc"}                    # by which polarity model
 _NAME = re.compile(r"^[A-Za-z]{1,2}_?\{?\d{0,3}\}?$")

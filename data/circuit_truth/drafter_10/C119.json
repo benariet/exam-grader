@@ -1,0 +1,76 @@
+{
+ "note": "CGHD drafter 10's C119 (a test drafter), transcribed by hand from C119_D1_P1 (8.11.2026): a full adder: two XORs, two ANDs, an OR (inputs A, B, C; sum S, carry Co). Inputs and outputs are open wire ends; D1 and D2 are two drawings of the same circuit.",
+ "components": [
+  {
+   "id": "U1",
+   "type": "xor",
+   "nodes": [
+    "N1",
+    "A",
+    "B"
+   ],
+   "roles": {
+    "out": "N1",
+    "in1": "A",
+    "in2": "B"
+   }
+  },
+  {
+   "id": "U2",
+   "type": "xor",
+   "nodes": [
+    "S",
+    "N1",
+    "C"
+   ],
+   "roles": {
+    "out": "S",
+    "in1": "N1",
+    "in2": "C"
+   }
+  },
+  {
+   "id": "U3",
+   "type": "and",
+   "nodes": [
+    "N2",
+    "C",
+    "N1"
+   ],
+   "roles": {
+    "out": "N2",
+    "in1": "C",
+    "in2": "N1"
+   }
+  },
+  {
+   "id": "U4",
+   "type": "and",
+   "nodes": [
+    "N3",
+    "A",
+    "B"
+   ],
+   "roles": {
+    "out": "N3",
+    "in1": "A",
+    "in2": "B"
+   }
+  },
+  {
+   "id": "U5",
+   "type": "or",
+   "nodes": [
+    "Co",
+    "N2",
+    "N3"
+   ],
+   "roles": {
+    "out": "Co",
+    "in1": "N2",
+    "in2": "N3"
+   }
+  }
+ ],
+ "ground": null
+}

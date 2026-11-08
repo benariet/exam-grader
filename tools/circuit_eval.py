@@ -60,15 +60,24 @@ def main():
     if not glob.glob(os.path.join(base, "spice", "*.asc")):          # the schematics: a few kB, not fetched before
         from huggingface_hub import snapshot_download
         snapshot_download("lowercaseonly/cghd", repo_type="dataset", local_dir=a.cghd, allow_patterns=["drafter_1/spice/*"])
-    for xml in sorted(glob.glob(os.path.join(base, "annotations", "*.xml")))[: a.limit or None]:
-        name = os.path.basename(xml)[:-4]
+    todo = [(os.path.basename(x)[:-4], x, base, None) for x in sorted(glob.glob(os.path.join(base, "annotations", "*.xml")))]
+    # circuits of other test drafters transcribed by hand (data/circuit_truth/drafter_<n>/<circuit>.json: drafter 10's
+    # logic-gate diagrams) - every photo of each
+    for tf in sorted(glob.glob(os.path.join(HERE, "data", "circuit_truth", "drafter_*", "*.json"))):
+        d = os.path.join(a.cghd, os.path.basename(os.path.dirname(tf)))
+        circ = os.path.basename(tf)[:-5]
+        todo += [(os.path.basename(x)[:-4], x, d, tf) for x in sorted(glob.glob(os.path.join(d, "annotations", circ + "_*.xml")))]
+    for name, xml, folder, truth_file in todo[: a.limit or None]:
         if a.only and not any(name.startswith(x) for x in a.only.split(",") if x):
             continue
-        truth = asc_netlist(os.path.join(base, "spice", name.split("_")[0] + ".asc"))
-        if truth.unknown_symbols or any(c.type == "other" for c in truth.components):
-            continue                                       # ICs, digital gates, switches: not in the schematics' reader
+        if truth_file:
+            truth = truth_netlist(truth_file)
+        else:
+            truth = asc_netlist(os.path.join(base, "spice", name.split("_")[0] + ".asc"))
+            if truth.unknown_symbols or any(c.type == "other" for c in truth.components):
+                continue                                   # an IC, a switch: not in the schematics' reader
         transistors = sum(1 for c in truth.components if c.roles)
-        img = ImageOps.exif_transpose(Image.open(glob.glob(os.path.join(base, "images", name + ".*"))[0])).convert("RGB")
+        img = ImageOps.exif_transpose(Image.open(glob.glob(os.path.join(folder, "images", name + ".*"))[0])).convert("RGB")
         dbg = None
         if reader is not None:
             if a.pictures:

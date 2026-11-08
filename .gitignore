@@ -20,6 +20,8 @@ models/*
 !models/cell-reader/
 !models/cell-reader-v2/
 !models/polarity/
+!models/roles/
+!models/gates/
 
 # data: the large sets are downloaded or generated again; the small evaluation sets are kept
 data/*
@@ -34,6 +36,7 @@ data/*
 !data/mixed_eval_en2/
 !data/my_scans/
 !data/online_keys/
+!data/circuit_truth/
 
 # students' exams and their readings never go into the repository
 grader_runs/

@@ -6786,6 +6786,22 @@ def test_a_parts_class_set_by_its_values_unit_a_part_boxed_twice_once_and_a_labe
     assert retype_by_units(comps, [((150, 110, 200, 140), "R1", 0.9), ((600, 600, 650, 640), "1µF", 0.9)])[0] == comps
     found = [("diode", (0, 0, 70, 48), 0.9), ("zener", (53, 6, 105, 52), 0.6), ("diode", (200, 0, 270, 48), 0.5)]
     assert drop_siblings(found) == [found[0], found[2]]
+    from recog.circuit_reader import gate_name, retype_by_names   # (drafter 10 writes each gate's name by it)
+    assert [gate_name(t) for t in ("OR", "NOB", "No7", "xOR", "AN1", "OP", "R1", "NA1")] == \
+        ["or", "nor", "not", "xor", "and", None, None, None]
+    gates = [("nor", (100, 100, 200, 160)), ("opamp", (300, 100, 400, 160)), ("resistor", (500, 100, 560, 130))]
+    got, changed = retype_by_names(gates, [((120, 165, 180, 190), "OR", 0.8), ((320, 165, 380, 190), "xOR", 0.7),
+                                           ((500, 135, 560, 160), "NOT", 0.7)])
+    assert [c for c, _ in got] == ["or", "xor", "resistor"] and changed == [("nor", "or"), ("opamp", "xor")]
+    from PIL import Image
+    from recog.circuit_reader import retype_by_shape                 # (the gate classifier's look at a gate's box)
+
+    class Looks:
+        def classify(self, crops):
+            return [("or", 0.95), ("nand", 0.6), ("xor", 0.99)][:len(crops)]
+    gates = [("nor", (10, 10, 60, 40)), ("and", (100, 10, 150, 40)), ("nor", (200, 10, 250, 40)), ("resistor", (300, 10, 340, 30))]
+    got, changed = retype_by_shape(Image.new("RGB", (400, 100), "white"), gates, Looks(), skip={(200, 10, 250, 40)})
+    assert [c for c, _ in got] == ["or", "and", "nor", "resistor"] and changed == [("nor", "or")]   # (unsure; named)
 
     def net_of(comps_):
         n = Netlist(components=[Component("R1", "resistor", ["n1", "n2"]), Component("R2", "resistor", ["n2", "n1"])])

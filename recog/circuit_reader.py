@@ -165,6 +165,67 @@ def _gap(tb, pb) -> float:
     return float(np.hypot(max(pb[0] - cx, 0, cx - pb[2]), max(pb[1] - cy, 0, cy - pb[3])))
 
 
+GATE_NAMES = {"AND": "and", "OR": "or", "NOT": "not", "NAND": "nand", "NOR": "nor", "XOR": "xor"}
+# the classes a gate is taken for: another gate, a triangle (an op-amp's, a NOT's), a switch
+GATE_CONFUSED = {"and", "or", "not", "nand", "nor", "xor", "opamp", "switch"}
+
+
+def gate_name(t: str):
+    """a label that names a gate ('OR', 'NOB' read for 'NOR', 'No7' for 'NOT', '00' for 'OR') -> its class, None if it
+    names none or is as near two names"""
+    from rapidfuzz.distance import Levenshtein
+    u = re.sub(r"[^A-Z0-9]", "", (t or "").upper()).replace("0", "O").replace("7", "T").replace("8", "B")
+    if not 2 <= len(u) <= 5:
+        return None
+    for v in (u, u.replace("B", "R")):                 # (an R read as a B: 'NOB')
+        if v in GATE_NAMES:
+            return GATE_NAMES[v]
+    if len(u) < 3:                                     # ('OP', 'XO': too short to stand one letter off)
+        return None
+    d = sorted((Levenshtein.distance(u, n), n) for n in GATE_NAMES)
+    return GATE_NAMES[d[0][1]] if d[0][0] <= 1 and d[1][0] > d[0][0] else None
+
+
+def retype_by_names(comps, texts, reach: float = 1.0):
+    """a gate's class set by the name written by it (drafter 10 writes 'OR', 'NOR', 'XOR' under each gate; the detector
+    takes an OR for a NOR, an XOR for an op-amp, a NOT for a switch): the part nearest a label naming a gate, within
+    `reach` times its size, of a class a gate is taken for -> (comps, [(old, new)])"""
+    out, changed = list(comps), []
+    for item in texts:
+        b, t = item[0], item[1]
+        g = gate_name(t)
+        if g is None:
+            continue
+        parts = [(k, c, pb) for k, (c, pb) in enumerate(out) if c in GATE_CONFUSED]
+        if not parts:
+            continue
+        k, c, pb = min(parts, key=lambda x: _gap(b, x[2]))
+        if c != g and _gap(b, pb) <= reach * max(pb[2] - pb[0], pb[3] - pb[1]):
+            out[k] = (g, pb)
+            changed.append((c, g))
+    return out, changed
+
+
+def retype_by_shape(small, comps, classifier, skip=(), sure: float = 0.8, margin: float = 0.15):
+    """a gate's class by the gate classifier's look at its box (recog/gates.py) where it is sure and differs from the
+    detector's - not a box whose class its written name set (skip) -> (comps, [(old, new)])"""
+    from .circuit_wiring import GATES
+    idx = [k for k, (c, b) in enumerate(comps) if c in GATES and tuple(b) not in skip]
+    if not idx or classifier is None:
+        return comps, []
+    crops = []
+    for k in idx:
+        x0, y0, x1, y1 = comps[k][1]
+        mx, my = margin * (x1 - x0), margin * (y1 - y0)
+        crops.append(small.crop((max(0, int(x0 - mx)), max(0, int(y0 - my)), int(x1 + mx), int(y1 + my))))
+    out, changed = list(comps), []
+    for k, (kind, p) in zip(idx, classifier.classify(crops)):
+        if p >= sure and kind != out[k][0]:
+            changed.append((out[k][0], kind))
+            out[k] = (kind, out[k][1])
+    return out, changed
+
+
 def retype_by_units(comps, texts, reach: float = 1.5):
     """[(cls, box)] with a part's class set by its value's unit where the detector confused it: the part nearest a
     value ('1µF', '10nH', '250Ω'), within `reach` times its size, of a class taken for the unit's part - unless a part
@@ -295,6 +356,11 @@ class CircuitReader:
             from .labels import DEFAULT_DIR as LABELS_DIR, LabelReader
             labels = LabelReader() if os.path.isfile(os.path.join(LABELS_DIR, "model.safetensors")) else False
         self.labels = labels
+        self.gates = None                              # the gate classifier (tools/train_gates.py), when trained
+        from .gates import DEFAULT_DIR as GATES_DIR
+        if os.path.isfile(os.path.join(GATES_DIR, "gates.safetensors")):
+            from .gates import GateClassifier
+            self.gates = GateClassifier()
         if formula is None and not labels:             # ... else the formula reader, held to the label grammar
             from .formula import FormulaRecognizer
             formula = FormulaRecognizer()
@@ -315,6 +381,11 @@ class CircuitReader:
         reads = self._read_labels(small, boxes, comps)
         texts = [(b, t or None, conf) for b, (t, conf) in zip(boxes, reads)]
         comps, retyped = retype_by_units(comps, texts)
+        before = list(comps)
+        comps, renamed = retype_by_names(comps, texts)
+        named = {tuple(b) for (c0, b), (c1, _) in zip(before, comps) if c0 != c1}
+        comps, reshaped = retype_by_shape(small, comps, self.gates, skip=named)
+        retyped = retyped + renamed + reshaped
         if retyped:                                    # (the boxes returned say the class the reading used)
             fixed = iter(comps)
             found = [(next(fixed)[0], b, sc) if c != "text" else (c, b, sc) for c, b, sc in found]

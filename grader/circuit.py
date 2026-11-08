@@ -84,7 +84,8 @@ class Netlist:
             nodes = [str(n) for n in (c.get("nodes") or []) if n is not None]
             comps.append(Component(str(c.get("id") or c.get("label") or f"X{i + 1}"), _TYPES.get(t, t), nodes,
                                    c.get("label"), None if c.get("value") in (None, "") else str(c.get("value")),
-                                   None if c.get("plus") is None else str(c.get("plus")), bool(c.get("ac", False))))
+                                   None if c.get("plus") is None else str(c.get("plus")), bool(c.get("ac", False)),
+                                   roles={str(k): str(v) for k, v in (c.get("roles") or {}).items()}))
         curs = [Current(str(c.get("label")), c.get("through"), None if c.get("from") is None else str(c.get("from")),
                         None if c.get("to") is None else str(c.get("to")))
                 for c in (d.get("currents", []) or []) if c.get("label")]

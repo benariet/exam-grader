@@ -1,0 +1,35 @@
+{
+ "families": [
+  "opamp",
+  "bjt",
+  "fet"
+ ],
+ "roles": {
+  "bjt": [
+   "Base",
+   "Collector",
+   "Emitter"
+  ],
+  "fet": [
+   "Gate",
+   "Drain",
+   "Source"
+  ],
+  "opamp": [
+   "In+",
+   "In-",
+   "Out"
+  ]
+ },
+ "kinds": {
+  "bjt": [
+   "npn",
+   "pnp"
+  ],
+  "fet": [
+   "nmos",
+   "pmos"
+  ]
+ },
+ "size": 96
+}

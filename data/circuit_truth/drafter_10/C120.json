@@ -1,0 +1,60 @@
+{
+ "note": "CGHD drafter 10's C120 (a test drafter), transcribed by hand from C120_D1_P1 (8.11.2026): x -> NOT and OR; y -> OR; NOT and OR's output into an AND; the AND and the first OR into an OR. Inputs and outputs are open wire ends; D1 and D2 are two drawings of the same circuit.",
+ "components": [
+  {
+   "id": "U1",
+   "type": "not",
+   "nodes": [
+    "P",
+    "x"
+   ],
+   "roles": {
+    "out": "P",
+    "in1": "x"
+   }
+  },
+  {
+   "id": "U2",
+   "type": "or",
+   "nodes": [
+    "Q",
+    "x",
+    "y"
+   ],
+   "roles": {
+    "out": "Q",
+    "in1": "x",
+    "in2": "y"
+   }
+  },
+  {
+   "id": "U3",
+   "type": "and",
+   "nodes": [
+    "R",
+    "P",
+    "Q"
+   ],
+   "roles": {
+    "out": "R",
+    "in1": "P",
+    "in2": "Q"
+   }
+  },
+  {
+   "id": "U4",
+   "type": "or",
+   "nodes": [
+    "z",
+    "R",
+    "Q"
+   ],
+   "roles": {
+    "out": "z",
+    "in1": "R",
+    "in2": "Q"
+   }
+  }
+ ],
+ "ground": null
+}

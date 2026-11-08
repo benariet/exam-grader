@@ -1,0 +1,60 @@
+{
+ "note": "CGHD drafter 10's C116 (a test drafter), transcribed by hand from C116_D1_P1 (8.11.2026): two ANDs into an OR, then a NOT (inputs a-d, output y). Inputs and outputs are open wire ends; D1 and D2 are two drawings of the same circuit.",
+ "components": [
+  {
+   "id": "U1",
+   "type": "and",
+   "nodes": [
+    "N1",
+    "a",
+    "b"
+   ],
+   "roles": {
+    "out": "N1",
+    "in1": "a",
+    "in2": "b"
+   }
+  },
+  {
+   "id": "U2",
+   "type": "and",
+   "nodes": [
+    "N2",
+    "c",
+    "d"
+   ],
+   "roles": {
+    "out": "N2",
+    "in1": "c",
+    "in2": "d"
+   }
+  },
+  {
+   "id": "U3",
+   "type": "or",
+   "nodes": [
+    "N3",
+    "N1",
+    "N2"
+   ],
+   "roles": {
+    "out": "N3",
+    "in1": "N1",
+    "in2": "N2"
+   }
+  },
+  {
+   "id": "U4",
+   "type": "not",
+   "nodes": [
+    "y",
+    "N3"
+   ],
+   "roles": {
+    "out": "y",
+    "in1": "N3"
+   }
+  }
+ ],
+ "ground": null
+}

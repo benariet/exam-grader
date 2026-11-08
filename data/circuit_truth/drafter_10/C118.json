@@ -1,0 +1,48 @@
+{
+ "note": "CGHD drafter 10's C118 (a test drafter), transcribed by hand from C118_D1_P1 (8.11.2026): an OR and a NOR into a NAND. Inputs and outputs are open wire ends; D1 and D2 are two drawings of the same circuit.",
+ "components": [
+  {
+   "id": "U1",
+   "type": "or",
+   "nodes": [
+    "N1",
+    "a",
+    "b"
+   ],
+   "roles": {
+    "out": "N1",
+    "in1": "a",
+    "in2": "b"
+   }
+  },
+  {
+   "id": "U2",
+   "type": "nor",
+   "nodes": [
+    "N2",
+    "c",
+    "d"
+   ],
+   "roles": {
+    "out": "N2",
+    "in1": "c",
+    "in2": "d"
+   }
+  },
+  {
+   "id": "U3",
+   "type": "nand",
+   "nodes": [
+    "y",
+    "N1",
+    "N2"
+   ],
+   "roles": {
+    "out": "y",
+    "in1": "N1",
+    "in2": "N2"
+   }
+  }
+ ],
+ "ground": null
+}
