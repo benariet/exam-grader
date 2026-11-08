@@ -925,6 +925,77 @@ class Netlist:
             return memo[n]
         return {n: f(n) for n in driven}
 
+    def switch_logic(self, most_inputs: int = 8, report: bool = False):
+        """a CMOS circuit drawn with its transistors: {node: its Boolean function} for each node a PMOS and an NMOS
+        both drive (a gate's output - the next stage's input too), in the inputs the drawing names (the gates' nodes
+        no transistor drives: a node's letter, else the node). Switch level: an NMOS conducts with its gate at 1, a
+        PMOS at 0; a node joined through conducting transistors to the supply is 1, to ground 0 - a node joined to
+        both or to neither in some row (a short, a floating output: a wrong network) gets no function. The supply:
+        a source's '+' with its other end at ground. report: -> (that, how many outputs got no function)"""
+        from sympy.logic.boolalg import SOPform
+        nothing = ({}, 0) if report else {}
+        fets = []
+        for c in self.components:
+            if c.type not in ("nmos", "pmos"):
+                continue
+            g, d, s_ = (c.roles.get(k) for k in ("Gate", "Drain", "Source")) if c.roles else (None, None, None)
+            if None in (g, d, s_):
+                if len(c.nodes) != 3:
+                    continue
+                g, d, s_ = c.nodes
+            fets.append((c.type, g, d, s_))
+        gnd = self.ground
+        vdd = {c.plus for c in self.components if c.type == "voltage_source" and c.plus is not None and gnd is not None
+               and gnd in c.nodes and c.plus != gnd}
+        if not fets or not vdd or gnd is None:
+            return nothing
+        channel = {n for _, _, d, s_ in fets for n in (d, s_)}
+        inputs = sorted({g for _, g, _, _ in fets if g not in channel and g not in vdd and g != gnd})
+        if not inputs or len(inputs) > most_inputs:
+            return nothing
+        kinds = {}
+        for t, _, d, s_ in fets:
+            for n in (d, s_):
+                kinds.setdefault(n, set()).add(t)
+        outs = [n for n, k in kinds.items() if k == {"nmos", "pmos"} and n not in vdd and n != gnd]
+        if not outs:
+            return nothing
+        rows = {n: [] for n in outs}
+        for bits in itertools.product((0, 1), repeat=len(inputs)):
+            val = dict(zip(inputs, bits))
+            for n in vdd:
+                val[n] = 1
+            val[gnd] = 0
+            for _ in range(len(fets) + 1):           # (a stage's output drives the next stage's gates: to a fixed point)
+                parent = {}
+
+                def find(a):
+                    while parent.get(a, a) != a:
+                        a = parent[a]
+                    return a
+                for t, g, d, s_ in fets:
+                    if val.get(g) is not None and val[g] == (1 if t == "nmos" else 0):
+                        parent[find(d)] = find(s_)
+                hi = {find(n) for n in vdd}
+                lo = find(gnd)
+                new = dict(val)
+                for n in channel - vdd - {gnd}:
+                    r = find(n)
+                    new[n] = 1 if r in hi and r != lo else 0 if r == lo and r not in hi else None
+                if new == val:
+                    break
+                val = new
+            for n in outs:
+                rows[n].append(val.get(n))
+        names = [sp.Symbol(self.node_labels.get(n, n)) for n in inputs]
+        combos = list(itertools.product((0, 1), repeat=len(inputs)))
+        out = {}
+        for n, r in rows.items():
+            if all(v in (0, 1) for v in r):
+                ones = [list(b) for b, v in zip(combos, r) if v == 1]
+                out[n] = SOPform(names, ones) if ones else sp.false
+        return (out, len(rows) - len(out)) if report else out
+
     def resistance_seen(self, a: str, b: str, switches: dict | None = None):
         """the resistance between nodes a and b with the independent sources set to zero (Thevenin's), or None"""
         r = self.solve("dc", switches, zero_sources=True, test=(a, b))

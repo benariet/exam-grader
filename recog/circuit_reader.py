@@ -74,16 +74,23 @@ class CircuitDetector:
         return found
 
 
-def _dedupe(found, iou: float = 0.6):
-    """one box per object: of boxes that overlap a lot (any class), the more confident stays"""
+def _dedupe(found, iou: float = 0.6, nested: float = 0.85):
+    """one box per object: of boxes that overlap a lot (any class), or of one class one lying in the other (a
+    transistor boxed whole and its symbol alone), the more confident stays"""
     def overlap(p, q):
         ix = max(0.0, min(p[2], q[2]) - max(p[0], q[0]))
         iy = max(0.0, min(p[3], q[3]) - max(p[1], q[1]))
         u = (p[2] - p[0]) * (p[3] - p[1]) + (q[2] - q[0]) * (q[3] - q[1]) - ix * iy
         return ix * iy / u if u > 0 else 0.0
+
+    def inside(p, q):                                  # the share of the smaller box inside the other
+        ix = max(0.0, min(p[2], q[2]) - max(p[0], q[0]))
+        iy = max(0.0, min(p[3], q[3]) - max(p[1], q[1]))
+        return ix * iy / max(1e-6, min((p[2] - p[0]) * (p[3] - p[1]), (q[2] - q[0]) * (q[3] - q[1])))
     keep = []
     for f in sorted(found, key=lambda f: -f[2]):
-        if all(overlap(f[1], k[1]) < iou for k in keep):
+        if all(overlap(f[1], k[1]) < iou and not (f[0] == k[0] != "text" and inside(f[1], k[1]) >= nested)
+               for k in keep):
             keep.append(f)
     return keep
 
@@ -495,6 +502,33 @@ def consistent_letters(texts, comps, logp, margin: float = 6.0, pair_margin: flo
     return texts, changed
 
 
+def complementary_kinds(net):
+    """a CMOS gate whose network is not complementary as read - some inputs leave its output joined to both rails or
+    to neither - while one transistor's kind turned (an NMOS read for a PMOS: the arrow is a small mark) makes it so:
+    that transistor taken as the other kind, and noted (a doubt - the student may have drawn it so) -> [ids turned]"""
+    fets = [c for c in net.components if c.type in ("nmos", "pmos")]
+    if len(fets) < 2:
+        return []
+    _, bad = net.switch_logic(report=True)
+    if not bad:
+        return []
+    fixes = []
+    for c in fets:
+        c.type = "pmos" if c.type == "nmos" else "nmos"
+        out, bad2 = net.switch_logic(report=True)
+        c.type = "pmos" if c.type == "nmos" else "nmos"
+        if out and not bad2:
+            fixes.append(c)
+    if len(fixes) != 1:                                # (none, or several alike: left as read)
+        return []
+    c = fixes[0]
+    was = c.type
+    c.type = "pmos" if was == "nmos" else "nmos"
+    net.notes.append(f"{c.id}: read as {'an NMOS' if was == 'nmos' else 'a PMOS'}, but the gate's network is "
+                     f"complementary only with {'a PMOS' if was == 'nmos' else 'an NMOS'} there - taken so")
+    return [c.id]
+
+
 def reading_score(net):
     """how sound a reading looks, lower better: its problems (loose wires, a part with one end, an unread
     polarity ...), then fewer two-terminal parts with two distinct ends"""
@@ -593,6 +627,7 @@ class CircuitReader:
                 net2, dbg2 = netlist_from_boxes(mask, comps, texts2, return_debug=True)
                 if reading_score(net2) <= reading_score(net):
                     net, dbg, texts = net2, dbg2, texts2
+        complementary_kinds(net)                       # a CMOS gate's PMOS read as an NMOS (or the other way)
         back = [(c, tuple(v / s for v in b), sc) for c, b, sc in found]
         if not return_debug:
             shift_notes(net, 1.0 / s)                  # the notes' spots in img's pixels, as the boxes returned

@@ -1223,6 +1223,64 @@ def test_an_arrow_up_at_a_wires_end_is_a_supply():
     assert not any(c.type == "voltage_source" for c in netlist_from_boxes(drawing(False), comps, polarity=False).components)
 
 
+def test_rails_named_at_their_wires_are_the_supply_and_the_ground():
+    """a CMOS gate's 'VDD' written over its top line and 'GND' under its bottom one, no symbol: the supply a source
+    from the top node to ground, the bottom node the ground; '+5V' a supply too, its value; a bare '9V' is no rail"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 300), bool)
+    m[60:340, 148:152] = True                       # one wire, top to bottom, through a resistor
+    m[180:220, 140:160] = True
+    m[58:62, 120:180] = True                        # a bar on top ...
+    m[338:342, 120:180] = True                      # ... and one at the bottom
+    comps = [("resistor", (130, 170, 170, 230))]
+    for top, kind in (("VDD", "VDD"), ("+5V", "5V"), ("9V", None)):
+        net = netlist_from_boxes(m, comps, [((130, 25, 172, 52), top), ((130, 348, 172, 375), "GND")], polarity=False)
+        r, = [c for c in net.components if c.type == "resistor"]
+        vs = [c for c in net.components if c.type == "voltage_source"]
+        assert net.ground == "0" and "0" in r.nodes
+        if kind is None:
+            assert not vs
+            continue
+        v, = vs
+        assert set(v.nodes) == set(r.nodes) and v.plus != "0" and v.label == top
+        assert v.value == (kind if kind != "VDD" else None)
+    far = netlist_from_boxes(m, comps, [((200, 0, 245, 27), "+9V")], polarity=False)   # (a note further off: none)
+    assert not any(c.type == "voltage_source" for c in far.components)
+
+
+def test_a_part_boxed_whole_and_its_symbol_alone_is_one_part():
+    """the detector boxing a transistor twice - whole, with its gate's stub, and its symbol alone inside (IoU under
+    the dedupe's 0.6): one of a class lying in another is the same part; a label inside a part's box stays"""
+    from recog.circuit_reader import _dedupe
+    found = [("fet", (100, 100, 220, 240), 0.9), ("fet", (130, 130, 215, 235), 0.7), ("text", (140, 140, 160, 160), 0.8),
+             ("fet", (300, 100, 380, 200), 0.8)]
+    kept = _dedupe(found)
+    assert [f[1] for f in kept if f[0] == "fet"] == [(100, 100, 220, 240), (300, 100, 380, 200)]
+    assert any(f[0] == "text" for f in kept)
+
+
+def test_two_wires_leaving_a_transistors_box_by_one_side_are_one_leg():
+    """a parallel network's bus meeting a source's wire at the transistor box's corner: four wires reach the box,
+    two of them by its bottom - a transistor's legs leave by different sides, so those two are one leg"""
+    import numpy as np
+    from recog.circuit_wiring import netlist_from_boxes
+    m = np.zeros((400, 500), bool)
+    box = (200, 150, 280, 250)
+    m[199:201, 80:200] = True                       # gate, from the left
+    m[40:150, 239:241] = True                       # drain, up
+    m[250:330, 229:231] = True                      # source, down ...
+    m[240:251, 229:231] = True
+    m[245:247, 230:279] = True                      # ... and the bus joining it inside the box's corner
+    m[247:262, 277:279] = True
+    m[260:262, 277:460] = True                      #     leaving by the bottom, away to the right
+    m[160:240, 215:217] = True                      # the symbol's strokes
+    for y in range(160, 240, 6):
+        m[y:y + 2, 215:241] = True
+    q, = netlist_from_boxes(m, [("fet", box)], polarity=False).components
+    assert len(q.nodes) == 3 and len(set(q.nodes)) == 3
+
+
 def test_a_transistors_leg_meeting_a_wire_just_past_its_box_is_a_leg():
     """a CMOS network: a drain's short stub meets the bus a few pixels under the transistor's box and the bus runs
     on along the box - the leg is the bus's (three legs, not two)"""
@@ -2152,6 +2210,68 @@ def test_logic_gates_read_and_boolean_answers_checked():
         return [c.verdict for c in check_against(circuit_statements(tex), net)]
     assert verdicts("F = \\overline{A B} + C") == ["right"] and verdicts("F = A' + B' + C") == ["right"]
     assert verdicts("F = A B + C") == ["wrong"]
+
+
+def test_a_cmos_gate_drawn_with_its_transistors_gives_its_boolean_function():
+    """switch level: an AOI21 (PMOS A || B in series with C, NMOS A - B in series || C) is Y = (A B + C)'; the answer
+    checked against it, by the output's name or - not named on the drawing - as the answer names it; a NAND into an
+    inverter is an AND (the first stage's output drives the second's gates); a PMOS missing leaves Y floating: no
+    function"""
+    import sympy as sp
+    from grader.circuit import Component, Netlist
+    from grader.circuit_check import check_against, circuit_statements
+
+    def q(i, t, g, d, s_):
+        return Component(i, t, [g, d, s_], roles={"Gate": g, "Drain": d, "Source": s_})
+    vdd = Component("V", "voltage_source", ["VDD", "0"], plus="VDD")
+    aoi = [q("Q1", "pmos", "a", "n1", "VDD"), q("Q2", "pmos", "b", "n1", "VDD"), q("Q3", "pmos", "c", "y", "n1"),
+           q("Q4", "nmos", "a", "y", "n2"), q("Q5", "nmos", "b", "n2", "0"), q("Q6", "nmos", "c", "y", "0"), vdd]
+    net = Netlist(aoi, ground="0", node_labels={"a": "A", "b": "B", "c": "C"})
+    A, B, C = sp.symbols("A B C")
+    (out, f), = net.switch_logic().items()
+    assert out == "y" and not sp.satisfiable(sp.Xor(f, ~((A & B) | C)))
+
+    def verdicts(tex, n=net):
+        return [c.verdict for c in check_against(circuit_statements(tex), n)]
+    assert verdicts("Y = \\overline{A B + C}") == ["right"] and verdicts("F = (A' + B') C'") == ["right"]
+    assert verdicts("Y = A B + C") == ["wrong"]
+    named = Netlist(aoi, ground="0", node_labels={"a": "A", "b": "B", "c": "C", "y": "Z"})
+    assert verdicts("Z = \\overline{A B + C}", named) == ["right"] and verdicts("Y = A B", named) == []
+    nand_inv = [q("Q1", "pmos", "a", "x", "VDD"), q("Q2", "pmos", "b", "x", "VDD"), q("Q3", "nmos", "a", "x", "m"),
+                q("Q4", "nmos", "b", "m", "0"), q("Q5", "pmos", "x", "y", "VDD"), q("Q6", "nmos", "x", "y", "0"), vdd]
+    two = Netlist(nand_inv, ground="0", node_labels={"a": "A", "b": "B", "y": "Y"})
+    sw = two.switch_logic()
+    assert not sp.satisfiable(sp.Xor(sw["y"], A & B)) and not sp.satisfiable(sp.Xor(sw["x"], ~(A & B)))
+    broken = Netlist(aoi[1:], ground="0", node_labels={"a": "A", "b": "B", "c": "C"})
+    assert broken.switch_logic() == {} and broken.switch_logic(report=True)[1] == 1
+    misread = Netlist(aoi, ground="0", node_labels={"a": "A", "b": "T", "c": "C"})   # its 'B' read 'T': no sure wrong
+    c, = check_against(circuit_statements("Y = \\overline{A B + C}"), misread)
+    assert c.verdict == "wrong" and not c.sure
+    assert check_against(circuit_statements("Y = \\overline{A T + C}"), misread)[0].sure
+
+
+def test_a_cmos_gates_transistor_read_as_the_other_kind_is_turned_with_a_note():
+    """an AOI21 whose PMOS on C was read as an NMOS: its network leaves Y on both rails or neither for some inputs;
+    turned, it is complementary - taken so, and noted (the student may have drawn it so); a gate complementary as
+    read is left alone"""
+    import sympy as sp
+    from grader.circuit import Component, Netlist
+    from recog.circuit_reader import complementary_kinds
+
+    def q(i, t, g, d, s_):
+        return Component(i, t, [g, d, s_], roles={"Gate": g, "Drain": d, "Source": s_})
+
+    def aoi(k3):
+        return Netlist([q("Q1", "pmos", "a", "n1", "VDD"), q("Q2", "pmos", "b", "n1", "VDD"), q("Q3", k3, "c", "y", "n1"),
+                        q("Q4", "nmos", "a", "y", "n2"), q("Q5", "nmos", "b", "n2", "0"), q("Q6", "nmos", "c", "y", "0"),
+                        Component("V", "voltage_source", ["VDD", "0"], plus="VDD")],
+                       ground="0", node_labels={"a": "A", "b": "B", "c": "C"})
+    net = aoi("nmos")
+    assert net.switch_logic() == {} and complementary_kinds(net) == ["Q3"]
+    A, B, C = sp.symbols("A B C")
+    assert not sp.satisfiable(sp.Xor(net.switch_logic()["y"], ~((A & B) | C))) and any("Q3" in p for p in net.problems())
+    good = aoi("pmos")
+    assert complementary_kinds(good) == [] and not good.notes
 
 
 def test_sinusoidal_circuit_phasors_checked():

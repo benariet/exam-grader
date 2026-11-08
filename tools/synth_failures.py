@@ -16,6 +16,9 @@ ap.add_argument("--long-side", type=int, default=1600)
 a = ap.parse_args()
 
 
+SUPPLY = ("VDD", "VCC", "+5V", "V+", "+12V", "+9V")
+
+
 def iou(p, q):
     ix = max(0.0, min(p[2], q[2]) - max(p[0], q[0])) * max(0.0, min(p[3], q[3]) - max(p[1], q[1]))
     u = (p[2] - p[0]) * (p[3] - p[1]) + (q[2] - q[0]) * (q[3] - q[1]) - ix
@@ -26,7 +29,7 @@ def main():
     rep = json.load(open(a.report, encoding="utf-8"))
     rows = rep.get("transistor_circuits", {}).get("rows", []) + rep.get("rows", [])
     fet_as, rail, gnd, letters, short, causes = Counter(), Counter(), Counter(), Counter(), Counter(), Counter()
-    misread = Counter()
+    misread, rail_words = Counter(), Counter()
     per_gate = defaultdict(lambda: [0, 0])
     for r in rows:
         tf = os.path.join(a.synth, r["image"] + ".json")
@@ -38,6 +41,7 @@ def main():
         rb, rt = r["boxes"], r.get("texts", [])
         why = []
         n_missed = 0
+        named = {}
         for w, b in tb:
             if w.startswith("fet"):
                 m = max(rb, key=lambda x: iou(x[1], b), default=None)
@@ -52,8 +56,19 @@ def main():
                     why.append(f"ground as {got}")
                 elif w == "voltage_rail" and not any(typ == "voltage_source" for _, typ, _n, _r in r["read"]):
                     why.append(f"no supply source (the arrow boxed as {got})")   # (a 'ground' fed from below is one)
+            elif w.startswith("word"):                      # a rail drawn as its name ('VDD', 'GND')
+                m = max(rt, key=lambda x: iou(x[1], b), default=None)
+                got = m[0] if m and iou(m[1], b) > 0.2 else None
+                named[w.split()[1]] = got
+                rail_words["read right" if got and got.strip().upper() == w.split()[1].upper() else "read otherwise"
+                           if got else "not found"] += 1
         if n_missed:
             why.append(f"{n_missed} transistor(s) not boxed as such")
+        if not any(w == "voltage_rail" for w, _ in tb) and not any(typ == "voltage_source" for _, typ, _n, _r in r["read"]):
+            sw_ = [f"'{k}' read {v!r}" for k, v in named.items() if k in SUPPLY]
+            why.append("no supply source (its name: " + (", ".join(sw_) or "?") + ")")
+        if any(k not in SUPPLY and v != k for k, v in named.items()) and t["ground"] not in [n for _, _t, ns, _r in r["read"] for n in ns]:
+            why.append("no ground (its name misread)")
         reads = defaultdict(set)
         for w, b in tb:
             if w.startswith("text"):
@@ -84,6 +99,8 @@ def main():
     print("transistors boxed as:", dict(fet_as))
     print("supply arrow boxed as:", dict(rail), " ground boxed as:", dict(gnd))
     print("letters:", dict(letters), " misread:", misread.most_common(12))
+    if rail_words:
+        print("rails drawn as their names:", dict(rail_words))
     print("drawings with transistors' ends missing (how many each):", dict(short))
     print("causes in the drawings not read exactly:", causes.most_common())
 

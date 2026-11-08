@@ -12,7 +12,9 @@ drafters wrote (hands the label reader never learned from), placed clear of the 
 wavering pen, the paper and ink varied. Each symbol's and letter's box is kept with the netlist (tools/synth_failures.py
 sorts the reader's misses by them).
 
-    python tools/cmos_synth.py --out ~/eg-data/cmos_synth --n 60 [--seed 0]
+    python tools/cmos_synth.py --out ~/eg-data/cmos_synth --n 60 [--seed 0] [--words 0.5]
+        (--words: that share of the supplies and grounds drawn as their names - 'VDD' / '+5V' over a bar or at the
+        wire's end, 'GND' / 'VSS' / '0V' under - as CGHD's test drafters wrote them)
         -> <out>/<name>.png and <out>/<name>.json (the netlist: each transistor's kind and its Gate / Drain / Source
            nodes, the supply as a source to ground; tools/circuit_eval.py --synth <out> measures the reader on them)
 """
@@ -223,6 +225,53 @@ def letters(cghd, rnd, want=("A", "B", "C"), n_each=40, drafters=(1, 5, 10, 15, 
     return out
 
 
+SUPPLY_WORDS, GROUND_WORDS = ("VDD", "VCC", "+5V", "V+", "+12V", "+9V"), ("GND", "VSS", "0V")
+
+
+def words(cghd, rnd, want=SUPPLY_WORDS + GROUND_WORDS, n_each=30, drafters=(1, 5, 10, 15, 20, 25, 30)):
+    """rails' names as CGHD's test drafters wrote them ('VDD', 'GND', '+5V' ...: their text boxes) -> {word: [ink]}"""
+    import glob
+    import xml.etree.ElementTree as ET
+    from PIL import ImageOps
+    from scipy import ndimage as ndi
+    from recog.gates import ink as ink_of
+    out = {w: [] for w in want}
+    xmls = [x for x in glob.glob(os.path.join(cghd, "drafter_*", "annotations", "*.xml"))
+            if int(re.search(r"drafter_(-?\d+)", x).group(1)) in drafters]
+    rnd.shuffle(xmls)
+    for x in xmls:
+        objs = [o for o in ET.parse(x).getroot().findall("object")
+                if o.findtext("name") == "text" and (o.findtext("text") or "").strip() in want]
+        if not objs:
+            continue
+        imgs = glob.glob(os.path.join(os.path.dirname(os.path.dirname(x)), "images", os.path.basename(x)[:-4] + ".*"))
+        if not imgs:
+            continue
+        img = ImageOps.exif_transpose(Image.open(imgs[0])).convert("L")
+        for o in objs:
+            t = o.findtext("text").strip()
+            if len(out[t]) >= n_each:
+                continue
+            b = o.find("bndbox")
+            x0, y0, x1, y1 = (int(float(b.findtext(k))) for k in ("xmin", "ymin", "xmax", "ymax"))
+            if y1 - y0 > x1 - x0:                      # (written turned: not as a rail's name is)
+                continue
+            m = ink_of(img.crop((x0 - 4, y0 - 4, x1 + 4, y1 + 4)))
+            if m.sum() < 40:
+                continue
+            lab, n = ndi.label(m, structure=np.ones((3, 3)))
+            edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+            kept = m & ~np.isin(lab, list(edge))
+            if kept.sum() < 0.8 * m.sum():
+                continue
+            ys, xs = np.nonzero(kept)
+            kept = kept[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+            if kept.mean() > 0.45:
+                continue
+            out[t].append(kept)
+    return {w: v for w, v in out.items() if v}
+
+
 # -- the drawing -------------------------------------------------------------------------------------------------------
 class Page:
     def __init__(self, w, h, rnd):
@@ -389,7 +438,7 @@ class Builder:
                 p.dot(*t)
 
 
-def draw(name, gate, syms, rnd):
+def draw(name, gate, syms, rnd, p_words=0.0):
     pdn = GATES[gate]
     pun = dual(pdn)
     ins = sorted(set(inputs_of(pdn)))
@@ -404,18 +453,26 @@ def draw(name, gate, syms, rnd):
     b = Builder(page, syms, rnd)
     xc = left + OFF                                     # the networks' spine
     # the supply on top, the PMOS network, the output, the NMOS network, the ground
-    vink, vports = rnd.choice(syms["vdd"])
-    vpts, _ = page.stamp(vink, vports, xc, top + 60, rnd.uniform(70, 95), what="voltage_rail")
     y_top = top + 130
-    page.line([vpts["pin"], (xc, y_top)])
+    sup_style = rnd.choice(["bar", "end"]) if p_words and rnd.random() < p_words else "symbol"
+    if sup_style == "symbol":
+        vink, vports = rnd.choice(syms["vdd"])
+        vpts, _ = page.stamp(vink, vports, xc, top + 60, rnd.uniform(70, 95), what="voltage_rail")
+        page.line([vpts["pin"], (xc, y_top)])
+    else:                                               # the supply named: 'VDD' over a bar, or at the wire's end
+        _rail_word(page, rnd, syms, SUPPLY_WORDS, xc, top + 85, y_top, sup_style, above=True)
     y_out = y_top + ph * CELL
     b.y_out = y_out
     b.place(pun, "pmos", left, y_top, "VDD", "Y", (xc, y_top), (xc, y_out))
     y_bot = y_out + nh * CELL
     b.place(pdn, "nmos", left, y_out, "Y", "0", (xc, y_out), (xc, y_bot))
-    gink, gports = rnd.choice(syms["gnd"])
-    gpts, gbox = page.stamp(gink, gports, xc, y_bot + 70, rnd.uniform(70, 95), what="gnd")
-    page.line([(xc, y_bot), gpts["pin"]])
+    gnd_style = rnd.choice(["bar", "end"]) if p_words and rnd.random() < p_words else "symbol"
+    if gnd_style == "symbol":
+        gink, gports = rnd.choice(syms["gnd"])
+        gpts, gbox = page.stamp(gink, gports, xc, y_bot + 70, rnd.uniform(70, 95), what="gnd")
+        page.line([(xc, y_bot), gpts["pin"]])
+    else:
+        _rail_word(page, rnd, syms, GROUND_WORDS, xc, y_bot + 55, y_bot, gnd_style, above=False)
     page.line([(xc, y_out), (left + width * CELLW + 220, y_out)])   # the output, to the right
     if rnd.random() < 0.6:
         page.dot(xc, y_out)
@@ -445,6 +502,22 @@ def draw(name, gate, syms, rnd):
     return img, truth
 
 
+def _rail_word(page, rnd, syms, choices, xc, y_end, y_from, style, above):
+    """a rail drawn as its name: the wire from y_from to y_end, then a short bar across it ('bar') or nothing ('end'),
+    the name beyond it ('VDD' above, 'GND' below)"""
+    have = [w for w in choices if w in syms["words"]]
+    word = rnd.choice(have)
+    ink = rnd.choice(syms["words"][word])
+    page.line([(xc, y_from), (xc, y_end)])
+    if style == "bar":
+        half = rnd.uniform(22, 40)
+        page.line([(xc - half, y_end), (xc + half, y_end)])
+    hgt = rnd.uniform(30, 44)
+    wid = hgt * ink.shape[1] / ink.shape[0]
+    cy = y_end - 10 - hgt / 2 if above else y_end + 10 + hgt / 2
+    page.stamp(ink, {}, xc + rnd.uniform(-8, 8), cy, max(hgt, wid), what=f"word {word}", thicken=False)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--zip", default=os.path.join(HERE, "data", "circuits_raw", "dhcd", "dhcd.zip"))
@@ -452,17 +525,22 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--n", type=int, default=60)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--words", type=float, default=0.0, help="the share of supplies / grounds drawn as their names "
+                    "('VDD' over a bar or at the wire's end, 'GND' under) instead of a symbol")
     a = ap.parse_args()
     rnd = random.Random(a.seed)
     syms = symbols(a.zip, rnd)
     syms["letters"] = letters(a.cghd, rnd)
+    if a.words:
+        syms["words"] = words(a.cghd, rnd)
+        print({k: len(v) for k, v in syms["words"].items()}, flush=True)
     print({k: len(v) for k, v in syms.items() if k != "letters"}, {k: len(v) for k, v in syms["letters"].items()}, flush=True)
     os.makedirs(a.out, exist_ok=True)
     names = list(GATES)
     for k in range(a.n):
         gate = names[k % len(names)]
         name = f"cmos_{k:03d}_{gate}"
-        img, truth = draw(name, gate, syms, random.Random(a.seed * 100003 + k))
+        img, truth = draw(name, gate, syms, random.Random(a.seed * 100003 + k), a.words)
         img.save(os.path.join(a.out, name + ".png"))
         json.dump(truth, open(os.path.join(a.out, name + ".json"), "w"), indent=1)
     print(f"{a.n} drawings -> {a.out}")

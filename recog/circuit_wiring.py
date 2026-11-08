@@ -64,6 +64,9 @@ def _label_kinds(t: str, is_value: bool):
         return _UNIT_KINDS.get(m.group(1), ()) if m else ()
     return _NAME_KINDS.get(t[0].upper(), ())
 _NODE = re.compile(r"^[A-HJ-Za-hj-z]$")
+# a rail named at its wire: the supply ('VDD', 'Vcc', 'V+', '+5V' - a bare '9V' is a battery's value) and the ground
+_SUPPLY = re.compile(r"^(?:V_?\{?(?:DD|CC|dd|cc|Dd|Cc)\}?|V\+|\+\d+(?:[.,]\d+)?\s?V)$")
+_GROUND = re.compile(r"^(?:GND|gnd|Gnd|V_?\{?(?:SS|ss|Ss)\}?|0\s?V)$")
 
 
 def _thin_ink(page: np.ndarray) -> np.ndarray:
@@ -1233,6 +1236,11 @@ def join_named_nodes(net):
         if len(ns) > 1:
             keep = "0" if "0" in ns else sorted(ns)[0]
             ren.update({n: keep for n in ns if n != keep})
+    return rename_nodes(net, ren)
+
+
+def rename_nodes(net, ren: dict):
+    """the netlist's nodes renamed in place (ren: old -> new; two renamed alike are one node) -> net"""
     if not ren:
         return net
     f = lambda n: ren.get(n, n)                        # noqa: E731
@@ -1386,7 +1394,13 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                 pts = _end_points(b, lab, ev, h, w)
                 if pts is None:
                     break
-                d, i, j = min((float(np.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1])), i, j)
+
+                def side(p):
+                    return min((p[0] - b[0], 0), (b[2] - p[0], 1), (p[1] - b[1], 2), (b[3] - p[1], 3))[1]
+                # (two leaving one side - a source's wire and a bus meeting it at the box's corner - one leg the
+                # sooner: a transistor's legs leave by different sides)
+                d, i, j = min((float(np.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1])) *
+                               (0.5 if side(pts[i]) == side(pts[j]) else 1.0), i, j)
                               for i in range(len(ev)) for j in range(i + 1, len(ev)))
                 if d > 0.3 * max(b[2] - b[0], b[3] - b[1]):
                     break
@@ -1599,6 +1613,7 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         netlist.ports_marked = True
         used_texts |= pm[1]
     current_texts = []
+    to_ground = set()                                               # (nodes a 'GND' label names)
     ends_at = None                                                  # (node -> parts' ends on it, when needed)
     for k_text, (tb, text, tconf) in enumerate(texts):              # a label belongs to the nearest component
         t = (text or "").strip()
@@ -1614,6 +1629,34 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
         if _CURRENT.match(t) and not (comp.type == "current_source" and comp.label is None and dist(pb) < 0.5 * max(pb[2] - pb[0], pb[3] - pb[1])):
             current_texts.append(((cx, cy), t, comp))
             continue
+        if (_SUPPLY.match(t) or _GROUND.match(t)) and wire_px.any():
+            # a rail named at its wire (a CMOS gate's 'VDD' over its top line, 'GND' under its bottom one): the
+            # supply a source from that node to ground, the ground node '0'
+            r = int(3 * max(tb[2] - tb[0], tb[3] - tb[1])) + 4
+            y0, x0 = max(0, int(cy) - r), max(0, int(cx) - r)
+            ys, xs = np.nonzero(wire_px[y0:int(cy) + r, x0:int(cx) + r])
+            if len(xs):
+                bx = np.maximum(0, np.maximum(tb[0] - (xs + x0), (xs + x0) - tb[2]))
+                by = np.maximum(0, np.maximum(tb[1] - (ys + y0), (ys + y0) - tb[3]))
+                db = bx.astype(float) ** 2 + by.astype(float) ** 2
+                j = int(np.argmin(db))
+                gap_part = max(0.0, max(pb[0] - tb[2], tb[0] - pb[2], 0) ** 2 + max(pb[1] - tb[3], tb[1] - pb[3], 0) ** 2) ** 0.5
+                # (written by its wire: within most of its own height - a label further off is some other note)
+                near_ = db[j] ** 0.5 < gap_part and db[j] ** 0.5 <= 0.8 * (tb[3] - tb[1])
+                nd = node(int(lab[ys[j] + y0, xs[j] + x0])) if near_ else None
+                if nd is not None:
+                    if _GROUND.match(t):
+                        to_ground.add(nd)
+                    else:
+                        netlist.node_labels[nd] = t
+                        if not any(c.type == "voltage_source" and nd in c.nodes for c in netlist.components):
+                            counter["voltage_source"] = counter.get("voltage_source", 0) + 1
+                            comp_ = Component(f"V{counter['voltage_source']}", "voltage_source", [nd, "0"], label=t,
+                                              value=t.lstrip("+").replace(" ", "") if t[-1:] == "V" and t[:1] != "V" else None)
+                            comp_.plus, comp_.state = nd, "a rail named " + t
+                            netlist.components.append(comp_)
+                            netlist.ground = "0"
+                    continue
         if _NODE.match(t) and wire_px.any():
             size = max(tb[2] - tb[0], tb[3] - tb[1])
             # a letter by a port's terminal names its node (a CMOS gate's input 'A' at the end of the gate's stub:
@@ -1820,6 +1863,9 @@ def netlist_from_boxes(mask: np.ndarray, comps, texts=(), gap: float | None = No
                 netlist.currents.append(Current(t, found[k][1].id, found[k][2], found[k][3]))
                 continue
         netlist.currents.append(Current(t, comp.id, None, None))
+    if to_ground - {"0"}:                                           # (named the ground: one node with it)
+        rename_nodes(netlist, {n: "0" for n in to_ground if n != "0"})
+        netlist.ground = "0"
     join_named_nodes(netlist)
     if return_debug:
         return netlist, {"labels": lab, "stroke_width": sw, "gap": gap, "ends": ends, "arrows": arrows,

@@ -2095,6 +2095,17 @@ def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
         for n, f in net.logic().items():
             if n in net.node_labels:
                 logic[_canon(net.node_labels[n])] = f
+    if any(c.type in ("nmos", "pmos") for c in net.components):     # a CMOS gate drawn with its transistors
+        sw = net.switch_logic()
+        for n, f in sw.items():
+            if n in net.node_labels:
+                logic[_canon(net.node_labels[n])] = f
+        bare = [f for n, f in sw.items() if n not in net.node_labels]
+        if len(sw) == 1 and len(bare) == 1:          # its one output, not named on the drawing: as the answer names it
+            ins = {_canon(str(x)) for x in bare[0].free_symbols}
+            for nm in ("y", "f", "z", "out", "vout", "q"):
+                if nm not in ins:
+                    logic.setdefault(nm, bare[0])
     states = _states(net)
     ac = any(c.ac for c in net.components if c.type in ("voltage_source", "current_source"))
     storage = not ac and any(c.type in ("capacitor", "inductor") for c in net.components)
@@ -2155,7 +2166,10 @@ def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
                 up = lambda e: e.xreplace({x: sp.Symbol(str(x).upper()) for x in e.free_symbols})   # noqa: E731
                 theirs = logic[_canon(texts[0])]
                 ok = not satisfiable(Xor(up(mine), up(theirs)))
-                verdict(ok, f"'{s.text}'" + (": as the gates give" if ok else f": the gates give {texts[0].strip()} = {theirs}"), s)
+                # (an answer in letters the drawing was not read to have - its 'B' read 'T': the reading's doubt)
+                named = {str(x) for x in up(mine).free_symbols} <= {str(x) for x in up(theirs).free_symbols}
+                verdict(ok, f"'{s.text}'" + (": as the gates give" if ok else f": the gates give {texts[0].strip()} = {theirs}"),
+                        s, sure=ok or named)
                 continue
         sp_m = re.fullmatch(r"\s*([A-Za-z](?:\s*_\s*\{?\s*[A-Za-z0-9]+\s*\}?)?)\s*('+)\s*", texts[0])
         if sp_m and len(texts) == 2 and not ac and not storage:

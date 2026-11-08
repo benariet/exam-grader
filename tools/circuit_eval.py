@@ -124,6 +124,12 @@ def main():
         rows.append({"image": name, "transistors": transistors,
                      **{k: c[k] for k in ("components", "extra_components", "topology_exact", "polarity", "legs", "kinds")
                         if k in c}})
+        tf = truth.switch_logic() if any(x.type in ("nmos", "pmos") for x in truth.components) else {}
+        if tf:                                             # a CMOS gate: the Boolean function read, whatever the layout
+            import sympy as sp
+            up = lambda e: e.xreplace({x: sp.Symbol(str(x).upper()) for x in e.free_symbols})   # noqa: E731
+            rf = [up(f) for f in net.switch_logic().values()]
+            rows[-1]["function_right"] = all(any(not sp.satisfiable(sp.Xor(up(f), g)) for g in rf) for f in tf.values())
         if a.details:                                      # (what was read: to sort the failures by their cause)
             rows[-1]["read"] = [(x.id, x.type, x.nodes, x.roles) for x in net.components]
             rows[-1]["labels"] = net.node_labels
@@ -163,6 +169,9 @@ def main():
     tc = out["transistor_circuits"]
     say(f"with transistors or gates: exact netlists {tc['exact_netlists']}/{tc['images']}, legs right {tc['legs_right_of_exact']}, "
         f"kinds right {tc['kinds_right_of_exact']} (of the exact ones)")
+    fr = [r["function_right"] for r in rows_t if "function_right" in r]
+    if fr:
+        say(f"CMOS gates whose Boolean function was read right: {sum(fr)}/{len(fr)}")
 
 
 def picture(page, net, dbg, path, extra=(), true_boxes=()):
