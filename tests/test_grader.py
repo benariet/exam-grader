@@ -2298,6 +2298,37 @@ def test_a_cmos_gate_drawn_with_its_transistors_gives_its_boolean_function():
     assert check_against(circuit_statements("Y = \\overline{A T + C}"), misread)[0].sure
 
 
+def test_a_pass_transistor_network_gives_its_boolean_function():
+    """the course's Moed C 2.1 as its solution draws it: S = A + B + C with four NMOS pass transistors - A passed to X
+    by B', B passed by B (X = A + B), X passed to S by C', C passed by C - no supply, no ground; an input named
+    "B'" (or '~B', '\\bar{B}') is B's complement; X and S get their functions, the inputs none; named as the
+    question names them, the inputs are its letters even where two nodes meet at one"""
+    import sympy as sp
+    from grader.circuit import Component, Netlist
+
+    def q(i, g, d, s_):
+        return Component(i, "nmos", [g, d, s_], roles={"Gate": g, "Drain": d, "Source": s_})
+    A, B, C = sp.symbols("A B C")
+    for bar in ("B'", "~B", "\\bar{B}"):
+        net = Netlist([q("M1", "bn", "x", "a"), q("M2", "b", "x", "b"), q("M3", "cn", "s", "x"), q("M4", "c", "s", "c")],
+                      node_labels={"a": "A", "b": "B", "bn": bar, "c": "C", "cn": "C'"})
+        sw = net.switch_logic()
+        assert set(sw) == {"x", "s"}, (bar, sw)
+        assert not sp.satisfiable(sp.Xor(sw["x"], A | B)) and not sp.satisfiable(sp.Xor(sw["s"], A | B | C))
+    wrong = Netlist([q("M1", "b", "x", "a"), q("M2", "b", "x", "b"), q("M3", "cn", "s", "x"), q("M4", "c", "s", "c")],
+                    node_labels={"a": "A", "b": "B", "c": "C", "cn": "C'"})   # (B for B': X floats when B = 0)
+    assert "x" not in wrong.switch_logic() and wrong.switch_logic(report=True)[1] >= 1
+    named = Netlist([q("M1", "bn", "x", "a"), q("M2", "b", "x", "b"), q("M3", "cn", "s", "x"), q("M4", "c", "s", "c")],
+                    node_labels={"a": "A", "b": "B", "bn": "B'", "c": "C", "cn": "C'", "s": "S"})
+    sw = named.switch_logic(inputs="ABC")
+    assert not sp.satisfiable(sp.Xor(sw["s"], A | B | C))
+    from grader.circuit_check import check_against, circuit_statements      # the answer against the drawing
+    for n_, (tex, verdict, sure) in ((named, ("S = A + B + C", "right", True)), (named, ("S = A B C", "wrong", True)),
+                                     (net, ("S = A + B + C", "right", True)), (net, ("S = A B", "wrong", False))):
+        c, = check_against(circuit_statements(tex), n_)
+        assert (c.verdict, c.sure) == (verdict, sure), (tex, c.verdict, c.sure, c.text)
+
+
 def test_a_cmos_gates_transistor_read_as_the_other_kind_is_turned_with_a_note():
     """an AOI21 whose PMOS on C was read as an NMOS: its network leaves Y on both rails or neither for some inputs;
     turned, it is complementary - taken so, and noted (the student may have drawn it so); a gate complementary as

@@ -2050,6 +2050,7 @@ def _check_valued(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
 def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
     trusted = not net.problems()
     guessed = net.ground is None and bool(net.components)
+    drawn = net                                    # (as drawn: a pass network has no ground to guess for its logic)
     if guessed:                                    # no ground drawn: node voltages from a guessed reference
         from dataclasses import replace
         net = replace(net, ground=_guess_ground(net))
@@ -2091,12 +2092,13 @@ def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
     rlc = {_canon(c.label or c.id) for c in net.components if c.type in ("resistor", "capacitor", "inductor")}
     kcl = _kcl_exprs(net)
     logic = {}                                     # a logic circuit: each gate output's Boolean function, by its name
+    unnamed = []
     if any(c.type in ("and", "or", "not", "nand", "nor", "xor") for c in net.components):
         for n, f in net.logic().items():
             if n in net.node_labels:
                 logic[_canon(net.node_labels[n])] = f
     if any(c.type in ("nmos", "pmos") for c in net.components):     # a CMOS gate drawn with its transistors
-        sw = net.switch_logic()
+        sw = drawn.switch_logic()
         for n, f in sw.items():
             if n in net.node_labels:
                 logic[_canon(net.node_labels[n])] = f
@@ -2106,6 +2108,7 @@ def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
             for nm in ("y", "f", "z", "out", "vout", "q"):
                 if nm not in ins:
                     logic.setdefault(nm, bare[0])
+        unnamed = bare if len(bare) > 1 else []      # (a pass network's nodes, none named: an answer is any of them)
     states = _states(net)
     ac = any(c.ac for c in net.components if c.type in ("voltage_source", "current_source"))
     storage = not ac and any(c.type in ("capacitor", "inductor") for c in net.components)
@@ -2170,6 +2173,18 @@ def _check_against(stmts, net, conf: float = 1.0, problem=0) -> list[Check]:
                 named = {str(x) for x in up(mine).free_symbols} <= {str(x) for x in up(theirs).free_symbols}
                 verdict(ok, f"'{s.text}'" + (": as the gates give" if ok else f": the gates give {texts[0].strip()} = {theirs}"),
                         s, sure=ok or named)
+                continue
+        if unnamed and len(texts) == 2 and re.fullmatch(r"\s*[A-Za-z]\s*", texts[0]) and _canon(texts[0]) not in logic:
+            mine = parse_bool(texts[1])                 # 'S = A + B + C' by a pass network none of whose nodes is
+            ins = {str(x).upper() for f in unnamed for x in f.free_symbols}   # named: right when one node gives it
+            if mine is not None and texts[0].strip().upper() not in ins:
+                from sympy.logic.boolalg import Xor
+                from sympy.logic.inference import satisfiable
+                up = lambda e: e.xreplace({x: sp.Symbol(str(x).upper()) for x in e.free_symbols})   # noqa: E731
+                ok = any(not satisfiable(Xor(up(mine), up(f))) for f in unnamed)
+                verdict(ok, f"'{s.text}'" + (": as the transistors give" if ok else
+                                             ": no node of the drawing gives it (" + "; ".join(str(f) for f in unnamed) + ")"),
+                        s, sure=ok)
                 continue
         sp_m = re.fullmatch(r"\s*([A-Za-z](?:\s*_\s*\{?\s*[A-Za-z0-9]+\s*\}?)?)\s*('+)\s*", texts[0])
         if sp_m and len(texts) == 2 and not ac and not storage:

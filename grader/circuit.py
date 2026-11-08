@@ -109,6 +109,11 @@ class Netlist:
             elif c.type == "transformer" and c.roles and (c.roles.get("P+") == c.roles.get("P-") or
                                                           c.roles.get("S+") == c.roles.get("S-")):
                 out.append(f"{c.id}: a coil's two ends on the same node (shorted)")
+            elif c.type in ("nmos", "pmos") and len(c.nodes) == 3:
+                ends = (c.roles.get("Drain"), c.roles.get("Source")) if c.roles and {"Drain", "Source"} <= set(c.roles) \
+                    else tuple(c.nodes[1:])        # (a gate tied to a channel end is a design - a diode-connected
+                if ends[0] == ends[1]:             #  transistor, B passed by B in pass-transistor logic - not a short)
+                    out.append(f"{c.id}: both ends on the same node (shorted)")
             elif c.type != "transformer" and len(set(c.nodes)) < len(c.nodes):
                 out.append(f"{c.id}: both ends on the same node (shorted)")
             if c.type in ("voltage_source", "current_source", "dependent_voltage_source", "dependent_current_source") \
@@ -925,14 +930,17 @@ class Netlist:
             return memo[n]
         return {n: f(n) for n in driven}
 
-    def switch_logic(self, most_inputs: int = 8, report: bool = False):
-        """a CMOS circuit drawn with its transistors: {node: its Boolean function} for each node a PMOS and an NMOS
-        both drive (a gate's output - the next stage's input too), in the inputs the drawing names (the gates' nodes
-        no transistor drives: a node's letter, else the node). Switch level: an NMOS conducts with its gate at 1, a
-        PMOS at 0; a node joined through conducting transistors to the supply is 1, to ground 0 - a node joined to
-        both or to neither in some row (a short, a floating output: a wrong network) gets no function. The supply:
-        a source's '+' with its other end at ground; none drawn (its arrow missed), the node only PMOS sources reach
-        (only NMOS sources: the ground). report: -> (that, how many outputs got no function)"""
+    def switch_logic(self, most_inputs: int = 8, report: bool = False, inputs=None):
+        """a digital circuit drawn with its transistors - static CMOS, pass-transistor logic, transmission gates:
+        {node: its Boolean function} for each node the transistors drive, in the inputs the drawing names. Switch
+        level: an NMOS conducts with its gate at 1, a PMOS at 0; a node joined through conducting transistors to the
+        supply is 1, to ground 0, to an input that input's value (pass-transistor logic: 'A' passed to X while B' is
+        1) - a node joined to unequal values or to none in some row (a short, a floating node: a wrong network) gets
+        no function. The inputs: the gates' nodes no transistor drives, and the nodes named as inputs - inputs (the
+        names, when the question says them: 'A', 'B', 'C'), else a named node that one other node's transistors
+        reach alone (an input passed on, not a meeting point); "B'" (also '~B', '\\bar{B}') is B's complement. The
+        supply: a source's '+' with its other end at ground; none drawn (its arrow missed), the node only PMOS
+        sources reach (only NMOS sources: the ground). report: -> (that, how many nodes got no function)"""
         from sympy.logic.boolalg import SOPform
         nothing = ({}, 0) if report else {}
         fets, legs = [], {}
@@ -948,6 +956,8 @@ class Netlist:
             if c.roles:
                 legs.setdefault(d, set()).add((c.type, "D"))
                 legs.setdefault(s_, set()).add((c.type, "S"))
+        if not fets:
+            return nothing
         others = {n for c in self.components if c.type not in ("nmos", "pmos") for n in c.nodes}
 
         def only(kind):                              # nodes only that kind's sources reach, nothing else
@@ -956,58 +966,86 @@ class Netlist:
         vdd = {c.plus for c in self.components if c.type == "voltage_source" and c.plus is not None and gnd is not None
                and gnd in c.nodes and c.plus != gnd}
         channel = {n for _, _, d, s_ in fets for n in (d, s_)}
+        gates = {g for _, g, _, _ in fets}
         if gnd is None or gnd not in channel:
             g_ = only("nmos")
             gnd = g_.pop() if len(g_) == 1 else gnd
         if not vdd:
             vdd = only("pmos") - {gnd}
-        if not fets or not vdd or gnd is None:
+        rails = set(vdd) | ({gnd} if gnd is not None else set())
+
+        def var(n):                                  # a node's input: (name, complemented) - or None
+            t = str(self.node_labels.get(n, "")).strip()
+            m = re.fullmatch(r"([A-Za-z])\s*'|[~!\u00ac]\s*([A-Za-z])|\\(?:bar|overline)\{\s*([A-Za-z])\s*\}", t)
+            if m:
+                return (next(x for x in m.groups() if x).upper(), True)
+            return (t.upper(), False) if re.fullmatch(r"[A-Za-z]", t) else None
+        near = {}
+        for _, _, d, s_ in fets:
+            near.setdefault(d, set()).add(s_)
+            near.setdefault(s_, set()).add(d)
+        want = {str(x).upper() for x in inputs} if inputs is not None else None
+        drive = {}                                   # node -> (input name, complemented)
+        for n in (channel | gates) - rails:
+            v = var(n)
+            if n not in channel:                     # a gate's node nothing drives: an input, named or not
+                drive[n] = v or (str(n), False)
+            elif v and (v[0] in want if want is not None else len(near[n] - {n}) == 1):
+                drive[n] = v
+        names = sorted({v[0] for v in drive.values()})
+        if not names or len(names) > most_inputs:
             return nothing
-        inputs = sorted({g for _, g, _, _ in fets if g not in channel and g not in vdd and g != gnd})
-        if not inputs or len(inputs) > most_inputs:
+        free = channel - rails - set(drive)
+        if not free:
             return nothing
-        kinds = {}
-        for t, _, d, s_ in fets:
-            for n in (d, s_):
-                kinds.setdefault(n, set()).add(t)
-        outs = [n for n, k in kinds.items() if k == {"nmos", "pmos"} and n not in vdd and n != gnd]
-        if not outs:
-            return nothing
-        rows = {n: [] for n in outs}
-        for bits in itertools.product((0, 1), repeat=len(inputs)):
-            val = dict(zip(inputs, bits))
-            for n in vdd:
-                val[n] = 1
-            val[gnd] = 0
+        rows = {n: [] for n in free}
+        combos = list(itertools.product((0, 1), repeat=len(names)))
+        for bits in combos:
+            x = dict(zip(names, bits))
+            fixed = {n: x[v] ^ int(neg) for n, (v, neg) in drive.items()}
+            fixed.update({n: 1 for n in vdd})
+            if gnd is not None:
+                fixed[gnd] = 0
+            val = dict(fixed)
             for _ in range(len(fets) + 1):           # (a stage's output drives the next stage's gates: to a fixed point)
                 parent = {}
 
-                def find(a):
-                    while parent.get(a, a) != a:
-                        a = parent[a]
-                    return a
+                def find(a_):
+                    while parent.get(a_, a_) != a_:
+                        a_ = parent[a_]
+                    return a_
                 for t, g, d, s_ in fets:
                     if val.get(g) is not None and val[g] == (1 if t == "nmos" else 0):
                         parent[find(d)] = find(s_)
-                hi = {find(n) for n in vdd}
-                lo = find(gnd)
+                seen = {}
+                for n, v in fixed.items():
+                    if n in channel:
+                        seen.setdefault(find(n), set()).add(v)
                 new = dict(val)
-                for n in channel - vdd - {gnd}:
-                    r = find(n)
-                    new[n] = 1 if r in hi and r != lo else 0 if r == lo and r not in hi else None
+                for n in free:
+                    vs = seen.get(find(n), set())
+                    new[n] = next(iter(vs)) if len(vs) == 1 else None
                 if new == val:
                     break
                 val = new
-            for n in outs:
+            for n in free:
                 rows[n].append(val.get(n))
-        names = [sp.Symbol(self.node_labels.get(n, n)) for n in inputs]
-        combos = list(itertools.product((0, 1), repeat=len(inputs)))
+        syms = [sp.Symbol(v) for v in names]
         out = {}
         for n, r in rows.items():
             if all(v in (0, 1) for v in r):
-                ones = [list(b) for b, v in zip(combos, r) if v == 1]
-                out[n] = SOPform(names, ones) if ones else sp.false
-        return (out, len(rows) - len(out)) if report else out
+                ones = [list(b_) for b_, v in zip(combos, r) if v == 1]
+                out[n] = SOPform(syms, ones) if ones else sp.false
+        # the nodes that must have a function: a CMOS gate's output (both kinds drive it); in a network of one kind
+        # (pass-transistor logic), a node paths from several others meet at (a series stack's inner node may float)
+        kinds_at = {}
+        for t, _, d, s_ in fets:
+            for n in (d, s_):
+                kinds_at.setdefault(n, set()).add(t)
+        one_kind = len({t for t, _, _, _ in fets}) == 1
+        bad = sum(1 for n in rows if n not in out and (kinds_at.get(n) == {"nmos", "pmos"} or
+                                                       one_kind and len(near.get(n, set()) - {n}) >= 3))
+        return (out, bad) if report else out
 
     def resistance_seen(self, a: str, b: str, switches: dict | None = None):
         """the resistance between nodes a and b with the independent sources set to zero (Thevenin's), or None"""
