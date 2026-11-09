@@ -8083,6 +8083,9 @@ def test_a_box_of_words_its_rows_found_and_its_answers_judged_by_keywords():
     assert judge_words(["Half adder"], key)[0] == "wrong"
     assert judge_words(["Half adder", "full adder"], key)[0] == "unsure"
     assert judge_words(["?"], key)[0] == "unsure"
+    import tools.read_crops as R                         # (each kind of piece has its prompt)
+    assert {"math", "words", "boolean"} <= set(R.PROMPTS) and {"words", "boolean"} <= set(R.BOX_PROMPTS)
+    assert "{label}" in R.FINAL_PROMPT and "'Y1 -'" in R.BOX_PROMPTS["words"].format(labels="'Y1 -'", lines="")
     from tools.words_box import judge_row                # (the row's own reading decides; the box's only agrees)
     assert judge_row({"vlm": [["Full adder", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "right"
     assert judge_row({"vlm": [["?", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "unsure"
@@ -8117,3 +8120,51 @@ def test_an_exams_checks_gathered_into_one_report_and_a_class_overview():
         csv_ = open(f"{tmp}/o/summary.csv", encoding="utf-8-sig").read()
         assert "wrong ב" in csv_ and "right ד" in csv_, csv_
         assert "<tr><td><a href='3_report.txt'>3</a></td>" in open(f"{tmp}/o/summary.html", encoding="utf-8").read()
+
+
+def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
+    """tools/value_area.py: the handwriting in the place given on the template, its last number against the key (a
+    share written as a fraction read as a percentage); two readers agreeing decide, else the formula reader's own"""
+    import json
+    import sys
+    import tempfile
+    from PIL import Image, ImageDraw, ImageFont
+    from recog.formula import Candidate
+    from tools import value_area as V
+    assert V.value_of(r"\frac{11.5}{200} \cdot 100 \% = 5.75 \%") == 5.75 and V.value_of("0.0575", True) == 5.75
+    assert V.judge_value({"pix2text": [("5.75 \\%", 0.9)]}, 5.75, 0.03)[0] == "right"
+    assert V.judge_value({"pix2text": [("11.5 \\%", 0.9)]}, 5.75, 0.03)[0] == "wrong"
+    assert V.judge_value({"pix2text": [("11.5 \\%", 0.2)]}, 5.75, 0.03)[0] == "unsure"           # (a weak token)
+    assert V.judge_value({"pix2text": [("\\int", 0.9)], "mumer": [("5.8\\%", 0)], "vlm": [("5.8 %", 0)]}, 5.75, 0.03)[0] == \
+        "right"                                                                                   # (two agree)
+    assert V.judge_value({"pix2text": [("\\int", 0.9)], "vlm": [("8.05%", 0)], "vlmfinal": [("8.05%", 0)]}, 5.75, 0.03)[0] == \
+        "unsure"                                       # (the vision model twice: one reader)
+    assert V.judge_value({"pix2text": [("\\int", 0.9)], "vlmfinal": [("5.75%", 0)]}, 5.75, 0.03)[0] == "right"
+    tpl = Image.new("L", (1240, 1754), 255)
+    d = ImageDraw.Draw(tpl)
+    d.text((510, 1535), "DUTY CYCLE=", fill=0, font=ImageFont.truetype("DejaVuSans-Bold.ttf", 20))
+    d.line([(78, 1610), (1100, 1610)], fill=0, width=3)
+    scan = tpl.copy().convert("RGB")
+    ImageDraw.Draw(scan).text((700, 1532), "5.75%", fill=(40,) * 3, font=ImageFont.truetype("DejaVuSans.ttf", 24))
+
+    class Fake:
+        def __init__(self, *a, **kw):
+            pass
+
+        def recognize(self, img, n_best=3, **kw):
+            return [Candidate("5.75 \\%", -1.0, 0.9)]
+    monkeypatch.setattr("recog.formula.FormulaRecognizer", Fake)
+    with tempfile.TemporaryDirectory() as tmp:
+        __import__("os").makedirs(f"{tmp}/booklet")
+        tpl.save(f"{tmp}/booklet/p1.png")
+        scan.save(f"{tmp}/8.pdf", resolution=150)
+        Image.new("RGB", (1240, 1754), "white").save(f"{tmp}/9.pdf", resolution=150)     # (nothing written)
+        argv = sys.argv
+        sys.argv = ["value_area.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--area", "80,1500,1100,1608",
+                    "--key", "5.75%", "--percent", "--name", "3 duty cycle", "--out", f"{tmp}/out", "--review"]
+        try:
+            V.main()
+        finally:
+            sys.argv = argv
+        assert json.load(open(f"{tmp}/out/8.value.json"))["verdict"] == "right"
+        assert json.load(open(f"{tmp}/out/9.value.json"))["verdict"] == "empty"

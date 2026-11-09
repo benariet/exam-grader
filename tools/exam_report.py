@@ -6,6 +6,7 @@ tools wrote (all on this computer, beside the exams):
     tools/words_box.py     <n>.words.json    + <n>_words_remarks.txt
     tools/choice_marks.py  <n>.choices.json  + <n>_choice_remarks.txt
     tools/circuit_key.py   circuit_key.json  + <n>_circuit_remarks.txt
+    tools/value_area.py    <n>.value.json    + <n>_value_remarks.txt
 
     python tools/exam_report.py --runs "<folder>" "<folder>" ... --out <folder> [--grades grades.xlsx]
         [--sure "2.2=5,2.3=5"]
@@ -26,9 +27,9 @@ from collections import defaultdict
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
-ORDER = ("table", "exprs", "words", "circuit", "choices")
+ORDER = ("table", "exprs", "words", "circuit", "choices", "value")
 REMARKS = {"table": "_table_remarks.txt", "exprs": "_expr_remarks.txt", "words": "_words_remarks.txt",
-           "circuit": "_circuit_remarks.txt", "choices": "_choice_remarks.txt"}
+           "circuit": "_circuit_remarks.txt", "choices": "_choice_remarks.txt", "value": "_value_remarks.txt"}
 
 
 def collect(folders):
@@ -47,6 +48,9 @@ def collect(folders):
         for f in glob.glob(os.path.join(d, "*.choices.json")):
             r = json.load(open(f, encoding="utf-8"))
             summ[r["exam"]]["choices"] = {x["item"]: (x["verdict"], x.get("chosen", "")) for x in r["items"]}
+        for f in glob.glob(os.path.join(d, "*.value.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            summ[r["exam"]]["value"] = {os.path.basename(d.rstrip("/\\")): r["verdict"]}
         key = os.path.join(d, "circuit_key.json")
         if os.path.isfile(key):
             for q, rows in json.load(open(key, encoding="utf-8")).items():
@@ -93,7 +97,7 @@ def main():
     os.makedirs(a.out, exist_ok=True)
     exams = sorted(set(summ) | set(rem), key=lambda n: int(re.sub(r"\D", "", n) or 0))
     titles = {"table": "שאלה 1(א) - טבלת האמת", "exprs": "שאלה 1(א) - הביטויים", "words": "שאלה 1(ב)",
-              "circuit": "שאלה 2.1 - המעגל", "choices": "שאלות אמריקאיות"}
+              "circuit": "שאלה 2.1 - המעגל", "choices": "שאלות אמריקאיות", "value": "ערך סופי"}
     for n in exams:
         lines = [f"מבחן {n} - בדיקה אוטומטית (לעיון המרצה; כל 'לבדיקה ידנית' לא נבדק)", ""]
         for part in ORDER:

@@ -17,9 +17,6 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 BOX_PROMPTS = {
-    "words": ("This image is one handwritten line from an exam answer, in Hebrew or English (a word or a few - maybe a "
-              "name of a circuit component, or a short phrase). Write exactly what is written, in its own language, "
-              "and nothing else. If something cannot be read, write ? in its place - do not guess."),
     "boolean": ("This image is a box from a digital logic exam with printed labels, {labels}, each followed by a "
                 "student's handwritten Boolean expression (the writing may run out of the box). Write the expressions, "
                 "each on its own line as {lines}, in LaTeX: variables A, B, C, V_x; OR written +; AND as letters side "
@@ -30,7 +27,13 @@ BOX_PROMPTS = {
               "in its own language, each on its own line as {lines}. Where something cannot be read write ? - do not "
               "guess."),
 }
+FINAL_PROMPT = ("This image is part of an exam page: a printed label '{label}' and a student's handwritten answer, "
+                "maybe with its working. Write only the final value the student gave for it, with its unit if one is "
+                "written (for example 12.5%). If no final value is written, write ?.")
 PROMPTS = {
+    "math": ("This image is handwriting from an engineering exam: a short calculation or a final value. Write it in "
+             "LaTeX exactly as written, on one line, and nothing else. If something cannot be read, write ? in its "
+             "place - do not guess."),
     "words": ("This image is one handwritten line from an exam answer, in Hebrew or English (a word or a few - maybe a "
               "name of a circuit component, or a short phrase). Write exactly what is written, in its own language, "
               "and nothing else. If something cannot be read, write ? in its place - do not guess."),
@@ -79,6 +82,7 @@ def main():
     ap.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     ap.add_argument("--n-best", type=int, default=3)
     ap.add_argument("--labels", default="Vx,Y1,Y2", help="a whole box's printed labels, top to bottom")
+    ap.add_argument("--label-text", default="", help="a value's printed label, for the final-value question")
     ap.add_argument("--sep", default="", help="what follows each label in print ('=' for expressions, '-' for words)")
     a = ap.parse_args()
     from PIL import Image
@@ -104,6 +108,12 @@ def main():
         for f in files:
             key = os.path.basename(f)[:-4]
             try:
+                if key.endswith("_valuebox"):          # (a value's place with its label: the final value asked for)
+                    if reader == "vlm":
+                        c = rd.recognize(Image.open(f).convert("RGB"), n_best=1, max_new_tokens=40,
+                                         prompt=FINAL_PROMPT.format(label=a.label_text))[0]
+                        out.setdefault(key[:-len("box")], {})["vlmfinal"] = [[c.text, float(c.logp)]]
+                    continue
                 if key.endswith("_box"):               # (a whole box: its rows read together, by the vision model)
                     if reader != "vlm":
                         continue
