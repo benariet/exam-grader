@@ -25,6 +25,16 @@ Answer with JSON only, in this form:
  "ground": "n0", "node_labels": {"n2": "A"},
  "currents": [{"label": "I1", "through": "R1", "from": "n1", "to": "n2"}]}"""
 
+PROMPT_TRANSISTORS = """This is a hand-drawn digital circuit made of MOSFET transistors (pass-transistor logic, transmission gates or static CMOS). A transistor is drawn as a raised step in a wire (its channel, with an end on each side) with a bar over or under it (its gate, with a short wire to a letter or to another node); a P-channel transistor has a small circle on its gate. Some drawings use the textbook symbol with an arrow instead.
+
+Read it as a netlist:
+- A node is a set of wire points joined by wires only, with no transistor in between. Name the nodes n0, n1, n2, ...
+- A letter written at a node or at the free end of a wire names that node: put it in node_labels. A letter with a bar over it or a prime after it is a complement: write it with a prime, like "B'". A supply (VDD, an arrow or a T on top) is named "VDD", a ground "GND".
+- For every transistor: "type" nmos or pmos, "gate" its gate's node, "ends" the two nodes its channel joins.
+
+Answer with JSON only, in this form:
+{"transistors": [{"id": "M1", "type": "nmos", "gate": "n3", "ends": ["n1", "n2"]}], "node_labels": {"n1": "A", "n3": "B'", "n2": "S"}}"""
+
 PROMPT_DESCRIBE = ("Describe this hand-drawn electrical circuit: every component with the name written next to it, "
                    "what each end of it is connected to, the sources' polarity, the ground, and every current arrow "
                    "with its name and direction.")
@@ -58,6 +68,34 @@ class CircuitReader:
         if isinstance(img, str):
             img = Image.open(img)
         return self.vlm.recognize(img.convert("RGB"), n_best=1, max_new_tokens=max_new_tokens, prompt=prompt)[0].text
+
+    def read_transistors(self, img, max_new_tokens: int = 700):
+        """a transistor network's drawing (already cut out) -> (Netlist of nmos / pmos with Gate / Drain / Source, the
+        supply a source from 'VDD' to ground, 'GND' the ground; the model's answer)"""
+        from grader.circuit import Component, Netlist, parse_json
+        raw = self.ask(img, PROMPT_TRANSISTORS, max_new_tokens=max_new_tokens)
+        try:
+            d = parse_json(raw) or {}
+        except Exception:                              # noqa: BLE001  (no JSON in the answer: nothing read)
+            return Netlist(), raw
+        labels = {str(k): str(v) for k, v in (d.get("node_labels") or {}).items() if v}
+        rails = {n: str(t).strip().upper() for n, t in labels.items() if str(t).strip().upper() in ("VDD", "GND", "VSS", "0")}
+        gnd = next((n for n, t in rails.items() if t != "VDD"), None)
+        comps = []
+        for k, t in enumerate(d.get("transistors") or []):
+            g, ends = t.get("gate"), [str(e) for e in (t.get("ends") or []) if e is not None]
+            kind = "pmos" if str(t.get("type", "")).lower().startswith("p") else "nmos"
+            if g is None or len(ends) != 2:
+                continue
+            nodes = [str(g)] + ends
+            nodes = ["0" if n == gnd else n for n in nodes]
+            comps.append(Component(str(t.get("id") or f"M{k + 1}"), kind, nodes,
+                                   roles={"Gate": nodes[0], "Drain": nodes[1], "Source": nodes[2]}))
+        vdd = [n for n, t in rails.items() if t == "VDD"]
+        if vdd and gnd is not None:
+            comps.append(Component("VDD", "voltage_source", [vdd[0], "0"], plus=vdd[0]))
+        labels = {("0" if n == gnd else n): t for n, t in labels.items() if n not in rails}
+        return Netlist(comps, ground="0" if gnd is not None else None, node_labels=labels), raw
 
     def read(self, img, crop: bool = True):
         from grader.circuit import Netlist

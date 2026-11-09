@@ -124,7 +124,10 @@ def find_circuits(img, reader):
     small = scale_to(img.convert("RGB"), LONG_SIDE)
     s = LONG_SIDE / max(img.size)
     found = reader.detector(small)
-    parts = [b for c, b, _ in found if c != "text"]
+    # (the seeds: parts a drawing is made of - not a terminal's circle, a crossing, a dot, which handwriting is full of:
+    # 9.11, the exams' question 2 - Boolean algebra round the drawing, its '+' boxed as crossings, its 'o' as
+    # terminals - grew each drawing's region over most of the page)
+    parts = [b for c, b, _ in found if c not in ("text", "terminal", "crossover", "junction")]
     if len(parts) < CIRCUIT_MIN_PARTS:
         return []
     mask = reader.strokes(small) if reader.strokes else classical(small)
@@ -149,9 +152,10 @@ def find_circuits(img, reader):
         if len(inside) < CIRCUIT_MIN_PARTS:
             continue
         near = 0.03 * LONG_SIDE                         # its labels: text boxes touching the region, or close by (a
-        for c, (a, b, cc, d), _ in found:               # CMOS gate's input letter a little past its gate's stub)
-            if c == "text" and a < x1 + near and cc > x0 - near and b < y1 + near and d > y0 - near:
-                x0, y0, x1, y1 = min(x0, a), min(y0, b), max(x1, cc), max(y1, d)
+        rx0, ry0, rx1, ry1 = x0, y0, x1, y1             # CMOS gate's input letter a little past its gate's stub) - by
+        for c, (a, b, cc, d), _ in found:               # the drawing itself, not by the labels taken (a line of
+            if c == "text" and a < rx1 + near and cc > rx0 - near and b < ry1 + near and d > ry0 - near:   # writing
+                x0, y0, x1, y1 = min(x0, a), min(y0, b), max(x1, cc), max(y1, d)                          # beside)
         out.append(tuple(int(round(v / s)) for v in (x0, y0, x1, y1)))
     return out
 
@@ -161,17 +165,48 @@ ZOOM_TO = 150          # a drawing whose parts come out smaller than this (pixel
 #                        about 50 - 90 pixels long - half the size the detector and the wiring are at home with)
 
 
+def _core(parts, size, bx):
+    """the biggest cluster of the parts (each within 2.5 parts' sizes of another), grown by a part's size round it,
+    inside the region bx - when smaller than the region -> (x0, y0, x1, y1) or None"""
+    groups = [[b] for b in parts]
+    gap = 2.5 * size
+    merged = True
+    while merged:
+        merged = False
+        for i in range(len(groups)):
+            for j in range(i + 1, len(groups)):
+                if any(a[0] - gap <= b[2] and b[0] - gap <= a[2] and a[1] - gap <= b[3] and b[1] - gap <= a[3]
+                       for a in groups[i] for b in groups[j]):
+                    groups[i] += groups.pop(j)
+                    merged = True
+                    break
+            if merged:
+                break
+    g = max(groups, key=len)
+    if len(g) < CIRCUIT_MIN_PARTS:
+        return None
+    m = 1.0 * size
+    core = (max(bx[0], int(min(b[0] for b in g) - m)), max(bx[1], int(min(b[1] for b in g) - m)),
+            min(bx[2], int(max(b[2] for b in g) + m)), min(bx[3], int(max(b[3] for b in g) + m)))
+    area = lambda b: (b[2] - b[0]) * (b[3] - b[1])     # noqa: E731
+    return core if area(core) < 0.8 * area(bx) else None
+
+
 def _zoomed(img, crop, bx, found, reader, zoom_to):
     """the drawing read again enlarged: pasted at the middle of a canvas of the page's shape but z times smaller (the
     reader brings it to its own size: the drawing comes out z times bigger, nothing stretched), z bringing its
     parts' middle size to zoom_to -> (net, found in page coordinates) or None (no need, or no room)"""
     from recog.circuit_reader import LONG_SIDE
-    parts = [b for c, b, _ in found if c not in ("text", "crossover", "junction")]
+    parts = [b for c, b, _ in found if c not in ("text", "crossover", "junction", "terminal")]
     if not parts:
         return None
-    med = float(np.median([max(b[2] - b[0], b[3] - b[1]) for b in parts])) * LONG_SIDE / max(img.size)
+    size = float(np.median([max(b[2] - b[0], b[3] - b[1]) for b in parts]))
+    med = size * LONG_SIDE / max(img.size)
     if med >= 0.75 * zoom_to:
         return None
+    core = _core(parts, size, bx)                      # (the parts' own cluster, a part's size round it - not the
+    if core is not None:                               #  writing the region took in beside it: 9.11, regions most of
+        crop, bx = img.crop(core), core                #  the page wide left no room to enlarge)
     cw, ch = crop.size                                 # (room round it: a drawing filling its canvas to the edges
     z = min(2.5, zoom_to / max(med, 1.0), 0.85 * img.width / max(cw, 1), 0.85 * img.height / max(ch, 1))   # reads worse)
     if z < 1.25:

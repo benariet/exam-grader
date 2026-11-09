@@ -7718,3 +7718,98 @@ def test_a_pass_networks_input_letter_boxed_as_a_supply_is_read_as_the_letter():
     assert rails_as_letters(net, dbg, None, comps, [], wire, lambda b: ("T", 0.9), "ABCS")[4] == []
     cmos = Netlist(net.components + [Component("P1", "pmos", ["g", "a", "y"])])
     assert rails_as_letters(cmos, dbg, None, comps, [], wire, lambda b: ("A", 0.9), "ABCS")[4] == []
+
+
+def test_a_drawings_region_is_not_grown_over_the_writing_round_it():
+    """a page of Boolean algebra with a two-transistor drawing in it (9.11, the exams' question 2): the '+' signs boxed
+    as crossings and the 'o's as terminals seed no drawing, and the labels taken are the ones by the drawing - not a
+    chain of words running on from them across the page"""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from read_page import find_circuits
+    img = Image.new("RGB", (1240, 1754), (255, 255, 255))
+    d = ImageDraw.Draw(img)
+    d.line([(300, 400), (500, 400)], fill=(0, 0, 0), width=4)            # the drawing: a wire joining two transistors
+    d.rectangle((260, 380, 300, 420), outline=(0, 0, 0), width=4)
+    d.rectangle((500, 380, 540, 420), outline=(0, 0, 0), width=4)
+    s = 1600 / 1754
+
+    class Reader:
+        strokes = None
+
+        def detector(self, small):
+            S = lambda *b: tuple(v * s for v in b)                       # noqa: E731
+            out = [("fet", S(255, 375, 305, 425), 0.9), ("fet", S(495, 375, 545, 425), 0.9),
+                   ("text", S(230, 330, 260, 360), 0.9)]                 # (a letter by the drawing)
+            out += [("text", S(260 + 60 * k, 300 - 0 * k, 310 + 60 * k, 330), 0.9) for k in range(1, 14)]   # a line of
+            out += [("crossover", S(100 + 70 * k, 900, 115 + 70 * k, 915), 0.6) for k in range(12)]       # writing; its
+            out += [("terminal", S(120 + 70 * k, 1000, 134 + 70 * k, 1014), 0.6) for k in range(12)]      # '+'s, 'o's
+            return out
+    regions = find_circuits(img, Reader())
+    assert len(regions) == 1, regions
+    x0, y0, x1, y1 = regions[0]
+    assert x0 <= 260 and x1 >= 540 and y1 < 600 and x1 - x0 < 500, regions      # (the drawing, the letter by it)
+
+
+def test_a_small_drawing_in_a_wide_region_is_enlarged_round_its_parts():
+    """the region found took in writing beside the drawing (most of the page wide - no room to enlarge it): the
+    enlarged reading is of the parts' own cluster, a part's size round it - the writing left out"""
+    import numpy as np
+    from PIL import Image, ImageDraw
+    from grader.circuit import Component, Netlist
+    from read_page import read_circuits
+    page = Image.new("RGB", (1240, 1754), (250, 250, 250))
+    d = ImageDraw.Draw(page)
+    d.rectangle((300, 800, 340, 820), fill=(0, 0, 0))          # two small parts
+    d.rectangle((400, 800, 440, 820), fill=(0, 0, 0))
+    d.rectangle((1000, 780, 1100, 840), fill=(0, 0, 0))        # writing far to the right, in the same region
+    seen = []
+
+    class Reader:
+        def read(self, img):
+            seen.append(img)
+            a = np.asarray(img.convert("L")) < 128
+            lab = __import__("scipy.ndimage", fromlist=["label"]).label(a)[0]
+            from scipy import ndimage as ndi
+            boxes = [(sl[1].start, sl[0].start, sl[1].stop, sl[0].stop) for sl in ndi.find_objects(lab)]
+            net = Netlist([Component("R1", "resistor", ["a", "b"]), Component("R2", "resistor", ["b", "0"])], ground="0")
+            return net, [("resistor", b, 0.9) for b in boxes if b[2] - b[0] <= 60] + \
+                [("text", b, 0.9) for b in boxes if b[2] - b[0] > 60]
+    res, = read_circuits(page, [(290, 770, 1110, 850)], Reader())
+    assert len(seen) == 2
+    big = np.asarray(seen[1].convert("L")) < 128
+    from scipy import ndimage as ndi
+    assert ndi.label(big)[1] == 2                              # (the two parts; the writing not on the canvas)
+    assert sorted(b for c, b, _ in res["found"]) == [(300, 800, 341, 821), (400, 800, 441, 821)], res["found"]
+
+
+def test_a_transistor_network_read_by_the_vision_model():
+    """recog.circuit_vlm's transistor prompt's answer (JSON: transistors with their gate and channel ends, the
+    letters at the nodes) made a netlist: Moed C 2.1's network gives S = A + B + C; 'VDD' / 'GND' as rails; an
+    answer with no JSON, nothing"""
+    import sympy as sp
+    from recog.circuit_vlm import CircuitReader
+
+    class Fake(CircuitReader):
+        def __init__(self, answer):
+            self.answer = answer
+
+        def ask(self, img, prompt, max_new_tokens=900):
+            assert "transistor" in prompt
+            return self.answer
+    ans = ('Here: {"transistors": [{"id": "M1", "type": "nmos", "gate": "n1", "ends": ["n2", "n3"]}, '
+           '{"id": "M2", "type": "nmos", "gate": "n4", "ends": ["n4", "n3"]}, '
+           '{"id": "M3", "type": "nmos", "gate": "n5", "ends": ["n3", "n6"]}, '
+           '{"id": "M4", "type": "nmos", "gate": "n7", "ends": ["n7", "n6"]}], '
+           '"node_labels": {"n1": "B\'", "n2": "A", "n4": "B", "n5": "C\'", "n7": "C", "n6": "S"}}')
+    net, raw = Fake(ans).read_transistors(None)
+    A, B, C = sp.symbols("A B C")
+    f = net.switch_logic(inputs="ABC")
+    assert not sp.satisfiable(sp.Xor(f["n6"], A | B | C)), f
+    inv = ('{"transistors": [{"type": "pmos", "gate": "a", "ends": ["v", "y"]}, {"type": "nmos", "gate": "a", "ends": '
+           '["y", "g"]}], "node_labels": {"a": "A", "v": "VDD", "g": "GND"}}')
+    net, _ = Fake(inv).read_transistors(None)
+    assert net.ground == "0" and any(c.type == "voltage_source" for c in net.components)
+    (n, fy), = net.switch_logic().items()
+    assert not sp.satisfiable(sp.Xor(fy, ~A))
+    assert Fake("I cannot read this.").read_transistors(None)[0].components == []
