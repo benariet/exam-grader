@@ -123,7 +123,9 @@ def main():
                        "other": "המעגל שצויר (כפי שנקרא) נותן פונקציה אחרת: " +
                                 "; ".join(f"{n} = {f}" for n, f in r["functions"].items()) + " - לבדיקה ידנית.",
                        "none": "המעגל שצויר נקרא, אך לא נמצאה בו פונקציה לוגית (צומת צף או קצר בחלק מהמצבים, או קריאה "
-                               "שגויה) - לבדיקה ידנית.",
+                               "שגויה) - לבדיקה ידנית" + (f"; זוהו בו {r['transistors']} טרנזיסטורים"
+                                                         + (f" (בפתרון {k['fewest']})" if k.get("fewest") else "")
+                                                         if r["transistors"] else "") + ".",
                        "no drawing": "לא נמצא מעגל טרנזיסטורים מצויר בדפי השאלה - לבדיקה ידנית."}[r["verdict"]]
                 remarks.setdefault(r["exam"], []).append(f"שאלה {q} - מעגל: {txt}")
     for name, lines in remarks.items():
