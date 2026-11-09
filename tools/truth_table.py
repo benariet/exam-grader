@@ -24,6 +24,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 SURE = 0.6              # a reading less likely than this: unsure (left to a human)
+ALIASES = {"1": "17", "0": "06"}   # a cell of 0s and 1s: a '7' is a '1' written with a flag, a '6' a '0' with a tail
 MIN_INK = 25            # handwriting pixels: fewer, an empty cell
 
 
@@ -147,17 +148,22 @@ def read_cells(page, ink, template, cells, want, reader, alphabet="01"):
             owners.append((key, k, n_ink))
     if crops:
         probs = reader.probs(crops)
-        idx = [reader.classes.index(ch) for ch in alphabet]
+        # (each value with the digits a hand writes it like: a '1' with a flag reads '7', a '0' with a tail '6')
+        idx = [[reader.classes.index(x) for x in ALIASES.get(ch, ch)] for ch in alphabet]
+        own = [reader.classes.index(ch) for ch in alphabet]
         best = {}
         for (key, k, n_ink), p in zip(owners, probs):
-            q = p[idx]
+            q = np.array([p[ix].sum() for ix in idx])
             if key in best and best[key][3] >= 0.5:
                 continue                               # (a character of the alphabet before: that one)
             mass = float(q.sum())                      # (how much it looks like one of them at all)
             j = int(np.argmax(q))
             sure = float(q[j] / mass) if mass > 0 else 0.0
+            v = alphabet[j] if mass >= 0.5 else "?"
+            if v != "?" and p[own[j]] < 0.5 * q[j]:
+                v += "~"                               # (read through a look-alike: '7' for a '1' - no sure wrong)
             if key not in best or mass > best[key][3]:
-                best[key] = (alphabet[j] if mass >= 0.5 else "?", sure * min(1.0, mass / 0.5), n_ink, mass)
+                best[key] = (v, sure * min(1.0, mass / 0.5), n_ink, mass)
         for key, (v, sure, n_ink, _) in best.items():
             out[key] = (v, sure, n_ink)
     return out
@@ -248,8 +254,10 @@ def main():
         for r, row in enumerate(key):
             for c, want_v in zip(cols, row):
                 v, p, n_ink = got[(r + 1, c)]
-                verdict = "empty" if v == "" else "unsure" if p < SURE or v not in "01" else \
-                    "right" if v == want_v else "wrong"
+                alike = v.endswith("~")                # (read through a look-alike digit: right when as the key,
+                v = v.rstrip("~")                      #  else left to a human)
+                verdict = "empty" if v == "" else "unsure" if p < SURE or v not in ("0", "1") else \
+                    "right" if v == want_v else "unsure" if alike else "wrong"
                 res[verdict] += 1
                 cells_out.append({"row": r + 1, "col": c, "read": v, "p": round(p, 3), "verdict": verdict, "key": want_v})
                 if verdict == "wrong":
