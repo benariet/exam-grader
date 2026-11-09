@@ -462,11 +462,12 @@ def rails_as_letters(net, dbg, mask, comps, texts, wire, read_label, letters: st
 _LETTER = re.compile(r"^\s*([A-Za-z])\s*[,.'`1lI|]?\s*$")
 
 
-def complement_mark(small, box) -> str | None:
+def complement_mark(small, box, text: str | None = None) -> str | None:
     """a letter written with its complement's mark - a bar over it, or "'" at its top right ('B\'') - as students
     write an input's complement by a pass transistor's gate: the letter's ink and the strokes around it (each a piece
-    of its own, none running out of the look - a wire does): 'bar' / 'prime' / None. The label reader has no such
-    mark among its characters ('B\'' reads 'B', 'B,')"""
+    of its own, none running out of the look - a wire does): 'bar' / 'prime' / None. A mark touching the letter (a
+    thick pen, a drawing enlarged) is looked for again with the strokes thinned, which parts them. The label reader
+    has no such mark among its characters ('B\'' reads 'B', 'B,')"""
     from scipy import ndimage as ndi
     from .gates import ink as ink_of
     x0, y0, x1, y1 = box
@@ -476,6 +477,62 @@ def complement_mark(small, box) -> str | None:
     cx0, cy0 = max(0, int(x0 - 0.3 * bh)), max(0, int(y0 - 0.6 * bh))
     cx1, cy1 = min(small.width, int(x1 + 0.7 * bh)), min(small.height, int(y1 + 0.2 * bh))
     m = ink_of(small.crop((cx0, cy0, cx1, cy1)))
+    bx = [x0 - cx0, y0 - cy0, x1 - cx0, y1 - cy0]
+    got = _mark_in(m, bx)
+    if got is None and m.any():
+        lab, _ = ndi.label(m, structure=np.ones((3, 3)))   # (the wires running out of the look gone first: thinned,
+        edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}   # a bus over the
+        own = m & ~np.isin(lab, sorted(edge))              # letter breaks into pieces that look like a bar - 9.11)
+        dt = ndi.distance_transform_edt(own)
+        sw = 2 * float(np.percentile(dt[own], 75)) if own.any() else 0.0
+        if sw >= 3:                                    # (thinned by about a third of the pen)
+            thin = ndi.binary_erosion(own, iterations=max(1, int(round(0.3 * sw))))
+            got = _mark_in(thin, bx) if thin.sum() > 0.25 * own.sum() else None
+    if got is None and m.any() and not (text and text in "bdfhklt"):   # (an ascender on the right: 'd' - no "'")
+        got = _glued_prime(m, bx)
+    return got
+
+
+def _glued_prime(m, bx) -> str | None:
+    """a "'" written on to the letter's own stroke (one piece with it): a narrow spike at the letter's right rising
+    over the top its left part keeps -> 'prime' or None"""
+    from scipy import ndimage as ndi
+    lab, n = ndi.label(m, structure=np.ones((3, 3)))
+    if not n:
+        return None
+    ids = [k for k, sl in enumerate(ndi.find_objects(lab), 1)
+           if sl[1].start < bx[2] and sl[1].stop > bx[0] and sl[0].start < bx[3] and sl[0].stop > bx[1]]
+    if not ids:
+        return None
+    k = max(ids, key=lambda i: int((lab == i).sum()))
+    piece = lab == k
+    ys, xs = np.nonzero(piece)
+    if ys.min() == 0 or xs.min() == 0 or ys.max() >= m.shape[0] - 1 or xs.max() >= m.shape[1] - 1:
+        return None                                    # (a wire through it)
+    x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
+    lw, lh = x1 - x0, y1 - y0
+    if lw < 6 or lh < 8:
+        return None
+    tops = np.array([ys[xs == x].min() if (xs == x).any() else y1 for x in range(x0, x1)])
+    left = tops[: max(1, int(0.55 * lw))]
+    t0 = float(np.median(left))
+    right = np.arange(int(0.55 * lw), lw)
+    spike = right[tops[right] < t0 - 0.12 * lh]
+    if not len(spike):
+        return None
+    width = spike.max() - spike.min() + 1
+    contiguous = width == len(spike) or len(spike) >= 0.7 * width
+    rise = t0 - tops[spike].min()
+    low_right = xs[ys >= y0 + 0.4 * lh].max() - x0      # (past the letter's own right edge below: a 'C's rising end,
+    if contiguous and width <= 0.35 * lw and rise >= 0.15 * lh and spike.min() >= 0.6 * lw and \
+            spike.max() > low_right + 0.04 * lw:       #  an 'A's leg overshooting at the top, are not)
+        return "prime"
+    return None
+
+
+def _mark_in(m, bx) -> str | None:
+    """complement_mark's look at the ink m (bool) round the letter's box bx"""
+    from scipy import ndimage as ndi
     lab, n = ndi.label(m, structure=np.ones((3, 3)))
     if not n:
         return None
@@ -489,11 +546,10 @@ def complement_mark(small, box) -> str | None:
         pieces.append([a, b, c, d, size])
     if not pieces:
         return None
-    bx = [x0 - cx0, y0 - cy0, x1 - cx0, y1 - cy0]      # the letter: the biggest piece in the box, and the pieces
     inside = [p for p in pieces if p[0] < bx[2] and p[2] > bx[0] and p[1] < bx[3] and p[3] > bx[1]]
-    if not inside:
-        return None
-    body = list(max(inside, key=lambda p: p[4])[:4])   # over it (two strokes of one letter)
+    if not inside:                                     # the letter: the biggest piece in the box, and the pieces
+        return None                                    # over it (two strokes of one letter)
+    body = list(max(inside, key=lambda p: p[4])[:4])
     rest = [p for p in pieces if p[:4] != body]
     grown = True
     while grown:
@@ -525,7 +581,7 @@ def with_complements(small, boxes, reads):
     out = []
     for b, (t, conf) in zip(boxes, reads):
         m = _LETTER.match(t or "")
-        out.append((m.group(1) + "'", conf) if m and complement_mark(small, b) else (t, conf))
+        out.append((m.group(1) + "'", conf) if m and complement_mark(small, b, m.group(1)) else (t, conf))
     return out
 
 

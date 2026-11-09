@@ -7498,6 +7498,39 @@ def test_a_letters_complement_mark_is_read():
         img, box = page(**kw)
         assert complement_mark(img, box) is None, kw
         assert with_complements(img, [box], [("B", 0.9)]) == [("B", 0.9)]
+    for mark in ("prime", "bar"):                     # a thick pen: the mark touching the letter at a point
+        img = Image.new("RGB", (400, 300), (240, 240, 240))
+        d = ImageDraw.Draw(img)
+        x, y, h = 150, 120, 60
+        d.line([(x, y), (x, y + h)], fill=(20, 20, 20), width=9)
+        d.arc((x - 20, y, x + 30, y + h / 2), 270, 90, fill=(20, 20, 20), width=9)
+        d.arc((x - 20, y + h / 2, x + 36, y + h), 270, 90, fill=(20, 20, 20), width=9)
+        if mark == "prime":
+            d.line([(x + 47, y - 6), (x + 40, y + 16)], fill=(20, 20, 20), width=9)
+        else:
+            d.line([(x - 6, y - 11), (x + 40, y - 11)], fill=(20, 20, 20), width=9)
+        box = (x - 6, y - 4, x + 40, y + h + 4)
+        assert complement_mark(img, box) == mark, mark
+    img = Image.new("RGB", (400, 300), (240, 240, 240))  # a "'" written on to the letter's own stroke: one piece
+    d = ImageDraw.Draw(img)
+    x, y, h = 150, 120, 60
+    d.line([(x, y), (x, y + h)], fill=(20, 20, 20), width=9)
+    d.arc((x - 20, y, x + 30, y + h / 2), 270, 90, fill=(20, 20, 20), width=9)
+    d.arc((x - 20, y + h / 2, x + 36, y + h), 270, 90, fill=(20, 20, 20), width=9)
+    d.line([(x + 33, y + 8), (x + 46, y - 12)], fill=(20, 20, 20), width=6)
+    assert complement_mark(img, (x - 6, y - 4, x + 40, y + h + 4)) == "prime"
+    from PIL import ImageFont                           # (plain letters: none; a 'd's ascender is no "'")
+    try:
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", 60)
+    except OSError:
+        font = None
+    if font is not None:
+        for ch in "ABCDEFGHJKLMNOPQRSTUVWXYZbdc":
+            img = Image.new("RGB", (200, 160), (240, 240, 240))
+            d = ImageDraw.Draw(img)
+            d.text((60, 40), ch, fill=(20, 20, 20), font=font)
+            b_ = d.textbbox((60, 40), ch, font=font)
+            assert complement_mark(img, (b_[0] - 2, b_[1] - 2, b_[2] + 2, b_[3] + 2), ch) is None, ch
     img, box = page("prime")
     assert with_complements(img, [box], [("AB", 0.9)]) == [("AB", 0.9)]      # (two letters, no complement: as read)
     assert with_complements(img, [box], [("B,", 0.9)]) == [("B'", 0.9)]      # (its mark read as a comma)
@@ -7639,7 +7672,7 @@ def test_exam_circuits_are_read_and_saved(tmp_path, monkeypatch):
     pages[0].save(tmp_path / "7_checked.pdf")
 
     class Stub:
-        def __init__(self, **kw):
+        def __init__(self, *a, **kw):
             pass
     net = Netlist([Component("M1", "nmos", ["g", "d", "s"], roles={"Gate": "g", "Drain": "d", "Source": "s"})],
                   node_labels={"g": "B'"})
