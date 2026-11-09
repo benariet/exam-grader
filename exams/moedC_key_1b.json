@@ -1,0 +1,8 @@
+{
+ "Function": {"right": ["full\\s*-?\\s*add", "מחבר\\s*מלא", "מסכם\\s*מלא", "מחבר\\s*שלם", "\\bF\\.?\\s*A\\b"],
+              "wrong": ["half\\s*-?\\s*add", "חצי", "mux|multiplex|מרבב", "decod|מפענח", "subtract|מחסר", "compar|משווה", "latch|flip|דלגלג"]},
+ "Y1": {"right": ["\\bsum\\b", "סכום", "\\bS\\b", "Σ|\\\\Sigma"],
+        "wrong": ["carry", "נשא", "c\\s*_?\\s*\\{?\\s*out", "\\bcout\\b"]},
+ "Y2": {"right": ["carry", "נשא", "c\\s*_?\\s*\\{?\\s*out", "\\bcout\\b", "\\bC\\s*_?\\s*\\{?\\s*o\\s*\\}?\\b", "העבר"],
+        "wrong": ["\\bsum\\b", "סכום"]}
+}

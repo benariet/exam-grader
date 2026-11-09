@@ -1,0 +1,150 @@
+{
+ "about": "Introduction to digital circuits (361.1.3021), Moed C 2025-26: the structured parts' keys, from the official solution",
+ "exams": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/Stud exam/Stud_exam",
+ "booklet": "booklet/moedC",
+ "grades": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grades_moed C.xlsx",
+ "out": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/moedC_auto",
+ "server": {
+  "host": "bgu",
+  "runs": "eg-runs/expr",
+  "sbatch": "eg-runs/expr/exprread.sbatch"
+ },
+ "parts": [
+  {
+   "name": "table_q1a",
+   "tool": "truth_table",
+   "args": {
+    "page": 5,
+    "cols": "2,4,5",
+    "key": "000;010;110;101;110;101;001;011",
+    "question": 1,
+    "second": true,
+    "strengths": "0W\\S,0W\\S,0S;0W\\S,1W\\S,0S;1S,1S,0W\\S;1S,0S,1S;1S,1S,0W\\S;1S,0S,1S;0S,0W\\S,1W\\S;0S,1W\\S,1W\\S",
+    "review": true
+   }
+  },
+  {
+   "name": "exprs_q1a",
+   "tool": "expr_box",
+   "args": {
+    "page": 5,
+    "key": "Vx = A ⊕ B; Y1 = A ⊕ B ⊕ C; Y2 = AB + AC + BC",
+    "question": 1,
+    "table": "{out}/table_q1a",
+    "table_cols": "Vx=2,Y1=4,Y2=5",
+    "review": true
+   },
+   "server": {
+    "readers": "mumer,vlm",
+    "prompt": "boolean",
+    "labels": "Vx|Y1|Y2"
+   }
+  },
+  {
+   "name": "words_q1b",
+   "tool": "words_box",
+   "args": {
+    "page": 7,
+    "rows": "Function,Y1,Y2",
+    "key": "exams/moedC_key_1b.json",
+    "question": 1,
+    "review": true
+   },
+   "server": {
+    "readers": "vlm",
+    "prompt": "words",
+    "labels": "Function|Y1|Y2"
+   }
+  },
+  {
+   "name": "value_q1e",
+   "tool": "value_area",
+   "args": {
+    "page": 11,
+    "area": "115,308,1112,1588",
+    "key": "70 ns",
+    "tol": 0.1,
+    "no_local": true,
+    "name": "שאלה 1(ה) - זמן ההשהיה",
+    "question": 1
+   },
+   "server": {
+    "readers": "vlm",
+    "prompt": "math",
+    "files": "*_valuebox.png",
+    "label_text": "the delay time t_pHL of output Y2 in the last transition"
+   }
+  },
+  {
+   "name": "value_q1f",
+   "tool": "value_area",
+   "args": {
+    "page": 13,
+    "area": "101,312,1094,1595",
+    "key": "0 J",
+    "no_local": true,
+    "name": "שאלה 1(ו) - האנרגיה מ-VDD",
+    "question": 1
+   },
+   "server": {
+    "readers": "vlm",
+    "prompt": "math",
+    "files": "*_valuebox.png",
+    "label_text": "the dynamic energy drawn from the supply V_DD during the transition"
+   }
+  },
+  {
+   "name": "circuits_q2",
+   "tool": "read_exam_circuits",
+   "args": {
+    "pages": "15-15",
+    "letters": "ABCS",
+    "inputs": "ABC",
+    "detector": "models/circuit-detector-r50tch"
+   }
+  },
+  {
+   "name": "circuit_key_q2",
+   "tool": "circuit_key",
+   "args": {
+    "circuits": "{out}/circuits_q2",
+    "key": "exams/moedC_key_2_1.json",
+    "remarks": true,
+    "pages": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/pages.json"
+   }
+  },
+  {
+   "name": "choices_q2",
+   "tool": "choice_marks",
+   "args": {
+    "item": [
+     "2.2:17:1,1,1,1,1,1:ג",
+     "2.3:19:2,2,2,2,2,2:ד"
+    ],
+    "question": 2,
+    "review": true
+   }
+  },
+  {
+   "name": "value_q3",
+   "tool": "value_area",
+   "args": {
+    "page": 25,
+    "area": "80,1500,1100,1608",
+    "key": "5.75%",
+    "percent": true,
+    "name": "שאלה 3 - Duty Cycle",
+    "question": 3,
+    "review": true
+   },
+   "server": {
+    "readers": "mumer,vlm",
+    "prompt": "math",
+    "label_text": "the DUTY CICLE printed at the bottom"
+   }
+  }
+ ],
+ "report": {
+  "sure": "2.2=5,2.3=5"
+ }
+}

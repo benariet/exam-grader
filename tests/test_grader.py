@@ -8201,3 +8201,22 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
             sys.argv = argv
         assert json.load(open(f"{tmp}/out/8.value.json"))["verdict"] == "right"
         assert json.load(open(f"{tmp}/out/9.value.json"))["verdict"] == "empty"
+
+
+def test_an_exams_structured_checks_run_from_its_config(tmp_path):
+    """tools/run_exam.py --dry-run on the course's config (exams/moedC.json): each part's command, the tool's own
+    options; a part with the GPU readers cut first, read on the server, the server's copies deleted, then judged with
+    the readings; the circuit's judging given the folder another part wrote; the report over every part's folder"""
+    import subprocess
+    import sys
+    out = subprocess.run([sys.executable, "tools/run_exam.py", "exams/moedC.json", "--dry-run"], capture_output=True,
+                         text=True, check=True).stdout
+    lines = out.splitlines()
+    assert sum(1 for x in lines if x.startswith("== ")) == 10, out             # (9 parts and the report)
+    assert any("expr_box.py" in x and "--crops-only" in x for x in lines)
+    i = next(k for k, x in enumerate(lines) if "rm -rf eg-runs/expr/exprs_q1a" in x)
+    assert "--second" in lines[i + 1] and "readings.json" in lines[i + 1]       # (deleted there, then judged here)
+    assert any("words_box.py" in x and "--readings" in x for x in lines)
+    assert any("circuit_key.py" in x and "moedC_auto/circuits_q2" in x and "--pages" in x for x in lines)
+    rep = next(x for x in lines if "exam_report.py" in x)
+    assert "--sure 2.2=5,2.3=5" in rep and "circuits_q2" in rep and "choices_q2" in rep
