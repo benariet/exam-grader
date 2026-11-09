@@ -7984,6 +7984,9 @@ def test_the_answer_boxs_expressions_are_found_read_and_judged(monkeypatch):
     assert E.second_opinion(alone, {"vlm": [c(r"A \oplus B")]}, k["Vx"], {}, table=xor)["verdict"] == "unsure"
     assert E.second_opinion(alone, {"vlm": [c(r"A \oplus B")], "vlmbox": [c(r"A \oplus B")]}, k["Vx"], {})["verdict"] \
         == "unsure"                                    # (the vision model twice: one reader)
+    v = E.second_opinion(alone, {"mumer": [c("A+B")], "mumer@0.75": [c(r"A \oplus B")], "mumer@1.33": [c(r"A \oplus B")],
+                                 "vlm": [c(r"A \oplus B")]}, k["Vx"], {})
+    assert v["verdict"] == "right" and v["agreed"] == ["mumer", "vlm"], v       # (most of a reader's views)
     two = E.second_opinion(p2t, {"mumer": [c(r"A \oplus B")], "vlm": [c(r"\overline{A} B + A \overline{B}")]}, k["Vx"], {})
     assert two["verdict"] == "right" and two["agreed"] == ["mumer", "vlm"], two
     one = E.second_opinion({**p2t, "verdict": "wrong"}, {"vlm": [c(r"A \oplus B")]}, k["Vx"], {})

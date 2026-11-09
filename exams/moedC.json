@@ -37,7 +37,8 @@
    "server": {
     "readers": "mumer,vlm",
     "prompt": "boolean",
-    "labels": "Vx|Y1|Y2"
+    "labels": "Vx|Y1|Y2",
+    "views": "1|0.75|1.33"
    }
   },
   {

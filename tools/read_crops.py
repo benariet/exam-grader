@@ -81,6 +81,8 @@ def main():
     ap.add_argument("--prompt", default="boolean")
     ap.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     ap.add_argument("--n-best", type=int, default=3)
+    ap.add_argument("--views", default="", help="each piece read at these scales too: '1|0.75|1.33' (readers "
+                    "'mumer@0.75' ...; '|' - Slurm's --export splits at commas)")
     ap.add_argument("--labels", default="Vx,Y1,Y2", help="a whole box's printed labels, top to bottom")
     ap.add_argument("--label-text", default="", help="what a value's place asks for, for the final-value question "
                     "('_' for spaces: Slurm's --export): \"the_DUTY_CICLE_printed_at_the_bottom\"")
@@ -89,7 +91,7 @@ def main():
     from PIL import Image
     files = sorted(glob.glob(os.path.join(a.folder, "*.png")))
     out = json.load(open(a.out, encoding="utf-8")) if os.path.isfile(a.out) else {}
-    for reader in a.readers.split(","):
+    for reader in [r for r in re.split(r"[,|]", a.readers) if r]:      # ('|' for Slurm's --export)
         t0 = time.time()
         if reader == "mumer":
             from recog.mumer import MumerReader
@@ -106,6 +108,7 @@ def main():
         print(f"{reader} ready in {time.time() - t0:.0f} s", flush=True)
         t1 = time.time()
         sep = a.sep or ("=" if a.prompt == "boolean" else "-")
+        views = [float(x) for x in re.split(r"[,;|:]", a.views) if x] if a.views else [1.0]   # (a '|' for Slurm)
         for f in files:
             key = os.path.basename(f)[:-4]
             try:
@@ -129,8 +132,13 @@ def main():
                         for name, expr in box_rows(text, labels):
                             out.setdefault(f"{exam}_{name}", {})["vlmbox"] = [[expr, float(logp)]]
                     continue
-                cands = read(Image.open(f).convert("RGB"))
-                out.setdefault(key, {})[reader] = [[c.text, float(c.logp)] for c in cands]
+                img = Image.open(f).convert("RGB")
+                for v in views:                        # (the piece at other scales too: a reading most views give
+                    im = img if v == 1 else img.resize((max(8, round(img.width * v)), max(8, round(img.height * v))),
+                                                       Image.BICUBIC)               # is likelier read right)
+                    cands = read(im)
+                    out.setdefault(key, {})[reader if v == 1 else f"{reader}@{v:g}"] = \
+                        [[c.text, float(c.logp)] for c in cands]
             except Exception as e:                     # noqa: BLE001  (one piece: the rest read)
                 print(f"{key}: {type(e).__name__}: {e}", flush=True)
         print(f"{reader}: {len(files)} pieces in {time.time() - t1:.0f} s", flush=True)

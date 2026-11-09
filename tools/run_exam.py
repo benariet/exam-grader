@@ -10,7 +10,8 @@ The config (JSON):
      "server": {"host": "bgu", "runs": "eg-runs/expr", "sbatch": "eg-runs/expr/exprread.sbatch"} (optional),
      "parts": [{"name": "table_q1a", "tool": "truth_table", "args": {"page": 5, "cols": "2,4,5", ...}},
                {"name": "exprs_q1a", "tool": "expr_box", "args": {...},
-                "server": {"readers": "mumer,vlm", "prompt": "boolean", "labels": "Vx|Y1|Y2"}}, ...],
+                "server": {"readers": "mumer,vlm", "prompt": "boolean", "labels": "Vx|Y1|Y2", "views": "1|0.75|1.33"}},
+               ...],
      "report": {"sure": "2.2=5,2.3=5"}}
 A part's args are the tool's own options ('table_cols' -> --table-cols; true -> the flag; a list -> the option
 again for each); "{out}" in a value is the results' folder. A part with "server": its pieces cut first
@@ -71,12 +72,15 @@ def server_read(part, crops, cfg, dry):
         extra += f" --labels {sp['labels']}"
     if sp.get("label_text"):
         extra += f" --label-text {sp['label_text'].replace(' ', '_')}"
+    if sp.get("views"):
+        extra += f" --views {sp['views'].replace(',', '|')}"
     run(["ssh", host, f"mkdir -p {remote}"], dry)
     run(["scp", "-q"] + files + [f"{host}:{remote}/"], dry)
     out = f"{runs}/{name}_readings.json"
+    readers = sp.get("readers", "mumer,vlm").replace(",", "|")    # (no commas in a value: --export splits at them)
+    export = f"ALL,IN=$HOME/{remote},OUT=$HOME/{out},READERS={readers},EXTRA={extra}"
     job = ["ssh", host, "export SLURM_CONF=/etc/slurm/slurm.conf PATH=/opt/slurm/bin:$PATH; cd " + runs + " && sbatch "
-           f"--parsable --export=ALL,IN=$HOME/{remote},OUT=$HOME/{out},READERS={sp.get('readers', 'mumer,vlm')},"
-           f"EXTRA=\"{extra}\" $HOME/{srv['sbatch']}"]
+           f"--parsable --export=\"{export}\" $HOME/{srv['sbatch']}"]
     print("  $ " + " ".join(job), flush=True)
     if not dry:
         jid = subprocess.run(job, check=True, capture_output=True, text=True).stdout.strip().split(";")[0]

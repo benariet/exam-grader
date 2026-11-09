@@ -423,10 +423,14 @@ def second_opinion(res, extra, want, env, inputs="ABC", table=None):
     got = parsed_functions(p2t, env, inputs)
     if got:
         tops.append(("pix2text", got[0][0].text, got[0][1]))
+    views = {}                                         # (a reader at several scales: the function most views give)
     for name, cands in (extra or {}).items():
         got = parsed_functions(cands, env, inputs)
         if got:
-            tops.append((name, got[0][0].text, got[0][1]))
+            views.setdefault(name.split("@")[0], []).append((name, got[0][0].text, got[0][1]))
+    for name, vs in views.items():
+        best = max(vs, key=lambda v: (sum(1 for w in vs if same(w[2], v[2])), v[0] == name))
+        tops.append((name, best[1], best[2]))
     out = dict(res)
     out["readers"] = {n: t for n, t, _ in tops}
     groups = []
