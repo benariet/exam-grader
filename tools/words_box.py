@@ -9,7 +9,8 @@ each row's writing cut out (and the whole box, its labels with it):
     (server)  python tools/read_crops.py <dir> --out readings.json --readers vlm --prompt words --labels Function,Y1,Y2
     python tools/words_box.py "<exams' PDFs>" --booklet booklet/moedC --page 7 --rows Function,Y1,Y2 \\
         --readings readings.json --key key.json --out <folder> [--grades ... --question 1] [--review]
-        key.json: {"Function": {"right": ["full\\\\s*adder", "מחבר\\\\s*מלא"], "wrong": ["half\\\\s*adder"]}, ...}
+        key.json: {"Function": {"right": ["full\\\\s*adder", "מחבר\\\\s*מלא"], "right_fuzzy": ["full adder"],
+                                "wrong": ["half\\\\s*adder"]}, ...}   (right_fuzzy: words a letter off still count)
         -> per row right (a reading names the solution's), wrong (readings name another, none the solution's), unsure;
            <out>/<n>.words.json and <n>_words_remarks.txt (Hebrew)
 """
@@ -26,13 +27,35 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 
+def _dl(a: str, b: str) -> int:
+    """the Damerau-Levenshtein distance (a swap of two letters one edit)"""
+    d = [[i + j if i * j == 0 else 0 for j in range(len(b) + 1)] for i in range(len(a) + 1)]
+    for i in range(1, len(a) + 1):
+        for j in range(1, len(b) + 1):
+            d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] != b[j - 1]))
+            if i > 1 and j > 1 and a[i - 1] == b[j - 2] and a[i - 2] == b[j - 1]:
+                d[i][j] = min(d[i][j], d[i - 2][j - 2] + 1)
+    return d[-1][-1]
+
+
+def fuzzy_hit(text: str, phrase: str) -> bool:
+    """the phrase's words, one after another, in the text, each a letter off at most (words of 4 letters or more -
+    'curry', 'caryy' for 'carry'; a shorter one as written)"""
+    toks = [t.lower() for t in re.findall(r"[A-Za-z\u0590-\u05ff]+", text)]
+    words = phrase.lower().split()
+    ok = lambda t, w: t == w or (len(w) >= 4 and _dl(t, w) <= 1)       # noqa: E731
+    return any(all(ok(toks[i + k], w) for k, w in enumerate(words)) for i in range(len(toks) - len(words) + 1))
+
+
 def judge_words(texts, key):
     """the readers' readings of a row [str] and the row's key {'right': [regex], 'wrong': [regex]} -> (verdict, the
     reading that decided): right when a reading names the solution's (and none names a wrong one alone), wrong when
     readings name a wrong one and none the solution's, else unsure"""
     rx = lambda pats: [re.compile(p, re.I) for p in pats]          # noqa: E731
     good, bad = rx(key.get("right", [])), rx(key.get("wrong", []))
-    hits_good = [t for t in texts if t and any(p.search(t) for p in good)]
+    hits_good = [t for t in texts if t and (any(p.search(t) for p in good) or
+                                         any(fuzzy_hit(t, f) for f in key.get("right_fuzzy", [])))]   # (misspelt or
+    #                                                                                       misread a letter: still it)
     hits_bad = [t for t in texts if t and any(p.search(t) for p in bad) and not any(p.search(t) for p in good)]
     if hits_good and not hits_bad:
         return "right", hits_good[0]

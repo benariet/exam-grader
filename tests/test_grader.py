@@ -8108,6 +8108,8 @@ def test_a_box_of_words_its_rows_found_and_its_answers_judged_by_keywords():
     assert judge_words(["Half adder"], key)[0] == "wrong"
     assert judge_words(["Half adder", "full adder"], key)[0] == "unsure"
     assert judge_words(["?"], key)[0] == "unsure"
+    assert judge_words(["Ful adder"], {**key, "right_fuzzy": ["full adder"]})[0] == "right"   # (a letter off)
+    assert judge_words(["header"], {**key, "right_fuzzy": ["full adder"]})[0] == "unsure"
     import tools.read_crops as R                         # (each kind of piece has its prompt)
     assert {"math", "words", "boolean"} <= set(R.PROMPTS) and {"words", "boolean"} <= set(R.BOX_PROMPTS)
     assert "{label}" in R.FINAL_PROMPT and "'Y1 -'" in R.BOX_PROMPTS["words"].format(labels="'Y1 -'", lines="")
