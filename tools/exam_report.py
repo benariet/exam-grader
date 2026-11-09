@@ -145,7 +145,8 @@ def details(folders, sure):
                     read = (f"{r['transistors']} טרנזיסטורים" if r.get("transistors") else "") + (f"; {funcs}" if funcs else "")
                     rem = os.path.join(d, f"{n}_circuit_remarks.txt")
                     why = open(rem, encoding="utf-8").read().strip().split(":", 1)[-1].strip() if os.path.isfile(rem) else ""
-                    out[n].append((f"{q}.1 המעגל", read, HEB.get(r["verdict"], r["verdict"]), "", why))
+                    v = {"none": "לבדיקה ידנית", "other": "פונקציה אחרת", "no drawing": "אין ציור"}.get(r["verdict"])
+                    out[n].append((f"{q}.1 המעגל", read, v or HEB.get(r["verdict"], r["verdict"]), "", why))
     order = lambda t: (_q(t[0]) or 99, t[0])           # noqa: E731
     return {n: sorted(v, key=order) for n, v in out.items()}
 
