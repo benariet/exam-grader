@@ -10,9 +10,12 @@ tools wrote (all on this computer, beside the exams):
 
     python tools/exam_report.py --runs "<folder>" "<folder>" ... --out <folder> [--grades grades.xlsx]
         [--sure "2.2=5,2.3=5"]
+        [--xlsx]
         -> <out>/<n>_report.txt (every remark of the exam, in Hebrew, part by part), <out>/summary.csv and
            <out>/summary.html (an exam a row: each part's verdicts; the points surely off - a multiple-choice letter
-           wrong where the question is all or nothing (--sure) - beside the lecturer's)
+           wrong where the question is all or nothing (--sure) - beside the lecturer's); with --xlsx
+           <out>/by_exam.xlsx: every exam question by question - what was read, the verdict, the points it settles
+           (only a multiple-choice letter, all or nothing), why, and what the lecturer took off the question
 """
 import argparse
 import csv
@@ -63,6 +66,146 @@ def collect(folders):
     return summ, rem
 
 
+HEB = {"right": "נכון", "wrong": "שגוי", "unsure": "לבדיקה ידנית", "unclear": "לא ברור", "none": "לא סומן",
+       "empty": "ריק", "other": "פונקציה אחרת", "no drawing": "אין ציור"}
+
+
+def _q(label: str):
+    """'1(א) ...' / '2.2' / 'שאלה 3 - ...' -> the question's number"""
+    m = re.search(r"(\d+)", label)
+    return int(m.group(1)) if m else None
+
+
+def details(folders, sure):
+    """{exam: [(question label, what was read, verdict (Hebrew), points settled, why)]} from the tools' outputs - each
+    exam's questions part by part, as the per-exam workbook shows them"""
+    out = defaultdict(list)
+    for d in folders:
+        for f in glob.glob(os.path.join(d, "*.table.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            n = r["exam"]
+            rem = os.path.join(d, f"{n}_table_remarks.txt")
+            lines = open(rem, encoding="utf-8").read().splitlines()[1:] if os.path.isfile(rem) else []
+            read = f"{r['right']} תאים נכונים, {r['wrong']} שגויים, {r['unsure']} לא נקראו בוודאות, {r['empty']} ריקים"
+            if r.get("strength"):
+                read += f"; חוזק שונה מהפתרון ב-{r['strength']} תאים"
+            verdict = "שגוי" if r["wrong"] else "לבדיקה ידנית" if r["unsure"] or r["empty"] or r.get("strength") else "נכון"
+            why = " ".join(x.strip() for x in lines if x.strip()) or ("כל התאים שנקראו כמו בפתרון" if not r["wrong"] else "")
+            out[n].append(("1(א) טבלת האמת", read, verdict, "", why))
+        for f in glob.glob(os.path.join(d, "*.exprs.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            for x in r["rows"]:
+                agreed = "+".join(x.get("agreed") or [])
+                why = {"right": "הפונקציה שנקראה שקולה לפתרון",
+                       "wrong": f"נקראה פונקציה אחרת ({x.get('function') or ''})",
+                       "unsure": "הקוראים לא הסכימו על פונקציה אחת, או שלא נקרא בוודאות",
+                       "empty": "לא נמצא כתב בשורה"}.get(x["verdict"], "")
+                if agreed:
+                    why += f"; קוראים שהסכימו: {agreed}"
+                if x.get("matches_table") is False:
+                    why += "; לא תואם לעמודה בטבלת האמת של הסטודנט"
+                out[r["exam"]].append((f"1(א) ביטוי {x['name']}", x.get("read") or "", HEB.get(x["verdict"], x["verdict"]),
+                                       "", why))
+        for f in glob.glob(os.path.join(d, "*.words.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            for x in r["rows"]:
+                why = {"right": "נכתבה התשובה שבפתרון (נקראה בשורה עצמה)",
+                       "wrong": "נכתבה תשובה אחרת מזו שבפתרון",
+                       "unsure": "קריאת השורה לא הכריעה (או שקריאת התיבה כולה לא הסכימה איתה)",
+                       "empty": "לא נמצא כתב בשורה"}.get(x["verdict"], "")
+                out[r["exam"]].append((f"1(ב) {x['name']}", x.get("read") or "", HEB.get(x["verdict"], x["verdict"]),
+                                       "", why))
+        for f in glob.glob(os.path.join(d, "*.choices.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            for x in r["items"]:
+                pts = sure.get(x["item"])
+                points = "" if pts is None else (f"0 מתוך {pts:g} (ודאי)" if x["verdict"] == "wrong" else
+                                                 f"{pts:g} מתוך {pts:g} אם ההסבר נכון" if x["verdict"] == "right" else "")
+                why = {"right": f"סומנה האות שבפתרון ({x.get('answer', '')}); ההסבר לא נבדק",
+                       "wrong": f"סומנה {x.get('chosen', '')}, בפתרון {x.get('answer', '')}; התשובה הכול או כלום",
+                       "none": "לא נמצא סימון על התשובות (אולי נכתבה בתיבה)",
+                       "unclear": "סומנו כמה תשובות במידה דומה (אולי שינוי תשובה)"}.get(x["verdict"], "")
+                read = (f"סומנה {x['chosen']}" if x.get("chosen") else "") + \
+                    (f" (מוקפת: {', '.join(x['circled'])})" if x.get("circled") else "")
+                out[r["exam"]].append((f"{x['item']} אמריקאית", read, HEB.get(x["verdict"], x["verdict"]), points, why))
+        for f in glob.glob(os.path.join(d, "*.value.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            n = r["exam"]
+            rem = os.path.join(d, f"{n}_value_remarks.txt")
+            text = open(rem, encoding="utf-8").read().strip() if os.path.isfile(rem) else ""
+            label = r.get("name") or (text.split(":")[0] if ":" in text else os.path.basename(d.rstrip("/\\")))
+            read = "" if r.get("value") is None else f"{r['value']:g}"
+            out[n].append((label, read, HEB.get(r["verdict"], r["verdict"]), "", text.split(":", 1)[-1].strip()))
+        key = os.path.join(d, "circuit_key.json")
+        if os.path.isfile(key):
+            for q, rows in json.load(open(key, encoding="utf-8")).items():
+                for r in rows:
+                    n = r["exam"]
+                    funcs = "; ".join(f"{k} = {v}" for k, v in (r.get("functions") or {}).items())
+                    read = (f"{r['transistors']} טרנזיסטורים" if r.get("transistors") else "") + (f"; {funcs}" if funcs else "")
+                    rem = os.path.join(d, f"{n}_circuit_remarks.txt")
+                    why = open(rem, encoding="utf-8").read().strip().split(":", 1)[-1].strip() if os.path.isfile(rem) else ""
+                    out[n].append((f"{q}.1 המעגל", read, HEB.get(r["verdict"], r["verdict"]), "", why))
+    order = lambda t: (_q(t[0]) or 99, t[0])           # noqa: E731
+    return {n: sorted(v, key=order) for n, v in out.items()}
+
+
+def write_xlsx(path, det, marks, title):
+    """the per-exam workbook: every exam's questions in one sheet (to sort and filter), and a sheet per exam"""
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    F = "Arial"
+    thin = Side(style="thin", color="BFBFBF")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    head = (Font(name=F, bold=True, color="FFFFFF"), PatternFill("solid", fgColor="1F3864"))
+    fills = {"נכון": "E2EFDA", "שגוי": "FCE4D6", "פונקציה אחרת": "FCE4D6", "לבדיקה ידנית": "FFF2CC",
+             "לא ברור": "FFF2CC", "ריק": "EDEDED", "לא סומן": "EDEDED", "אין ציור": "EDEDED"}
+    cols = ["מבחן", "שאלה / סעיף", "מה נקרא", "פסק", "ניקוד שנקבע אוטומטית", "למה", "המרצה הוריד בשאלה כולה"]
+    widths = [8, 24, 44, 14, 22, 70, 14]
+    exams = sorted(det, key=lambda n: int(re.sub(r"\D", "", n) or 0))
+    wb = Workbook()
+
+    def sheet(ws, rows, with_exam):
+        ws.sheet_view.rightToLeft = True
+        ws["A1"] = title
+        ws["A1"].font = Font(name=F, bold=True, size=13)
+        ws["A2"] = ("הבדיקה האוטומטית נותנת פסק לכל סעיף; ניקוד נקבע רק לתשובה אמריקאית (הכול או כלום). "
+                    "'לבדיקה ידנית' = לא נבדק. עמודת המרצה: הנקודות שירדו בשאלה כולה, לא בסעיף.")
+        ws["A2"].font = Font(name=F, italic=True, size=9, color="595959")
+        hs = cols if with_exam else cols[1:]
+        for j, h in enumerate(hs, 1):
+            c = ws.cell(row=4, column=j, value=h)
+            c.font, c.fill, c.border = head[0], head[1], border
+            c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        for i, row in enumerate(rows):
+            vals = row if with_exam else row[1:]
+            for j, v in enumerate(vals, 1):
+                c = ws.cell(row=5 + i, column=j, value=v)
+                c.font, c.border = Font(name=F, size=10), border
+                c.alignment = Alignment(horizontal="right", vertical="top", wrap_text=True)
+            vcol = 4 if with_exam else 3
+            fill = fills.get(vals[vcol - 1])
+            if fill:
+                ws.cell(row=5 + i, column=vcol).fill = PatternFill("solid", fgColor=fill)
+        for j, w in enumerate(widths if with_exam else widths[1:], 1):
+            ws.column_dimensions[chr(64 + j)].width = w
+        ws.freeze_panes = "A5"
+        if rows:
+            ws.auto_filter.ref = f"A4:{chr(64 + len(hs))}{4 + len(rows)}"
+
+    every = []
+    for n in exams:
+        for q, read, verdict, points, why in det[n]:
+            off = (marks.get(n) or {}).get(_q(q))
+            every.append((n, q, read, verdict, points, why, "" if off is None else off))
+    ws = wb.active
+    ws.title = "כל המבחנים"
+    sheet(ws, every, True)
+    for n in exams:
+        sheet(wb.create_sheet(f"מבחן {n}"[:31]), [r for r in every if r[0] == n], True)
+    wb.save(path)
+
+
 def sure_off(s, sure):
     """the points surely off: each multiple-choice item answered with another letter, where it is all or nothing"""
     return sum(pts for item, pts in sure.items() if s.get("choices", {}).get(item, ("",))[0] == "wrong")
@@ -87,6 +230,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--grades", default="")
     ap.add_argument("--sure", default="", help="multiple-choice items all or nothing, and their points: '2.2=5,2.3=5'")
+    ap.add_argument("--xlsx", action="store_true", help="<out>/by_exam.xlsx: every exam question by question")
+    ap.add_argument("--title", default="בדיקה אוטומטית - כל מבחן, שאלה אחר שאלה")
     a = ap.parse_args()
     summ, rem = collect(a.runs)
     sure = {k.strip(): float(v) for k, v in (x.split("=") for x in a.sure.split(",") if "=" in x)}
@@ -148,6 +293,10 @@ def main():
         "<p>ירוק: נכון. אדום: שגוי. כתום: לבדיקה ידנית. בעמודות הטבלה: מספר התאים. לחיצה על מספר המבחן: כל ההערות.</p>"
         f"<table><tr><th>מבחן</th>{head}" + ("<th>ירדו בוודאות</th>" if sure else "") +
         ("<th>המרצה הוריד (סה\"כ)</th>" if marks else "") + "</tr>" + "\n".join(body) + "</table></html>")
+    if a.xlsx:
+        det = details(a.runs, sure)
+        write_xlsx(os.path.join(a.out, "by_exam.xlsx"), det, marks, a.title)
+        print(f"by_exam.xlsx: {len(det)} exams, {sum(len(v) for v in det.values())} rows")
     print(f"{len(exams)} exams -> {a.out}")
 
 

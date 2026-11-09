@@ -8145,7 +8145,7 @@ def test_an_exams_checks_gathered_into_one_report_and_a_class_overview():
             open(f"{tmp}/{d}/3_value_remarks.txt", "w", encoding="utf-8").write(f"ערך {d}\n")
         argv = sys.argv
         sys.argv = ["exam_report.py", "--runs", f"{tmp}/t", f"{tmp}/c", f"{tmp}/v1", f"{tmp}/v2", "--out", f"{tmp}/o",
-                    "--sure", "2.2=5,2.3=5"]
+                    "--sure", "2.2=5,2.3=5", "--xlsx"]
         try:
             exam_report.main()
         finally:
@@ -8155,6 +8155,11 @@ def test_an_exams_checks_gathered_into_one_report_and_a_class_overview():
         csv_ = open(f"{tmp}/o/summary.csv", encoding="utf-8-sig").read()
         assert "wrong ב" in csv_ and "right ד" in csv_ and "value:v1" in csv_ and "value:v2" in csv_, csv_
         assert "ערך v1" in rep and "ערך v2" in rep
+        import openpyxl                               # (every exam question by question: one sheet, and its own)
+        wb = openpyxl.load_workbook(f"{tmp}/o/by_exam.xlsx")
+        assert wb.sheetnames == ["כל המבחנים", "מבחן 3"], wb.sheetnames
+        rows = [[c.value for c in r] for r in wb["מבחן 3"].iter_rows(min_row=5)]
+        assert rows[0][1].startswith("1(א)") and any(r[1] == "2.2 אמריקאית" and r[4] == "0 מתוך 5 (ודאי)" for r in rows), rows
         assert "<tr><td><a href='3_report.txt'>3</a></td>" in open(f"{tmp}/o/summary.html", encoding="utf-8").read()
 
 

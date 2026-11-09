@@ -174,7 +174,7 @@ def main():
             for rd, cs in second.get(f"{name}_value", {}).items():
                 readings[rd] = [(t, 1.0) for t, _ in cs]
             v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
-        out = {"exam": name, "verdict": v, "read": used, "value": val, "key": key}
+        out = {"exam": name, "name": a.name, "verdict": v, "read": used, "value": val, "key": key}
         json.dump(out, open(os.path.join(a.out, f"{name}.value.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         txt = {"right": f"{a.name}: נכתב {val:g} - כמו בפתרון ({a.key})." if val is not None else "",
                "wrong": f"{a.name}: נכתב {val:g}; בפתרון {a.key}." if val is not None else "",
