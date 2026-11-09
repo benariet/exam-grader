@@ -7835,3 +7835,60 @@ def test_a_review_page_shows_each_drawing_with_what_was_read(tmp_path, monkeypat
     circuit_review.main()
     page = open(tmp_path / "review.html", encoding="utf-8").read()
     assert page.count("<img src='data:image/png;base64,") == 1 and "gate g (B&#x27;)" in page
+
+
+def test_a_printed_truth_tables_cells_are_found_and_read():
+    """tools/truth_table.py: the table's cells from the booklet's template (its ruled lines - a column's printed
+    digits one over the other are no line), laid on a scan, the print left out, each filled cell's first character
+    read ('1W': its 1); an empty cell empty"""
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    from forms.cells import CellReader
+    from tools.truth_table import read_cells, table_cells
+    W, H = 1240, 1754
+    tpl = Image.new("L", (W, H), 255)
+    d = ImageDraw.Draw(tpl)
+    xs = [88, 134, 189, 270, 340, 426, 542, 1150]
+    ys = [996, 1045] + [1045 + 48 * k for k in range(1, 9)]
+    for x in xs:
+        d.line([(x, ys[0]), (x, ys[-1])], fill=0, width=3)
+    for y in ys:
+        d.line([(xs[0], y), (xs[-1], y)], fill=0, width=3)
+    font = ImageFont.truetype("DejaVuSans-Bold.ttf", 26)
+    for r in range(8):                                  # (the printed inputs: B and C columns)
+        d.text((150, ys[r + 1] + 8), str((r >> 1) & 1), fill=0, font=font)
+        d.text((295, ys[r + 1] + 8), str(r & 1), fill=0, font=font)
+    template = np.asarray(tpl) < 128
+    cells = table_cells(template)
+    assert len(cells) == 63 and cells[(1, 2)] == (189, 1045, 270, 1093), cells.get((1, 2))
+    scan = tpl.copy()
+    d = ImageDraw.Draw(scan)
+    hand = ImageFont.truetype("DejaVuSans.ttf", 30)
+    d.text((215, ys[1] + 8), "1", fill=40, font=hand)                  # Vx row 1: '1'
+    d.text((360, ys[2] + 8), "0", fill=40, font=hand)                  # Y1 row 2: '0'
+    d.text((450, ys[3] + 8), "1W", fill=40, font=hand)                 # Y2 row 3: '1W'
+    d.text((350, ys[5] + 8), "(0)", fill=40, font=hand)                # Y1 row 5: '(0)' - the parenthesis no value
+    page = scan.convert("RGB")
+    got = read_cells(page, np.asarray(scan) < 128, template, cells, [(1, 2), (2, 4), (3, 5), (4, 2), (5, 4)], CellReader())
+    assert got[(1, 2)][0] == "1" and got[(2, 4)][0] == "0" and got[(3, 5)][0] == "1", got
+    assert got[(5, 4)][0] == "0", got
+    import json
+    import sys
+    import tempfile
+    from tools import truth_table                     # the whole run: a booklet folder, a scan, the key, the review
+    with tempfile.TemporaryDirectory() as tmp:
+        os_ = __import__("os")
+        os_.makedirs(f"{tmp}/booklet")
+        tpl.save(f"{tmp}/booklet/p1.png")
+        scan.convert("RGB").resize((1240, 1754)).save(f"{tmp}/9.pdf", resolution=150)
+        sys_argv = sys.argv
+        sys.argv = ["truth_table.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--cols", "2,4,5",
+                    "--key", "100;010;001;000;000;000;000;000", "--out", f"{tmp}/out", "--review"]
+        try:
+            truth_table.main()
+        finally:
+            sys.argv = sys_argv
+        r = json.load(open(f"{tmp}/out/9.table.json"))
+        assert (r["right"], r["wrong"]) == (3, 1), r              # (row 2's Y1: '0' written, the key's 1)
+        assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
+    assert got[(4, 2)][0] == ""                                         # (empty)
