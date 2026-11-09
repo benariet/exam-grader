@@ -50,7 +50,7 @@ def collect(folders):
             summ[r["exam"]]["choices"] = {x["item"]: (x["verdict"], x.get("chosen", "")) for x in r["items"]}
         for f in glob.glob(os.path.join(d, "*.value.json")):
             r = json.load(open(f, encoding="utf-8"))
-            summ[r["exam"]]["value"] = {os.path.basename(d.rstrip("/\\")): r["verdict"]}
+            summ[r["exam"]].setdefault("value", {})[os.path.basename(d.rstrip("/\\"))] = r["verdict"]
         key = os.path.join(d, "circuit_key.json")
         if os.path.isfile(key):
             for q, rows in json.load(open(key, encoding="utf-8")).items():
@@ -59,7 +59,7 @@ def collect(folders):
         for part, suffix in REMARKS.items():
             for f in glob.glob(os.path.join(d, "*" + suffix)):
                 name = os.path.basename(f)[:-len(suffix)]
-                rem[name][part] = [x for x in open(f, encoding="utf-8").read().splitlines() if x.strip()]
+                rem[name].setdefault(part, []).extend(x for x in open(f, encoding="utf-8").read().splitlines() if x.strip())
     return summ, rem
 
 

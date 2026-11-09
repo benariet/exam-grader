@@ -8134,8 +8134,13 @@ def test_an_exams_checks_gathered_into_one_report_and_a_class_overview():
         json.dump({"exam": "3", "items": [{"item": "2.2", "verdict": "wrong", "chosen": "ב"},
                                           {"item": "2.3", "verdict": "right", "chosen": "ד"}]}, open(f"{tmp}/c/3.choices.json", "w"))
         open(f"{tmp}/c/3_choice_remarks.txt", "w", encoding="utf-8").write("שאלה 2.2: סומנה ב\n")
+        for d, v in (("v1", "right"), ("v2", "unsure")):           # (two places' values: both kept)
+            os_.makedirs(f"{tmp}/{d}")
+            json.dump({"exam": "3", "verdict": v}, open(f"{tmp}/{d}/3.value.json", "w"))
+            open(f"{tmp}/{d}/3_value_remarks.txt", "w", encoding="utf-8").write(f"ערך {d}\n")
         argv = sys.argv
-        sys.argv = ["exam_report.py", "--runs", f"{tmp}/t", f"{tmp}/c", "--out", f"{tmp}/o", "--sure", "2.2=5,2.3=5"]
+        sys.argv = ["exam_report.py", "--runs", f"{tmp}/t", f"{tmp}/c", f"{tmp}/v1", f"{tmp}/v2", "--out", f"{tmp}/o",
+                    "--sure", "2.2=5,2.3=5"]
         try:
             exam_report.main()
         finally:
@@ -8143,7 +8148,8 @@ def test_an_exams_checks_gathered_into_one_report_and_a_class_overview():
         rep = open(f"{tmp}/o/3_report.txt", encoding="utf-8").read()
         assert "טבלה: 20 נכונים" in rep and "סומנה ב" in rep and rep.index("טבלה") < rep.index("2.2") and ": 5" in rep, rep
         csv_ = open(f"{tmp}/o/summary.csv", encoding="utf-8-sig").read()
-        assert "wrong ב" in csv_ and "right ד" in csv_, csv_
+        assert "wrong ב" in csv_ and "right ד" in csv_ and "value:v1" in csv_ and "value:v2" in csv_, csv_
+        assert "ערך v1" in rep and "ערך v2" in rep
         assert "<tr><td><a href='3_report.txt'>3</a></td>" in open(f"{tmp}/o/summary.html", encoding="utf-8").read()
 
 
