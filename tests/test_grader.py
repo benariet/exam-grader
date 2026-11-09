@@ -8049,3 +8049,41 @@ def test_a_multiple_choice_mark_is_found_on_the_printed_options():
         r = json.load(open(f"{tmp}/out/5.choices.json", encoding="utf-8"))
         assert r["items"][0]["verdict"] == "right" and r["items"][0]["chosen"] == "ג", r
         assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
+
+
+def test_a_box_of_words_its_rows_found_and_its_answers_judged_by_keywords():
+    """tools/words_box.py over tools/expr_box.py's box finding: a box with a thick ruled top its first label touches
+    ('Function -', a word as long as a short line - no ruled line), its rows; the vision model's reading of a whole box
+    split at its labels (tools/read_crops.py box_rows: 'Y_{1} -', 'Y2:'); each row's answer judged by the solution's
+    words (Hebrew or English) and the wrong ones"""
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    from tools.expr_box import answer_rows
+    from tools.read_crops import box_rows
+    from tools.words_box import judge_words
+    tpl = Image.new("L", (1240, 1754), 255)
+    d = ImageDraw.Draw(tpl)
+    d.rectangle((100, 215, 1112, 232), fill=0)                          # (a thick top)
+    d.rectangle((100, 312, 1112, 318), fill=0)
+    d.rectangle((99, 215, 105, 318), fill=0)
+    d.rectangle((1107, 215, 1112, 300), fill=0)                         # (a side broken short)
+    font = ImageFont.truetype("DejaVuSans-Bold.ttf", 21)
+    d.text((113, 230), "Function –", fill=0, font=font)
+    d.text((113, 256), "Y1 –", fill=0, font=font)
+    d.text((113, 282), "Y2 –", fill=0, font=font)
+    rows = answer_rows(np.asarray(tpl) < 128, 3)
+    assert len(rows) == 3 and rows[0]["x0"] > 200 > rows[1]["x0"], rows
+    assert box_rows("**Function** – Full Adder\nY_{1} - Sum\nY2: carry out", ("Function", "Y1", "Y2")) == \
+        [("Function", "Full Adder"), ("Y1", "Sum"), ("Y2", "carry out")]
+    assert box_rows("Function - מחבר מלא Y1 - S Y2 - Cout", ("Function", "Y1", "Y2"))[0] == \
+        ("Function", "מחבר מלא")
+    key = {"right": [r"full\s*-?\s*add", "מחבר\\s*מלא"], "wrong": [r"half\s*-?\s*add"]}
+    assert judge_words(["Full Adder", "?"], key)[0] == "right"
+    assert judge_words(["מחבר מלא"], key)[0] == "right"
+    assert judge_words(["Half adder"], key)[0] == "wrong"
+    assert judge_words(["Half adder", "full adder"], key)[0] == "unsure"
+    assert judge_words(["?"], key)[0] == "unsure"
+    from tools.words_box import judge_row                # (the row's own reading decides; the box's only agrees)
+    assert judge_row({"vlm": [["Full adder", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "right"
+    assert judge_row({"vlm": [["?", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "unsure"
+    assert judge_row({"vlm": [["half adder", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "unsure"

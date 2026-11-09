@@ -41,8 +41,10 @@ def answer_rows(template: np.ndarray, n_rows: int = 0):
     past the label; y0-y1: the row's band, between its neighbours; base: the label's bottom), [] if none. n_rows: the
     box with that many rows, when the page has more than one"""
     from scipy import ndimage as ndi
-    horiz = ndi.binary_opening(ndi.binary_closing(template, structure=np.ones((1, 15))), structure=np.ones((1, 80)))
-    vert = ndi.binary_opening(ndi.binary_closing(template, structure=np.ones((9, 1))), structure=np.ones((40, 1)))
+    horiz = ndi.binary_opening(ndi.binary_closing(template, structure=np.ones((1, 5))),   # (gaps of a pixel or two
+                               structure=np.ones((1, 150)))    # closed - not a word's letters into a line)
+    vert = ndi.binary_opening(ndi.binary_closing(template & ~horiz, structure=np.ones((9, 1))),   # (a letter's stem
+                              structure=np.ones((40, 1)))      # touching a thick ruled line is no ruled line)
     segs = lambda m: [(sl[1].start, sl[0].start, sl[1].stop, sl[0].stop) for sl in ndi.find_objects(ndi.label(m)[0])]  # noqa: E731
     hs = [s for s in segs(horiz) if s[2] - s[0] >= 150]
     vs = [s for s in segs(vert) if s[3] - s[1] >= 40]
@@ -53,10 +55,10 @@ def answer_rows(template: np.ndarray, n_rows: int = 0):
             if y1 - y0 < 40 or abs(t[0] - u[0]) > 10 or abs(t[2] - u[2]) > 10:
                 continue
             x0, x1 = min(t[0], u[0]), max(t[2], u[2])
-            side = lambda x: any(abs((v[0] + v[2]) / 2 - x) <= 10 and v[1] <= y0 + 0.1 * (y1 - y0) and  # noqa: E731
-                                 v[3] >= y1 - 0.1 * (y1 - y0) for v in vs)
-            if not (side(x0) and side(x1)):
-                continue
+            side = lambda x: sum(max(0, min(v[3], y1) - max(v[1], y0)) for v in vs   # noqa: E731
+                                 if abs((v[0] + v[2]) / 2 - x) <= 10) / (y1 - y0)
+            if min(side(x0), side(x1)) < 0.5 or max(side(x0), side(x1)) < 0.8:
+                continue                               # (a side may come out broken in a template: half of it)
             if any(y0 + 6 < (w[1] + w[3]) / 2 < y1 - 6 and min(w[2], x1) - max(w[0], x0) >= 0.5 * (x1 - x0) for w in hs) or \
                     any(x0 + 6 < (v[0] + v[2]) / 2 < x1 - 6 and min(v[3], y1) - max(v[1], y0) >= 0.5 * (y1 - y0) for v in vs):
                 continue                               # (a table: ruled lines inside)
