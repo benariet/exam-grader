@@ -23,11 +23,13 @@ sys.path.insert(0, HERE)
 
 MW = os.environ.get("MATHWRITING", os.path.join(HERE, "data", "mathwriting"))
 GLYPHS = {"A": "A", "B": "B", "C": "C", "V": "V", "x": "x", "+": "+", "^": "\\oplus", "(": "(", ")": ")",
-          "'": "\\prime", ".": "\\cdot", "0": "0", "1": "1"}
+          "'": "\\prime", ".": "\\cdot", "0": "0", "1": "1", "S": "S", "W": "W", "s": "s", "w": "w", "/": "/",
+          "\\": "\\backslash"}
 # each glyph's height (letter heights) and where its middle sits (above the baseline, letter heights)
 SIZE = {"A": (1.0, 0.5), "B": (1.0, 0.5), "C": (1.0, 0.5), "V": (1.0, 0.5), "x": (0.5, -0.05), "+": (0.6, 0.45),
         "^": (0.7, 0.45), "(": (1.3, 0.45), ")": (1.3, 0.45), "'": (0.35, 1.0), ".": (0.12, 0.45), "0": (1.0, 0.5),
-        "1": (1.0, 0.5)}
+        "1": (1.0, 0.5), "S": (1.0, 0.5), "W": (1.0, 0.5), "s": (0.6, 0.3), "w": (0.6, 0.3), "/": (1.2, 0.5),
+        "\\": (1.2, 0.5)}
 
 
 def load_glyphs(root=MW, want=GLYPHS):
@@ -165,9 +167,14 @@ def _glyph_seq(e, rnd, dot_and):
 
 def draw(e, glyphs, rnd, h=None, ink=None, width=None):
     """the expression handwritten -> (grayscale image (uint8, white paper), the baseline's y)"""
+    seq, bars = _glyph_seq(e, rnd, dot_and=rnd.random() < 0.15)
+    return draw_seq(seq, bars, glyphs, rnd, h, ink, width)
+
+
+def draw_seq(seq, bars, glyphs, rnd, h=None, ink=None, width=None):
+    """glyphs side by side (bars: [(first, past the last)] - a bar over those) -> (grayscale image, the baseline's y)"""
     from PIL import Image, ImageDraw
     h = h or rnd.uniform(16, 26)                           # (letter height, pixels at 150 dpi)
-    seq, bars = _glyph_seq(e, rnd, dot_and=rnd.random() < 0.15)
     slant = rnd.uniform(-0.15, 0.2)
     gap = rnd.uniform(0.12, 0.35)
     S = 4                                                  # (drawn 4x, shrunk: smooth strokes)
@@ -234,6 +241,22 @@ def draw(e, glyphs, rnd, h=None, ink=None, width=None):
     return np.asarray(img), -y_lo
 
 
+def cell_forms(rnd):
+    """a truth table's cell as students fill it: a logic value and its strength - '1S', '0 W', '1W/S', '0(S)', 'w' small
+    - -> (glyphs, value, strength or '')"""
+    v = rnd.choice("01")
+    st = rnd.choice(["S", "W", "S", "W", "W/S", ""])
+    letter = (lambda c: c.lower() if rnd.random() < 0.25 else c)    # noqa: E731
+    if st == "W/S":
+        sep = rnd.choice(["/", "\\"])
+        return [v, letter("W"), sep, letter("S")], v, "W/S"
+    if not st:
+        return [v], v, ""
+    if rnd.random() < 0.15:
+        return [v, "(", letter(st), ")"], v, st
+    return [v, letter(st)], v, st
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
@@ -242,6 +265,7 @@ def main():
     ap.add_argument("--mathwriting", default=MW)
     ap.add_argument("--page", default="", help="the booklet's page with the answer box: the expressions written in it too")
     ap.add_argument("--scale", type=float, default=1.0, help="the page's resolution / 150 dpi (2: a 300-dpi page)")
+    ap.add_argument("--cells", action="store_true", help="truth-table cells (a value and its strength) instead")
     a = ap.parse_args()
     from PIL import Image
     rnd = random.Random(a.seed)
@@ -259,6 +283,12 @@ def main():
         if not rows:
             raise SystemExit(f"no answer box found on {a.page}")
     for i in range(a.n):
+        if a.cells:
+            seq, v, st = cell_forms(rnd)
+            img, _ = draw_seq(seq, [], glyphs, rnd, h=rnd.uniform(14, 24))
+            Image.fromarray(img).save(os.path.join(a.out, f"{i}.png"))
+            json.dump({"value": v, "strength": st, "glyphs": "".join(seq)}, open(os.path.join(a.out, f"{i}.json"), "w"))
+            continue
         name, e = rnd.choice(forms(rnd))
         img, base = draw(e, glyphs, rnd)
         Image.fromarray(img).save(os.path.join(a.out, f"{i}.png"))

@@ -38,7 +38,7 @@ def collect(folders):
     for d in folders:
         for f in glob.glob(os.path.join(d, "*.table.json")):
             r = json.load(open(f, encoding="utf-8"))
-            summ[r["exam"]]["table"] = {k: r[k] for k in ("right", "wrong", "unsure", "empty")}
+            summ[r["exam"]]["table"] = {k: r[k] for k in ("right", "wrong", "unsure", "empty", "strength") if k in r}
         for f in glob.glob(os.path.join(d, "*.exprs.json")):
             r = json.load(open(f, encoding="utf-8"))
             summ[r["exam"]]["exprs"] = {x["name"]: x["verdict"] for x in r["rows"]}
@@ -110,7 +110,8 @@ def main():
     cols = []                                          # (part, key)
     for part in ORDER:
         keys = sorted({k for n in exams for k in summ.get(n, {}).get(part, {})}) if part != "table" else \
-            (["right", "wrong", "unsure", "empty"] if any("table" in summ.get(n, {}) for n in exams) else [])
+            ([k for k in ("right", "wrong", "unsure", "empty", "strength")
+              if any(k in summ.get(n, {}).get("table", {}) for n in exams)])
         cols += [(part, k) for k in keys]
     with open(os.path.join(a.out, "summary.csv"), "w", encoding="utf-8-sig", newline="") as fh:
         w = csv.writer(fh)

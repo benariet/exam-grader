@@ -7891,7 +7891,32 @@ def test_a_printed_truth_tables_cells_are_found_and_read():
         r = json.load(open(f"{tmp}/out/9.table.json"))
         assert (r["right"], r["wrong"]) == (3, 1), r              # (row 2's Y1: '0' written, the key's 1)
         assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
+        import recog.formula as rf                    # (with the strengths: each cell read whole as well)
+        from recog.formula import Candidate
+
+        class Fake:
+            def __init__(self, *a, **kw):
+                pass
+
+            def recognize(self, img, n_best=3, max_new_tokens=160, grammar=None):
+                return [Candidate("1 W", -1.0, 0.9)]
+        real, rf.FormulaRecognizer = rf.FormulaRecognizer, Fake
+        sys.argv = ["truth_table.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--cols", "2,4,5",
+                    "--key", "100;010;001;000;000;000;000;000", "--out", f"{tmp}/out2",
+                    "--strengths", ";".join(["1S,0W\\S,0S"] * 8)]
+        try:
+            truth_table.main()
+        finally:
+            sys.argv = sys_argv
+            rf.FormulaRecognizer = real
+        r = json.load(open(f"{tmp}/out2/9.table.json"))
+        assert r["strength"] == 2, r                  # (rows 1's Vx and 3's Y2: right, read W - the key's S only;
+        #                                                row 2's Y1 takes either)
     assert got[(4, 2)][0] == ""                                         # (empty)
+    from tools.truth_table import allowed_strengths, parse_cell          # (a cell read whole: its strength)
+    assert parse_cell("1 S") == ("1", "S") and parse_cell("0 ( w )") == ("0", "W") and parse_cell("1") == ("1", "")
+    assert parse_cell("0 W \\backslash S") == ("0", "W/S") and parse_cell("1 _ { s }") == ("1", "S")
+    assert allowed_strengths("1S") == {"S"} and allowed_strengths("0W\\S") == {"S", "W", "W/S"}
 
 
 def test_the_answer_boxs_expressions_are_found_read_and_judged(monkeypatch):

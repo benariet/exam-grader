@@ -169,6 +169,49 @@ def read_cells(page, ink, template, cells, want, reader, alphabet="01"):
     return out
 
 
+CELL_GRAMMAR = (r"\s*[01]\s*(?:_\s*)?(?:\{\s*)?(?:\(\s*)?(?:(?:\\mathrm\s*\{\s*)?[SWsw](?:\s*\})?"
+                r"(?:\s*(?:/|\\backslash|\\setminus|\|)\s*(?:\\mathrm\s*\{\s*)?[SWsw](?:\s*\})?)?)?(?:\s*\))?(?:\s*\})?\s*",
+                "01SWsw_{}()/| \\backslashetminumr")
+# (a cell as the formula reader is made to read it: a value, a strength after it - '1S', '0 W', '1W/S', '0(S)', '1_{s}')
+
+
+def parse_cell(text: str):
+    """the formula reader's reading of a cell -> (value '0' / '1' or None, strength 'S' / 'W' / 'W/S' / '')"""
+    m = re.match(r"\s*([01])", text)
+    if not m:
+        return None, ""
+    rest = re.sub(r"\\(?:mathrm|backslash|setminus)", " ", text[m.end():])
+    letters = {c.upper() for c in re.findall(r"(?<![a-z\\])[SWsw](?![a-z])", rest)}
+    return m.group(1), ("W/S" if letters == {"S", "W"} else letters.pop() if letters else "")
+
+
+def allowed_strengths(key_cell: str):
+    """a key's cell ('1S', '0W\\S') -> the strengths it takes: 'W\\S' either (and both written)"""
+    st = key_cell[1:].replace("\\", "/").upper()
+    return {"S", "W", "W/S"} if set(st) >= {"S", "W"} else {st} if st else set()
+
+
+def read_cell_text(page, ink, template, cells, want, fr):
+    """each cell in want read whole by the formula reader made to read a cell (CELL_GRAMMAR) -> {(row, col): (value or
+    None, strength)} - the strength the digit reader cannot see, and a second reading of the value"""
+    from recog.printed import fit_map, printed_on
+    from tools.expr_box import crop_of
+    M, b = fit_map(template, ink)
+    hand = ink & ~printed_on(template, ink)
+    gray = np.asarray(page.convert("L"))
+    out = {}
+    for key in want:
+        x0, y0, x1, y1 = to_scan(cells[key], M, b)
+        m = 4
+        sub = np.zeros_like(hand)
+        sub[y0 + m:y1 - m, x0 + m:x1 - m] = hand[y0 + m:y1 - m, x0 + m:x1 - m]
+        if int(sub.sum()) < MIN_INK:
+            continue
+        c = fr.recognize(crop_of(gray, sub), n_best=2, grammar=CELL_GRAMMAR)
+        out[key] = parse_cell(c[0].text) if c else (None, "")
+    return out
+
+
 def _review_figure(img, boxes, cells_out, name, res, off):
     """one exam's table for review.html: the scan round the cells read, each boxed in its verdict's colour"""
     import base64
@@ -204,6 +247,10 @@ def main():
     ap.add_argument("--cols", default="2,4,5", help="the columns to read (0 = the leftmost)")
     ap.add_argument("--key", required=True, help="the solution's values, a row per ';' in the table's order, a "
                                                  "character per column read: '000;010;...'")
+    ap.add_argument("--strengths", default="", help="the solution's cells with their strengths, a row per ';', the "
+                    "columns read by ',': '0W\\S,0W\\S,0S;...' - each cell read whole too, its strength against it")
+    ap.add_argument("--second", action="store_true", help="each cell read whole by the formula reader too: a value the "
+                    "digit reader was unsure of, read alike by both, decided")
     ap.add_argument("--rows", type=int, default=9)
     ap.add_argument("--ncols", type=int, default=7)
     ap.add_argument("--grades", default="")
@@ -224,6 +271,11 @@ def main():
     key = [list(r) for r in a.key.split(";")]
     want = [(r + 1, c) for r in range(len(key)) for c in cols]
     reader = CellReader()
+    strengths = [r.split(",") for r in a.strengths.split(";")] if a.strengths else None
+    fr = None
+    if a.strengths or a.second:
+        from recog.formula import FormulaRecognizer
+        fr = FormulaRecognizer()
     marks = {}
     if a.grades:
         from tools.recheck_exams import grades
@@ -245,11 +297,12 @@ def main():
         page, _ = clean_scan(img)
         ink = np.asarray(page.convert("L")) < 128
         got = read_cells(page, ink, template, cells, want, reader)
+        whole = read_cell_text(page, ink, template, cells, want, fr) if fr is not None else {}
         if a.review:
             from recog.printed import fit_map
             M, b = fit_map(template, ink)
             boxes = {k: to_scan(cells[k], M, b) for k in want}
-        res = {"right": 0, "wrong": 0, "empty": 0, "unsure": 0}
+        res = {"right": 0, "wrong": 0, "empty": 0, "unsure": 0, "strength": 0}
         cells_out, remarks = [], []
         for r, row in enumerate(key):
             for c, want_v in zip(cols, row):
@@ -258,14 +311,27 @@ def main():
                 v = v.rstrip("~")                      #  else left to a human)
                 verdict = "empty" if v == "" else "unsure" if p < SURE or v not in ("0", "1") else \
                     "right" if v == want_v else "unsure" if alike else "wrong"
+                v2, st = whole.get((r + 1, c), (None, ""))
+                if verdict == "unsure" and v in ("0", "1") and v2 == v:      # (the two readers alike: decided)
+                    verdict = "right" if v == want_v else "wrong"
                 res[verdict] += 1
-                cells_out.append({"row": r + 1, "col": c, "read": v, "p": round(p, 3), "verdict": verdict, "key": want_v})
+                cell = {"row": r + 1, "col": c, "read": v, "p": round(p, 3), "verdict": verdict, "key": want_v,
+                        "second": v2}
                 if verdict == "wrong":
                     remarks.append(f"שורה {r + 1}, עמודה {c + 1}: נכתב {v}, בפתרון {want_v}.")
+                if strengths and verdict == "right":           # (the strength, where the value is right)
+                    ok = allowed_strengths(strengths[r][cols.index(c)])
+                    cell.update(strength=st, strength_key="/".join(sorted(ok)))
+                    if st and ok and st not in ok:
+                        res["strength"] += 1
+                        remarks.append(f"שורה {r + 1}, עמודה {c + 1}: חוזק {st}, בפתרון {strengths[r][cols.index(c)]} "
+                                       "(לבדיקה).")
+                cells_out.append(cell)
         json.dump({"exam": name, "cells": cells_out, **res}, open(os.path.join(a.out, f"{name}.table.json"), "w",
                                                                     encoding="utf-8"), ensure_ascii=False, indent=1)
         txt = [f"שאלה {a.question}(א) - טבלת האמת: {res['right']} תאים נכונים, {res['wrong']} שגויים, "
-               f"{res['empty']} ריקים, {res['unsure']} לא נקראו בוודאות (לבדיקה ידנית)."] + remarks
+               f"{res['empty']} ריקים, {res['unsure']} לא נקראו בוודאות (לבדיקה ידנית)" +
+               (f"; {res['strength']} תאים שבהם החוזק שנקרא שונה מהפתרון (לבדיקה)." if strengths else ".")] + remarks
         open(os.path.join(a.out, f"{name}_table_remarks.txt"), "w", encoding="utf-8").write("\n".join(txt) + "\n")
         off = marks.get(name, {}).get(a.question) if marks else None
         table.append((res, off))
@@ -279,8 +345,10 @@ def main():
                      "אפור: ריק. בכל תא כתוב מה נקרא.</p>"] + review + ["</html>"]
         open(os.path.join(a.out, "review.html"), "w", encoding="utf-8").write("\n".join(page_html))
     n = len(table)
-    tot = {k: sum(r[k] for r, _ in table) for k in ("right", "wrong", "empty", "unsure")}
-    print(f"{n} exams, {sum(tot.values())} cells: " + ", ".join(f"{k} {v}" for k, v in tot.items()))
+    tot = {k: sum(r[k] for r, _ in table) for k in ("right", "wrong", "empty", "unsure", "strength")}
+    print(f"{n} exams, {sum(tot[k] for k in ('right', 'wrong', 'empty', 'unsure'))} cells: " +
+          ", ".join(f"{k} {v}" for k, v in tot.items() if k != "strength") +
+          (f"; strengths unlike the solution's (of the right values): {tot['strength']}" if a.strengths else ""))
     if marks:
         for lo, hi, what in ((0, 0, "no cell wrong"), (1, 3, "1-3 cells wrong"), (4, 99, "4+ cells wrong")):
             offs = [o for r, o in table if lo <= r["wrong"] <= hi and o is not None]
