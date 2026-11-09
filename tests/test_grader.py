@@ -7993,3 +7993,59 @@ def test_the_answer_boxs_expressions_are_found_read_and_judged(monkeypatch):
         cells = [{"row": r + 1, "col": 2, "read": str(v), "verdict": "right"} for r, v in enumerate((0, 0, 1, 1, 1, 1, 0, 0))]
         json.dump({"cells": cells}, open(f"{tmp}/4.table.json", "w"))
         assert E.own_table(tmp, "4", 2, 8) == (0, 0, 1, 1, 1, 1, 0, 0) and E.own_table(tmp, "4", 4, 8) is None
+
+
+def test_a_multiple_choice_mark_is_found_on_the_printed_options():
+    """tools/choice_marks.py: the options' printed lines right above the answer box on the template, grouped by the
+    lines each takes; a circle round an option's letter (cut where it crosses the print), a tick, an underline (the line
+    above it) - the option chosen; nothing marked - none; two options marked - unclear"""
+    import json
+    import sys
+    import tempfile
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    from tools import choice_marks as C
+    W, H = 1240, 1754
+    tpl = Image.new("L", (W, H), 255)
+    d = ImageDraw.Draw(tpl)
+    font = ImageFont.truetype("DejaVuSans-Bold.ttf", 20)
+    d.text((120, 160), "The question: which of these is right? Mark one answer only, and explain.", fill=0, font=font)
+    ys = [260 + 29 * k for k in range(6)]
+    for k, y in enumerate(ys):
+        d.text((560, y), f"option number {k + 1} of the six      {k + 1}.", fill=0, font=font)
+    d.rectangle((100, 480, 1110, 1600), outline=0, width=4)
+    template = np.asarray(tpl) < 128
+    bands = C.option_bands(template, [1] * 6)
+    assert len(bands) == 6 and all(b[1] < b[3] for b in bands) and bands[-1][3] < 480, bands
+
+    def marked(draw):
+        scan = tpl.copy().convert("RGB")
+        draw(ImageDraw.Draw(scan))
+        sc, _, _, rings = C.read_choices(scan, template, bands)
+        return C.choose(sc, rings=rings)
+    right = [int(np.flatnonzero(template[y:y + 22].any(0)).max()) for y in ys]
+    circ = lambda k: (lambda dr: dr.ellipse((right[k] - 34, ys[k] - 6, right[k] + 6, ys[k] + 28), outline=(50,) * 3,  # noqa: E731
+                                            width=2))
+    assert marked(circ(2)) == (2, "chosen")
+    assert marked(lambda dr: dr.line([(right[4] + 20, ys[4] + 12), (right[4] + 28, ys[4] + 22), (right[4] + 48, ys[4] - 2)],
+                                     fill=(50,) * 3, width=2)) == (4, "chosen")                   # a tick past it
+    assert marked(lambda dr: dr.line([(600, ys[1] + 25), (right[1] - 5, ys[1] + 26)], fill=(50,) * 3, width=2)) == \
+        (1, "chosen")                                                                              # underlined
+    assert marked(lambda dr: None) == (None, "none")
+    assert marked(lambda dr: (circ(0)(dr), circ(3)(dr))) == (None, "unclear")
+    with tempfile.TemporaryDirectory() as tmp:         # (the whole run: the booklet, a scan, the key, the review)
+        __import__("os").makedirs(f"{tmp}/booklet")
+        tpl.save(f"{tmp}/booklet/p1.png")
+        scan = tpl.copy().convert("RGB")
+        circ(2)(ImageDraw.Draw(scan))
+        scan.save(f"{tmp}/5.pdf", resolution=150)
+        argv = sys.argv
+        sys.argv = ["choice_marks.py", tmp, "--booklet", f"{tmp}/booklet", "--item", "2.2:1:1,1,1,1,1,1:ג",
+                    "--out", f"{tmp}/out", "--review"]
+        try:
+            C.main()
+        finally:
+            sys.argv = argv
+        r = json.load(open(f"{tmp}/out/5.choices.json", encoding="utf-8"))
+        assert r["items"][0]["verdict"] == "right" and r["items"][0]["chosen"] == "ג", r
+        assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
