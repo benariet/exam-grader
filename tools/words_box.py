@@ -101,6 +101,8 @@ def main():
     ap.add_argument("--question", type=int, default=1)
     ap.add_argument("--out", default="")
     ap.add_argument("--review", action="store_true")
+    ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a row left "
+                    "unsure decided as a human marked it - its exam's, or its wording's anywhere")
     a = ap.parse_args()
     import pypdfium2 as pdfium
     from PIL import Image
@@ -116,6 +118,8 @@ def main():
     blank = blank_answers(template, rows)
     key = json.load(open(a.key, encoding="utf-8")) if a.key else {}
     readings = json.load(open(a.readings, encoding="utf-8")) if a.readings else {}
+    from tools.decide_sheet import decided, load
+    dec = load(a.decisions) if a.decisions else {}
     marks = {}
     if a.grades:
         from tools.recheck_exams import grades
@@ -159,9 +163,17 @@ def main():
                 v, used = "empty", ""
             else:
                 v, used = judge_row(got, key.get(nm, {}))
+            how = ""
+            if v == "unsure" and dec:                  # (a human's mark on this answer, or on its wording elsewhere)
+                hv, how = decided(dec, f"words:{nm}", name, (got.get("vlm") or [[used]])[0][0])
+                v = hv or v
             res[v] += 1
-            out.append({"name": nm, "verdict": v, "read": used, "readers": {k: cs[0][0] for k, cs in got.items() if cs}})
-            remarks.append({"right": f"{nm}: נכון ({used}).", "wrong": f"{nm}: נכתב '{used}' - שונה מהפתרון.",
+            row = {"name": nm, "verdict": v, "read": used, "readers": {k: cs[0][0] for k, cs in got.items() if cs}}
+            if how:
+                row["decided"] = how
+            out.append(row)
+            by = " - לפי החלטת הבודק" if how else ""
+            remarks.append({"right": f"{nm}: נכון ({used}){by}.", "wrong": f"{nm}: נכתב '{used}' - שונה מהפתרון{by}.",
                             "unsure": f"{nm}: לא נקרא בוודאות - לבדיקה ידנית.", "empty": f"{nm}: ריק."}[v])
         json.dump({"exam": name, "rows": out, **res}, open(os.path.join(a.out, f"{name}.words.json"), "w", encoding="utf-8"),
                   ensure_ascii=False, indent=1)

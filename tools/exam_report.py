@@ -113,6 +113,8 @@ def details(folders, sure):
                        "wrong": "נכתבה תשובה אחרת מזו שבפתרון",
                        "unsure": "קריאת השורה לא הכריעה (או שקריאת התיבה כולה לא הסכימה איתה)",
                        "empty": "לא נמצא כתב בשורה"}.get(x["verdict"], "")
+                if x.get("decided"):                   # (tools/decide_sheet.py: a human's mark)
+                    why = "לפי החלטת הבודק" + (" על אותו ניסוח במבחן אחר" if x["decided"] == "wording" else "")
                 out[r["exam"]].append((f"1(ב) {x['name']}", x.get("read") or "", HEB.get(x["verdict"], x["verdict"]),
                                        "", why))
         for f in glob.glob(os.path.join(d, "*.choices.json")):

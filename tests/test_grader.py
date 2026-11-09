@@ -8296,7 +8296,10 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     out = subprocess.run([sys.executable, "tools/run_exam.py", "exams/moedC.json", "--dry-run"], capture_output=True,
                          text=True, check=True).stdout
     lines = out.splitlines()
-    assert sum(1 for x in lines if x.startswith("== ")) == 10, out             # (9 parts and the report)
+    assert sum(1 for x in lines if x.startswith("== ")) == 11, out   # (9 parts, the decisions sheet, the report)
+    assert all("--decisions" in x for x in lines if ("words_box.py" in x or "value_area.py" in x) and "--crops-only" not in x)
+    sheet = next(x for x in lines if "decide_sheet.py" in x)
+    assert "--words" in sheet and "value_q1f" in sheet and "value_q1e" not in sheet
     assert any("expr_box.py" in x and "--crops-only" in x for x in lines)
     i = next(k for k, x in enumerate(lines) if "rm -rf eg-runs/expr/exprs_q1a" in x)
     assert "--second" in lines[i + 1] and "readings.json" in lines[i + 1]       # (deleted there, then judged here)
@@ -8304,3 +8307,57 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert any("circuit_key.py" in x and "moedC_auto/circuits_q2" in x and "--pages" in x for x in lines)
     rep = next(x for x in lines if "exam_report.py" in x)
     assert "--sure 2.2=5,2.3=5" in rep and "circuits_q2" in rep and "choices_q2" in rep
+
+
+def test_undecided_answers_are_put_before_a_human_once_and_his_marks_decide(tmp_path):
+    """tools/decide_sheet.py: the words rows and final values the checks left unsure, in a workbook with the writing
+    cut out and a column to mark; marked, each answer is decided, and a wording marked alike everywhere decides the
+    same wording in another exam (tools/words_box.py / value_area.py --decisions)"""
+    import json
+    import sys
+    import openpyxl
+    from PIL import Image
+    from tools import decide_sheet as D
+    assert D.norm("\\text{Full-Adder}") == "fulladder" == D.norm(" full adder ") and D.norm("x?y") == ""
+    w, c, v, vc = (tmp_path / x for x in ("w", "wc", "v", "vc"))
+    for d in (w, c, v, vc):
+        d.mkdir()
+    rows = [("1", "Y1", "XOR"), ("2", "Y1", "xor"), ("3", "Y2", "majority")]
+    for n, nm, t in rows:
+        json.dump({"exam": n, "rows": [{"name": nm, "verdict": "unsure", "read": t, "readers": {"vlm": t}},
+                                       {"name": "Function", "verdict": "right", "read": "full adder"}]},
+                  open(w / f"{n}.words.json", "w"))
+        Image.new("RGB", (300, 60), "white").save(c / f"{n}_{nm}.png")
+    json.dump({"exam": "4", "name": "1(f)", "verdict": "unsure", "read": "", "value": None}, open(v / "4.value.json", "w"))
+    Image.new("RGB", (900, 600), "white").save(vc / "4_valuebox.png")
+    json.dump({"4_value": {"vlmfinal": [["?", 0]], "where": [0.1, 0.1, 0.6, 0.2], "vlmwords": [["אין אנרגיה", 0]]}},
+              open(tmp_path / "r.json", "w"))
+    argv = sys.argv
+    sys.argv = ["decide_sheet.py", "make", "--words", str(w), "--words-crops", str(c), "--value", str(v), "--value-crops",
+                str(vc), "--value-readings", str(tmp_path / "r.json"), "--out", str(tmp_path / "d.xlsx")]
+    try:
+        D.main()
+    finally:
+        sys.argv = argv
+    wb = openpyxl.load_workbook(tmp_path / "d.xlsx")
+    ws = wb.active
+    got = [(r[0], r[2], r[6]) for r in ws.iter_rows(min_row=3, values_only=True)]
+    assert sorted(got) == [("1", "XOR", "words:Y1"), ("2", "xor", "words:Y1"), ("3", "majority", "words:Y2"),
+                           ("4", "אין אנרגיה", "value:1(f)")], got
+    assert len(ws._images) == 4
+    for row in ws.iter_rows(min_row=3):                # (a human's marks: XOR right in both, majority not marked)
+        if row[0].value in ("1", "2"):
+            row[4].value = "נכון"
+        if row[0].value == "4":
+            row[4].value = "נכון"
+    wb.save(tmp_path / "d.xlsx")
+    sys.argv = ["decide_sheet.py", "apply", str(tmp_path / "d.xlsx"), "--out", str(tmp_path / "d.json")]
+    try:
+        D.main()
+    finally:
+        sys.argv = argv
+    dec = D.load(str(tmp_path / "d.json"))
+    assert dec["exams"]["words:Y1"] == {"1": "right", "2": "right"} and "words:Y2" not in dec["exams"]
+    assert dec["wordings"]["words:Y1"] == {"xor": "right"} and "words:Y2" not in dec["wordings"]
+    assert D.decided(dec, "words:Y1", "9", "X O R") == ("right", "wording")      # (another exam, the same wording)
+    assert D.decided(dec, "words:Y1", "9", "XNOR") == (None, "") and D.decided(dec, "value:1(f)", "4", "")[0] == "right"

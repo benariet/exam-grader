@@ -12,11 +12,14 @@ The config (JSON):
                {"name": "exprs_q1a", "tool": "expr_box", "args": {...},
                 "server": {"readers": "mumer,vlm", "prompt": "boolean", "labels": "Vx|Y1|Y2", "views": "1|0.75|1.33"}},
                ...],
-     "report": {"sure": "2.2=5,2.3=5"}}
+     "report": {"sure": "2.2=5,2.3=5"},
+     "decisions": {"file": "<decisions.json>", "sheet": "<decisions.xlsx>", "values": ["value_q1f"]} (optional)}
 A part's args are the tool's own options ('table_cols' -> --table-cols; true -> the flag; a list -> the option
 again for each); "{out}" in a value is the results' folder. A part with "server": its pieces cut first
 (--crops-only), read on the server (tools/read_crops.py by Slurm), the readings fetched and the server's copies
-deleted, then the part judged with them (--second; words_box: --readings).
+deleted, then the part judged with them (--second; words_box, truth_table: --readings).
+"decisions": what a human marked on tools/decide_sheet.py's sheet (kept with the exams) given to words_box and
+value_area; after the parts, the sheet made anew of what is still undecided (the words parts, the values named).
 """
 import argparse
 import glob
@@ -124,6 +127,9 @@ def main():
         common = {"booklet": cfg.get("booklet")} if tool not in POSITIONAL else {}
         if cfg.get("grades") and tool not in ("read_exam_circuits",):
             common["grades"] = cfg["grades"]
+        dec = (cfg.get("decisions") or {}).get("file")
+        if dec and tool in ("words_box", "value_area"):    # (a human's marks on what the checks left: kept with
+            common["decisions"] = dec                      #  the exams, tools/decide_sheet.py)
         if part.get("server") and cfg.get("server"):
             crops = os.path.join(out, name + "_crops")
             cmd = cli(tool, {**common, **args, "crops_only": crops}, out)
@@ -139,6 +145,17 @@ def main():
             cmd = cli(tool, {**common, **args, "out": pout}, out)
             cmd[2:2] = head
         run(cmd, a.dry_run)
+    dec = cfg.get("decisions") or {}
+    if dec.get("sheet") and not a.parts:                # (the answers still undecided, for a human to mark once)
+        print("== decisions sheet", flush=True)
+        cmd = [sys.executable, os.path.join(HERE, "tools", "decide_sheet.py"), "make"]
+        for part, f in zip(cfg["parts"], folders):
+            crops = os.path.join(out, part["name"] + "_crops")
+            if part["tool"] == "words_box":
+                cmd += ["--words", f, "--words-crops", crops]
+            elif part["tool"] == "value_area" and part["name"] in dec.get("values", []):
+                cmd += ["--value", f, "--value-crops", crops, "--value-readings", os.path.join(crops, "readings.json")]
+        run(cmd + ["--out", dec["sheet"]], a.dry_run)
     rep = cfg.get("report")
     if rep is not None:
         print("== report", flush=True)

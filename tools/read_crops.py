@@ -38,6 +38,9 @@ LOCATE_PROMPT = ("This image is part of an exam page: a student's handwritten an
                  "working. Where on the image is the final value the student gave for it? Answer only with JSON "
                  '{{"bbox_2d": [x1, y1, x2, y2]}} around that final value with its unit (and the name before it, '
                  "if written on the same line). If no final value is written, answer {{}}.")
+ANSWER_PROMPT = ("This image is a student's handwritten final answer from an engineering exam: a value with its unit, or "
+                 "a few words in Hebrew or English. Write exactly what is written, in its own language, on one line, and "
+                 "nothing else. If something cannot be read, write ? in its place - do not guess.")
 PROMPTS = {
     "math": ("This image is handwriting from an engineering exam: a short calculation or a final value. Write it in "
              "LaTeX exactly as written, on one line, and nothing else. If something cannot be read, write ? in its "
@@ -163,6 +166,10 @@ def main():
                         out.setdefault(name, {})["vlmfinal"] = [[c.text, float(c.logp)]]
                         g = rd.recognize(img, n_best=1, max_new_tokens=60, prompt=LOCATE_PROMPT.format(label=label))[0]
                         out[name]["where"] = bbox_of(g.text, img.size)
+                        if out[name]["where"]:         # (what is written there, as written - an answer in words too:
+                            w = rd.recognize(final_crop(img, out[name]["where"]), n_best=1, max_new_tokens=80,
+                                             prompt=ANSWER_PROMPT)[0]          #  cut out, nothing round it to guess from)
+                            out[name]["vlmwords"] = [[w.text, float(w.logp)]]
                     elif reader == "mumer" and (out.get(name) or {}).get("where"):     # (the vision model read first)
                         out[name]["mumerfinal"] = [[c.text, float(c.logp)] for c in read(final_crop(img, out[name]["where"]))]
                     continue

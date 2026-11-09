@@ -140,6 +140,8 @@ def main():
     ap.add_argument("--crops-only", default="")
     ap.add_argument("--second", default="")
     ap.add_argument("--review", action="store_true")
+    ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a value "
+                    "left unsure decided as a human marked it - its exam's, or its wording's anywhere")
     a = ap.parse_args()
     import pypdfium2 as pdfium
     from PIL import Image
@@ -156,6 +158,8 @@ def main():
     from grader.numeric import parse_numeric
     key_unit = (parse_numeric(a.key).unit or "").strip()
     second = json.load(open(a.second, encoding="utf-8")) if a.second else {}
+    from tools.decide_sheet import decided, load
+    dec = load(a.decisions) if a.decisions else {}
     marks = {}
     if a.grades:
         from tools.recheck_exams import grades
@@ -218,16 +222,28 @@ def main():
                 from tools.read_crops import final_crop                       #  too - a third family's reading)
                 readings["pix2textfinal"] = [(c.text, 1.0) for c in fr.recognize(final_crop(box, where), n_best=4)]
             v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
+        how = ""
+        if v == "unsure" and dec:                      # (a human's mark on this answer, or on its wording elsewhere)
+            text = (got.get("vlmwords") or got.get("vlmfinal") or [[used or ""]])[0][0]
+            hv, how = decided(dec, f"value:{a.name}", name, text)
+            if hv:
+                v, used = hv, text
         out = {"exam": name, "name": a.name, "verdict": v, "read": used, "value": val, "key": key}
+        if how:
+            out["decided"] = how
         if crop is not None:                           # (each reader's likeliest reading - to see why it was unsure)
             out["readers"] = {rd: cs[0][0] for rd, cs in readings.items() if cs}
         json.dump(out, open(os.path.join(a.out, f"{name}.value.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         u = f" {key_unit}" if key_unit and key_unit != "%" else key_unit     # (the value in the key's unit)
-        txt = {"right": f"{a.name}: נכתב {val:.4g}{u} - כמו בפתרון ({a.key})." if val is not None else "",
-               "wrong": f"{a.name}: נכתב {val:.4g}{u}; בפתרון {a.key}." if val is not None else "",
-               "unsure": f"{a.name}: לא נקרא בוודאות - לבדיקה ידנית" +
-                         (f" (קריאה אפשרית: {val:.4g}{u}; בפתרון {a.key})." if val is not None else "."),
-               "empty": f"{a.name}: לא נמצאה תשובה במקום המיועד."}[v]
+        if how:                                        # (decided by a human's mark)
+            txt = {"right": f"{a.name}: נכון ({used}) - לפי החלטת הבודק.",
+                   "wrong": f"{a.name}: נכתב '{used}'; בפתרון {a.key} - לפי החלטת הבודק."}[v]
+        else:
+            txt = {"right": f"{a.name}: נכתב {val:.4g}{u} - כמו בפתרון ({a.key})." if val is not None else "",
+                   "wrong": f"{a.name}: נכתב {val:.4g}{u}; בפתרון {a.key}." if val is not None else "",
+                   "unsure": f"{a.name}: לא נקרא בוודאות - לבדיקה ידנית" +
+                             (f" (קריאה אפשרית: {val:.4g}{u}; בפתרון {a.key})." if val is not None else "."),
+                   "empty": f"{a.name}: לא נמצאה תשובה במקום המיועד."}[v]
         open(os.path.join(a.out, f"{name}_value_remarks.txt"), "w", encoding="utf-8").write(txt + "\n")
         table.append((v, marks.get(name, {}).get(a.question) if marks and a.question else None))
         if a.review:

@@ -153,5 +153,12 @@
  ],
  "report": {
   "sure": "2.2=5,2.3=5"
+ },
+ "decisions": {
+  "file": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/decisions/moedC_decisions.json",
+  "sheet": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/decisions/moedC_decisions.xlsx",
+  "values": [
+   "value_q1f"
+  ]
  }
 }
