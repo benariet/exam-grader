@@ -206,6 +206,68 @@ def write_xlsx(path, det, marks, title):
     wb.save(path)
 
 
+def write_compare(path, n, rows, marks_n, points, sure, title):
+    """one exam, question by question: the lecturer's points beside what the checks found in it - each part read, its
+    verdict, why - the points they settle, and whether the two agree (a sure deduction more than the lecturer took off
+    is a contradiction; parts found wrong with nothing taken off, or points off with every checked part right, are
+    pointed out)"""
+    by_q = defaultdict(list)
+    for r in rows:
+        by_q[_q(r[0])].append(r)
+    color = {"נכון": "#e2efda", "שגוי": "#fce4d6", "פונקציה אחרת": "#fce4d6", "לבדיקה ידנית": "#fff2cc",
+             "לא ברור": "#fff2cc"}
+    out = [f"<!doctype html><html lang='he' dir='rtl'><meta charset='utf-8'><title>מבחן {html.escape(n)}</title>",
+           "<style>body{font-family:Arial,sans-serif;margin:20px;max-width:1100px}table{border-collapse:collapse;width:100%;"
+           "margin:6px 0 18px}td,th{border:1px solid #ccc;padding:5px 8px;font-size:13px;vertical-align:top;text-align:right}"
+           "th{background:#1f3864;color:#fff}.box{background:#f4f6fa;border:1px solid #d0d7e5;padding:8px 12px;margin:6px 0}"
+           "</style>", f"<h1>מבחן {html.escape(n)}</h1><p>{html.escape(title)}</p>"]
+    tot_max = tot_lect = 0.0
+    for q in sorted(points):
+        mx = points[q]
+        off = marks_n.get(q)
+        parts = by_q.get(q, [])
+        settled = sum(pts for item, pts in sure.items() if _q(item) == q and
+                      any(r[0].startswith(item) and r[2] == "שגוי" for r in parts))
+        wrong = [r for r in parts if r[2] in ("שגוי", "פונקציה אחרת")]
+        right = [r for r in parts if r[2] == "נכון"]
+        open_ = [r for r in parts if r[2] not in ("שגוי", "פונקציה אחרת", "נכון")]
+        if off is not None:
+            tot_max += mx
+            tot_lect += mx - off
+        if off is None:
+            agree = "אין ציון מהמרצה לשאלה זו."
+        elif settled > off:
+            agree = f"סתירה: המערכת בטוחה שירדו לפחות {settled:g} נקודות, והמרצה הוריד {off:g} - לבדוק."
+        elif wrong and off == 0:
+            agree = "שים לב: המערכת מצאה סעיפים שגויים, אבל המרצה לא הוריד נקודות בשאלה - לבדוק את הקריאה."
+        elif off > 0 and not wrong:
+            agree = (f"המרצה הוריד {off:g} נקודות, והמערכת לא מצאה שגיאה ודאית בסעיפים שהיא בודקת"
+                     + (f" ({len(open_)} סעיפים לא הוכרעו)" if open_ else "") +
+                     " - ההורדה בחלקים שהמערכת לא בודקת (הסבר, דרך חישוב, ציור) או בסעיפים שלא הוכרעו.")
+        elif off > 0:
+            agree = (f"מתיישב: המרצה הוריד {off:g} נקודות, והמערכת מצאה {len(wrong)} סעיפים שגויים"
+                     + (f" (מהם {settled:g} נקודות ודאיות)" if settled else "") + ".")
+        else:
+            agree = "מתיישב: המרצה לא הוריד נקודות, והמערכת לא מצאה שגיאה." if not open_ else \
+                f"המרצה לא הוריד נקודות; המערכת לא מצאה שגיאה ({len(open_)} סעיפים לא הוכרעו)."
+        lect = "-" if off is None else f"{mx - off:g} מתוך {mx:g} (הוריד {off:g})"
+        out.append(f"<h2>שאלה {q}</h2><div class='box'><b>המרצה:</b> {html.escape(lect)}<br>"
+                   f"<b>המערכת:</b> {len(right)} נכונים, {len(wrong)} שגויים, {len(open_)} לבדיקה ידנית"
+                   + (f"; ירדו בוודאות {settled:g} נקודות" if settled else "") +
+                   f"<br><b>השוואה:</b> {html.escape(agree)}</div>")
+        out.append("<table><tr><th>סעיף</th><th>מה נקרא</th><th>פסק</th><th>ניקוד שנקבע</th><th>למה</th></tr>")
+        for label, read, verdict, pts, why in parts:
+            out.append(f"<tr><td>{html.escape(label)}</td><td>{html.escape(read)}</td>"
+                       f"<td style='background:{color.get(verdict, '#eee')}'>{html.escape(verdict)}</td>"
+                       f"<td>{html.escape(pts)}</td><td>{html.escape(why)}</td></tr>")
+        out.append("</table>")
+    if tot_max:
+        out.append(f"<p><b>סה\"כ אצל המרצה:</b> {tot_lect:g} מתוך {tot_max:g} (לפני פקטור).</p>")
+    out.append("<p style='font-size:12px;color:#666'>המערכת נותנת פסק לכל סעיף; ניקוד נקבע רק לתשובה אמריקאית "
+               "(הכול או כלום). 'לבדיקה ידנית' = לא נבדק. ציון המרצה הוא לשאלה כולה.</p></html>")
+    open(path, "w", encoding="utf-8").write("\n".join(out))
+
+
 def sure_off(s, sure):
     """the points surely off: each multiple-choice item answered with another letter, where it is all or nothing"""
     return sum(pts for item, pts in sure.items() if s.get("choices", {}).get(item, ("",))[0] == "wrong")
@@ -232,6 +294,9 @@ def main():
     ap.add_argument("--sure", default="", help="multiple-choice items all or nothing, and their points: '2.2=5,2.3=5'")
     ap.add_argument("--xlsx", action="store_true", help="<out>/by_exam.xlsx: every exam question by question")
     ap.add_argument("--title", default="בדיקה אוטומטית - כל מבחן, שאלה אחר שאלה")
+    ap.add_argument("--compare", default="", help="exams ('1,3' or 'all'): <out>/compare_<n>.html each - question by "
+                    "question, the lecturer's points beside the checks' findings and whether they agree")
+    ap.add_argument("--points", default="", help="each question's points, for --compare: '1=50,2=25,3=25'")
     a = ap.parse_args()
     summ, rem = collect(a.runs)
     sure = {k.strip(): float(v) for k, v in (x.split("=") for x in a.sure.split(",") if "=" in x)}
@@ -293,6 +358,14 @@ def main():
         "<p>ירוק: נכון. אדום: שגוי. כתום: לבדיקה ידנית. בעמודות הטבלה: מספר התאים. לחיצה על מספר המבחן: כל ההערות.</p>"
         f"<table><tr><th>מבחן</th>{head}" + ("<th>ירדו בוודאות</th>" if sure else "") +
         ("<th>המרצה הוריד (סה\"כ)</th>" if marks else "") + "</tr>" + "\n".join(body) + "</table></html>")
+    if a.compare:
+        det = details(a.runs, sure)
+        pts = {int(k): float(v) for k, v in (x.split("=") for x in a.points.split(",") if "=" in x)}
+        which = exams if a.compare == "all" else [x.strip() for x in a.compare.split(",") if x.strip()]
+        for n in which:
+            write_compare(os.path.join(a.out, f"compare_{n}.html"), n, det.get(n, []), marks.get(n, {}),
+                          pts or {q: 0 for q in sorted({_q(r[0]) for r in det.get(n, [])} - {None})}, sure, a.title)
+        print(f"compare: {len(which)} exams")
     if a.xlsx:
         det = details(a.runs, sure)
         write_xlsx(os.path.join(a.out, "by_exam.xlsx"), det, marks, a.title)
