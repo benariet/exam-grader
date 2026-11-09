@@ -165,9 +165,10 @@ ZOOM_TO = 150          # a drawing whose parts come out smaller than this (pixel
 #                        about 50 - 90 pixels long - half the size the detector and the wiring are at home with)
 
 
-def _core(parts, size, bx):
-    """the biggest cluster of the parts (each within 2.5 parts' sizes of another), grown by a part's size round it,
-    inside the region bx - when smaller than the region -> (x0, y0, x1, y1) or None"""
+def _core(parts, size, bx, texts=()):
+    """the biggest cluster of the parts (each within 2.5 parts' sizes of another) with the labels within 2 parts'
+    sizes of it (an input's letter at its wire's end), grown by a part's size round them, inside the region bx -
+    when smaller than the region -> (x0, y0, x1, y1) or None"""
     groups = [[b] for b in parts]
     gap = 2.5 * size
     merged = True
@@ -185,6 +186,11 @@ def _core(parts, size, bx):
     g = max(groups, key=len)
     if len(g) < CIRCUIT_MIN_PARTS:
         return None
+    gx0, gy0 = min(b[0] for b in g), min(b[1] for b in g)
+    gx1, gy1 = max(b[2] for b in g), max(b[3] for b in g)
+    r = 2.0 * size
+    near = [t for t in texts if t[0] < gx1 + r and t[2] > gx0 - r and t[1] < gy1 + r and t[3] > gy0 - r]
+    g = g + near
     m = 1.0 * size
     core = (max(bx[0], int(min(b[0] for b in g) - m)), max(bx[1], int(min(b[1] for b in g) - m)),
             min(bx[2], int(max(b[2] for b in g) + m)), min(bx[3], int(max(b[3] for b in g) + m)))
@@ -204,7 +210,8 @@ def _zoomed(img, crop, bx, found, reader, zoom_to):
     med = size * LONG_SIDE / max(img.size)
     if med >= 0.75 * zoom_to:
         return None
-    core = _core(parts, size, bx)                      # (the parts' own cluster, a part's size round it - not the
+    core = _core(parts, size, bx, [b for c, b, _ in found if c == "text"])   # (the parts' own cluster, its labels,
+    #                                                    a part's size round it - not the
     if core is not None:                               #  writing the region took in beside it: 9.11, regions most of
         crop, bx = img.crop(core), core                #  the page wide left no room to enlarge)
     cw, ch = crop.size                                 # (room round it: a drawing filling its canvas to the edges

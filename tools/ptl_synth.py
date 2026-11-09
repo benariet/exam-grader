@@ -237,14 +237,17 @@ def on_exam_page(page, scale, rnd, dpi=150):
     k = dpi / 150                                        # (the scans themselves are 300 dpi: --exam-dpi 300)
     W, H, scale = int(1240 * k), int(1754 * k), scale * k
     small = page.ink.resize((max(1, int(page.w * scale)), max(1, int(page.h * scale))), Image.BILINEAR)
-    if page.pen * scale < 2.2 * k:                       # (a 3-pixel pen at a half: thickened back to about 2)
-        small = small.filter(ImageFilter.MaxFilter(3 if k < 1.5 else 5))
+    if page.pen * scale < 2.2 * k:                       # (a 3-pixel pen at a half: thickened back to about 2 - the
+        small = small.filter(ImageFilter.MaxFilter(3))   #  exams' strokes: 6 pixels wide at 300 dpi, 9.11)
     ox, oy = rnd.randint(0, max(0, W - small.width)), rnd.randint(0, max(0, H - small.height))
     ink = Image.new("L", (W, H), 0)
     ink.paste(small, (ox, oy))
     page.ink, page.w, page.h = ink, W, H
     page.d = ImageDraw.Draw(page.ink)
     page.boxes = [(w, tuple(v * scale + (ox if i % 2 == 0 else oy) for i, v in enumerate(b))) for w, b in page.boxes]
+    page.paper_range = (238, 255)                        # (a scan: white paper, the ink lighter than a photo's - the
+    page.colors = [(60, 60, 70), (80, 80, 90), (100, 100, 105), (55, 65, 120), (75, 80, 140), (115, 115, 115)]
+    #                                                      exams' ink: gray 76 in the middle, 38 - 116)
 
 
 def draw(kind, syms, rnd, p_hat=0.0, exam_scale=0.0, exam_dpi=150):

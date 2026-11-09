@@ -370,12 +370,13 @@ class Page:
 
     def render(self):
         rnd = self.rnd
-        paper = np.full((self.h, self.w), rnd.uniform(215, 248), np.float32)
+        paper = np.full((self.h, self.w), rnd.uniform(*getattr(self, "paper_range", (215, 248))), np.float32)
         yy, xx = np.mgrid[0:self.h, 0:self.w]
         paper += rnd.uniform(-15, 15) * (xx / self.w) + rnd.uniform(-15, 15) * (yy / self.h)   # uneven light
         paper += np.random.default_rng(rnd.randrange(1 << 30)).normal(0, 3, paper.shape)
         a = np.asarray(self.ink.filter(ImageFilter.GaussianBlur(rnd.uniform(0.4, 1.0))), np.float32) / 255.0
-        color = np.array(rnd.choice([(30, 30, 35), (25, 35, 110), (40, 40, 90), (60, 50, 50)]), np.float32)
+        color = np.array(rnd.choice(getattr(self, "colors", [(30, 30, 35), (25, 35, 110), (40, 40, 90), (60, 50, 50)])),
+                         np.float32)
         rgb = paper[..., None] * (1 - a[..., None]) + color * a[..., None]
         img = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8))
         if rnd.random() < 0.7:
