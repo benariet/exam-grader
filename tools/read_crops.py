@@ -27,9 +27,9 @@ BOX_PROMPTS = {
               "in its own language, each on its own line as {lines}. Where something cannot be read write ? - do not "
               "guess."),
 }
-FINAL_PROMPT = ("This image is part of an exam page: a printed label '{label}' and a student's handwritten answer, "
-                "maybe with its working. Write only the final value the student gave for it, with its unit if one is "
-                "written (for example 12.5%). If no final value is written, write ?.")
+FINAL_PROMPT = ("This image is part of an exam page: a student's handwritten answer for {label}, maybe with its "
+                "working. Write only the final value the student gave for it, with its unit if one is written (for "
+                "example 12.5%). If no final value is written, write ?.")
 PROMPTS = {
     "math": ("This image is handwriting from an engineering exam: a short calculation or a final value. Write it in "
              "LaTeX exactly as written, on one line, and nothing else. If something cannot be read, write ? in its "
@@ -82,7 +82,8 @@ def main():
     ap.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     ap.add_argument("--n-best", type=int, default=3)
     ap.add_argument("--labels", default="Vx,Y1,Y2", help="a whole box's printed labels, top to bottom")
-    ap.add_argument("--label-text", default="", help="a value's printed label, for the final-value question")
+    ap.add_argument("--label-text", default="", help="what a value's place asks for, for the final-value question "
+                    "('_' for spaces: Slurm's --export): \"the_DUTY_CICLE_printed_at_the_bottom\"")
     ap.add_argument("--sep", default="", help="what follows each label in print ('=' for expressions, '-' for words)")
     a = ap.parse_args()
     from PIL import Image
@@ -111,7 +112,7 @@ def main():
                 if key.endswith("_valuebox"):          # (a value's place with its label: the final value asked for)
                     if reader == "vlm":
                         c = rd.recognize(Image.open(f).convert("RGB"), n_best=1, max_new_tokens=40,
-                                         prompt=FINAL_PROMPT.format(label=a.label_text))[0]
+                                         prompt=FINAL_PROMPT.format(label=a.label_text.replace("_", " ")))[0]
                         out.setdefault(key[:-len("box")], {})["vlmfinal"] = [[c.text, float(c.logp)]]
                     continue
                 if key.endswith("_box"):               # (a whole box: its rows read together, by the vision model)

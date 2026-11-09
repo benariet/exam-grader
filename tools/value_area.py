@@ -28,19 +28,27 @@ sys.path.insert(0, HERE)
 SURE_P = 0.5
 
 
-def value_of(text, percent=False):
-    """a reading -> its final value (float) or None; with percent, a bare fraction below 1 is a share (x 100)"""
-    from grader.numeric import parse_numeric
+def value_of(text, percent=False, unit=""):
+    """a reading -> its final value (float) or None; with percent, a bare fraction below 1 is a share (x 100); with
+    unit (the key's: 'ns'), a value with a unit of its own put in it ('6.97 \\cdot 10^{-8} s' -> 69.7), one with a
+    unit of another kind None, a bare number taken as in it"""
+    from grader.numeric import Q_, parse_numeric
     try:
         v = parse_numeric(text)
     except Exception:                                  # noqa: BLE001  (not a number)
         return None
-    if percent and not (v.unit or "").strip() and 0 < abs(v.value) < 1:
+    u = (v.unit or "").strip()
+    if percent and not u and 0 < abs(v.value) < 1:
         return v.value * 100
+    if unit and u and u != unit and unit != "%" and u != "%":
+        try:
+            return float(Q_(v.value, u).to(unit).magnitude)
+        except Exception:                              # noqa: BLE001  (a unit of another kind)
+            return None
     return float(v.value)
 
 
-def judge_value(readings, key, tol, percent=False):
+def judge_value(readings, key, tol, percent=False, unit=""):
     """{reader: [(text, min token p)]} -> (verdict, the reading used, its value): the vision model asked for the final
     value of the place ('vlmfinal') giving the key's - right (it could not have worked it out); two readers whose
     likeliest readings that hold a number agree (within 1 %) decide; else the formula reader's own - right if its
@@ -50,7 +58,7 @@ def judge_value(readings, key, tol, percent=False):
     tops = {}
     for rd, cands in readings.items():
         for text, p in cands:
-            v = value_of(text, percent)
+            v = value_of(text, percent, unit)
             if v is not None:
                 tops[rd] = (text, v, p)
                 break
@@ -64,7 +72,7 @@ def judge_value(readings, key, tol, percent=False):
             if close(tops[a][1], tops[b][1], 0.01):
                 return ("right" if close(tops[a][1], key, tol) else "wrong"), tops[a][0], tops[a][1]
     own = readings.get("pix2text", [])
-    vals = [value_of(t, percent) for t, _ in own]
+    vals = [value_of(t, percent, unit) for t, _ in own]
     first = next(((t, v, p) for (t, p), v in zip(own, vals) if v is not None), None)
     if first is None:                                  # (the final value the vision model was asked for, if any:
         if "vlmfinal" in tops:                         #  for the human to see, not a verdict)
@@ -87,6 +95,8 @@ def main():
     ap.add_argument("--key", required=True, help="the solution's value, a unit after it if any: '5.75%%'")
     ap.add_argument("--tol", type=float, default=0.03)
     ap.add_argument("--percent", action="store_true")
+    ap.add_argument("--no-local", action="store_true", help="the formula reader on this computer left out (a whole "
+                    "page of working: only the readers asked for its final value)")
     ap.add_argument("--name", default="")
     ap.add_argument("--question", type=int, default=0)
     ap.add_argument("--grades", default="")
@@ -107,6 +117,8 @@ def main():
     key = value_of(a.key, a.percent)
     if key is None:
         raise SystemExit(f"the key {a.key!r} is no number")
+    from grader.numeric import parse_numeric
+    key_unit = (parse_numeric(a.key).unit or "").strip()
     second = json.load(open(a.second, encoding="utf-8")) if a.second else {}
     marks = {}
     if a.grades:
@@ -158,10 +170,10 @@ def main():
             if fr is None:
                 from recog.formula import FormulaRecognizer
                 fr = FormulaRecognizer()
-            readings = {"pix2text": [(c.text, c.min_token_p) for c in fr.recognize(crop, n_best=4)]}
+            readings = {} if a.no_local else {"pix2text": [(c.text, c.min_token_p) for c in fr.recognize(crop, n_best=4)]}
             for rd, cs in second.get(f"{name}_value", {}).items():
                 readings[rd] = [(t, 1.0) for t, _ in cs]
-            v, used, val = judge_value(readings, key, a.tol, a.percent)
+            v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
         out = {"exam": name, "verdict": v, "read": used, "value": val, "key": key}
         json.dump(out, open(os.path.join(a.out, f"{name}.value.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         txt = {"right": f"{a.name}: נכתב {val:g} - כמו בפתרון ({a.key})." if val is not None else "",

@@ -8157,6 +8157,8 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
     from recog.formula import Candidate
     from tools import value_area as V
     assert V.value_of(r"\frac{11.5}{200} \cdot 100 \% = 5.75 \%") == 5.75 and V.value_of("0.0575", True) == 5.75
+    assert abs(V.value_of(r"6.97 \cdot 10^{-8} s", False, "ns") - 69.7) < 1e-9 and V.value_of("3 V", False, "ns") is None
+    assert V.judge_value({"vlmfinal": [("0 J", 0)]}, 0.0, 0.1, False, "J")[0] == "right"
     assert V.judge_value({"pix2text": [("5.75 \\%", 0.9)]}, 5.75, 0.03)[0] == "right"
     assert V.judge_value({"pix2text": [("11.5 \\%", 0.9)]}, 5.75, 0.03)[0] == "wrong"
     assert V.judge_value({"pix2text": [("11.5 \\%", 0.2)]}, 5.75, 0.03)[0] == "unsure"           # (a weak token)
