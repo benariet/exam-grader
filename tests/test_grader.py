@@ -8087,3 +8087,33 @@ def test_a_box_of_words_its_rows_found_and_its_answers_judged_by_keywords():
     assert judge_row({"vlm": [["Full adder", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "right"
     assert judge_row({"vlm": [["?", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "unsure"
     assert judge_row({"vlm": [["half adder", 0]], "vlmbox": [["full adder", 0]]}, key)[0] == "unsure"
+
+
+def test_an_exams_checks_gathered_into_one_report_and_a_class_overview():
+    """tools/exam_report.py: the course tools' outputs (truth table, expressions, words, multiple choice, circuit) in
+    their folders -> each exam's remarks in one file, part by part, and an overview with the points surely off (a
+    multiple-choice letter wrong where it is all or nothing)"""
+    import json
+    import sys
+    import tempfile
+    from tools import exam_report
+    with tempfile.TemporaryDirectory() as tmp:
+        os_ = __import__("os")
+        for d in ("t", "c", "o"):
+            os_.makedirs(f"{tmp}/{d}")
+        json.dump({"exam": "3", "right": 20, "wrong": 1, "unsure": 3, "empty": 0, "cells": []}, open(f"{tmp}/t/3.table.json", "w"))
+        open(f"{tmp}/t/3_table_remarks.txt", "w", encoding="utf-8").write("טבלה: 20 נכונים\n")
+        json.dump({"exam": "3", "items": [{"item": "2.2", "verdict": "wrong", "chosen": "ב"},
+                                          {"item": "2.3", "verdict": "right", "chosen": "ד"}]}, open(f"{tmp}/c/3.choices.json", "w"))
+        open(f"{tmp}/c/3_choice_remarks.txt", "w", encoding="utf-8").write("שאלה 2.2: סומנה ב\n")
+        argv = sys.argv
+        sys.argv = ["exam_report.py", "--runs", f"{tmp}/t", f"{tmp}/c", "--out", f"{tmp}/o", "--sure", "2.2=5,2.3=5"]
+        try:
+            exam_report.main()
+        finally:
+            sys.argv = argv
+        rep = open(f"{tmp}/o/3_report.txt", encoding="utf-8").read()
+        assert "טבלה: 20 נכונים" in rep and "סומנה ב" in rep and rep.index("טבלה") < rep.index("2.2") and ": 5" in rep, rep
+        csv_ = open(f"{tmp}/o/summary.csv", encoding="utf-8-sig").read()
+        assert "wrong ב" in csv_ and "right ד" in csv_, csv_
+        assert "<tr><td><a href='3_report.txt'>3</a></td>" in open(f"{tmp}/o/summary.html", encoding="utf-8").read()
