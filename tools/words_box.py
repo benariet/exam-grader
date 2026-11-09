@@ -38,12 +38,22 @@ def _dl(a: str, b: str) -> int:
     return d[-1][-1]
 
 
+LOOK_ALIKE = {frozenset(p) for p in ("uy", "uv", "ao", "ec", "nh", "mn", "il", "rv")}   # (letters a hand's writing
+#                                                                                            is read as one another)
+
+
+def _look_alike(t: str, w: str) -> bool:
+    """t is w with one letter read as a look-alike ('sym' for 'sum')"""
+    diff = [(a, b) for a, b in zip(t, w) if a != b]
+    return len(t) == len(w) and len(diff) == 1 and frozenset(diff[0]) in LOOK_ALIKE
+
+
 def fuzzy_hit(text: str, phrase: str) -> bool:
     """the phrase's words, one after another, in the text, each a letter off at most (words of 4 letters or more -
-    'curry', 'caryy' for 'carry'; a shorter one as written)"""
+    'curry', 'caryy' for 'carry'; a shorter one only a look-alike letter off - 'sym' for 'sum')"""
     toks = [t.lower() for t in re.findall(r"[A-Za-z\u0590-\u05ff]+", text)]
     words = phrase.lower().split()
-    ok = lambda t, w: t == w or (len(w) >= 4 and _dl(t, w) <= 1)       # noqa: E731
+    ok = lambda t, w: t == w or (_dl(t, w) <= 1 if len(w) >= 4 else len(w) == 3 and _look_alike(t, w))  # noqa: E731
     return any(all(ok(toks[i + k], w) for k, w in enumerate(words)) for i in range(len(toks) - len(words) + 1))
 
 

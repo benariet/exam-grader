@@ -7912,6 +7912,36 @@ def test_a_printed_truth_tables_cells_are_found_and_read():
         r = json.load(open(f"{tmp}/out2/9.table.json"))
         assert r["strength"] == 2, r                  # (rows 1's Vx and 3's Y2: right, read W - the key's S only;
         #                                                row 2's Y1 takes either)
+        assert r["wrong"] == 0 and r["unsure"] == 1, r     # (row 2's Y1: the formula reader read the key's 1)
+        # the cells cut out for the GPU readers, then judged with their readings: two kinds alike decide
+        sys.argv = ["truth_table.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--cols", "2,4,5",
+                    "--key", "100;010;001;000;000;000;000;000", "--crops-only", f"{tmp}/crops"]
+        try:
+            truth_table.main()
+        finally:
+            sys.argv = sys_argv
+        cut = sorted(os_.listdir(f"{tmp}/crops"))
+        assert cut == ["9_r1c2.png", "9_r2c4.png", "9_r3c5.png", "9_r5c4.png"], cut
+        json.dump({"9_r2c4": {"vlm": [["0", 0]], "mumer": [["0", 0]]}}, open(f"{tmp}/g.json", "w"))
+        sys.argv = ["truth_table.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--cols", "2,4,5",
+                    "--key", "100;010;001;000;000;000;000;000", "--out", f"{tmp}/out3", "--readings", f"{tmp}/g.json"]
+        try:
+            truth_table.main()
+        finally:
+            sys.argv = sys_argv
+        r = json.load(open(f"{tmp}/out3/9.table.json"))
+        assert r["wrong"] == 1 and "נכתב 0, בפתרון 1" in open(f"{tmp}/out3/9_table_remarks.txt", encoding="utf-8").read()
+    from tools.truth_table import cell_verdict, gpu_cell
+    assert cell_verdict("0", 0.9, False, "1", {}, "1") == "unsure"           # (the formula reader read the key's)
+    assert cell_verdict("0", 0.9, False, "0", {}, "1") == "wrong" and cell_verdict("0", 0.9, False, None, {}, "1") == \
+        "wrong" and cell_verdict("?", 0.2, False, "1", {}, "1") == "unsure"
+    assert cell_verdict("?", 0.2, False, "1", {"vlm": "1"}, "1") == "right"          # (two kinds alike)
+    assert cell_verdict("0", 0.9, False, "1", {"vlm": "1", "mumer": "1"}, "1") == "right"     # (three against one)
+    assert cell_verdict("0", 0.9, False, "1", {"vlm": "0", "mumer": "1"}, "1") == "unsure"    # (two against two)
+    assert cell_verdict("0", 0.9, False, None, {"vlm": "0"}, "1") == "wrong" and cell_verdict("", 0, False, None,
+                                                                                                {"vlm": "1"}, "1") == "empty"
+    assert gpu_cell({"vlm": [["$1W$", 0]], "mumer": [["?", 0], ["0 \\mathrm{S}", -1]], "x": None}) == \
+        ({"vlm": "1", "mumer": "0"}, {"vlm": "W", "mumer": "S"})
     assert got[(4, 2)][0] == ""                                         # (empty)
     from tools.truth_table import allowed_strengths, parse_cell          # (a cell read whole: its strength)
     assert parse_cell("1 S") == ("1", "S") and parse_cell("0 ( w )") == ("0", "W") and parse_cell("1") == ("1", "")
@@ -8021,6 +8051,11 @@ def test_the_answer_boxs_expressions_are_found_read_and_judged(monkeypatch):
         cells = [{"row": r + 1, "col": 2, "read": str(v), "verdict": "right"} for r, v in enumerate((0, 0, 1, 1, 1, 1, 0, 0))]
         json.dump({"cells": cells}, open(f"{tmp}/4.table.json", "w"))
         assert E.own_table(tmp, "4", 2, 8) == (0, 0, 1, 1, 1, 1, 0, 0) and E.own_table(tmp, "4", 4, 8) is None
+        cells[2].update(read="?", key="0", verdict="wrong")     # (decided by the GPU readers: the digit reader's '?')
+        for c in cells:
+            c.setdefault("key", c["read"])
+        json.dump({"cells": cells}, open(f"{tmp}/4.table.json", "w"))
+        assert E.own_table(tmp, "4", 2, 8) == (0, 0, 1, 1, 1, 1, 0, 0)
 
 
 def test_a_multiple_choice_mark_is_found_on_the_printed_options():
@@ -8113,6 +8148,10 @@ def test_a_box_of_words_its_rows_found_and_its_answers_judged_by_keywords():
     assert judge_words(["?"], key)[0] == "unsure"
     assert judge_words(["Ful adder"], {**key, "right_fuzzy": ["full adder"]})[0] == "right"   # (a letter off)
     assert judge_words(["header"], {**key, "right_fuzzy": ["full adder"]})[0] == "unsure"
+    s = {"right": [r"\bsum\b"], "right_fuzzy": ["sum"]}  # (a short word: only a look-alike letter off)
+    assert judge_words(["Sym"], s)[0] == "right" and judge_words(["Sun"], s)[0] == "right"
+    assert judge_words(["Sub"], s)[0] == "unsure" and judge_words(["Su"], s)[0] == "unsure"
+    assert {"cell"} <= set(__import__("tools.read_crops", fromlist=["x"]).PROMPTS)
     import tools.read_crops as R                         # (each kind of piece has its prompt)
     assert {"math", "words", "boolean"} <= set(R.PROMPTS) and {"words", "boolean"} <= set(R.BOX_PROMPTS)
     assert "{label}" in R.FINAL_PROMPT and "'Y1 -'" in R.BOX_PROMPTS["words"].format(labels="'Y1 -'", lines="")
@@ -8186,6 +8225,25 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
     assert V.judge_value({"pix2text": [("\\int", 0.9)], "vlm": [("8.05%", 0)], "vlmfinal": [("8.05%", 0)]}, 5.75, 0.03)[0] == \
         "unsure"                                       # (the vision model twice: one reader)
     assert V.judge_value({"pix2text": [("\\int", 0.9)], "vlmfinal": [("5.75%", 0)]}, 5.75, 0.03)[0] == "right"
+    # a page of working: the vision model's final value read again where it found it, by readers of other families
+    assert V.family("vlmfinal") == V.family("vlm@0.75") == "vlm" and V.family("mumerfinal") == "mumer" and \
+        V.family("pix2textfinal") == "pix2text"
+    assert V.judge_value({"vlmfinal": [("t = 35 ns", 0)], "mumerfinal": [("t_{pHL}=35\\,ns", 0)]}, 69.7, 0.1, False,
+                         "ns")[:2] == ("wrong", "t = 35 ns")                           # (two families: a wrong value)
+    assert V.judge_value({"vlmfinal": [("35 ns", 0)], "mumerfinal": [("35 ns", 0)], "pix2textfinal": [("69.7ns", 0)]},
+                         69.7, 0.1, False, "ns")[0] == "unsure"         # (but a third read the key's: not surely wrong)
+    assert V.judge_value({"vlmfinal": [("35 ns", 0)], "mumerfinal": [("35 ns", 0)], "pix2textfinal": [("12 ns", 0)]},
+                         69.7, 0.1, False, "ns")[0] == "wrong"              # (a third read another wrong value)
+    assert V.judge_value({"mumerfinal": [("69 ns", 0)], "pix2textfinal": [("69 ns", 0)], "vlm": [("12 ns", 0)],
+                          "mumer": [("12 ns", 0)]}, 69.7, 0.1, False, "ns")[0] == "unsure"   # (two pairs: key, not)
+    assert V.judge_value({"vlmfinal": [("35 ns", 0)], "vlm": [("35 ns", 0)]}, 69.7, 0.1, False, "ns")[0] == "unsure"
+    assert V.value_of("69.7 ns.", False, "ns") == 69.7 and V.value_of("69.7 ns ?", False, "ns") is None
+    from tools.read_crops import bbox_of, final_crop
+    assert bbox_of('{"bbox_2d": [100, 500, 600, 550]}', (2000, 1000)) == [0.1, 0.5, 0.6, 0.55]
+    assert bbox_of('```json\n[{"bbox_2d": [600, 550, 100, 500], "label": "t"}]\n```', (9, 9)) == [0.1, 0.5, 0.6, 0.55]
+    assert bbox_of("{}", (9, 9)) is None and bbox_of("[10, 10, 10, 10]", (9, 9)) is None
+    assert bbox_of("[200, 100, 1200, 300]", (2400, 600)) == [0.0833, 0.1667, 0.5, 0.5]   # (pixels: an older model)
+    assert final_crop(Image.new("RGB", (2000, 1000)), [0.1, 0.5, 0.6, 0.55]).size == (1030, 80)
     tpl = Image.new("L", (1240, 1754), 255)
     d = ImageDraw.Draw(tpl)
     d.text((510, 1535), "DUTY CYCLE=", fill=0, font=ImageFont.truetype("DejaVuSans-Bold.ttf", 20))
@@ -8214,6 +8272,19 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
             sys.argv = argv
         assert json.load(open(f"{tmp}/out/8.value.json"))["verdict"] == "right"
         assert json.load(open(f"{tmp}/out/9.value.json"))["verdict"] == "empty"
+        # the GPU readers' readings: where the final value is, read there here too (the fake reads 5.75 %: the two
+        # that agree on 11.5 % are not enough - not surely wrong)
+        json.dump({"8_value": {"vlmfinal": [["11.5%", 0]], "where": [0.5, 0.2, 0.8, 0.8], "mumerfinal": [["11.5\\%", 0]]}},
+                  open(f"{tmp}/r.json", "w"))
+        sys.argv = ["value_area.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--area", "80,1500,1100,1608",
+                    "--key", "5.75%", "--percent", "--no-local", "--second", f"{tmp}/r.json", "--out", f"{tmp}/out2",
+                    "--review"]
+        try:
+            V.main()
+        finally:
+            sys.argv = argv
+        assert json.load(open(f"{tmp}/out2/8.value.json"))["verdict"] == "unsure"
+        assert "data:image/png" in open(f"{tmp}/out2/review.html", encoding="utf-8").read()
 
 
 def test_an_exams_structured_checks_run_from_its_config(tmp_path):

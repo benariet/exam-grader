@@ -185,15 +185,42 @@ def parse_cell(text: str):
     return m.group(1), ("W/S" if letters == {"S", "W"} else letters.pop() if letters else "")
 
 
+def cell_verdict(digit, p, alike, whole, gpu, want):
+    """a cell's readings -> its verdict: digit - the digit reader's value ('0' / '1', '?' none, '' empty) and how sure
+    it is (p), alike - read through a look-alike ('7' for a '1'); whole - the formula reader's value of the whole cell
+    (or None); gpu - {reader: value} the GPU readers' (Uni-MuMER, the vision model - the cell alone, nothing round it
+    to guess from; tools/read_crops.py --prompt cell). With the GPU readers' values: a value readers of two kinds give,
+    and more of them than the other value, decides, else unsure. Without them: the digit reader's sure value - a
+    wrong one not when the formula reader reads the key's (in half of the digit reader's wrongs it does: a misreading),
+    an unsure one decided when the two read it alike"""
+    if digit == "":
+        return "empty"
+    if gpu:
+        from collections import Counter
+        votes = Counter(v for v in [digit if digit in ("0", "1") and p >= SURE else None, whole, *gpu.values()]
+                        if v in ("0", "1"))
+        if votes:
+            (x, n), *rest = votes.most_common()
+            if n >= 2 and (not rest or rest[0][1] < n):
+                return "right" if x == want else "wrong"
+        return "unsure"
+    verdict = "unsure" if p < SURE or digit not in ("0", "1") else "right" if digit == want else \
+        "unsure" if alike else "wrong"
+    if verdict == "unsure" and digit in ("0", "1") and whole == digit:   # (the two readers alike: decided)
+        verdict = "right" if digit == want else "wrong"
+    if verdict == "wrong" and whole == want:           # (the formula reader read the key's: not surely wrong)
+        verdict = "unsure"
+    return verdict
+
+
 def allowed_strengths(key_cell: str):
     """a key's cell ('1S', '0W\\S') -> the strengths it takes: 'W\\S' either (and both written)"""
     st = key_cell[1:].replace("\\", "/").upper()
     return {"S", "W", "W/S"} if set(st) >= {"S", "W"} else {st} if st else set()
 
 
-def read_cell_text(page, ink, template, cells, want, fr):
-    """each cell in want read whole by the formula reader made to read a cell (CELL_GRAMMAR) -> {(row, col): (value or
-    None, strength)} - the strength the digit reader cannot see, and a second reading of the value"""
+def cell_crops(page, ink, template, cells, want):
+    """each written cell in want -> {(row, col): its handwriting alone (PIL image, the print gone)}"""
     from recog.printed import fit_map, printed_on
     from tools.expr_box import crop_of
     M, b = fit_map(template, ink)
@@ -205,11 +232,34 @@ def read_cell_text(page, ink, template, cells, want, fr):
         m = 4
         sub = np.zeros_like(hand)
         sub[y0 + m:y1 - m, x0 + m:x1 - m] = hand[y0 + m:y1 - m, x0 + m:x1 - m]
-        if int(sub.sum()) < MIN_INK:
-            continue
-        c = fr.recognize(crop_of(gray, sub), n_best=2, grammar=CELL_GRAMMAR)
+        if int(sub.sum()) >= MIN_INK:
+            out[key] = crop_of(gray, sub)
+    return out
+
+
+def read_cell_text(page, ink, template, cells, want, fr):
+    """each cell in want read whole by the formula reader made to read a cell (CELL_GRAMMAR) -> {(row, col): (value or
+    None, strength)} - the strength the digit reader cannot see, and a second reading of the value"""
+    out = {}
+    for key, crop in cell_crops(page, ink, template, cells, want).items():
+        c = fr.recognize(crop, n_best=2, grammar=CELL_GRAMMAR)
         out[key] = parse_cell(c[0].text) if c else (None, "")
     return out
+
+
+def gpu_cell(got):
+    """the GPU readers' readings of a cell {reader: [[text, logp], ...]} -> ({reader: value}, {reader: strength}) of
+    their likeliest readings that hold a value"""
+    vals, sts = {}, {}
+    for rd, cands in (got or {}).items():
+        if not isinstance(cands, list):
+            continue
+        for text, _ in cands:
+            v, st = parse_cell(re.sub(r"^[\s$\\(\[{]*(?:\\mathrm\s*\{|\\text\s*\{)?", "", text))
+            if v is not None:
+                vals[rd.split("@")[0]], sts[rd.split("@")[0]] = v, st
+                break
+    return vals, sts
 
 
 def _review_figure(img, boxes, cells_out, name, res, off):
@@ -255,7 +305,11 @@ def main():
     ap.add_argument("--ncols", type=int, default=7)
     ap.add_argument("--grades", default="")
     ap.add_argument("--question", type=int, default=1)
-    ap.add_argument("--out", required=True)
+    ap.add_argument("--out", default="")
+    ap.add_argument("--crops-only", default="", help="each written cell's handwriting saved there (<n>_r<row>c<col>.png)"
+                    " for the GPU readers (tools/read_crops.py --prompt cell), nothing judged")
+    ap.add_argument("--readings", default="", help="the GPU readers' readings of the cells (tools/read_crops.py): a "
+                    "cell's value readers of two kinds give, and more of them than the other, decides")
     ap.add_argument("--only", default="")
     ap.add_argument("--review", action="store_true", help="<out>/review.html: each exam's table as scanned, each cell "
                     "read boxed - green right, red wrong, orange unsure, gray empty - with its reading (to look over)")
@@ -270,6 +324,22 @@ def main():
     cols = [int(c) for c in a.cols.split(",")]
     key = [list(r) for r in a.key.split(";")]
     want = [(r + 1, c) for r in range(len(key)) for c in cols]
+    if a.crops_only:
+        os.makedirs(a.crops_only, exist_ok=True)
+        import pypdfium2 as pdfium
+        for pdf in sorted(p for p in glob.glob(os.path.join(a.folder, "*.pdf")) if not re.search(r"_checked\.pdf$", p, re.I)):
+            name = os.path.splitext(os.path.basename(pdf))[0]
+            doc = pdfium.PdfDocument(pdf)
+            if len(doc) < a.page:
+                continue
+            page, _ = clean_scan(doc[a.page - 1].render(scale=150 / 72).to_pil().convert("RGB"))
+            ink = np.asarray(page.convert("L")) < 128
+            for (r, c), crop in cell_crops(page, ink, template, cells, want).items():
+                crop.save(os.path.join(a.crops_only, f"{name}_r{r}c{c}.png"))
+        return
+    if not a.out:
+        raise SystemExit("--out is needed (or --crops-only)")
+    gpu = json.load(open(a.readings, encoding="utf-8")) if a.readings else {}
     reader = CellReader()
     strengths = [r.split(",") for r in a.strengths.split(";")] if a.strengths else None
     fr = None
@@ -309,18 +379,24 @@ def main():
                 v, p, n_ink = got[(r + 1, c)]
                 alike = v.endswith("~")                # (read through a look-alike digit: right when as the key,
                 v = v.rstrip("~")                      #  else left to a human)
-                verdict = "empty" if v == "" else "unsure" if p < SURE or v not in ("0", "1") else \
-                    "right" if v == want_v else "unsure" if alike else "wrong"
                 v2, st = whole.get((r + 1, c), (None, ""))
-                if verdict == "unsure" and v in ("0", "1") and v2 == v:      # (the two readers alike: decided)
-                    verdict = "right" if v == want_v else "wrong"
+                gv, gst = gpu_cell(gpu.get(f"{name}_r{r + 1}c{c}"))
+                verdict = cell_verdict(v, p, alike, v2, gv, want_v)
                 res[verdict] += 1
                 cell = {"row": r + 1, "col": c, "read": v, "p": round(p, 3), "verdict": verdict, "key": want_v,
                         "second": v2}
+                if gv:
+                    cell["gpu"] = gv
                 if verdict == "wrong":
-                    remarks.append(f"שורה {r + 1}, עמודה {c + 1}: נכתב {v}, בפתרון {want_v}.")
+                    remarks.append(f"שורה {r + 1}, עמודה {c + 1}: נכתב {'1' if want_v == '0' else '0'}, בפתרון {want_v}.")
                 if strengths and verdict == "right":           # (the strength, where the value is right)
                     ok = allowed_strengths(strengths[r][cols.index(c)])
+                    from collections import Counter                 # (the strength readers of two kinds give, and
+                    sv = Counter(x for x in [st, *gst.values()] if x)   # more than another: theirs; else the
+                    if sv:                                              # formula reader's)
+                        (s1, n1), *more = sv.most_common()
+                        if n1 >= 2 and (not more or more[0][1] < n1):
+                            st = s1
                     cell.update(strength=st, strength_key="/".join(sorted(ok)))
                     if st and ok and st not in ok:
                         res["strength"] += 1

@@ -4,6 +4,10 @@ tools/expr_box.py --second to judge with, on the computer the exams stay on.
 
     python tools/read_crops.py <folder> --out readings.json [--readers mumer,vlm] [--prompt boolean]
         -> {"<the PNG's name>": {"mumer": [[latex, logp], ...], "vlm": [[latex, logp], ...]}}
+
+A value's place with its print (<n>_valuebox.png, tools/value_area.py --crops-only): the vision model asked for the
+final value ('vlmfinal') and where it is ('where': shares of the image); Uni-MuMER then reads it there ('mumerfinal')
+- a second reader of another family for the judging (the vision model always reads first).
 """
 import argparse
 import glob
@@ -30,6 +34,10 @@ BOX_PROMPTS = {
 FINAL_PROMPT = ("This image is part of an exam page: a student's handwritten answer for {label}, maybe with its "
                 "working. Write only the final value the student gave for it, with its unit if one is written (for "
                 "example 12.5%). If no final value is written, write ?.")
+LOCATE_PROMPT = ("This image is part of an exam page: a student's handwritten answer for {label}, maybe with its "
+                 "working. Where on the image is the final value the student gave for it? Answer only with JSON "
+                 '{{"bbox_2d": [x1, y1, x2, y2]}} around that final value with its unit (and the name before it, '
+                 "if written on the same line). If no final value is written, answer {{}}.")
 PROMPTS = {
     "math": ("This image is handwriting from an engineering exam: a short calculation or a final value. Write it in "
              "LaTeX exactly as written, on one line, and nothing else. If something cannot be read, write ? in its "
@@ -37,12 +45,45 @@ PROMPTS = {
     "words": ("This image is one handwritten line from an exam answer, in Hebrew or English (a word or a few - maybe a "
               "name of a circuit component, or a short phrase). Write exactly what is written, in its own language, "
               "and nothing else. If something cannot be read, write ? in its place - do not guess."),
+    "cell": ("This image is one handwritten cell of a truth table from a digital logic exam: a logic value, 0 or 1, maybe "
+             "followed by its strength - S (strong), W (weak) or W/S. Write exactly what is written (for example 1, 0S, "
+             "1W, 0W/S), and nothing else. If it cannot be read, write ? - do not guess."),
     "boolean": ("This image is one handwritten Boolean expression from a digital logic exam: variables A, B, C and V_x; "
                 "OR written +, AND written as letters side by side or with a dot, XOR written as a circled plus, NOT as a "
                 "bar over a letter or a group or a prime after it, and brackets. Write exactly what is written, in LaTeX "
                 "(\\oplus, \\overline{...}, ', \\cdot), on one line, and nothing else. If something cannot be read, "
                 "write ? in its place - do not guess."),
 }
+
+
+def bbox_of(text: str, size):
+    """the vision model's answer where a thing is -> [x0, y0, x1, y1] as shares of the image (0..1), or None: Qwen3-VL
+    gives coordinates 0-1000 of the image whatever its size (a larger one - an older model's pixels - taken as pixels
+    of size (w, h))"""
+    num = r"\s*(-?\d+(?:\.\d+)?)\s*"
+    m = re.search(r"\[" + ",".join([num] * 4) + r"\]", text)
+    if not m:
+        return None
+    x0, y0, x1, y1 = (float(v) for v in m.groups())
+    if max(x0, y0, x1, y1) > 1000:
+        w, h = size
+        x0, x1, y0, y1 = x0 / w, x1 / w, y0 / h, y1 / h
+    else:
+        x0, y0, x1, y1 = (v / 1000 for v in (x0, y0, x1, y1))
+    x0, x1 = sorted((max(0.0, x0), min(1.0, x1)))
+    y0, y1 = sorted((max(0.0, y0), min(1.0, y1)))
+    if x1 - x0 < 0.005 or y1 - y0 < 0.005:
+        return None
+    return [round(v, 4) for v in (x0, y0, x1, y1)]
+
+
+def final_crop(img, where, pad: float = 0.3):
+    """the place found (bbox_of's shares) cut out of the image, with a margin of pad of its height around it (at least
+    8 pixels: a box the model draws often cuts the strokes' ends)"""
+    w, h = img.size
+    x0, y0, x1, y1 = where[0] * w, where[1] * h, where[2] * w, where[3] * h
+    m = max(8.0, pad * (y1 - y0))
+    return img.crop((int(max(0, x0 - m)), int(max(0, y0 - m)), int(min(w, x1 + m)), int(min(h, y1 + m))))
 
 
 def label_pattern(name: str) -> str:
@@ -91,7 +132,8 @@ def main():
     from PIL import Image
     files = sorted(glob.glob(os.path.join(a.folder, "*.png")))
     out = json.load(open(a.out, encoding="utf-8")) if os.path.isfile(a.out) else {}
-    for reader in [r for r in re.split(r"[,|]", a.readers) if r]:      # ('|' for Slurm's --export)
+    readers = sorted((r for r in re.split(r"[,|]", a.readers) if r), key=lambda r: r != "vlm")   # ('|' for Slurm's
+    for reader in readers:                             # --export; the vision model first: where a final value is)
         t0 = time.time()
         if reader == "mumer":
             from recog.mumer import MumerReader
@@ -112,11 +154,17 @@ def main():
         for f in files:
             key = os.path.basename(f)[:-4]
             try:
-                if key.endswith("_valuebox"):          # (a value's place with its label: the final value asked for)
+                if key.endswith("_valuebox"):          # (a value's place with its label: the final value asked for,
+                    name = key[:-len("box")]           #  and where it is - for another reader to read it there)
+                    img = Image.open(f).convert("RGB")
+                    label = a.label_text.replace("_", " ")
                     if reader == "vlm":
-                        c = rd.recognize(Image.open(f).convert("RGB"), n_best=1, max_new_tokens=40,
-                                         prompt=FINAL_PROMPT.format(label=a.label_text.replace("_", " ")))[0]
-                        out.setdefault(key[:-len("box")], {})["vlmfinal"] = [[c.text, float(c.logp)]]
+                        c = rd.recognize(img, n_best=1, max_new_tokens=40, prompt=FINAL_PROMPT.format(label=label))[0]
+                        out.setdefault(name, {})["vlmfinal"] = [[c.text, float(c.logp)]]
+                        g = rd.recognize(img, n_best=1, max_new_tokens=60, prompt=LOCATE_PROMPT.format(label=label))[0]
+                        out[name]["where"] = bbox_of(g.text, img.size)
+                    elif reader == "mumer" and (out.get(name) or {}).get("where"):     # (the vision model read first)
+                        out[name]["mumerfinal"] = [[c.text, float(c.logp)] for c in read(final_crop(img, out[name]["where"]))]
                     continue
                 if key.endswith("_box"):               # (a whole box: its rows read together, by the vision model)
                     if reader != "vlm":

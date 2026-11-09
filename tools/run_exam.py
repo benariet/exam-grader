@@ -129,7 +129,7 @@ def main():
             cmd = cli(tool, {**common, **args, "crops_only": crops}, out)
             run(cmd[:2] + head + cmd[2:], a.dry_run)
             readings = server_read(part, crops, cfg, a.dry_run)
-            args["readings" if tool == "words_box" else "second"] = readings
+            args["readings" if tool in ("words_box", "truth_table") else "second"] = readings
         if tool in POSITIONAL:                         # (its folder of results another part wrote - and its own)
             where = str(args.pop(POSITIONAL[tool])).replace("{out}", out)
             folders[-1] = where

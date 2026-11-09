@@ -11,6 +11,11 @@ a share ('0.0575' for 5.75 % with --percent), against the key within --tol.
         --key "5.75%" --percent --name "3 duty cycle" --question 3 --out <folder> [--grades ...] [--review]
         [--crops-only <dir>] [--second readings.json]
         -> right / wrong / unsure / empty per exam; <out>/<n>.value.json, <n>_value_remarks.txt (Hebrew)
+
+A page of working (1(e)'s delay): the GPU readers' readings (--second) say where the vision model found the final
+value ('where'); it is read there by Uni-MuMER on the server ('mumerfinal') and the formula reader here
+('pix2textfinal') - two families agreeing with each other or with the vision model's final value decide, a wrong
+value too (--review frames the place found in red).
 """
 import argparse
 import glob
@@ -33,28 +38,56 @@ def value_of(text, percent=False, unit=""):
     unit (the key's: 'ns'), a value with a unit of its own put in it ('6.97 \\cdot 10^{-8} s' -> 69.7), one with a
     unit of another kind None, a bare number taken as in it"""
     from grader.numeric import Q_, parse_numeric
+    if "?" in text:                                    # (a reader's mark for what it could not read)
+        return None
+    if re.search(r"\d\s+\.?\s*\d|\d\s*\.\s+\d", text):    # (Uni-MuMER spaces its tokens: '4 2 . 5 n s' - 42.5 ns)
+        text = re.sub(r"(?<=[\d.])\s+(?=[\d.])", "", text)
+        text = re.sub(r"(?<=\d)\s+([a-zA-Zµμ])\s+([a-zA-Z])\b", r" \1\2", text)
+    text = re.sub(r"\\(?:mathrm|text|textrm|operatorname|mathit|rm)\s*\{\s*([^{}]*?)\s*\}",   # ('\mathrm { n s }')
+                  lambda m: " " + m.group(1).replace(" ", ""), text)
+    text = re.sub(r"\\sec\b", "sec", text)            # ('10^{-9} \sec': the unit, not the secant)
+    text = re.sub(r"\^\s*\{\s*([-+\u2212]?)\s*(\d+)\s*\}", lambda m: "^{" + m.group(1).replace("\u2212", "-") +
+                  m.group(2) + "}", text)             # ('10 ^ { - 9 }')
+    text = re.sub(r"(?<=[\d\s}])P(?=\s*(?:s|sec|F|J|W|A|V|Hz|H)\b)", "p", text)   # ('51.86 Psec': pico - a hand's p
+    #                                                                              read as a capital; no exam has peta)
     try:
         v = parse_numeric(text)
     except Exception:                                  # noqa: BLE001  (not a number)
-        return None
+        bare = re.sub(r"(?:\s|\\[,;!]|\\quad|[.,;:]|\\(?:Rightarrow|rightarrow|Longrightarrow|implies|to)\b)+$", "", text)
+        if bare == text:                               # ('69.7 ns.' - a sentence's full stop; an arrow after it)
+            return None
+        try:
+            v = parse_numeric(bare)
+        except Exception:                              # noqa: BLE001
+            return None
     u = (v.unit or "").strip()
     if percent and not u and 0 < abs(v.value) < 1:
         return v.value * 100
     if unit and u and u != unit and unit != "%" and u != "%":
-        try:
-            return float(Q_(v.value, u).to(unit).magnitude)
-        except Exception:                              # noqa: BLE001  (a unit of another kind)
-            return None
+        for w in dict.fromkeys((u, re.sub(r"S$", "s", u))):   # ('69.7 nS': a hand's s read as a capital - not
+                                                                #  siemens)
+            try:
+                return float(Q_(v.value, w).to(unit).magnitude)
+            except Exception:                          # noqa: BLE001  (a unit of another kind)
+                continue
+        return None
     return float(v.value)
+
+
+def family(name: str) -> str:
+    """a reader's family: the vision model however asked ('vlm', 'vlmfinal', 'vlm@0.75') is one reader; a reader
+    reading the place the vision model found ('mumerfinal', 'pix2textfinal') is its own"""
+    name = re.sub(r"@.*$", "", name)
+    return "vlm" if name.startswith("vlm") else re.sub(r"(?:final|box)$", "", name)
 
 
 def judge_value(readings, key, tol, percent=False, unit=""):
     """{reader: [(text, min token p)]} -> (verdict, the reading used, its value): the vision model asked for the final
-    value of the place ('vlmfinal') giving the key's - right (it could not have worked it out); two readers whose
-    likeliest readings that hold a number agree (within 1 %) decide; else the formula reader's own - right if its
-    likeliest number is the key's, wrong if that reading is sure and no other reading is the key's, else unsure"""
+    value of the place ('vlmfinal') giving the key's - right (it could not have worked it out); readers of two
+    families whose likeliest readings that hold a number agree (within 1 %) decide - right if every such pair is on
+    the key's, wrong if no reader read the key's, else unsure; else the formula reader's own - right if its likeliest
+    number is the key's, wrong if that reading is sure and no other reading is the key's, else unsure"""
     close = lambda v, w, t: v is not None and w is not None and abs(v - w) <= t * max(abs(w), 1e-12)  # noqa: E731
-    family = lambda n: "vlm" if n.startswith("vlm") else n                                             # noqa: E731
     tops = {}
     for rd, cands in readings.items():
         for text, p in cands:
@@ -65,12 +98,15 @@ def judge_value(readings, key, tol, percent=False, unit=""):
     if "vlmfinal" in tops and close(tops["vlmfinal"][1], key, tol):
         return "right", tops["vlmfinal"][0], tops["vlmfinal"][1]   # (the vision model told only what the place is:
     names = list(tops)                                             #  it cannot work the key out - it read it)
-    for i, a in enumerate(names):
-        for b in names[i + 1:]:
-            if family(a) == family(b):                 # (the vision model twice - on the cut writing, asked for the
-                continue                               #  final value - is one reader)
-            if close(tops[a][1], tops[b][1], 0.01):
-                return ("right" if close(tops[a][1], key, tol) else "wrong"), tops[a][0], tops[a][1]
+    agreed = [a for i, a in enumerate(names) for b in names[i + 1:]  # (the vision model twice - on the cut writing,
+              if family(a) != family(b) and close(tops[a][1], tops[b][1], 0.01)]   # asked for the final value - is
+    if agreed:                                                       # one reader)
+        text, v, _ = tops[agreed[0]]
+        if all(close(tops[x][1], key, tol) for x in agreed):
+            return "right", text, v
+        if any(close(x[1], key, tol) for x in tops.values()):       # (a pair or a reader on the key's: not sure)
+            return "unsure", text, v
+        return "wrong", text, v
     own = readings.get("pix2text", [])
     vals = [value_of(t, percent, unit) for t, _ in own]
     first = next(((t, v, p) for (t, p), v in zip(own, vals) if v is not None), None)
@@ -155,15 +191,19 @@ def main():
         mask = np.isin(lab, keep) if keep else None
         if mask is not None and int(mask.sum()) < 30:
             mask = None
-        crop = crop_of(gray, mask, hi=cleaned_hires(doc, a.page, 300)) if mask is not None else None
+        hi = cleaned_hires(doc, a.page, 300) if mask is not None else None
+        crop = crop_of(gray, mask, hi=hi) if mask is not None else None
+        k = hi.shape[1] / gray.shape[1] if hi is not None else 1.0
+        box_at = (max(0, int((x0 - 15) * k)), max(0, int((y0 - 15) * k)))   # (the place with its print, for a reader
+        box = (Image.fromarray(hi[box_at[1]:int((y1 + 15) * k), box_at[0]:int((x1 + 15) * k)])   # told what it is)
+               if hi is not None else None)
         if a.crops_only:
             if crop is not None:
                 crop.save(os.path.join(a.crops_only, f"{name}_value.png"))
-                hi = cleaned_hires(doc, a.page, 300)       # (the place with its print, for a reader told what it is)
-                k = hi.shape[1] / gray.shape[1]
-                Image.fromarray(hi[max(0, int((y0 - 15) * k)):int((y1 + 15) * k), max(0, int((x0 - 15) * k)):int((x1 + 15) * k)]
-                                ).save(os.path.join(a.crops_only, f"{name}_valuebox.png"))
+                box.save(os.path.join(a.crops_only, f"{name}_valuebox.png"))
             continue
+        got = second.get(f"{name}_value", {})
+        where = got.get("where")
         if crop is None:
             v, used, val = "empty", "", None
         else:
@@ -171,15 +211,22 @@ def main():
                 from recog.formula import FormulaRecognizer
                 fr = FormulaRecognizer()
             readings = {} if a.no_local else {"pix2text": [(c.text, c.min_token_p) for c in fr.recognize(crop, n_best=4)]}
-            for rd, cs in second.get(f"{name}_value", {}).items():
-                readings[rd] = [(t, 1.0) for t, _ in cs]
+            for rd, cs in got.items():
+                if isinstance(cs, list) and cs and isinstance(cs[0], (list, tuple)):     # (not 'where', 'raw')
+                    readings[rd] = [(t, 1.0) for t, _ in cs]
+            if where:                                  # (the final value where the vision model found it: read here
+                from tools.read_crops import final_crop                       #  too - a third family's reading)
+                readings["pix2textfinal"] = [(c.text, 1.0) for c in fr.recognize(final_crop(box, where), n_best=4)]
             v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
         out = {"exam": name, "name": a.name, "verdict": v, "read": used, "value": val, "key": key}
+        if crop is not None:                           # (each reader's likeliest reading - to see why it was unsure)
+            out["readers"] = {rd: cs[0][0] for rd, cs in readings.items() if cs}
         json.dump(out, open(os.path.join(a.out, f"{name}.value.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-        txt = {"right": f"{a.name}: נכתב {val:g} - כמו בפתרון ({a.key})." if val is not None else "",
-               "wrong": f"{a.name}: נכתב {val:g}; בפתרון {a.key}." if val is not None else "",
+        u = f" {key_unit}" if key_unit and key_unit != "%" else key_unit     # (the value in the key's unit)
+        txt = {"right": f"{a.name}: נכתב {val:.4g}{u} - כמו בפתרון ({a.key})." if val is not None else "",
+               "wrong": f"{a.name}: נכתב {val:.4g}{u}; בפתרון {a.key}." if val is not None else "",
                "unsure": f"{a.name}: לא נקרא בוודאות - לבדיקה ידנית" +
-                         (f" (קריאה אפשרית: {val:g}; בפתרון {a.key})." if val is not None else "."),
+                         (f" (קריאה אפשרית: {val:.4g}{u}; בפתרון {a.key})." if val is not None else "."),
                "empty": f"{a.name}: לא נמצאה תשובה במקום המיועד."}[v]
         open(os.path.join(a.out, f"{name}_value_remarks.txt"), "w", encoding="utf-8").write(txt + "\n")
         table.append((v, marks.get(name, {}).get(a.question) if marks and a.question else None))
@@ -187,6 +234,12 @@ def main():
             import base64
             import io
             q = img.crop((max(0, x0 - 20), max(0, y0 - 20), min(img.width, x1 + 20), min(img.height, y1 + 20)))
+            if where and box is not None:              # (where the final value was found: framed in red)
+                from PIL import ImageDraw
+                ox, oy = box_at[0] / k - max(0, x0 - 20), box_at[1] / k - max(0, y0 - 20)
+                bw, bh = box.width / k, box.height / k
+                ImageDraw.Draw(q).rectangle([ox + where[0] * bw, oy + where[1] * bh, ox + where[2] * bw,
+                                             oy + where[3] * bh], outline=(220, 0, 0), width=3)
             buf = io.BytesIO()
             q.save(buf, "PNG")
             review.append(f"<figure><img src='data:image/png;base64,{base64.b64encode(buf.getvalue()).decode()}'>"

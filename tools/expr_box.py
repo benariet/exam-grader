@@ -497,7 +497,10 @@ def own_table(folder, exam, col, n_rows):
     got = [cells.get((r + 1, col)) for r in range(n_rows)]
     if not all(c and c["verdict"] in ("right", "wrong") for c in got):
         return None
-    return tuple(int(c["read"]) for c in got)
+    if not all("key" in c for c in got):
+        return tuple(int(c["read"]) for c in got)
+    return tuple(int(c["key"]) if c["verdict"] == "right" else 1 - int(c["key"]) for c in got)   # (the value decided -
+    #                                                                     by the readers' majority, maybe not the digit's)
 
 
 def _review_figure(img, rows_scan, masks, out, name, off):

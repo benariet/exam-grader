@@ -21,6 +21,10 @@
     "second": true,
     "strengths": "0W\\S,0W\\S,0S;0W\\S,1W\\S,0S;1S,1S,0W\\S;1S,0S,1S;1S,1S,0W\\S;1S,0S,1S;0S,0W\\S,1W\\S;0S,1W\\S,1W\\S",
     "review": true
+   },
+   "server": {
+    "readers": "vlm,mumer",
+    "prompt": "cell"
    }
   },
   {
@@ -67,10 +71,11 @@
     "tol": 0.1,
     "no_local": true,
     "name": "שאלה 1(ה) - זמן ההשהיה",
-    "question": 1
+    "question": 1,
+    "review": true
    },
    "server": {
-    "readers": "vlm",
+    "readers": "vlm,mumer",
     "prompt": "math",
     "files": "*_valuebox.png",
     "label_text": "the delay time t_pHL of output Y2 in the last transition"
@@ -85,10 +90,11 @@
     "key": "0 J",
     "no_local": true,
     "name": "שאלה 1(ו) - האנרגיה מ-VDD",
-    "question": 1
+    "question": 1,
+    "review": true
    },
    "server": {
-    "readers": "vlm",
+    "readers": "vlm,mumer",
     "prompt": "math",
     "files": "*_valuebox.png",
     "label_text": "the dynamic energy drawn from the supply V_DD during the transition"
@@ -139,7 +145,7 @@
     "review": true
    },
    "server": {
-    "readers": "mumer,vlm",
+    "readers": "vlm,mumer",
     "prompt": "math",
     "label_text": "the DUTY CICLE printed at the bottom"
    }
