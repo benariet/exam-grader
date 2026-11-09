@@ -7813,3 +7813,25 @@ def test_a_transistor_network_read_by_the_vision_model():
     (n, fy), = net.switch_logic().items()
     assert not sp.satisfiable(sp.Xor(fy, ~A))
     assert Fake("I cannot read this.").read_transistors(None)[0].components == []
+
+
+def test_a_review_page_shows_each_drawing_with_what_was_read(tmp_path, monkeypatch):
+    """tools/circuit_review.py: each exam's drawing cut from its scan, the boxes found drawn on it, what was read under
+    it - one HTML file beside the results"""
+    import json
+    import sys
+    from PIL import Image
+    from grader.circuit import Component, Netlist
+    from tools.read_exam_circuits import netlist_dict
+    from tools import circuit_review
+    Image.new("RGB", (400, 560), "white").save(tmp_path / "7.pdf")
+    net = Netlist([Component("Q1", "nmos", ["g", "d", "s"], roles={"Gate": "g", "Drain": "d", "Source": "s"})],
+                  node_labels={"g": "B'"})
+    json.dump({"exam": "7", "pages_in_scan": 1, "booklet_used": False,
+               "pages": [{"page": 1, "booklet": None, "circuits": [{"box": [100, 100, 300, 300], "netlist": netlist_dict(net),
+                                                                     "found": [["fet", [120, 120, 200, 180], 0.9]]}]}]},
+              open(tmp_path / "7.circuits.json", "w"))
+    monkeypatch.setattr(sys, "argv", ["circuit_review.py", str(tmp_path), "--exams", str(tmp_path)])
+    circuit_review.main()
+    page = open(tmp_path / "review.html", encoding="utf-8").read()
+    assert page.count("<img src='data:image/png;base64,") == 1 and "gate g (B&#x27;)" in page
