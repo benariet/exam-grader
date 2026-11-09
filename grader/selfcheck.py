@@ -1756,8 +1756,9 @@ def _complex_units(text: str) -> str:
         return before.rstrip().endswith("=") and \
             re.match(r"\s*(?:$|[,;]|\\q?quad|\\\\)", m.string[m.end():])     # k\Omega' - in the student's units)
 
+    one_space = lambda z: re.sub(r"\s+", " ", z.strip())        # noqa: E731  (outside the f-string: Python < 3.12)
     text = _RECT_UNIT.sub(lambda m: m.group(0) if last(m, m.group("l")) else
-                          f"{m.group('l')}({re.sub(r'\s+', ' ', m.group('z').strip())}) {m.group('u')}", text)
+                          f"{m.group('l')}({one_space(m.group('z'))}) {m.group('u')}", text)
 
     def rep(m):
         before = text[:m.start()].rstrip()
@@ -4845,7 +4846,8 @@ def _at_jw(s, defs):
     except Exception:                              # noqa: BLE001
         return None
     mine = s.sides[1]
-    shown = f"{m.group(1)}(s→j{'ω' if a in ('\\omega', 'w', 'ω') else a})"
+    var_ = "ω" if a in ("\\omega", "w", "ω") else a              # (outside the f-string: Python < 3.12)
+    shown = f"{m.group(1)}(s→j{var_})"
     shown = (f"20log|{shown}|" if db else f"|{shown}|") if bars else shown
     if not _letters(mine) and not _letters(want):  # a number: within its decimals
         got, x = _cnum(mine), _cnum(want)

@@ -7892,3 +7892,104 @@ def test_a_printed_truth_tables_cells_are_found_and_read():
         assert (r["right"], r["wrong"]) == (3, 1), r              # (row 2's Y1: '0' written, the key's 1)
         assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
     assert got[(4, 2)][0] == ""                                         # (empty)
+
+
+def test_the_answer_boxs_expressions_are_found_read_and_judged(monkeypatch):
+    """tools/expr_box.py: the booklet's answer box (a ruled rectangle - not the table above it, ruled inside - each of
+    its rows starting 'name ='), the writing in each row cut out (a bar over a letter to the row under it), the
+    reader's LaTeX parsed - '\\mathrm{V}_{x}' the solution's Vx, 'A_{B}' two letters side by side, a prime - and judged
+    against the key: right, wrong (sure), unsure"""
+    import json
+    import sys
+    import tempfile
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    from recog.formula import Candidate
+    from tools import expr_box as E
+    W, H = 1240, 1754
+    tpl = Image.new("L", (W, H), 255)
+    d = ImageDraw.Draw(tpl)
+    for x in (80, 300, 600, 1150):                     # (a table above: ruled inside, no answer box)
+        d.line([(x, 900), (x, 1200)], fill=0, width=3)
+    for y in (900, 1000, 1100, 1200):
+        d.line([(80, y), (1150, y)], fill=0, width=3)
+    d.rectangle((375, 1450, 750, 1560), outline=0, width=4)
+    font = ImageFont.truetype("DejaVuSans-Bold.ttf", 22)
+    for k, lab in enumerate(("Vx =", "Y1 =", "Y2 =")):
+        d.text((390, 1462 + 31 * k), lab, fill=0, font=font)
+    template = np.asarray(tpl) < 128
+    rows = E.answer_rows(template, 3)
+    assert len(rows) == 3 and rows[0]["box"][0] in range(370, 381) and all(r["x0"] < 470 for r in rows), rows
+    assert rows[0]["y1"] == rows[1]["y0"] and rows[0]["y0"] < rows[0]["base"] <= rows[0]["y1"] + 2
+    scan = tpl.copy()
+    d = ImageDraw.Draw(scan)
+    hand = ImageFont.truetype("DejaVuSans.ttf", 22)
+    d.text((480, 1462), "A+B", fill=40, font=hand)                    # Vx row
+    d.text((480, 1493 + 2), "AB", fill=40, font=hand)                 # Y1 row, a bar over it
+    d.line([(478, 1494), (512, 1493)], fill=40, width=2)
+    d.text((700, 1524), "ABC+AC+BC", fill=40, font=hand)              # Y2 row, running out of the box
+    gray = np.asarray(scan)
+    masks = E.row_pieces((gray < 128) & ~E.blank_answers(template, rows), rows)
+    assert all(m is not None for m in masks)
+    assert masks[1][1490:1497].any() and not masks[0][1490:1497, 470:520].any()    # (the bar: Y1's)
+    assert masks[2][:, 760:].any()                                                 # (past the box's side)
+    k = dict(E.parse_key("Vx = A ⊕ B; Y1 = Vx ⊕ C; Y2 = AB + C Vx"))
+    env = {"Vx": k["Vx"]}
+    c = lambda t, p=0.9: Candidate(t, -1.0, p)                                     # noqa: E731
+    assert E.judge([c(r"\overline { { \mathrm { V } _ { x } } } C + V _ { x } \overline { C }")], k["Y1"], env)[0] == "right"
+    assert E.judge([c(r"A _ { B } + C V _ { x }")], k["Y2"], env)[0] == "right"
+    assert E.judge([c(r"A ^ { \prime } B + A B ^ { \prime }")], k["Vx"], {})[0] == "right"
+    assert E.judge([c("A + B")], k["Vx"], {})[0] == "wrong"
+    assert E.judge([c("A + B", 0.2)], k["Vx"], {})[0] == "unsure"                  # (a weak token: no sure wrong)
+    assert E.judge([c("A + B"), c(r"A \oplus B")], k["Vx"], {})[0] == "unsure"     # (another reading gives it)
+    assert E.judge([c(r"\int x d x")], k["Vx"], {})[0] == "unsure"
+    assert E.judge([c(r"\overline { A B } + A B")], k["Vx"], {})[0] == "unsure"     # (a bar over two letters: how
+    assert E.judge([c(r"\overline { A } \overline { B } + A B")], k["Vx"], {})[0] == "wrong"   # far it reaches?)
+    p2t = {"verdict": "unsure", "read": "", "function": None, "free": r"\int", "forced": "A + B"}
+    two = E.second_opinion(p2t, {"mumer": [c("A+B")]}, k["Vx"], {})
+    assert two["verdict"] == "wrong" and two["agreed"] == ["pix2text", "mumer"], two             # (two readers agree)
+    assert E.second_opinion(p2t, {"mumer": [c("A+B")], "vlm": [c(r"A \oplus B")]}, k["Vx"], {})["verdict"] == "unsure"
+    assert E.second_opinion(p2t, {"mumer": [c("A+B")]}, k["Vx"], {}, table=(0, 0, 1, 1, 1, 1, 0, 0))["verdict"] == \
+        "unsure"                                       # (the student's own table: not A + B - to a human)
+    assert E.truth_vector(k["Y2"]) == (0, 0, 0, 1, 0, 1, 1, 1)
+    xor = (0, 0, 1, 1, 1, 1, 0, 0)
+    alone = {"verdict": "unsure", "read": "", "function": None, "free": r"\int", "forced": ""}
+    t = E.second_opinion(alone, {"mumer": [c(r"A \oplus B")]}, k["Vx"], {}, table=xor)
+    assert t["verdict"] == "right" and t["agreed"] == ["mumer", "table"], t          # (its own table: the second)
+    assert E.second_opinion(alone, {"vlm": [c(r"A \oplus B")]}, k["Vx"], {}, table=xor)["verdict"] == "unsure"
+    assert E.second_opinion(alone, {"vlm": [c(r"A \oplus B")], "vlmbox": [c(r"A \oplus B")]}, k["Vx"], {})["verdict"] \
+        == "unsure"                                    # (the vision model twice: one reader)
+    two = E.second_opinion(p2t, {"mumer": [c(r"A \oplus B")], "vlm": [c(r"\overline{A} B + A \overline{B}")]}, k["Vx"], {})
+    assert two["verdict"] == "right" and two["agreed"] == ["mumer", "vlm"], two
+    one = E.second_opinion({**p2t, "verdict": "wrong"}, {"vlm": [c(r"A \oplus B")]}, k["Vx"], {})
+    assert one["verdict"] == "unsure"                                     # (one other reader: a 'wrong' left open)
+
+    class Fake:                                        # (the reader: what each row says, in the order read)
+        said = [[c("A + B")], [c("A + B")], [c("A B")], [c(r"A \oplus B \oplus C")], [c("A B + C V _ { x }")]]
+        # (Vx: surely A + B, forced too - wrong; Y1: surely another, forced the function - unsure; Y2: right)
+        tok = type("T", (), {"encode": staticmethod(lambda t: type("E", (), {"ids": t.split()})())})
+
+        def __init__(self, *a, **kw):
+            pass
+
+        def recognize(self, img, n_best=3, max_new_tokens=160, grammar=None):
+            return Fake.said.pop(0)
+    monkeypatch.setattr("recog.formula.FormulaRecognizer", Fake)
+    with tempfile.TemporaryDirectory() as tmp:
+        __import__("os").makedirs(f"{tmp}/booklet")
+        tpl.save(f"{tmp}/booklet/p1.png")
+        scan.convert("RGB").save(f"{tmp}/4.pdf", resolution=150)
+        argv = sys.argv
+        sys.argv = ["expr_box.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--key",
+                    "Vx = A ⊕ B; Y1 = Vx ⊕ C; Y2 = AB + C Vx", "--out", f"{tmp}/out", "--review", "--hires", "0"]
+        try:
+            E.main()
+        finally:
+            sys.argv = argv
+        r = json.load(open(f"{tmp}/out/4.exprs.json", encoding="utf-8"))
+        assert [x["verdict"] for x in r["rows"]] == ["wrong", "unsure", "right"], r
+        assert "Vx" in open(f"{tmp}/out/4_expr_remarks.txt", encoding="utf-8").read()
+        assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
+        cells = [{"row": r + 1, "col": 2, "read": str(v), "verdict": "right"} for r, v in enumerate((0, 0, 1, 1, 1, 1, 0, 0))]
+        json.dump({"cells": cells}, open(f"{tmp}/4.table.json", "w"))
+        assert E.own_table(tmp, "4", 2, 8) == (0, 0, 1, 1, 1, 1, 0, 0) and E.own_table(tmp, "4", 4, 8) is None
