@@ -1,0 +1,16 @@
+{
+ "right": [
+  "(?<![nN])\\b[aA][nN][dD]2?\\b",
+  "nand.{0,20}(not|inv|מהפך)",
+  "(not|inv|מהפך).{0,20}nand"
+ ],
+ "wrong": [
+  "\\bnand\\b",
+  "\\bnor\\b",
+  "\\bor\\b",
+  "xor",
+  "\\bnot\\b",
+  "invert",
+  "מהפך"
+ ]
+}

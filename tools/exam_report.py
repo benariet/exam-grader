@@ -30,9 +30,10 @@ from collections import defaultdict
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
-ORDER = ("table", "exprs", "words", "circuit", "choices", "value")
+ORDER = ("table", "exprs", "words", "circuit", "choices", "value", "wave", "step")
 REMARKS = {"table": "_table_remarks.txt", "exprs": "_expr_remarks.txt", "words": "_words_remarks.txt",
-           "circuit": "_circuit_remarks.txt", "choices": "_choice_remarks.txt", "value": "_value_remarks.txt"}
+           "circuit": "_circuit_remarks.txt", "choices": "_choice_remarks.txt", "value": "_value_remarks.txt",
+           "step": "_step_remarks.txt", "wave": "_wave_remarks.txt"}
 
 
 def collect(folders):
@@ -54,6 +55,9 @@ def collect(folders):
         for f in glob.glob(os.path.join(d, "*.value.json")):
             r = json.load(open(f, encoding="utf-8"))
             summ[r["exam"]].setdefault("value", {})[os.path.basename(d.rstrip("/\\"))] = r["verdict"]
+        for f in glob.glob(os.path.join(d, "*.wave.json")):
+            r = json.load(open(f, encoding="utf-8"))
+            summ[r["exam"]].setdefault("wave", {})[os.path.basename(d.rstrip("/\\"))] = r["verdict"]
         key = os.path.join(d, "circuit_key.json")
         if os.path.isfile(key):
             for q, rows in json.load(open(key, encoding="utf-8")).items():
@@ -66,6 +70,7 @@ def collect(folders):
     return summ, rem
 
 
+STEP = {"right": "כמו בפתרון", "wrong": "שונה מהפתרון", "unsure": "לא נקרא בוודאות", "empty": "לא נמצא"}
 HEB = {"right": "נכון", "wrong": "שגוי", "unsure": "לבדיקה ידנית", "unclear": "לא ברור", "none": "לא סומן",
        "empty": "ריק", "other": "פונקציה אחרת", "no drawing": "אין ציור"}
 
@@ -135,9 +140,19 @@ def details(folders, sure):
             n = r["exam"]
             rem = os.path.join(d, f"{n}_value_remarks.txt")
             text = open(rem, encoding="utf-8").read().strip() if os.path.isfile(rem) else ""
+            if r.get("kind") == "step":                # (a value on the way: where the work went astray)
+                rem = os.path.join(d, f"{n}_step_remarks.txt")
+                text = open(rem, encoding="utf-8").read().strip() if os.path.isfile(rem) else ""
             label = r.get("name") or (text.split(":")[0] if ":" in text else os.path.basename(d.rstrip("/\\")))
-            read = "" if r.get("value") is None else f"{r['value']:g}"
-            out[n].append((label, read, HEB.get(r["verdict"], r["verdict"]), "", text.split(":", 1)[-1].strip()))
+            read = r.get("read") or "" if r.get("value") is None else f"{r['value']:g}"
+            verdict = (STEP if r.get("kind") == "step" else HEB).get(r["verdict"], r["verdict"])
+            out[n].append((label, read, verdict, "", text.split(":", 1)[-1].strip()))
+        for f in glob.glob(os.path.join(d, "*.wave.json")):    # (tools/waveform.py: a drawn waveform's shape)
+            r = json.load(open(f, encoding="utf-8"))
+            n = r["exam"]
+            rem = os.path.join(d, f"{n}_wave_remarks.txt")
+            text = open(rem, encoding="utf-8").read().strip() if os.path.isfile(rem) else ""
+            out[n].append((r.get("name", ""), "", HEB.get(r["verdict"], r["verdict"]), "", text.split(":", 1)[-1].strip()))
         key = os.path.join(d, "circuit_key.json")
         if os.path.isfile(key):
             for q, rows in json.load(open(key, encoding="utf-8")).items():
@@ -153,7 +168,104 @@ def details(folders, sure):
     return {n: sorted(v, key=order) for n, v in out.items()}
 
 
-def write_xlsx(path, det, marks, title):
+WRONG = {"שגוי", "פונקציה אחרת"}
+
+
+def points_view(det, rubric, marks):
+    """each exam's questions by the exam's own points (rubric: [{"item": "1(א)", "q": 1, "points": 10, "match": regex
+    on a row's label, "mcq": all or nothing}]) -> (rows [exam, question, item, points, status, what the checks say],
+    per question [exam, question, its points, the lecturer's, kept, lost for sure, with an error found, open,
+    agrees], coverage: the share of the points the checks decided, per exam). An item: right when every check of it
+    is; an error found when one is wrong (how much it costs is the lecturer's); open when some are not decided; not
+    checked when none is. A value on the way (a step) is no item's check."""
+    items, per_q, cover = [], [], {}
+    for n in sorted(det, key=lambda x: int(re.sub(r"\D", "", x) or 0)):
+        rows = [r for r in det[n] if r[2] not in STEP.values()]
+        byq = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0, 0.0])        # (points, kept, lost, error found, open)
+        for it in rubric:
+            mine = [r for r in rows if re.search(it["match"], r[0])]
+            verdicts = [r[2] for r in mine]
+            if not mine:
+                status = "לא נבדק"
+            elif it.get("mcq"):
+                status = "נכון (לבדוק את ההסבר)" if verdicts == ["נכון"] else "שגוי - ירד בוודאות" if \
+                    verdicts == ["שגוי"] else "פתוח"
+            elif any(v in WRONG for v in verdicts):
+                status = "נמצאה טעות"
+            elif all(v == "נכון" for v in verdicts):
+                status = "נכון" + (" (בחלקים שנבדקו)" if it.get("partial") else "")
+            else:
+                status = "פתוח" + (" (חלק נבדק ונכון)" if "נכון" in verdicts else "")
+            p = float(it["points"])
+            b = byq[it["q"]]
+            b[0] += p
+            if status.startswith("נכון"):
+                b[1] += p
+            elif status.startswith("שגוי"):
+                b[2] += p
+            elif status == "נמצאה טעות":
+                b[3] += p
+            else:
+                b[4] += p
+            items.append([n, it["q"], it["item"], p, status,
+                          "; ".join(f"{r[0]}: {r[2]}" for r in mine) if mine else ""])
+        done = 0.0
+        for q, (pts, kept, lost, err, opn) in sorted(byq.items()):
+            off = (marks.get(n) or {}).get(q)
+            got = None if off is None else pts - off
+            agrees = "" if got is None else ("לבדוק: המרצה נתן יותר ממה שאפשר" if got > pts - lost + 1e-9 else
+                                             "לבדוק: נמצאה טעות והמרצה לא הוריד" if err and off == 0 else "מתיישב")
+            per_q.append([n, q, pts, "" if got is None else got, kept, lost, err, opn, agrees])
+            done += kept + lost + err
+        cover[n] = done / max(1e-9, sum(v[0] for v in byq.values()))
+    return items, per_q, cover
+
+
+def write_points(wb, items, per_q, cover):
+    """the workbook's points sheets: per question, and per item"""
+    from openpyxl.styles import Alignment, Font, PatternFill
+    F = "Arial"
+    ws = wb.create_sheet("ניקוד לפי שאלה", 1)
+    ws.sheet_view.rightToLeft = True
+    ws["A1"] = "ניקוד לפי חלוקת הנקודות בטופס: מה הבדיקה אישרה, מה ירד בוודאות, איפה נמצאה טעות ומה פתוח"
+    ws["A1"].font = Font(name=F, bold=True, size=12)
+    ws["A2"] = (f"הבדיקה הכריעה בממוצע {100 * sum(cover.values()) / max(1, len(cover)):.0f}% מהנקודות "
+                "(אושר, ירד בוודאות או נמצאה טעות). 'נמצאה טעות' - כמה יורד על הטעות נשאר להחלטת המרצה.")
+    ws["A2"].font = Font(name=F, italic=True, size=9, color="595959")
+    head = ["מבחן", "שאלה", "נקודות", "המרצה נתן", "אושר", "ירד בוודאות", "נמצאה טעות", "פתוח / לא נבדק", "בדיקה"]
+    for j, h in enumerate(head, 1):
+        c = ws.cell(row=4, column=j, value=h)
+        c.font, c.fill = Font(name=F, bold=True, color="FFFFFF"), PatternFill("solid", fgColor="1F3864")
+    for i, r in enumerate(per_q, 5):
+        for j, v in enumerate(r, 1):
+            c = ws.cell(row=i, column=j, value=v)
+            c.font, c.alignment = Font(name=F, size=10), Alignment(horizontal="right")
+        if str(r[-1]).startswith("לבדוק"):
+            ws.cell(row=i, column=len(r)).fill = PatternFill("solid", fgColor="FCE4D6")
+    for j, w in enumerate([8, 7, 8, 11, 8, 11, 11, 14, 34], 1):
+        ws.column_dimensions[chr(64 + j)].width = w
+    ws.freeze_panes = "A5"
+    ws.auto_filter.ref = f"A4:I{4 + len(per_q)}"
+    ws2 = wb.create_sheet("ניקוד לפי סעיף", 2)
+    ws2.sheet_view.rightToLeft = True
+    for j, h in enumerate(["מבחן", "שאלה", "סעיף", "נקודות", "מצב", "הבדיקות"], 1):
+        c = ws2.cell(row=1, column=j, value=h)
+        c.font, c.fill = Font(name=F, bold=True, color="FFFFFF"), PatternFill("solid", fgColor="1F3864")
+    fills = {"נכון": "E2EFDA", "שגוי": "FCE4D6", "נמצאה": "FCE4D6", "פתוח": "FFF2CC", "לא נבדק": "EDEDED"}
+    for i, r in enumerate(items, 2):
+        for j, v in enumerate(r, 1):
+            c = ws2.cell(row=i, column=j, value=v)
+            c.font, c.alignment = Font(name=F, size=10), Alignment(horizontal="right", wrap_text=j == 6)
+        f = next((v for k, v in fills.items() if str(r[4]).startswith(k)), None)
+        if f:
+            ws2.cell(row=i, column=5).fill = PatternFill("solid", fgColor=f)
+    for j, w in enumerate([8, 7, 10, 8, 26, 90], 1):
+        ws2.column_dimensions[chr(64 + j)].width = w
+    ws2.freeze_panes = "A2"
+    ws2.auto_filter.ref = f"A1:F{1 + len(items)}"
+
+
+def write_xlsx(path, det, marks, title, rubric=None):
     """the per-exam workbook: every exam's questions in one sheet (to sort and filter), and a sheet per exam"""
     from openpyxl import Workbook
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -206,6 +318,8 @@ def write_xlsx(path, det, marks, title):
     sheet(ws, every, True)
     for n in exams:
         sheet(wb.create_sheet(f"מבחן {n}"[:31]), [r for r in every if r[0] == n], True)
+    if rubric:                                         # (the exam's own points: what is decided, what is left)
+        write_points(wb, *points_view(det, rubric, marks))
     wb.save(path)
 
 
@@ -300,6 +414,8 @@ def main():
     ap.add_argument("--compare", default="", help="exams ('1,3' or 'all'): <out>/compare_<n>.html each - question by "
                     "question, the lecturer's points beside the checks' findings and whether they agree")
     ap.add_argument("--points", default="", help="each question's points, for --compare: '1=50,2=25,3=25'")
+    ap.add_argument("--rubric", default="", help="the exam's points per item (JSON file): by_exam.xlsx gets sheets of "
+                    "what is decided of them, against the lecturer's")
     a = ap.parse_args()
     summ, rem = collect(a.runs)
     sure = {k.strip(): float(v) for k, v in (x.split("=") for x in a.sure.split(",") if "=" in x)}
@@ -310,7 +426,8 @@ def main():
     os.makedirs(a.out, exist_ok=True)
     exams = sorted(set(summ) | set(rem), key=lambda n: int(re.sub(r"\D", "", n) or 0))
     titles = {"table": "שאלה 1(א) - טבלת האמת", "exprs": "שאלה 1(א) - הביטויים", "words": "שאלה 1(ב)",
-              "circuit": "שאלה 2.1 - המעגל", "choices": "שאלות אמריקאיות", "value": "ערך סופי"}
+              "circuit": "שאלה 2.1 - המעגל", "choices": "שאלות אמריקאיות", "value": "ערך סופי",
+              "step": "ערכי ביניים (איפה החישוב סטה מהפתרון)", "wave": "צורות האותות"}
     for n in exams:
         lines = [f"מבחן {n} - בדיקה אוטומטית (לעיון המרצה; כל 'לבדיקה ידנית' לא נבדק)", ""]
         for part in ORDER:
@@ -371,8 +488,13 @@ def main():
         print(f"compare: {len(which)} exams")
     if a.xlsx:
         det = details(a.runs, sure)
-        write_xlsx(os.path.join(a.out, "by_exam.xlsx"), det, marks, a.title)
+        rubric = json.load(open(a.rubric, encoding="utf-8")) if a.rubric else None
+        write_xlsx(os.path.join(a.out, "by_exam.xlsx"), det, marks, a.title, rubric)
         print(f"by_exam.xlsx: {len(det)} exams, {sum(len(v) for v in det.values())} rows")
+        if rubric:
+            _, per_q, cover = points_view(det, rubric, marks)
+            print(f"points decided: {100 * sum(cover.values()) / max(1, len(cover)):.0f}% on average; questions to "
+                  f"look at: {sum(1 for r in per_q if str(r[-1]).startswith('לבדוק'))} of {len(per_q)}")
     print(f"{len(exams)} exams -> {a.out}")
 
 

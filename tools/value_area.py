@@ -85,7 +85,8 @@ def judge_value(readings, key, tol, percent=False, unit=""):
     """{reader: [(text, min token p)]} -> (verdict, the reading used, its value): the vision model asked for the final
     value of the place ('vlmfinal') giving the key's - right (it could not have worked it out); readers of two
     families whose likeliest readings that hold a number agree (within 1 %) decide - right if every such pair is on
-    the key's, wrong if no reader read the key's, else unsure; else the formula reader's own - right if its likeliest
+    the key's, wrong if no reader read the key's, else unsure (and not wrong when the pair read the place the vision
+    model found and its own final value is another: the place may not be the value's); else the formula reader's own - right if its likeliest
     number is the key's, wrong if that reading is sure and no other reading is the key's, else unsure"""
     close = lambda v, w, t: v is not None and w is not None and abs(v - w) <= t * max(abs(w), 1e-12)  # noqa: E731
     tops = {}
@@ -102,6 +103,12 @@ def judge_value(readings, key, tol, percent=False, unit=""):
               if family(a) != family(b) and close(tops[a][1], tops[b][1], 0.01)]   # asked for the final value - is
     if agreed:                                                       # one reader)
         text, v, _ = tops[agreed[0]]
+        pair = {x for x in names if any(close(tops[x][1], v, 0.01) and family(x) != family(y) for y in names
+                                        if close(tops[y][1], v, 0.01))}
+        if "vlmfinal" in tops and not any(family(x) == "vlm" for x in pair) and not close(v, key, tol) and \
+                not close(tops["vlmfinal"][1], v, 0.01):           # (a wrong value they read on the place the vision
+            return "unsure", text, v                                #  model found, which gave another: maybe the
+        #                                                              wrong place - the key's there is the key's)
         if all(close(tops[x][1], key, tol) for x in agreed):
             return "right", text, v
         if any(close(x[1], key, tol) for x in tops.values()):       # (a pair or a reader on the key's: not sure)
@@ -128,7 +135,14 @@ def main():
     ap.add_argument("--booklet", required=True)
     ap.add_argument("--page", type=int, required=True)
     ap.add_argument("--area", required=True, help="x0,y0,x1,y1 on the booklet's template of the page")
-    ap.add_argument("--key", required=True, help="the solution's value, a unit after it if any: '5.75%%'")
+    ap.add_argument("--key", default="", help="the solution's value, a unit after it if any: '5.75%%'")
+    ap.add_argument("--words-key", default="", help="an answer in words instead ('F1 is a NOT'): JSON, inline or a "
+                    "file - {'right': [regex], 'wrong': [regex]} (tools/words_box.py's); the vision model's reading of "
+                    "the place it found, cut out, decides - its reading of the whole place may only agree")
+    ap.add_argument("--reading-id", default="", help="which of the things read on the place this is (tools/"
+                    "read_crops.py --label-text 'id=what;...': the readings' <n>_value~id)")
+    ap.add_argument("--step", action="store_true", help="a value on the way, not the answer (V_Tn on the way to "
+                    "t_pHL): reported as matching the solution or not, for where the work went astray")
     ap.add_argument("--tol", type=float, default=0.03)
     ap.add_argument("--percent", action="store_true")
     ap.add_argument("--no-local", action="store_true", help="the formula reader on this computer left out (a whole "
@@ -152,11 +166,16 @@ def main():
     from tools.truth_table import to_scan
     template = np.asarray(Image.open(os.path.join(a.booklet, f"p{a.page}.png")).convert("L")) < 128
     area = tuple(int(v) for v in a.area.split(","))
-    key = value_of(a.key, a.percent)
-    if key is None:
-        raise SystemExit(f"the key {a.key!r} is no number")
-    from grader.numeric import parse_numeric
-    key_unit = (parse_numeric(a.key).unit or "").strip()
+    wkey = None
+    if a.words_key:
+        wkey = json.load(open(a.words_key, encoding="utf-8")) if os.path.isfile(a.words_key) else json.loads(a.words_key)
+        key, key_unit = None, ""
+    else:
+        key = value_of(a.key, a.percent)
+        if key is None:
+            raise SystemExit(f"the key {a.key!r} is no number (or --words-key)")
+        from grader.numeric import parse_numeric
+        key_unit = (parse_numeric(a.key).unit or "").strip()
     second = json.load(open(a.second, encoding="utf-8")) if a.second else {}
     from tools.decide_sheet import decided, load
     dec = load(a.decisions) if a.decisions else {}
@@ -206,10 +225,17 @@ def main():
                 crop.save(os.path.join(a.crops_only, f"{name}_value.png"))
                 box.save(os.path.join(a.crops_only, f"{name}_valuebox.png"))
             continue
-        got = second.get(f"{name}_value", {})
+        got = second.get(f"{name}_value~{a.reading_id}" if a.reading_id else f"{name}_value", {})
         where = got.get("where")
+        readings = {}
         if crop is None:
             v, used, val = "empty", "", None
+        elif wkey is not None:                         # (words: the place found, cut out, read as written decides)
+            from tools.words_box import judge_row
+            row = {"vlm": got.get("vlmwords") or [], "vlmbox": got.get("vlmfinal") or []}
+            readings = {k: [(t, 1.0) for t, _ in cs] for k, cs in row.items() if cs}
+            v, used = judge_row({k: cs for k, cs in row.items() if cs}, wkey)
+            val = None
         else:
             if fr is None:
                 from recog.formula import FormulaRecognizer
@@ -228,14 +254,21 @@ def main():
             hv, how = decided(dec, f"value:{a.name}", name, text)
             if hv:
                 v, used = hv, text
-        out = {"exam": name, "name": a.name, "verdict": v, "read": used, "value": val, "key": key}
+        out = {"exam": name, "name": a.name, "verdict": v, "read": used, "value": val, "key": key if wkey is None
+               else a.words_key}
+        if a.step:
+            out["kind"] = "step"
         if how:
             out["decided"] = how
         if crop is not None:                           # (each reader's likeliest reading - to see why it was unsure)
             out["readers"] = {rd: cs[0][0] for rd, cs in readings.items() if cs}
         json.dump(out, open(os.path.join(a.out, f"{name}.value.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         u = f" {key_unit}" if key_unit and key_unit != "%" else key_unit     # (the value in the key's unit)
-        if how:                                        # (decided by a human's mark)
+        if wkey is not None and not how:               # (an answer in words)
+            txt = {"right": f"{a.name}: נכון ({used}).", "wrong": f"{a.name}: נכתב '{used}' - שונה מהפתרון.",
+                   "unsure": f"{a.name}: לא נקרא בוודאות - לבדיקה ידנית" + (f" (קריאה אפשרית: {used})." if used else "."),
+                   "empty": f"{a.name}: לא נמצאה תשובה במקום המיועד."}[v]
+        elif how:                                      # (decided by a human's mark)
             txt = {"right": f"{a.name}: נכון ({used}) - לפי החלטת הבודק.",
                    "wrong": f"{a.name}: נכתב '{used}'; בפתרון {a.key} - לפי החלטת הבודק."}[v]
         else:
@@ -244,7 +277,10 @@ def main():
                    "unsure": f"{a.name}: לא נקרא בוודאות - לבדיקה ידנית" +
                              (f" (קריאה אפשרית: {val:.4g}{u}; בפתרון {a.key})." if val is not None else "."),
                    "empty": f"{a.name}: לא נמצאה תשובה במקום המיועד."}[v]
-        open(os.path.join(a.out, f"{name}_value_remarks.txt"), "w", encoding="utf-8").write(txt + "\n")
+        if a.step:                                     # (a value on the way: not 'to check by hand' - a pointer)
+            txt = txt.replace("לבדיקה ידנית", "לא נקבע").replace("לא נמצאה תשובה במקום המיועד", "לא נמצא בעבודה")
+        open(os.path.join(a.out, f"{name}_{'step' if a.step else 'value'}_remarks.txt"), "w", encoding="utf-8").write(
+            txt + "\n")
         table.append((v, marks.get(name, {}).get(a.question) if marks and a.question else None))
         if a.review:
             import base64

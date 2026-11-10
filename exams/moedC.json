@@ -101,6 +101,80 @@
    }
   },
   {
+   "name": "value_q1d_ol",
+   "tool": "value_area",
+   "args": {
+    "page": 9,
+    "area": "115,300,1112,1590",
+    "key": "0 V",
+    "no_local": true,
+    "reading_id": "ol",
+    "name": "שאלה 1(ד) - VOLmin",
+    "question": 1,
+    "review": true
+   },
+   "server": {
+    "readers": "vlm,mumer",
+    "prompt": "math",
+    "files": "*_valuebox.png",
+    "label_text": "ol=VOLmin_of_the_output_Y1;oh=VOHmax_of_the_output_Y1"
+   }
+  },
+  {
+   "name": "value_q1d_oh",
+   "tool": "value_area",
+   "args": {
+    "page": 9,
+    "area": "115,300,1112,1590",
+    "key": "1.15 V",
+    "no_local": true,
+    "reading_id": "oh",
+    "name": "שאלה 1(ד) - VOHmax",
+    "question": 1,
+    "review": true
+   },
+   "server": {
+    "share": "value_q1d_ol"
+   }
+  },
+  {
+   "name": "step_q1e_y20",
+   "tool": "value_area",
+   "args": {
+    "page": 11,
+    "area": "115,308,1112,1588",
+    "key": "1.151 V",
+    "no_local": true,
+    "reading_id": "y20",
+    "step": true,
+    "name": "1(ה) מתח ההתחלה של Y2",
+    "question": 1
+   },
+   "server": {
+    "readers": "vlm,mumer",
+    "prompt": "math",
+    "files": "*_valuebox.png",
+    "label_text": "y20=the_initial_voltage_of_Y2_just_before_the_last_transition;vtn=the_NMOS_threshold_voltage_VTn_with_the_body_effect"
+   }
+  },
+  {
+   "name": "step_q1e_vtn",
+   "tool": "value_area",
+   "args": {
+    "page": 11,
+    "area": "115,308,1112,1588",
+    "key": "0.649 V",
+    "no_local": true,
+    "reading_id": "vtn",
+    "step": true,
+    "name": "1(ה) VTn עם אפקט המצע",
+    "question": 1
+   },
+   "server": {
+    "share": "step_q1e_y20"
+   }
+  },
+  {
    "name": "circuits_q2",
    "tool": "read_exam_circuits",
    "args": {
@@ -149,10 +223,109 @@
     "prompt": "math",
     "label_text": "the DUTY CICLE printed at the bottom"
    }
+  },
+  {
+   "name": "words_q3_f1",
+   "tool": "value_area",
+   "args": {
+    "page": 23,
+    "area": "108,570,1105,1515",
+    "words_key": "exams/moedC_key_3_f1.json",
+    "reading_id": "f1",
+    "name": "שאלה 3 - הפונקציה של F1",
+    "question": 3,
+    "review": true,
+    "step": true
+   },
+   "server": {
+    "readers": "vlm,mumer",
+    "prompt": "math",
+    "files": "*_valuebox.png",
+    "label_text": "f1=the_logic_function_or_gate_implemented_by_F1;f2=the_logic_function_or_gate_implemented_by_F2;tf1=the_delay_tpd_of_F1;tf2=the_delay_tpd_of_F2"
+   }
+  },
+  {
+   "name": "words_q3_f2",
+   "tool": "value_area",
+   "args": {
+    "page": 23,
+    "area": "108,570,1105,1515",
+    "words_key": "exams/moedC_key_3_f2.json",
+    "reading_id": "f2",
+    "name": "שאלה 3 - הפונקציה של F2",
+    "question": 3,
+    "review": true,
+    "step": true
+   },
+   "server": {
+    "share": "words_q3_f1"
+   }
+  },
+  {
+   "name": "step_q3_tf1",
+   "tool": "value_area",
+   "args": {
+    "page": 23,
+    "area": "108,570,1105,1515",
+    "key": "11.5 ps",
+    "no_local": true,
+    "reading_id": "tf1",
+    "step": true,
+    "name": "3 ההשהיה של F1",
+    "question": 3
+   },
+   "server": {
+    "share": "words_q3_f1"
+   }
+  },
+  {
+   "name": "step_q3_tf2",
+   "tool": "value_area",
+   "args": {
+    "page": 23,
+    "area": "108,570,1105,1515",
+    "key": "27.6 ps",
+    "no_local": true,
+    "reading_id": "tf2",
+    "step": true,
+    "name": "3 ההשהיה של F2",
+    "question": 3
+   },
+   "server": {
+    "share": "words_q3_f1"
+   }
+  },
+  {
+   "name": "wave_q3_z",
+   "tool": "waveform",
+   "args": {
+    "page": 25,
+    "plot": "216,960,699,962",
+    "edges": "374r,527f,680r,833f",
+    "kind": "inverted",
+    "name": "שאלה 3 - האות Z",
+    "question": 3,
+    "review": true
+   }
+  },
+  {
+   "name": "wave_q3_out",
+   "tool": "waveform",
+   "args": {
+    "page": 25,
+    "plot": "210,950,1118,1383",
+    "edges": "374r,527f,680r,833f",
+    "kind": "pulses",
+    "name": "שאלה 3 - האות Out",
+    "question": 3,
+    "review": true
+   }
   }
  ],
  "report": {
-  "sure": "2.2=5,2.3=5"
+  "sure": "2.2=5,2.3=5",
+  "rubric": "exams/moedC_rubric.json",
+  "points": "1=50,2=25,3=25"
  },
  "decisions": {
   "file": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/decisions/moedC_decisions.json",

@@ -17,7 +17,9 @@ The config (JSON):
 A part's args are the tool's own options ('table_cols' -> --table-cols; true -> the flag; a list -> the option
 again for each); "{out}" in a value is the results' folder. A part with "server": its pieces cut first
 (--crops-only), read on the server (tools/read_crops.py by Slurm), the readings fetched and the server's copies
-deleted, then the part judged with them (--second; words_box, truth_table: --readings).
+deleted, then the part judged with them (--second; words_box, truth_table: --readings). Several things asked for on
+one place (value_area: "label_text": "f1=the_function_of_F1;tf1=..."): read once, by the first part; the others say
+"server": {"share": "<that part>"} and their own "reading_id".
 "decisions": what a human marked on tools/decide_sheet.py's sheet (kept with the exams) given to words_box and
 value_area; after the parts, the sheet made anew of what is still undecided (the words parts, the values named).
 """
@@ -30,7 +32,8 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TOOLS = {"truth_table", "expr_box", "words_box", "choice_marks", "value_area", "circuit_key", "read_exam_circuits"}
+TOOLS = {"truth_table", "expr_box", "words_box", "choice_marks", "value_area", "circuit_key", "read_exam_circuits",
+         "waveform"}
 POSITIONAL = {"circuit_key": "circuits"}               # (a tool whose first argument is a folder of results)
 
 
@@ -128,9 +131,11 @@ def main():
         if cfg.get("grades") and tool not in ("read_exam_circuits",):
             common["grades"] = cfg["grades"]
         dec = (cfg.get("decisions") or {}).get("file")
-        if dec and tool in ("words_box", "value_area"):    # (a human's marks on what the checks left: kept with
+        if dec and tool in ("words_box", "value_area", "waveform"):    # (a human's marks on what the checks left: kept with
             common["decisions"] = dec                      #  the exams, tools/decide_sheet.py)
-        if part.get("server") and cfg.get("server"):
+        if (part.get("server") or {}).get("share"):     # (read with another part's place: its readings, no reading
+            args["second"] = os.path.join(out, part["server"]["share"] + "_crops", "readings.json")   # again)
+        elif part.get("server") and cfg.get("server"):
             crops = os.path.join(out, name + "_crops")
             cmd = cli(tool, {**common, **args, "crops_only": crops}, out)
             run(cmd[:2] + head + cmd[2:], a.dry_run)
@@ -165,6 +170,9 @@ def main():
             cmd += ["--grades", cfg["grades"]]
         if rep.get("sure"):
             cmd += ["--sure", rep["sure"]]
+        if rep.get("rubric"):                          # (the exam's points per item: what is decided of them)
+            cmd += ["--xlsx", "--rubric", rep["rubric"]] + (["--compare", "all", "--points", rep["points"]]
+                                                           if rep.get("points") else [])
         run(cmd, a.dry_run)
 
 

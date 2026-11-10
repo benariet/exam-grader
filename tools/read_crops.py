@@ -89,6 +89,17 @@ def final_crop(img, where, pad: float = 0.3):
     return img.crop((int(max(0, x0 - m)), int(max(0, y0 - m)), int(min(w, x1 + m)), int(min(h, y1 + m))))
 
 
+def value_labels(base: str, label_text: str):
+    """--label-text -> [(the readings' key, what is asked for)]: one thing ('the_DUTY_CICLE') -> [(base, 'the DUTY
+    CICLE')]; several on one place, each with its id ('f1=the_function_of_F1;tf1=the_delay_of_F1') -> [(base~f1, ...),
+    (base~tf1, ...)] - '_' for spaces, ';' between them (Slurm's --export splits at commas)"""
+    out = []
+    for part in [x for x in (label_text or "").split(";") if x.strip()] or [""]:
+        lid, _, text = part.rpartition("=") if "=" in part else ("", "", part)
+        out.append((f"{base}~{lid.strip()}" if lid.strip() else base, text.replace("_", " ").strip()))
+    return out
+
+
 def label_pattern(name: str) -> str:
     """a printed label as a reader writes it back: 'Y1' -> Y1, Y_1, Y_{1}; 'Vx' -> V_x, V_{x}"""
     import re
@@ -158,20 +169,21 @@ def main():
             key = os.path.basename(f)[:-4]
             try:
                 if key.endswith("_valuebox"):          # (a value's place with its label: the final value asked for,
-                    name = key[:-len("box")]           #  and where it is - for another reader to read it there)
-                    img = Image.open(f).convert("RGB")
-                    label = a.label_text.replace("_", " ")
-                    if reader == "vlm":
-                        c = rd.recognize(img, n_best=1, max_new_tokens=40, prompt=FINAL_PROMPT.format(label=label))[0]
-                        out.setdefault(name, {})["vlmfinal"] = [[c.text, float(c.logp)]]
-                        g = rd.recognize(img, n_best=1, max_new_tokens=60, prompt=LOCATE_PROMPT.format(label=label))[0]
-                        out[name]["where"] = bbox_of(g.text, img.size)
-                        if out[name]["where"]:         # (what is written there, as written - an answer in words too:
-                            w = rd.recognize(final_crop(img, out[name]["where"]), n_best=1, max_new_tokens=80,
-                                             prompt=ANSWER_PROMPT)[0]          #  cut out, nothing round it to guess from)
-                            out[name]["vlmwords"] = [[w.text, float(w.logp)]]
-                    elif reader == "mumer" and (out.get(name) or {}).get("where"):     # (the vision model read first)
-                        out[name]["mumerfinal"] = [[c.text, float(c.logp)] for c in read(final_crop(img, out[name]["where"]))]
+                    img = Image.open(f).convert("RGB")  # and where it is - for another reader to read it there; each
+                    for name, label in value_labels(key[:-len("box")], a.label_text):     # thing asked for on it)
+                        if reader == "vlm":
+                            c = rd.recognize(img, n_best=1, max_new_tokens=40, prompt=FINAL_PROMPT.format(label=label))[0]
+                            out.setdefault(name, {})["vlmfinal"] = [[c.text, float(c.logp)]]
+                            g = rd.recognize(img, n_best=1, max_new_tokens=60,
+                                             prompt=LOCATE_PROMPT.format(label=label))[0]
+                            out[name]["where"] = bbox_of(g.text, img.size)
+                            if out[name]["where"]:     # (what is written there, as written - an answer in words too:
+                                w = rd.recognize(final_crop(img, out[name]["where"]), n_best=1, max_new_tokens=80,
+                                                 prompt=ANSWER_PROMPT)[0]      #  cut out, nothing round it to guess from)
+                                out[name]["vlmwords"] = [[w.text, float(w.logp)]]
+                        elif reader == "mumer" and (out.get(name) or {}).get("where"):  # (the vision model read first)
+                            out[name]["mumerfinal"] = [[c.text, float(c.logp)]
+                                                       for c in read(final_crop(img, out[name]["where"]))]
                     continue
                 if key.endswith("_box"):               # (a whole box: its rows read together, by the vision model)
                     if reader != "vlm":

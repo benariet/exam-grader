@@ -8237,8 +8237,14 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
     assert V.judge_value({"mumerfinal": [("69 ns", 0)], "pix2textfinal": [("69 ns", 0)], "vlm": [("12 ns", 0)],
                           "mumer": [("12 ns", 0)]}, 69.7, 0.1, False, "ns")[0] == "unsure"   # (two pairs: key, not)
     assert V.judge_value({"vlmfinal": [("35 ns", 0)], "vlm": [("35 ns", 0)]}, 69.7, 0.1, False, "ns")[0] == "unsure"
+    assert V.judge_value({"vlmfinal": [("1.5V", 0)], "mumerfinal": [("i = 0,", 0)], "pix2textfinal": [("t = 0", 0)]},
+                         1.151, 0.03, False, "V")[0] == "unsure"     # (the place found holds another value than the
+    #                                                                   vision model's own: maybe not the place)
     assert V.value_of("69.7 ns.", False, "ns") == 69.7 and V.value_of("69.7 ns ?", False, "ns") is None
-    from tools.read_crops import bbox_of, final_crop
+    from tools.read_crops import bbox_of, final_crop, value_labels
+    assert value_labels("7_value", "the_DUTY_CICLE") == [("7_value", "the DUTY CICLE")]
+    assert value_labels("7_value", "f1=the_function_of_F1;tf1=its_delay") == [("7_value~f1", "the function of F1"),
+                                                                              ("7_value~tf1", "its delay")]
     assert bbox_of('{"bbox_2d": [100, 500, 600, 550]}', (2000, 1000)) == [0.1, 0.5, 0.6, 0.55]
     assert bbox_of('```json\n[{"bbox_2d": [600, 550, 100, 500], "label": "t"}]\n```', (9, 9)) == [0.1, 0.5, 0.6, 0.55]
     assert bbox_of("{}", (9, 9)) is None and bbox_of("[10, 10, 10, 10]", (9, 9)) is None
@@ -8285,6 +8291,22 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
             sys.argv = argv
         assert json.load(open(f"{tmp}/out2/8.value.json"))["verdict"] == "unsure"
         assert "data:image/png" in open(f"{tmp}/out2/review.html", encoding="utf-8").read()
+        # several things asked for on one place (read_crops' 'id=what;...'): an answer in words, a value on the way
+        json.dump({"8_value~f1": {"vlmwords": [["NOT gate", 0]], "vlmfinal": [["NOT", 0]], "where": [0.5, 0.2, 0.8, 0.8]},
+                   "8_value~tf1": {"vlmfinal": [["11.5 ps", 0]]}}, open(f"{tmp}/r3.json", "w"))
+        for extra, out in ((["--words-key", json.dumps({"right": [r"\bnot\b"], "wrong": [r"\band\b"]}), "--reading-id", "f1"], "o3"),
+                           (["--key", "11.5 ps", "--reading-id", "tf1", "--step", "--no-local"], "o4")):
+            sys.argv = ["value_area.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--area", "80,1500,1100,1608",
+                        "--name", "F1", "--second", f"{tmp}/r3.json", "--out", f"{tmp}/{out}"] + extra
+            try:
+                V.main()
+            finally:
+                sys.argv = argv
+        r = json.load(open(f"{tmp}/o3/8.value.json"))
+        assert r["verdict"] == "right" and r["read"] == "NOT gate", r
+        r = json.load(open(f"{tmp}/o4/8.value.json"))
+        assert r["verdict"] == "right" and r["kind"] == "step" and __import__("os").path.isfile(f"{tmp}/o4/8_step_remarks.txt"), r
+        assert "לא נמצא בעבודה" in open(f"{tmp}/o4/9_step_remarks.txt", encoding="utf-8").read()
 
 
 def test_an_exams_structured_checks_run_from_its_config(tmp_path):
@@ -8296,7 +8318,10 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     out = subprocess.run([sys.executable, "tools/run_exam.py", "exams/moedC.json", "--dry-run"], capture_output=True,
                          text=True, check=True).stdout
     lines = out.splitlines()
-    assert sum(1 for x in lines if x.startswith("== ")) == 11, out   # (9 parts, the decisions sheet, the report)
+    assert sum(1 for x in lines if x.startswith("== ")) == 21, out   # (19 parts, the decisions sheet, the report)
+    shared = [x for x in lines if "value_area.py" in x and "--reading-id oh" in x]
+    assert len(shared) == 1 and "value_q1d_ol_crops" in shared[0] and "--crops-only" not in shared[0]   # (read once)
+    assert sum(1 for x in lines if "sbatch" in x) == 9, [x for x in lines if "sbatch" in x]
     assert all("--decisions" in x for x in lines if ("words_box.py" in x or "value_area.py" in x) and "--crops-only" not in x)
     sheet = next(x for x in lines if "decide_sheet.py" in x)
     assert "--words" in sheet and "value_q1f" in sheet and "value_q1e" not in sheet
@@ -8361,3 +8386,86 @@ def test_undecided_answers_are_put_before_a_human_once_and_his_marks_decide(tmp_
     assert dec["wordings"]["words:Y1"] == {"xor": "right"} and "words:Y2" not in dec["wordings"]
     assert D.decided(dec, "words:Y1", "9", "X O R") == ("right", "wording")      # (another exam, the same wording)
     assert D.decided(dec, "words:Y1", "9", "XNOR") == (None, "") and D.decided(dec, "value:1(f)", "4", "")[0] == "right"
+
+
+def test_a_drawn_waveform_is_checked_by_its_shape():
+    """tools/waveform.py: where a drawing on a printed time axis is high, against the solution's - an inverted copy of
+    the clock (Z = NOT In, a little later), or low with a short pulse after each rising edge (Out)"""
+    import json
+    import sys
+    import tempfile
+    from PIL import Image, ImageDraw, ImageFont
+    from tools import waveform as W
+    tpl = Image.new("L", (1240, 1754), 255)
+    d = ImageDraw.Draw(tpl)
+    d.text((300, 120), "Question 3 - draw Z and Out", fill=0, font=ImageFont.truetype("DejaVuSans-Bold.ttf", 30))
+    for vdd, zero in ((699, 962), (1118, 1383)):
+        d.line([(215, vdd - 60), (215, zero)], fill=0, width=3)
+        d.line([(215, zero), (990, zero)], fill=0, width=4)
+        for x in range(220, 960, 14):              # (the dashed V_DD line and grid)
+            d.line([(x, vdd), (x + 7, vdd)], fill=0, width=2)
+        for x in range(252, 960, 38):
+            for y in range(vdd, zero, 14):
+                d.line([(x, y), (x, y + 7)], fill=0, width=2)
+        d.text((150, vdd - 15), "VDD", fill=0, font=ImageFont.truetype("DejaVuSans.ttf", 22))
+    ink = (30, 30, 90)
+
+    def wave(dr, vdd, zero, highs):                 # (a drawn waveform: high stretches, low between, the edges)
+        y_hi, y_lo = vdd + 3, zero - 4
+        xs = [220] + [x for h in highs for x in h] + [955]
+        level = [False] + [i % 2 == 0 for i in range(len(xs) - 2)]
+        for i, (xa, xb) in enumerate(zip(xs, xs[1:])):
+            dr.line([(xa, y_hi if level[i] else y_lo), (xb, y_hi if level[i] else y_lo)], fill=ink, width=3)
+            dr.line([(xb, y_hi), (xb, y_lo)], fill=ink, width=3)
+    scans = {"1": [(220, 391), (543, 698), (850, 955)],     # (Z right: high before the first rise, inverted after)
+             "2": [(374, 527), (680, 833)],                 # (Z a copy of In)
+             "4": "pulses", "5": "late", "3": None}
+    with tempfile.TemporaryDirectory() as tmp:
+        __import__("os").makedirs(f"{tmp}/booklet")
+        tpl.save(f"{tmp}/booklet/p1.png")
+        for n, highs in scans.items():
+            s = tpl.copy().convert("RGB")
+            dr = ImageDraw.Draw(s)
+            if isinstance(highs, list):
+                wave(dr, 699, 962, highs)
+            elif highs == "pulses":
+                wave(dr, 1118, 1383, [(416, 436), (722, 742)])
+            elif highs == "late":                       # (pulses at the falling edges)
+                wave(dr, 1118, 1383, [(545, 565), (851, 871)])
+            s.save(f"{tmp}/{n}.pdf", resolution=150)
+        argv = sys.argv
+        for plot, kind, out in (("216,960,699,962", "inverted", "z"), ("216,960,1118,1383", "pulses", "o")):
+            sys.argv = ["waveform.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--plot", plot, "--edges",
+                        "374r,527f,680r,833f", "--kind", kind, "--name", kind, "--out", f"{tmp}/{out}", "--review"]
+            try:
+                W.main()
+            finally:
+                sys.argv = argv
+        z = {n: json.load(open(f"{tmp}/z/{n}.wave.json"))["verdict"] for n in scans}
+        o = {n: json.load(open(f"{tmp}/o/{n}.wave.json"))["verdict"] for n in scans}
+        assert z["1"] == "right" and z["2"] == "wrong" and z["3"] == "empty", z
+        assert o["4"] == "right" and o["5"] == "wrong" and o["3"] == "empty", o
+        assert "data:image/png" in open(f"{tmp}/z/review.html", encoding="utf-8").read()
+
+
+def test_the_report_puts_the_checks_against_the_exams_own_points():
+    """tools/exam_report.py --rubric: each item of the exam (its points from the booklet) right when its checks all
+    are, an error found when one is wrong, open or not checked; per question against the lecturer's points"""
+    from tools.exam_report import points_view
+    rubric = [{"item": "1(א)", "q": 1, "points": 10, "match": r"^1\(א\)"},
+              {"item": "1(ג)", "q": 1, "points": 10, "match": r"1\(ג\)"},
+              {"item": "2.2", "q": 2, "points": 5, "match": r"^2\.2", "mcq": True},
+              {"item": "3", "q": 3, "points": 25, "match": r"^שאלה 3", "partial": True}]
+    det = {"1": [("1(א) טבלת האמת", "", "נכון", "", ""), ("1(א) ביטוי Y1", "", "נכון", "", ""),
+                 ("2.2 אמריקאית", "ג", "שגוי", "0", ""), ("שאלה 3 - האות Z", "", "שגוי", "", ""),
+                 ("3 ההשהיה של F1", "", "שונה מהפתרון", "", "")],          # (a step: no item's check)
+           "2": [("1(א) טבלת האמת", "", "לבדיקה ידנית", "", ""), ("1(א) ביטוי Y1", "", "נכון", "", ""),
+                 ("2.2 אמריקאית", "ד", "נכון", "", ""), ("שאלה 3 - האות Z", "", "נכון", "", "")]}
+    marks = {"1": {1: 10, 2: 0, 3: 0}, "2": {1: 10, 2: 0, 3: 5}}
+    items, per_q, cover = points_view(det, rubric, marks)
+    st = {(r[0], r[2]): r[4] for r in items}
+    assert st[("1", "1(א)")] == "נכון" and st[("1", "1(ג)")] == "לא נבדק" and st[("1", "2.2")].startswith("שגוי")
+    assert st[("1", "3")] == "נמצאה טעות" and st[("2", "1(א)")].startswith("פתוח") and st[("2", "3")].startswith("נכון")
+    q = {(r[0], r[1]): r for r in per_q}
+    assert q[("1", 2)][-1].startswith("לבדוק") and q[("1", 3)][-1].startswith("לבדוק")   # (5 lost for sure, yet
+    assert q[("2", 1)][-1] == "מתיישב" and abs(cover["1"] - 40 / 50) < 1e-9              #  full; an error, 0 off)

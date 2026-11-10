@@ -1,0 +1,21 @@
+{
+ "right": [
+  "\\bnot\\b",
+  "invert",
+  "\\binv\\b",
+  "מהפך",
+  "אינוורטר",
+  "\\\\overline",
+  "\\\\neg",
+  "¬"
+ ],
+ "wrong": [
+  "\\bnand\\b",
+  "\\bnor\\b",
+  "\\band\\b",
+  "\\bor\\b",
+  "xor",
+  "buffer",
+  "באפר"
+ ]
+}
