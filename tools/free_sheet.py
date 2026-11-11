@@ -46,21 +46,42 @@ def page_answers(text: str):
 
 
 def join_pages(pages, mcq: int):
-    """each page's answers -> {question: answer}: a continuation added to the last answer before it, a letter answer
-    kept to its letter, an answer met twice joined"""
+    """each page's answers -> {question: answer}: a continuation added to the last answer before it (a single letter
+    right before a page's question 2 is question 1's - its '1' read as something else), a letter answer kept to its
+    letter and to the first page that gives it, an answer met twice joined; a page giving many questions one same
+    letter (a near blank page - the back's writing showing through - read as a list) gives no letters"""
+    from collections import Counter
     got, last = {}, None
     for answers in pages:
-        for q, a in answers:
+        letters = Counter(a.strip().upper() for q, a in answers if q.isdigit() and int(q) <= mcq)
+        blind = bool(letters) and letters.most_common(1)[0][1] >= 8 and len(letters) == 1
+        for i, (q, a) in enumerate(answers):
             if q == "cont":
-                if last:
+                nxt = answers[i + 1][0] if i + 1 < len(answers) else ""
+                if re.fullmatch(r"\W*[A-Da-d]\W*", a) and nxt == "2" and "1" not in got:
+                    q = "1"                            # (question 1's letter, its number misread)
+                elif re.search(r"answer all|each question|carries|marks\b", a, re.I) and len(a) < 60:
+                    continue                           # (the paper's instructions, copied)
+                elif last and int(last) > mcq:
                     got[last] = (got[last] + " " + a).strip()
-                continue
+                    continue
+                elif last == str(mcq) and str(mcq + 1) not in got and len(a) > 15:
+                    q = str(mcq + 1)                   # (text right after the last letter: the first written answer,
+                else:                                  #  its number not seen)
+                    continue
             if not q.isdigit():
                 continue
-            if int(q) <= mcq:
+            if int(q) <= mcq:                          # (a letter; 'True' / 'False' the options A / B)
+                if blind:
+                    continue
+                tf = re.search(r"\b(true|false)\b", a, re.I)
                 m = re.search(r"\b([A-Da-d])\b", a) or re.fullmatch(r"\W*([A-Da-d])\W*", a)
-                a = m.group(1).upper() if m else "?"
-            got[q] = (got[q] + " " + a).strip() if q in got and int(q) > mcq else a
+                a = m.group(1).upper() if m else ("A" if tf.group(1).lower() == "true" else "B") if tf else "?"
+                if got.get(q, "?") != "?":
+                    continue
+                got[q] = a
+            else:
+                got[q] = (got[q] + " " + a).strip() if q in got else a
             last = q
     return got
 
@@ -89,6 +110,12 @@ def read(a):
         out[name] = {"pages": raws, "answers": join_pages(pages, a.mcq)}
         json.dump(out, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
         print(name, len(doc), "pages,", len(out[name]["answers"]), "answers", flush=True)
+
+
+def answers_of(r, mcq):
+    """a student's readings -> his answers, joined anew from the pages' raw lines (when kept) - so a better joining
+    needs no reading again"""
+    return join_pages([page_answers(p) for p in r["pages"]], mcq) if r.get("pages") else r["answers"]
 
 
 def key_of(path):
@@ -121,7 +148,7 @@ def grade(a):
             continue
         marks = {}
         for q in range(a.mcq + 1, a.questions + 1):
-            ans = r["answers"].get(str(q), "").strip()
+            ans = answers_of(r, a.mcq).get(str(q), "").strip()
             if not ans or set(ans) <= set("? "):
                 marks[str(q)] = [None, ""]             # (no answer read: not graded)
                 continue
@@ -148,13 +175,17 @@ def score(a):
             continue
         mine = 0
         for q in range(1, a.mcq + 1):
-            got, rec = r["answers"].get(str(q), "?"), (t.get(str(q)) or "").strip().upper()
+            got, rec = answers_of(r, a.mcq).get(str(q), "?"), (t.get(str(q)) or "").strip().upper()
+            rec = {"TRUE": "A", "FALSE": "B"}.get(rec, rec)
             letters[0 if got == rec else 2 if got == "?" else 1] += 1
             mine += got == key.get(str(q))
         mcq_marks.append((mine, float(t["MCQ mark"])))
         for q in range(a.mcq + 1, a.questions + 1):
             tm = (t.get(str(q)) or "").strip()
-            tm = 0.0 if tm in ("", "NC") else float(tm)
+            try:
+                tm = float(tm)
+            except ValueError:                         # ('', 'NC', 'NM': blank, not marked - nothing given)
+                tm = 0.0
             g = (grades.get(name) or {}).get(str(q), [None])[0]
             short.append((g, tm))
     n = sum(letters)

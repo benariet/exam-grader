@@ -8478,6 +8478,13 @@ def test_a_free_answer_sheet_is_joined_per_question():
     p1 = page_answers('{"q": 1, "answer": "D"}\n{"q": 2, "answer": "c."}\n{"q": 21, "answer": "Supervised learning is"}')
     p2 = page_answers('{"q": "cont", "answer": "learning from labeled data"}\n{"q": 26, "answer": "\\"structured\\" data"}'
                       '\n{"q": 3, "answer": "?"}')
+    assert join_pages([page_answers('{"q": 17, "answer": "False"}')], 20) == {"17": "B"}    # (True / False: A / B)
+    blank = page_answers(" ".join('{"q": %d, "answer": "a"}' % q for q in range(1, 21)))   # (a near blank page)
+    first = page_answers('{"q": "cont", "answer": "B"} {"q": 2, "answer": "A"}')       # (its '1' misread)
+    assert join_pages([first, blank], 20) == {"1": "B", "2": "A"}
+    after = page_answers('{"q": 20, "answer": "C"} {"q": "cont", "answer": "Answer all questions"} '
+                         '{"q": "cont", "answer": "Supervised learning uses labeled data"}')
+    assert join_pages([after], 20) == {"20": "C", "21": "Supervised learning uses labeled data"}   # (21's, unnumbered)
     got = join_pages([p1, p2], 20)
     assert got == {"1": "D", "2": "C", "21": "Supervised learning is learning from labeled data",
                    "26": '"structured" data', "3": "?"}, got
