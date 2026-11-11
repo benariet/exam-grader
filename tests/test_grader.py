@@ -8318,7 +8318,7 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     out = subprocess.run([sys.executable, "tools/run_exam.py", "exams/moedC.json", "--dry-run"], capture_output=True,
                          text=True, check=True).stdout
     lines = out.splitlines()
-    assert sum(1 for x in lines if x.startswith("== ")) == 21, out   # (19 parts, the decisions sheet, the report)
+    assert sum(1 for x in lines if x.startswith("== ")) == 22, out   # (20 parts, the decisions sheet, the report)
     shared = [x for x in lines if "value_area.py" in x and "--reading-id oh" in x]
     assert len(shared) == 1 and "value_q1d_ol_crops" in shared[0] and "--crops-only" not in shared[0]   # (read once)
     assert sum(1 for x in lines if "sbatch" in x) == 9, [x for x in lines if "sbatch" in x]
@@ -8469,3 +8469,60 @@ def test_the_report_puts_the_checks_against_the_exams_own_points():
     q = {(r[0], r[1]): r for r in per_q}
     assert q[("1", 2)][-1].startswith("לבדוק") and q[("1", 3)][-1].startswith("לבדוק")   # (5 lost for sure, yet
     assert q[("2", 1)][-1] == "מתיישב" and abs(cover["1"] - 40 / 50) < 1e-9              #  full; an error, 0 off)
+
+
+def test_a_free_answer_sheet_is_joined_per_question():
+    """tools/free_sheet.py: the vision model's lines per page -> each question's answer, a page's unnumbered top joined
+    to the last answer before it, a multiple-choice answer kept to its letter"""
+    from tools.free_sheet import join_pages, page_answers
+    p1 = page_answers('{"q": 1, "answer": "D"}\n{"q": 2, "answer": "c."}\n{"q": 21, "answer": "Supervised learning is"}')
+    p2 = page_answers('{"q": "cont", "answer": "learning from labeled data"}\n{"q": 26, "answer": "\\"structured\\" data"}'
+                      '\n{"q": 3, "answer": "?"}')
+    got = join_pages([p1, p2], 20)
+    assert got == {"1": "D", "2": "C", "21": "Supervised learning is learning from labeled data",
+                   "26": '"structured" data', "3": "?"}, got
+
+
+def test_a_drawn_curve_is_checked_by_its_levels():
+    """tools/waveform.py --kind curve: a curve on printed axes - low at the start, rising, stopping under V_DD - its
+    levels near the start and the end; the numbers written by it left out"""
+    import json
+    import sys
+    import tempfile
+    from PIL import Image, ImageDraw, ImageFont
+    from tools import waveform as W
+    tpl = Image.new("L", (1240, 1754), 255)
+    d = ImageDraw.Draw(tpl)
+    d.text((300, 120), "Question 1(c) - draw Y1 against C", fill=0, font=ImageFont.truetype("DejaVuSans-Bold.ttf", 30))
+    d.line([(185, 520), (185, 1001)], fill=0, width=3)
+    d.line([(185, 1001), (660, 1001)], fill=0, width=4)
+    for y in range(574, 1000, 36):
+        for x in range(190, 616, 14):
+            d.line([(x, y), (x + 7, y)], fill=0, width=2)
+    ink = (30, 30, 90)
+
+    def curve(dr, pts):
+        dr.line([(185 + x * 430, 1001 - y * 427) for x, y in pts], fill=ink, width=3)
+    shapes = {"1": [(0.02, 0.3), (0.66, 0.3), (1.0, 0.64)],          # (flat, then rising to V_DD - V_T)
+              "2": [(0.02, 0.3), (0.4, 0.3), (1.0, 0.98)],            # (rising to V_DD: the drop missed)
+              "3": [(0.02, 0.98), (0.4, 0.95), (0.7, 0.05), (1.0, 0.02)],   # (falling: the inverter's)
+              "4": None}
+    with tempfile.TemporaryDirectory() as tmp:
+        __import__("os").makedirs(f"{tmp}/booklet")
+        tpl.save(f"{tmp}/booklet/p1.png")
+        for n, pts in shapes.items():
+            s = tpl.copy().convert("RGB")
+            dr = ImageDraw.Draw(s)
+            if pts:
+                curve(dr, pts)
+                dr.text((420, 640), "|VTp|", fill=ink, font=ImageFont.truetype("DejaVuSans.ttf", 22))
+            s.save(f"{tmp}/{n}.pdf", resolution=150)
+        argv = sys.argv
+        sys.argv = ["waveform.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--plot", "185,615,574,1001",
+                    "--kind", "curve", "--name", "1(c)", "--out", f"{tmp}/c", "--review"]
+        try:
+            W.main()
+        finally:
+            sys.argv = argv
+        got = {n: json.load(open(f"{tmp}/c/{n}.wave.json"))["verdict"] for n in shapes}
+        assert got == {"1": "right", "2": "wrong", "3": "wrong", "4": "empty"}, got

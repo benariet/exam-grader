@@ -101,6 +101,18 @@
    }
   },
   {
+   "name": "wave_q1c",
+   "tool": "waveform",
+   "args": {
+    "page": 7,
+    "plot": "185,615,574,1001",
+    "kind": "curve",
+    "name": "שאלה 1(ג) - הגרף של Y1",
+    "question": 1,
+    "review": true
+   }
+  },
+  {
    "name": "value_q1d_ol",
    "tool": "value_area",
    "args": {

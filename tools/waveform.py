@@ -9,6 +9,9 @@ Two kinds of waveform:
             of the input (its first --settle pixels left out, the delay) must be at the opposite level
   pulses    --kind pulses: low but for a short pulse a little after each rising edge of the input (Out = In AND Z - the
             glitch while Z has not yet fallen): a pulse within --after pixels of each rising edge, none elsewhere
+  curve     --kind curve: a curve on printed axes (1(c): Y1 against C - low and flat, then rising, stopping under
+            V_DD): its level near the start and near the end in their ranges (--early, --late), the end above the start
+            (--rise); ending at V_DD or falling is wrong
 
     python tools/waveform.py "<exams' PDFs>" --booklet booklet/moedC --page 25 --plot 216,960,699,962 \\
         --edges 374r,527f,680r,833f --kind inverted --name "3 Z" --question 3 --out <folder> [--grades ...] [--review]
@@ -124,14 +127,59 @@ def judge_pulses(high, x0, edges, drawn, after, widest):
     return "unsure", wins
 
 
+def curve_of(gray, printed, x0, x1, y_vdd, y_zero, min_width=40):
+    """a curve drawn on printed axes -> {x share (0..1, by 1 %): y share (0 at the axis, 1 at V_DD)}: the ink that is
+    not the print (the print exactly, a pixel round it - a curve crossing the grid's dashes is cut there only), its
+    strokes at least min_width wide once joined across such cuts (a curve, not the numbers and labels written by it),
+    the middle of their ink in each column"""
+    from scipy import ndimage as ndi
+    top, bottom = int(y_vdd - 10), int(y_zero + 4)
+    sub = (gray[top:bottom, x0:x1] < 170) & ~ndi.binary_dilation(printed[top:bottom, x0:x1], iterations=1)
+    sub = ndi.binary_opening(sub, structure=np.ones((2, 2)))      # (specks)
+    lab, n = ndi.label(ndi.binary_dilation(sub, iterations=4), structure=np.ones((3, 3)))
+    keep = np.zeros_like(sub)
+    for k, sl in enumerate(ndi.find_objects(lab)):
+        if sl is not None and sl[1].stop - sl[1].start >= min_width:
+            keep |= (lab == k + 1) & sub
+    out = {}
+    for c in range(keep.shape[1]):
+        ys = np.where(keep[:, c])[0]
+        if len(ys):
+            out[round(c / max(1, x1 - x0), 2)] = float((y_zero - (top + np.median(ys))) / (y_zero - y_vdd))
+    return out
+
+
+def judge_curve(curve, early, late, rise):
+    """the drawn curve against the solution's shape: its level over early (x from, to, y low, high - shares of the
+    axes) and over late in their ranges, and late above early by rise -> (verdict, [(part, level)]): wrong when it
+    ends at V_DD (the threshold drop missed), or falls (the inverter's curve, not this output's)"""
+    def level(a, b):
+        ys = [y for x, y in curve.items() if a <= x <= b]
+        return float(np.median(ys)) if len(ys) >= 3 else None
+    e, l_ = level(*early[:2]), level(*late[:2])
+    seen = [("early", e), ("late", l_)]
+    if not curve:
+        return "empty", seen
+    if e is None or l_ is None:
+        return "unsure", seen
+    if early[2] <= e <= early[3] and late[2] <= l_ <= late[3] and l_ - e >= rise:
+        return "right", seen
+    if l_ >= 0.9 or l_ - e <= -0.2:
+        return "wrong", seen
+    return "unsure", seen
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("folder")
     ap.add_argument("--booklet", required=True)
     ap.add_argument("--page", type=int, required=True)
     ap.add_argument("--plot", required=True, help="x_from,x_to,y_vdd,y_zero of the plot, on the booklet's template")
-    ap.add_argument("--edges", required=True, help="the input's edges on the template: '374r,527f,680r,833f'")
-    ap.add_argument("--kind", choices=("inverted", "pulses"), required=True)
+    ap.add_argument("--edges", default="", help="the input's edges on the template: '374r,527f,680r,833f'")
+    ap.add_argument("--kind", choices=("inverted", "pulses", "curve"), required=True)
+    ap.add_argument("--early", default="0.08,0.40,0.10,0.50", help="curve: x from,to and its level's low,high")
+    ap.add_argument("--late", default="0.88,1.0,0.45,0.82", help="curve: likewise at the end")
+    ap.add_argument("--rise", type=float, default=0.15, help="curve: the end above the start by at least this")
     ap.add_argument("--settle", type=int, default=40, help="pixels after an edge left out (the delay drawn)")
     ap.add_argument("--after", type=int, default=110, help="pulses: a pulse must start within this after a rise")
     ap.add_argument("--widest", type=int, default=90, help="pulses: and be at most this wide")
@@ -150,7 +198,7 @@ def main():
     from tools.truth_table import to_scan
     template = np.asarray(Image.open(os.path.join(a.booklet, f"p{a.page}.png")).convert("L")) < 128
     px0, px1, py_vdd, py_zero = (int(v) for v in a.plot.split(","))
-    edges_t = [(int(e[:-1]), e[-1]) for e in a.edges.split(",")]
+    edges_t = [(int(e[:-1]), e[-1]) for e in a.edges.split(",") if e]
     marks = {}
     if a.grades:
         from tools.recheck_exams import grades
@@ -175,7 +223,11 @@ def main():
         edges = sorted((to_scan((x, py_vdd, x, py_vdd), M, b)[0], k) for x, k in edges_t)
         high, known = high_columns(hand, gray, exact, x0, x1, y_vdd, y_zero, 12 if a.kind == "inverted" else 6)
         drawn = drawn_range(hand, x0, x1, y_vdd, y_zero)
-        if a.kind == "inverted":
+        if a.kind == "curve":                          # (a curve on printed axes: its levels at the start and end)
+            curve = curve_of(gray, exact, x0, x1, y_vdd, y_zero)
+            v, wins = judge_curve(curve, [float(x) for x in a.early.split(",")], [float(x) for x in a.late.split(",")],
+                                  a.rise)
+        elif a.kind == "inverted":
             v, wins = judge_inverted(high, known, x0, edges, drawn, a.settle)
         else:
             v, wins = judge_pulses(high, x0, edges, drawn, a.after, a.widest)
@@ -186,10 +238,13 @@ def main():
             v = hv or v
         out = {"exam": name, "name": a.name, "verdict": v, "kind": "wave", "windows": [list(w) for w in wins],
                "high_share": round(float(high.mean()), 3), "known_share": round(float(known.mean()), 3), "drawn": drawn}
+        if a.kind == "curve":
+            out["windows"] = [[k, None if x is None else round(x, 2)] for k, x in wins]
         if how:
             out["decided"] = how
         json.dump(out, open(os.path.join(a.out, f"{name}.wave.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-        expect = "הפוך ומושהה מעט ביחס ל-In" if a.kind == "inverted" else "נמוך, עם פולס קצר מעט אחרי כל עליה של In"
+        expect = {"inverted": "הפוך ומושהה מעט ביחס ל-In", "pulses": "נמוך, עם פולס קצר מעט אחרי כל עליה של In",
+                  "curve": "נמוך בהתחלה, עולה ונעצר מתחת ל-VDD"}[a.kind]
         txt = {"right": f"{a.name}: צורת האות נכונה ({expect}).",
                "wrong": f"{a.name}: צורת האות שונה מהפתרון (בפתרון: {expect}).",
                "unsure": f"{a.name}: הציור לא הוכרע - לבדיקה ידנית (בפתרון: {expect}).",
@@ -206,7 +261,7 @@ def main():
             ox, oy = max(0, x0 - 30), int(y_vdd - 40)
             for i in np.where(high)[0]:                # (what was taken as high: green)
                 d.line([(x0 + i - ox, y_vdd - oy - 18), (x0 + i - ox, y_vdd - oy - 12)], fill=(0, 170, 0))
-            for wa, wb, want, seen, *_ in wins:        # (each window: what the solution has, what was seen)
+            for wa, wb, want, seen, *_ in ([] if a.kind == "curve" else wins):   # (each window: the solution's, seen)
                 col = (0, 120, 220) if seen in (want, "pulse") else (220, 0, 0)
                 d.rectangle([wa - ox, y_zero - oy + 4, wb - ox, y_zero - oy + 10], outline=col, width=2)
             buf = io.BytesIO()
