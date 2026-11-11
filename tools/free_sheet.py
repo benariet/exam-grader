@@ -6,6 +6,8 @@ multiple-choice letters and 15 short answers of 2 marks each, the teacher's mark
 
     python tools/free_sheet.py read <PDFs' folder> --out readings.json [--mcq 20] [--questions 35] [--only 1,2]
         -> {"<pdf>": {"pages": [raw text, ...], "answers": {"1": "B", ..., "21": "..."}}}
+    python tools/free_sheet.py reread readings.json <PDFs' folder> --out halves.json     (a student some written
+        answer of whom was not found: his pages again in halves; merged into readings.json as 'halves')
     python tools/free_sheet.py grade readings.json --key answerkey.txt --questions-text Question.txt --out grades.json
         -> {"<pdf>": {"21": [mark, raw], ...}}
     python tools/free_sheet.py score readings.json grades.json --key answerkey.txt --teacher <marks.csv>
@@ -45,13 +47,45 @@ def page_answers(text: str):
     return out
 
 
-def join_pages(pages, mcq: int):
+STOP = set("the and for are that this with from its can not but has have was were which what how why when where who "
+           "into than then them they their there these those been being will would should could also such each other "
+           "use used using give given two one data answer question".split())
+
+
+def _words(text: str):
+    return {w for w in re.findall(r"[a-z]{3,}", (text or "").lower()) if w not in STOP}
+
+
+def by_content(segs, refs, mcq: int, last_q: int):
+    """[[question, text]] in reading order -> the same, a number read twice set right: while some question has no
+    answer, each answer under a number met twice goes to whichever of that number and the ones missing its words
+    share most with (the question's wording and its key, refs) - when clearly more (24 read as 21)"""
+    from collections import defaultdict
+    by = defaultdict(list)
+    for i, (q, _) in enumerate(segs):
+        by[q].append(i)
+    missing = [str(q) for q in range(mcq + 1, last_q + 1) if str(q) not in by]
+    for q in [q for q, ix in by.items() if len(ix) > 1]:
+        for i in by[q]:
+            if not missing:
+                return segs
+            w = _words(segs[i][1])
+            score = {c: len(w & _words(refs.get(c, ""))) for c in [q] + missing}
+            best = max(missing, key=lambda c: score[c])
+            if score[best] >= 2 and score[best] >= 1.5 * score[q] + 1:
+                segs[i][0] = best
+                missing.remove(best)
+    return segs
+
+
+def join_pages(pages, mcq: int, refs=None, last_q: int = 0):
     """each page's answers -> {question: answer}: a continuation added to the last answer before it (a single letter
     right before a page's question 2 is question 1's - its '1' read as something else), a letter answer kept to its
-    letter and to the first page that gives it, an answer met twice joined; a page giving many questions one same
-    letter (a near blank page - the back's writing showing through - read as a list) gives no letters"""
+    letter and to the first page that gives it, an answer met twice joined (with refs - {question: its wording and
+    key} - first set right by its content, by_content); a page giving many questions one same letter (a near blank
+    page - the back's writing showing through - read as a list) gives no letters"""
     from collections import Counter
-    got, last = {}, None
+    got, segs, last = {}, [], None
     for answers in pages:
         letters = Counter(a.strip().upper() for q, a in answers if q.isdigit() and int(q) <= mcq)
         blind = bool(letters) and letters.most_common(1)[0][1] >= 8 and len(letters) == 1
@@ -63,9 +97,9 @@ def join_pages(pages, mcq: int):
                 elif re.search(r"answer all|each question|carries|marks\b", a, re.I) and len(a) < 60:
                     continue                           # (the paper's instructions, copied)
                 elif last and int(last) > mcq:
-                    got[last] = (got[last] + " " + a).strip()
+                    segs[-1][1] = (segs[-1][1] + " " + a).strip()
                     continue
-                elif last == str(mcq) and str(mcq + 1) not in got and len(a) > 15:
+                elif last == str(mcq) and not any(x[0] == str(mcq + 1) for x in segs) and len(a) > 15:
                     q = str(mcq + 1)                   # (text right after the last letter: the first written answer,
                 else:                                  #  its number not seen)
                     continue
@@ -81,8 +115,12 @@ def join_pages(pages, mcq: int):
                     continue
                 got[q] = a
             else:
-                got[q] = (got[q] + " " + a).strip() if q in got else a
+                segs.append([q, a])
             last = q
+    if refs:
+        segs = by_content(segs, refs, mcq, last_q or max([int(q) for q, _ in segs] + [mcq]))
+    for q, a in segs:
+        got[q] = (got[q] + " " + a).strip() if q in got else a
     return got
 
 
@@ -112,10 +150,54 @@ def read(a):
         print(name, len(doc), "pages,", len(out[name]["answers"]), "answers", flush=True)
 
 
-def answers_of(r, mcq):
+def answers_of(r, mcq, refs=None, last_q=0):
     """a student's readings -> his answers, joined anew from the pages' raw lines (when kept) - so a better joining
-    needs no reading again"""
-    return join_pages([page_answers(p) for p in r["pages"]], mcq) if r.get("pages") else r["answers"]
+    needs no reading again; a written answer the whole pages missed taken from the pages read again in halves
+    ('halves', reread: an answer met in both halves joined once - the longer)"""
+    got = join_pages([page_answers(p) for p in r["pages"]], mcq, refs, last_q) if r.get("pages") else r["answers"]
+    if r.get("halves"):
+        more = {}
+        for h in r["halves"]:
+            for q, a in join_pages([page_answers(h)], mcq, refs, last_q).items():
+                if int(q) > mcq and len(a) > len(more.get(q, "")):
+                    more[q] = a
+        for q, a in more.items():
+            if q not in got:
+                got[q] = a
+    return got
+
+
+def reread(a):
+    """a student some written answer of whom was not found under its number: each of his pages read again in two
+    halves (the top 55 %, the bottom 55 %: half as much writing for the model to keep its numbers apart) ->
+    readings' 'halves' - answers_of takes from them only the questions the whole pages missed"""
+    import pypdfium2 as pdfium
+    import torch
+    from recog.hebrew_vlm import HebrewRecognizer
+    rd = HebrewRecognizer(model_dir=a.vlm, dtype=torch.bfloat16 if torch.cuda.is_available() and
+                          torch.cuda.is_bf16_supported() else None)
+    readings = json.load(open(a.readings, encoding="utf-8"))
+    out = json.load(open(a.out, encoding="utf-8")) if os.path.isfile(a.out) else {}
+    only = {x for x in a.only.split(",") if x}
+    for name, r in readings.items():
+        if name in out or (only and name.split("_")[-1] not in only):
+            continue
+        got = answers_of(r, a.mcq)
+        if all(str(q) in got for q in range(a.mcq + 1, a.questions + 1)):
+            continue
+        doc = pdfium.PdfDocument(os.path.join(a.folder, name + ".pdf"))
+        halves = []
+        for i in range(len(doc)):
+            w = doc[i].get_size()[0]
+            img = doc[i].render(scale=a.width / w).to_pil().convert("RGB")
+            for y0, y1 in ((0.0, 0.55), (0.45, 1.0)):
+                part = img.crop((0, int(y0 * img.height), img.width, int(y1 * img.height)))
+                c = rd.recognize(part, n_best=1, max_new_tokens=a.tokens,
+                                 prompt=PAGE_PROMPT.format(n=a.questions, m=a.mcq))[0]
+                halves.append(c.text)
+        out[name] = halves
+        json.dump(out, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, indent=0)
+        print(name, len(halves), "halves", flush=True)
 
 
 def key_of(path):
@@ -141,6 +223,7 @@ def grade(a):
                           torch.cuda.is_bf16_supported() else None)
     readings = json.load(open(a.readings, encoding="utf-8"))
     key, qs = key_of(a.key), questions_of(a.questions_text)
+    refs = {q: qs.get(q, "") + " " + key.get(q, "") for q in set(qs) | set(key)}
     blank = Image.new("RGB", (32, 32), "white")      # (the model is asked about text: an empty picture with it)
     out = json.load(open(a.out, encoding="utf-8")) if os.path.isfile(a.out) else {}
     for name, r in readings.items():
@@ -148,7 +231,7 @@ def grade(a):
             continue
         marks = {}
         for q in range(a.mcq + 1, a.questions + 1):
-            ans = answers_of(r, a.mcq).get(str(q), "").strip()
+            ans = answers_of(r, a.mcq, refs, a.questions).get(str(q), "").strip()
             if not ans or set(ans) <= set("? "):
                 marks[str(q)] = [None, ""]             # (no answer read: not graded)
                 continue
@@ -166,16 +249,20 @@ def score(a):
     readings = json.load(open(a.readings, encoding="utf-8"))
     grades = json.load(open(a.grades, encoding="utf-8")) if a.grades else {}
     key = key_of(a.key)
+    qs = questions_of(a.questions_text) if a.questions_text else {}
+    refs = {q: qs.get(q, "") + " " + key.get(q, "") for q in set(qs) | set(key)} if qs else None
     teacher = {r["Student_ID"].split("_")[-1]: r for r in csv.DictReader(open(a.teacher, encoding="utf-8"))}
     letters = [0, 0, 0]                                # (as recorded, other, not read)
+    found = []                                         # (an answer found under its number, the teacher's mark)
     mcq_marks, short = [], []
     for name, r in readings.items():
         t = teacher.get(name.split("_")[-1])
         if not t:
             continue
         mine = 0
+        mine_answers = answers_of(r, a.mcq, refs, a.questions)
         for q in range(1, a.mcq + 1):
-            got, rec = answers_of(r, a.mcq).get(str(q), "?"), (t.get(str(q)) or "").strip().upper()
+            got, rec = mine_answers.get(str(q), "?"), (t.get(str(q)) or "").strip().upper()
             rec = {"TRUE": "A", "FALSE": "B"}.get(rec, rec)
             letters[0 if got == rec else 2 if got == "?" else 1] += 1
             mine += got == key.get(str(q))
@@ -188,9 +275,13 @@ def score(a):
                 tm = 0.0
             g = (grades.get(name) or {}).get(str(q), [None])[0]
             short.append((g, tm))
+            found.append((str(q) in mine_answers, tm))
     n = sum(letters)
     print(f"letters: {n} - as the teacher recorded {letters[0]} ({100 * letters[0] / max(1, n):.1f}%), "
           f"another {letters[1]}, not read {letters[2]}")
+    print(f"written answers found under their number: {sum(1 for f, _ in found if f)} of {len(found)}; of those the "
+          f"teacher gave marks to, not found: {sum(1 for f, t in found if not f and t > 0)} of "
+          f"{sum(1 for _, t in found if t > 0)}")
     d = [abs(x - y) for x, y in mcq_marks]
     print(f"multiple-choice mark (of 20) against the teacher's: exact {sum(1 for x in d if x == 0)} of {len(d)}, "
           f"mean difference {sum(d) / max(1, len(d)):.2f}")
@@ -237,15 +328,27 @@ def main():
     g.add_argument("--mcq", type=int, default=20)
     g.add_argument("--questions", type=int, default=35)
     g.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
+    h = sub.add_parser("reread")
+    h.add_argument("readings")
+    h.add_argument("folder")
+    h.add_argument("--out", required=True)
+    h.add_argument("--mcq", type=int, default=20)
+    h.add_argument("--questions", type=int, default=35)
+    h.add_argument("--width", type=int, default=1400)
+    h.add_argument("--tokens", type=int, default=500)
+    h.add_argument("--only", default="")
+    h.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     s = sub.add_parser("score")
     s.add_argument("readings")
     s.add_argument("grades", nargs="?", default="")
     s.add_argument("--key", required=True)
     s.add_argument("--teacher", required=True)
+    s.add_argument("--questions-text", default="", help="the questions' wording: an answer under a number met twice "
+                   "set right by its content")
     s.add_argument("--mcq", type=int, default=20)
     s.add_argument("--questions", type=int, default=35)
     a = ap.parse_args()
-    {"read": read, "grade": grade, "score": score}[a.cmd](a)
+    {"read": read, "reread": reread, "grade": grade, "score": score}[a.cmd](a)
 
 
 if __name__ == "__main__":

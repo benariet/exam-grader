@@ -8485,6 +8485,15 @@ def test_a_free_answer_sheet_is_joined_per_question():
     after = page_answers('{"q": 20, "answer": "C"} {"q": "cont", "answer": "Answer all questions"} '
                          '{"q": "cont", "answer": "Supervised learning uses labeled data"}')
     assert join_pages([after], 20) == {"20": "C", "21": "Supervised learning uses labeled data"}   # (21's, unnumbered)
+    twice = page_answers('{"q": 21, "answer": "learning from labeled examples"} '
+                         '{"q": 21, "answer": "normalization puts features on one scale for KNN distance"}')
+    refs = {"21": "What is supervised learning? labeled data", "22": "Why normalize data for KNN? scale distance features"}
+    from tools.free_sheet import answers_of
+    r = {"pages": ['{"q": 21, "answer": "labeled data"}'],
+         "halves": ['{"q": 21, "answer": "x"} {"q": 23, "answer": "short"}', '{"q": 23, "answer": "the longer one"}']}
+    assert answers_of(r, 20) == {"21": "labeled data", "23": "the longer one"}   # (only what the pages missed)
+    assert join_pages([twice], 20, refs, 22) == {"21": "learning from labeled examples",
+                                                "22": "normalization puts features on one scale for KNN distance"}
     got = join_pages([p1, p2], 20)
     assert got == {"1": "D", "2": "C", "21": "Supervised learning is learning from labeled data",
                    "26": '"structured" data', "3": "?"}, got
