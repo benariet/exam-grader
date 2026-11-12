@@ -9,11 +9,13 @@ place marked. Public data (not our students'): read on the GPU server.
     python tools/fermat_check.py pick --data <the parquet files' folder> --out pick.json [--n 340] [--seed 1]
         -> the rows checked: every one without a mistake and as many with one, at random over the kinds
     python tools/fermat_check.py run --data <folder> --pick pick.json --out runs.json [--shard 0/8]
-                                     [--modes key,nokey,read,text]
+                                     [--modes key,nokey,read,text,think] [--vlm <model>]
+                                     [--reuse earlier.json [--reuse-fields read]]
         key:   the photo, the question and a correct solution (as a grader with the key would) -> mistake or not, where
         nokey: the photo and the question only
         read:  the photo -> the solution written out (LaTeX)
         text:  that writing (no photo), the question and the correct solution -> mistake or not, where
+        think: the same, a few short lines of checking written before the verdict
     python tools/fermat_check.py score runs.json [more.json ...] --data <folder>
         -> per way: right / wrong against the marks, by kind of mistake; how sure a 'no mistake' is (the share of them
            really without one); the mistake's place found; the writing against the marked solution; and with a
@@ -254,10 +256,12 @@ def run(a):
     meta = {r["new_custom_id"]: r for r in load_meta(a.data)}
     out = json.load(open(a.out, encoding="utf-8")) if os.path.isfile(a.out) else {}
     if a.reuse and os.path.isfile(a.reuse):            # (what an earlier run has: the writing out is not asked again)
+        keep = {f for f in re.split(r"[,|+]", a.reuse_fields) if f}
         for i, res in json.load(open(a.reuse, encoding="utf-8")).items():
             if i in ids:
+                res = {k: v for k, v in res.items() if not keep or k in keep}
                 out[i] = {**res, **out.get(i, {})}
-    modes = [m for m in a.modes.split(",") if m]
+    modes = [m for m in re.split(r"[,|+]", a.modes) if m]
     need = {"key": ["key"], "nokey": ["nokey"], "read": ["read"], "text": ["read", "text"], "think": ["read", "think"]}
     todo = [i for i in ids if any(n not in out.get(i, {}) for m in modes for n in need[m])]
     if not todo:
@@ -267,8 +271,8 @@ def run(a):
     photo = [i for i in todo if any(m not in out.get(i, {}) for m in ("key", "nokey", "read") if m in
                                     {n for x in modes for n in need[x]})]
     imgs = images_of(a.data, photo) if photo else {}
-    rd = HebrewRecognizer(model_dir=a.vlm, dtype=torch.bfloat16 if torch.cuda.is_available() and
-                          torch.cuda.is_bf16_supported() else None)
+    rd = HebrewRecognizer(model_dir=a.vlm, load_in_4bit=a.four_bit, dtype=torch.bfloat16 if
+                          torch.cuda.is_available() and torch.cuda.is_bf16_supported() else None)
     blank = Image.new("RGB", (32, 32), "white")      # (the 'text' way is asked about text: an empty picture with it)
 
     def ask(img, prompt, tokens):
@@ -408,12 +412,16 @@ def main():
     r.add_argument("--pick", required=True)
     r.add_argument("--out", required=True)
     r.add_argument("--shard", default="0/1")
-    r.add_argument("--modes", default="key,nokey,read,text")
+    r.add_argument("--modes", default="key,nokey,read,text", help="comma-, | or +-separated (Slurm's --export splits "
+                   "at commas)")
     r.add_argument("--side", type=int, default=1600, help="the photo's longer side at most (pixels)")
     r.add_argument("--tokens", type=int, default=700, help="the writing out's length at most")
     r.add_argument("--think-tokens", type=int, default=350, help="the 'think' way's length at most")
     r.add_argument("--reuse", default="", help="an earlier run's results: what it has is not asked again")
+    r.add_argument("--reuse-fields", default="", help="only these of it (e.g. 'read': another model's writing out, "
+                   "judged anew)")
     r.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
+    r.add_argument("--four-bit", action="store_true", help="the weights in 4 bits (a 32B model on one 24 GB card)")
     s = sub.add_parser("score")
     s.add_argument("runs", nargs="+")
     s.add_argument("--data", required=True)
