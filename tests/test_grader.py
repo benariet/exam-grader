@@ -8542,3 +8542,46 @@ def test_a_drawn_curve_is_checked_by_its_levels():
             sys.argv = argv
         got = {n: json.load(open(f"{tmp}/c/{n}.wave.json"))["verdict"] for n in shapes}
         assert got == {"1": "right", "2": "wrong", "3": "wrong", "4": "empty"}, got
+
+
+def test_fermat_check_helpers():
+    """FERMAT (public handwritten math with planted mistakes): the model's verdict line read, the marked change found
+    in what it names, the writing compared with the marked solution"""
+    from tools import fermat_check as F
+    pert = r"\[ 6\sqrt{5} \times 2\sqrt{5} = 12 \times 5 = \textcolor{red}{65} \]"
+    assert F.red_parts(pert) == ["65"]
+    assert F.red_parts(r"a \textcolor{red}{\frac{8\sqrt{3}}{51}} b") == [r"\frac{8\sqrt{3}}{51}"]
+    assert F.unmark(pert) == r"\[ 6\sqrt{5} \times 2\sqrt{5} = 12 \times 5 = 65 \]"
+    assert F.verdict('{"mistake": true, "where": "12 x 5 = 65"}') == (True, "12 x 5 = 65")
+    assert F.verdict('{"mistake": false, "where": ""}') == (False, "")
+    assert F.verdict("I cannot tell") == (None, "")
+    assert F.found_place("= 65", pert) is True
+    assert F.found_place("= 60", pert) is False
+    assert F.found_place("", pert) is None
+    assert F.found_place("anything", "no marks here") is None
+    # a lone marked letter is not taken as found in whatever is said (the longer mark must be named)
+    two = r"let \textcolor{red}{c} be \textcolor{red}{10513}"
+    assert F.found_place("c = 3", two) is False and F.found_place("10513", two) is True
+    assert F.kind(1.3) == 1 and F.kind(5.1) == 5 and F.kind(None) == 0
+    assert F.similarity(F.unmark(pert), pert) == 1.0
+    assert F.similarity("cos theta", pert) < 0.5
+    assert F.core(r"\frac{16}{5\sqrt{2}}") == "1652"
+
+
+def test_fermat_final_answer():
+    """the final answer of a written-out solution, checked by the symbolic / numeric checker against the key's"""
+    from tools import fermat_check as F
+    key = r"Thus \[ 6\sqrt{5} \times 2\sqrt{5} = 12 \times 5 = 60 \] Hence the product is 60."
+    assert F.final_of(key) == "60"
+    assert F.final_of(r"Bill = \( ₹ 450 + ₹ 22.50 = ₹ 472.50 \).") == "472.50"
+    assert F.final_of(r"\[ PQ = \sqrt{45} = 3\sqrt{5} \text{ units} \]") == r"3\sqrt{5}"
+    assert F.final_of("no mathematics here") == ""
+    assert F.final_check(r"$12 \times 5 = 65$", key) == "differ"
+    assert F.final_check(r"$12 \cdot 5 = 60$", key) == "same"
+    assert F.final_check(r"$x = \frac{6}{4}$", r"\[ x = \frac{3}{2} \]") == "same"
+    assert F.final_check("we are done", key) == "unknown"
+    # the student's own letters for the key's, used throughout, are not a mistake; another value is
+    assert F.renamed("8u", "8x") == ["8x"]
+    assert F.renamed("8x", "8x") == [] and F.renamed("a+b+c+d", "w+x+y+z") == []
+    assert F.final_check("$v^2 = 8u$", r"\[ y^2 = 8x \]") == "same"
+    assert F.final_check("$= 9u$", r"\[ = 8x \]") == "differ"
