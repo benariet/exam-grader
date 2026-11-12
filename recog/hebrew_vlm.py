@@ -51,23 +51,30 @@ def pick_device() -> tuple[str, torch.dtype]:
 
 
 class HebrewRecognizer:
-    """dtype None: chosen for the machine (recog/gpu.py). load_in_4bit (bitsandbytes, a CUDA GPU): weights
+    """dtype None: chosen for the machine (recog/gpu.py). load_in_8bit (bitsandbytes, a CUDA GPU): weights in
+    8 bits - a 32B model in ~35 GB on one 48 GB card. load_in_4bit (bitsandbytes, a CUDA GPU): weights
     in 4 bits - an 8B model in ~7 GB; the rest and the arithmetic in float16 on an RTX 20xx (bfloat16 on
     newer GPUs). A float16 model that overflows (NaN) is reloaded wider (float32, or bfloat16 if that does
     not fit)."""
 
     def __init__(self, model_dir: str = DEFAULT_MODEL, adapter_dir: str | None = None,
-                 device: str | None = None, load_in_4bit: bool = False, dtype=None):
+                 device: str | None = None, load_in_4bit: bool = False, dtype=None, load_in_8bit: bool = False):
         from transformers import AutoProcessor
 
         from . import gpu
         if not os.path.isdir(model_dir):
             raise FileNotFoundError(f"model not found in {model_dir} — run download_models.py")
         self.gpu, self.model_dir, self.adapter_dir, self.load_in_4bit = gpu, model_dir, adapter_dir, load_in_4bit
+        self.load_in_8bit = load_in_8bit and not load_in_4bit
         self.n_b = gpu.params_b(model_dir)
-        self.device, self.dtype = gpu.pick(None if load_in_4bit else self.n_b, device, fast=load_in_4bit)
+        q = load_in_4bit or self.load_in_8bit
+        self.device, self.dtype = gpu.pick(None if q else self.n_b, device, fast=q)
         if dtype is not None:
             self.dtype = dtype
+        if self.load_in_8bit:                          # (8-bit matrix products work in float16: asked in it, not
+            import logging                             #  cast - and told about - at every one)
+            self.dtype = torch.float16
+            logging.getLogger("bitsandbytes").setLevel(logging.ERROR)
         self.parked = False
         self._load()
         self.proc = AutoProcessor.from_pretrained(model_dir)
@@ -75,7 +82,14 @@ class HebrewRecognizer:
     def _load(self):
         from transformers import AutoModelForImageTextToText
         kwargs = {"dtype": self.dtype}
-        if self.load_in_4bit:
+        if self.load_in_8bit:
+            from transformers import BitsAndBytesConfig
+            kwargs["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
+            kwargs["device_map"] = "auto"
+            if self.device.startswith("cuda"):
+                budget = max(1.0, self.gpu.gpu_free_gb() - self.gpu.MARGIN_GB - 0.5)
+                kwargs["max_memory"] = {0: f"{budget:.1f}GiB", "cpu": "96GiB"}
+        elif self.load_in_4bit:
             from transformers import BitsAndBytesConfig
             # what does not fit the GPU's free memory (a card that also drives the screen may have only half of
             # it free) stays on the CPU in float32 - usually just the last layers and the output layer
@@ -107,7 +121,7 @@ class HebrewRecognizer:
     def _reload_wider(self):
         del self.model
         self.gpu.release()
-        if self.load_in_4bit:
+        if self.load_in_4bit or self.load_in_8bit:
             self.dtype = torch.float32
             try:
                 self._load()
@@ -123,7 +137,7 @@ class HebrewRecognizer:
     def park(self):
         """free the model's memory for another reader (recog/gpu.py park: a 4-bit model is dropped and
         loaded again on the next read)"""
-        self.gpu.park(self, quantized=self.load_in_4bit)
+        self.gpu.park(self, quantized=self.load_in_4bit or self.load_in_8bit)
 
     def _unpark(self):
         if self.parked:

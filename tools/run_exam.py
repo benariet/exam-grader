@@ -7,7 +7,8 @@ part done on the server when a part needs it (only the cut pieces go there, dele
 The config (JSON):
     {"exams": "<the scans' folder>", "booklet": "booklet/moedC", "grades": "<the lecturer's sheet>" (optional),
      "out": "<the results' folder>",
-     "server": {"host": "bgu", "runs": "eg-runs/expr", "sbatch": "eg-runs/expr/exprread.sbatch"} (optional),
+     "server": {"host": "bgu", "runs": "eg-runs/expr", "sbatch": "eg-runs/expr/exprread.sbatch"} (optional;
+                "vlm": "<another vision model's folder there>", "bits": 8 or 4 - the same for every part),
      "parts": [{"name": "table_q1a", "tool": "truth_table", "args": {"page": 5, "cols": "2,4,5", ...}},
                {"name": "exprs_q1a", "tool": "expr_box", "args": {...},
                 "server": {"readers": "mumer,vlm", "prompt": "boolean", "labels": "Vx|Y1|Y2", "views": "1|0.75|1.33"}},
@@ -80,6 +81,10 @@ def server_read(part, crops, cfg, dry):
         extra += f" --label-text {sp['label_text'].replace(' ', '_')}"
     if sp.get("views"):
         extra += f" --views {sp['views'].replace(',', '|')}"
+    if srv.get("vlm"):                                 # (another vision model for every part: its folder on the
+        extra += f" --vlm {srv['vlm']}"                #  server, and its weights' bits - 8 / 4 for a 32B model)
+    if srv.get("bits"):
+        extra += f" --bits {srv['bits']}"
     run(["ssh", host, f"mkdir -p {remote}"], dry)
     run(["scp", "-q"] + files + [f"{host}:{remote}/"], dry)
     out = f"{runs}/{name}_readings.json"

@@ -271,7 +271,7 @@ def run(a):
     photo = [i for i in todo if any(m not in out.get(i, {}) for m in ("key", "nokey", "read") if m in
                                     {n for x in modes for n in need[x]})]
     imgs = images_of(a.data, photo) if photo else {}
-    rd = HebrewRecognizer(model_dir=a.vlm, load_in_4bit=a.four_bit, dtype=torch.bfloat16 if
+    rd = HebrewRecognizer(model_dir=a.vlm, load_in_4bit=a.four_bit, load_in_8bit=a.eight_bit, dtype=torch.bfloat16 if
                           torch.cuda.is_available() and torch.cuda.is_bf16_supported() else None)
     blank = Image.new("RGB", (32, 32), "white")      # (the 'text' way is asked about text: an empty picture with it)
 
@@ -422,6 +422,7 @@ def main():
                    "judged anew)")
     r.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     r.add_argument("--four-bit", action="store_true", help="the weights in 4 bits (a 32B model on one 24 GB card)")
+    r.add_argument("--eight-bit", action="store_true", help="the weights in 8 bits (a 32B model on one 48 GB card)")
     s = sub.add_parser("score")
     s.add_argument("runs", nargs="+")
     s.add_argument("--data", required=True)

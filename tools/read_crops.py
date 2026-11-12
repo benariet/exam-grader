@@ -135,6 +135,8 @@ def main():
     ap.add_argument("--readers", default="mumer,vlm")
     ap.add_argument("--prompt", default="boolean")
     ap.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
+    ap.add_argument("--bits", type=int, default=16, choices=(4, 8, 16), help="the vision model's weights: 8 - a 32B "
+                    "model on one 48 GB card, 4 - on one 24 GB card")
     ap.add_argument("--n-best", type=int, default=3)
     ap.add_argument("--views", default="", help="each piece read at these scales too: '1|0.75|1.33' (readers "
                     "'mumer@0.75' ...; '|' - Slurm's --export splits at commas)")
@@ -156,7 +158,8 @@ def main():
         elif reader == "vlm":
             import torch
             from recog.hebrew_vlm import HebrewRecognizer
-            rd = HebrewRecognizer(model_dir=a.vlm, dtype=torch.bfloat16 if torch.cuda.is_available() and
+            rd = HebrewRecognizer(model_dir=a.vlm, load_in_4bit=a.bits == 4, load_in_8bit=a.bits == 8,
+                                  dtype=torch.bfloat16 if torch.cuda.is_available() and
                                   torch.cuda.is_bf16_supported() else None)
             read = lambda img: rd.recognize(img, n_best=a.n_best, max_new_tokens=160, prompt=PROMPTS[a.prompt])  # noqa: E731
         else:
