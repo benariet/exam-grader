@@ -137,6 +137,10 @@ def main():
     ap.add_argument("--vlm", default=os.path.join(HERE, "models", "qwen3-vl-8b"))
     ap.add_argument("--bits", type=int, default=16, choices=(4, 8, 16), help="the vision model's weights: 8 - a 32B "
                     "model on one 48 GB card, 4 - on one 24 GB card")
+    ap.add_argument("--final-crops", default="0.3|1|line", help="where the vision model found a final value, cut "
+                    "for Uni-MuMER: margins (a share of its height) and 'line' (the place's whole width); each its own "
+                    "reading (mumerfinal, mumerfinal@1, mumerfinal@line - one family). Moed C: 14 %% -> 20 %% of the "
+                    "points decided on its 11 value parts against '0.3' alone")
     ap.add_argument("--n-best", type=int, default=3)
     ap.add_argument("--views", default="", help="each piece read at these scales too: '1|0.75|1.33' (readers "
                     "'mumer@0.75' ...; '|' - Slurm's --export splits at commas)")
@@ -185,8 +189,12 @@ def main():
                                                  prompt=ANSWER_PROMPT)[0]      #  cut out, nothing round it to guess from)
                                 out[name]["vlmwords"] = [[w.text, float(w.logp)]]
                         elif reader == "mumer" and (out.get(name) or {}).get("where"):  # (the vision model read first)
-                            out[name]["mumerfinal"] = [[c.text, float(c.logp)]
-                                                       for c in read(final_crop(img, out[name]["where"]))]
+                            wh = out[name]["where"]
+                            for cut in [x for x in re.split(r"[,|]", a.final_crops) if x]:   # (cut more ways: one may
+                                im = final_crop(img, (0.0, wh[1], 1.0, wh[3])) if cut == "line" else \
+                                    final_crop(img, wh, pad=float(cut))                    #  hold the value whole)
+                                out[name]["mumerfinal" if cut == "0.3" else f"mumerfinal@{cut}"] = \
+                                    [[c.text, float(c.logp)] for c in read(im)]
                     continue
                 if key.endswith("_box"):               # (a whole box: its rows read together, by the vision model)
                     if reader != "vlm":

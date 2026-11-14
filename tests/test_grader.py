@@ -8585,3 +8585,20 @@ def test_fermat_final_answer():
     assert F.renamed("8x", "8x") == [] and F.renamed("a+b+c+d", "w+x+y+z") == []
     assert F.final_check("$v^2 = 8u$", r"\[ y^2 = 8x \]") == "same"
     assert F.final_check("$= 9u$", r"\[ = 8x \]") == "differ"
+
+
+def test_value_found_place_cut_several_ways():
+    """the place the vision model found, cut three ways for the formula reader on the server (mumerfinal,
+    mumerfinal@1, mumerfinal@line): one family - any of the cuts agreeing with the vision model's final value decides"""
+    from tools.value_area import family, judge_value
+    assert family("mumerfinal@line") == "mumer" and family("mumerfinal@1") == "mumer"
+    assert family("pix2textfinal@line") == "pix2text" and family("trocrfinal") == "trocr"
+    got = {"vlmfinal": [("82 ns", 1.0)], "mumerfinal": [("?", 1.0)], "mumerfinal@line": [("82 n s", 1.0)]}
+    assert judge_value(got, 70.0, 0.1, unit="ns")[0] == "wrong"
+    # the same family twice is not two readers: two cuts of the formula reader alone do not decide
+    alone = {"mumerfinal": [("82 ns", 1.0)], "mumerfinal@line": [("82 ns", 1.0)]}
+    assert judge_value(alone, 70.0, 0.1, unit="ns")[0] == "unsure"
+    from tools.read_crops import final_crop
+    from PIL import Image
+    img = Image.new("RGB", (400, 200), "white")
+    assert final_crop(img, (0.0, 0.4, 1.0, 0.5)).size[0] == 400

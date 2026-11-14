@@ -147,6 +147,10 @@ def main():
     ap.add_argument("--percent", action="store_true")
     ap.add_argument("--no-local", action="store_true", help="the formula reader on this computer left out (a whole "
                     "page of working: only the readers asked for its final value)")
+    ap.add_argument("--final-crops", default="0.3", help="where the vision model found the final value, cut for the "
+                    "formula reader: margins (a share of its height) and 'line' (the place's whole width) - '0.3|1|line'")
+    ap.add_argument("--final-readers", default="pix2text", help="who reads the place found, besides the GPU readers: "
+                    "'pix2text' (the formula reader), 'pix2text,trocr' (and TrOCR, a handwriting line reader)")
     ap.add_argument("--name", default="")
     ap.add_argument("--question", type=int, default=0)
     ap.add_argument("--grades", default="")
@@ -186,7 +190,7 @@ def main():
     for d in (a.crops_only, a.out):
         if d:
             os.makedirs(d, exist_ok=True)
-    fr = None
+    fr = er = None
     pdfs = sorted((p for p in glob.glob(os.path.join(a.folder, "*.pdf")) if not re.search(r"_checked\.pdf$", p, re.I)),
                   key=lambda p: int(re.sub(r"\D", "", os.path.basename(p)) or 0))
     table, review = [], []
@@ -245,8 +249,22 @@ def main():
                 if isinstance(cs, list) and cs and isinstance(cs[0], (list, tuple)):     # (not 'where', 'raw')
                     readings[rd] = [(t, 1.0) for t, _ in cs]
             if where:                                  # (the final value where the vision model found it: read here
-                from tools.read_crops import final_crop                       #  too - a third family's reading)
-                readings["pix2textfinal"] = [(c.text, 1.0) for c in fr.recognize(final_crop(box, where), n_best=4)]
+                from tools.read_crops import final_crop                       #  too - a third family's reading; cut
+                for cut in [x for x in re.split(r"[,|]", a.final_crops) if x]:  # more ways, one may hold it whole)
+                    if cut == "line":
+                        w0, w1 = where[1], where[3]
+                        img_cut = final_crop(box, (0.0, w0, 1.0, w1))
+                    else:
+                        img_cut = final_crop(box, where, pad=float(cut))
+                    name_cut = "pix2textfinal" if cut in ("0.3", "") else f"pix2textfinal@{cut}"
+                    readings[name_cut] = [(c.text, 1.0) for c in fr.recognize(img_cut, n_best=4)]
+                    if "trocr" in a.final_readers:     # (a handwriting line reader - another family again)
+                        if er is None:
+                            from recog.english import BASE_DIR, EnglishRecognizer
+                            base = os.path.isfile(os.path.join(BASE_DIR, "encoder_model.onnx"))
+                            er = EnglishRecognizer(BASE_DIR if base else None)
+                        readings[name_cut.replace("pix2text", "trocr")] = \
+                            [(c.text, 1.0) for c in er.recognize(img_cut, n_best=3, max_new_tokens=32)]
             v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
         how = ""
         if v == "unsure" and dec:                      # (a human's mark on this answer, or on its wording elsewhere)
