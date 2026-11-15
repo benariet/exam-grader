@@ -7585,7 +7585,7 @@ def test_a_drawn_circuit_is_judged_against_the_key(tmp_path):
     assert sorted(f for f in os.listdir(tmp_path) if f.endswith("_circuit.png")) == \
         ["2_q2_circuit.png", "3_q2_circuit.png", "4_q2_circuit.png"]
     assert Image.open(tmp_path / "2_q2_circuit.png").size[0] < 200      # (the drawing's box; 4's: its whole page)
-    assert Image.open(tmp_path / "4_q2_circuit.png").size[0] == 827
+    assert abs(Image.open(tmp_path / "4_q2_circuit.png").size[0] - 1240) <= 2      # (its whole page, 150 dpi)
     from tools.decide_sheet import _rows_circuit
     assert [(r[0], r[1]) for r in _rows_circuit(str(tmp_path))] == [("4", "circuit:2")]
     assert "לפי החלטת הבודק" in open(tmp_path / "2_circuit_remarks.txt", encoding="utf-8").read()
@@ -8465,6 +8465,7 @@ def test_undecided_answers_are_put_before_a_human_once_and_his_marks_decide(tmp_
     Image.new("RGB", (900, 200), "white").save(v / "5_valueempty.png")    # (nothing found on the place: shown so)
     got5 = [r for r in D._rows_value(str(v), str(vc), str(tmp_path / "r.json")) if r[0] == "5"]
     assert len(got5) == 1 and got5[0][1] == "value:1(f)" and got5[0][3] == "" and "לא נמצא כתב" in got5[0][2], got5
+    assert got5[0][4].endswith("5_valueempty.png")      # (a file: linked on the sheet as well)
     (v / "5.value.json").unlink()
     json.dump({"4_value~oh": {"vlmfinal": [["1.2 V", 0]], "where": [0.1, 0.1, 0.6, 0.2]}}, open(tmp_path / "r2.json", "w"))
     (_, part, _, text, img), = D._rows_value(str(v), str(vc), str(tmp_path / "r2.json"), "oh")   # (one of several
@@ -8521,8 +8522,11 @@ def test_undecided_drawings_and_choices_go_on_the_sheet_too(tmp_path):
         D.main()
     finally:
         sys.argv = argv
-    got = [(r[0], r[8]) for r in openpyxl.load_workbook(tmp_path / "d2.xlsx").active.iter_rows(min_row=3, values_only=True)]
+    ws3 = openpyxl.load_workbook(tmp_path / "d2.xlsx").active
+    got = [(r[0], r[8]) for r in ws3.iter_rows(min_row=3, values_only=True)]
     assert got == [("4", "כן"), ("5", "כן"), ("1", None), ("2", None)], got
+    assert ws3["J3"].value == "פתח" and ws3["J3"].hyperlink.target == "wave/4_wave.png", ws3["J3"].hyperlink
+    assert ws3.row_dimensions[3].height > 90           # (a drawing shown large: 400 x 120 px at full size)
     assert len(ws._images) == 4
     for row in ws.iter_rows(min_row=3):                # (1 and 2 right, 5 wrong; 4 left)
         row[4].value = {"1": "נכון", "2": "נכון", "5": "שגוי"}.get(row[0].value)

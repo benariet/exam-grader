@@ -25,7 +25,10 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 MARKS = {"נכון": "right", "שגוי": "wrong"}
-HEADER = ["מבחן", "סעיף", "מה נקרא", "מה נכתב (התמונה)", "החלטה", "הערה", "part", "נקודות הסעיף", "מכריע את הסעיף"]
+HEADER = ["מבחן", "סעיף", "מה נקרא", "מה נכתב (התמונה)", "החלטה", "הערה", "part", "נקודות הסעיף", "מכריע את הסעיף",
+          "התמונה בגודל מלא"]
+BIG = ("wave:", "choice:", "table", "circuit:")      # (a drawing, a table, the options: shown large - their details
+#                                                      are what is judged)
 
 
 def alone_items(report: str) -> dict:
@@ -100,7 +103,7 @@ def _rows_value(folder, crops, readings, rid=""):
         empty = os.path.join(folder, f"{n}_valueempty.png")
         if r["verdict"] == "empty" and not r.get("decided") and os.path.isfile(empty):   # (nothing found on the place:
             out.append((n, f"value:{r.get('name', '')}", f"{r.get('name', '')} (לא נמצא כתב במקום התשובה)", "",
-                        Image.open(empty).convert("RGB")))     # (it and the lines above it shown; no text: no wording)
+                        empty))                                # (it and the lines above it shown; no text: no wording)
             continue
         if r["verdict"] != "unsure":
             continue
@@ -248,14 +251,14 @@ def make(a):
     ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
     ws.print_title_rows = "2:2"
     ws.freeze_panes = "A3"                             # (the header stays in view while scrolling)
-    ws.auto_filter.ref = f"A2:I{len(rows) + 2}"        # (one part, or one exam, at a time)
+    ws.auto_filter.ref = f"A2:J{len(rows) + 2}"        # (one part, or one exam, at a time)
     for c, h in enumerate(HEADER, 1):
         cell = ws.cell(row=2, column=c, value=h)
         cell.font = Font(bold=True)
         cell.fill = PatternFill("solid", fgColor="DDEBF7")
     dv = DataValidation(type="list", formula1='"נכון,שגוי,לא ברור"', allow_blank=True)
     ws.add_data_validation(dv)
-    for c, w in zip("ABCDEFGHI", (8, 34, 34, 70, 12, 30, 2, 10, 12)):
+    for c, w in zip("ABCDEFGHIJ", (8, 34, 34, 130, 12, 30, 2, 10, 12, 12)):
         ws.column_dimensions[c].width = w
     ws.column_dimensions["G"].hidden = True             # (the part's id, for apply)
     for i, (exam, part, label, text, img) in enumerate(rows, 3):
@@ -264,11 +267,16 @@ def make(a):
             ws[f"{c}{i}"] = v
             ws[f"{c}{i}"].alignment = Alignment(wrap_text=True, vertical="center")
         dv.add(f"E{i}")
-        if isinstance(img, str):
+        if isinstance(img, str):                       # (a file: linked too, to open it whole)
+            if os.path.isfile(img):
+                ws[f"J{i}"] = "פתח"
+                ws[f"J{i}"].hyperlink = os.path.relpath(os.path.abspath(img), os.path.dirname(os.path.abspath(a.out)))
+                ws[f"J{i}"].font = Font(color="0563C1", underline="single")
             img = Image.open(img).convert("RGB") if os.path.isfile(img) else None
         h = 30
+        big = part.startswith(BIG) or "לא נמצא כתב" in label
         if img is not None:
-            s = min(1.0, 480 / img.width, 110 / img.height)
+            s = min(1.0, (900 if big else 480) / img.width, (420 if big else 110) / img.height)
             im = img.resize((max(1, int(img.width * s)), max(1, int(img.height * s))))
             buf = io.BytesIO()
             im.save(buf, "PNG")

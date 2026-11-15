@@ -31,7 +31,7 @@ def question_of_pages(name, scan, qpages, by_booklet) -> dict:
     return {p["page"]: by_booklet.get(p["booklet"]) for p in scan["pages"] if p.get("booklet") in by_booklet}
 
 
-def save_drawing(exams, name, page, boxes, path, dpi=100):
+def save_drawing(exams, name, page, boxes, path, dpi=150):
     """the drawings on the exam's page cut out (their boxes, read at 150 dpi, with a margin) - the whole page when none
     - for the human's sheet; nothing when the page is not known"""
     import pypdfium2 as pdfium
