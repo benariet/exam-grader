@@ -8419,7 +8419,7 @@ def test_a_drawn_waveform_is_checked_by_its_shape():
             dr.line([(xb, y_hi), (xb, y_lo)], fill=ink, width=3)
     scans = {"1": [(220, 391), (543, 698), (850, 955)],     # (Z right: high before the first rise, inverted after)
              "2": [(374, 527), (680, 833)],                 # (Z a copy of In)
-             "4": "pulses", "5": "late", "3": None}
+             "4": "pulses", "5": "late", "3": None, "6": "only pulses"}
     with tempfile.TemporaryDirectory() as tmp:
         __import__("os").makedirs(f"{tmp}/booklet")
         tpl.save(f"{tmp}/booklet/p1.png")
@@ -8432,6 +8432,9 @@ def test_a_drawn_waveform_is_checked_by_its_shape():
                 wave(dr, 1118, 1383, [(416, 436), (722, 742)])
             elif highs == "late":                       # (pulses at the falling edges)
                 wave(dr, 1118, 1383, [(545, 565), (851, 871)])
+            elif highs == "only pulses":                # (Out's low left on the axis: only its pulses drawn - what
+                for xa, xb in ((416, 436), (722, 742)):  #  is seen starts after the first rise)
+                    dr.line([(xa, 1379), (xa, 1121), (xb, 1121), (xb, 1379)], fill=ink, width=3)
             s.save(f"{tmp}/{n}.pdf", resolution=150)
         argv = sys.argv
         for plot, kind, out in (("216,960,699,962", "inverted", "z"), ("216,960,1118,1383", "pulses", "o")):
@@ -8444,7 +8447,7 @@ def test_a_drawn_waveform_is_checked_by_its_shape():
         z = {n: json.load(open(f"{tmp}/z/{n}.wave.json"))["verdict"] for n in scans}
         o = {n: json.load(open(f"{tmp}/o/{n}.wave.json"))["verdict"] for n in scans}
         assert z["1"] == "right" and z["2"] == "wrong" and z["3"] == "empty", z
-        assert o["4"] == "right" and o["5"] == "wrong" and o["3"] == "empty", o
+        assert o["4"] == "right" and o["5"] == "wrong" and o["3"] == "empty" and o["6"] == "right", o
         assert "data:image/png" in open(f"{tmp}/z/review.html", encoding="utf-8").read()
 
 

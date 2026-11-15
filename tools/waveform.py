@@ -99,7 +99,6 @@ def judge_pulses(high, x0, edges, drawn, after, widest):
     """low but for a short pulse a little after each rising edge -> (verdict, [(from, to, 'pulse' / 'low', seen)])"""
     if drawn is None:
         return "empty", []
-    rises = [x for x, k in edges if k == "r" and drawn[0] - 5 <= x <= drawn[1] - after / 2]
     runs, x = [], 0
     while x < len(high):                               # (the high stretches)
         if high[x]:
@@ -109,6 +108,11 @@ def judge_pulses(high, x0, edges, drawn, after, widest):
             runs.append((x0 + x, x0 + y))
             x = y
         x += 1
+    rises = [x for x, k in edges if k == "r" and (drawn[0] - after <= x <= drawn[1] - after / 2 or
+                                                  any(a < x + after and b > x - 10 for a, b in runs))]
+    # (a rise the drawing covers: Out is low along the axis, where the print hides it, so what is seen of a right
+    #  drawing may start at its first pulse, a little after the first rise - that rise is the drawing's too; and a
+    #  rise with a pulse drawn by it is, however soon after it the drawing stops)
     wins, near = [], set()
     for r in rises:
         hit = [(a, b) for a, b in runs if a < r + after and b > r]
