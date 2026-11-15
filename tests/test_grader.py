@@ -8393,6 +8393,18 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert "--second" in lines[i + 1] and "readings.json" in lines[i + 1]       # (deleted there, then judged here)
     assert any("words_box.py" in x and "--readings" in x for x in lines)
     assert any("circuit_key.py" in x and "moedC_auto/circuits_q2" in x and "--pages" in x for x in lines)
+    (tmp_path / "circuits_q2").mkdir()                   # (--judge-only: all judged again from what was read, after
+    out = subprocess.run([sys.executable, "tools/run_exam.py", "exams/moedC.json", "--dry-run", "--judge-only",   # the
+                          "--out", str(tmp_path), "--apply", str(tmp_path / "marked.xlsx")],                 # marks)
+                         capture_output=True, text=True, check=True).stdout
+    lines = out.splitlines()
+    cmds = [x for x in lines if x.startswith("  $ ")]
+    assert "decide_sheet.py apply" in cmds[0] and "marked.xlsx" in cmds[0], cmds[0]
+    assert not any("--crops-only" in x or "sbatch" in x or "scp" in x or "read_exam_circuits.py" in x for x in cmds)
+    assert any("expr_box.py" in x and f"--reuse {tmp_path}/exprs_q1a" in x for x in cmds)
+    assert any("truth_table.py" in x and f"--readings {tmp_path}/table_q1a_crops/readings.json" in x for x in cmds)
+    assert any("circuit_key.py" in x and f"{tmp_path}/circuits_q2" in x for x in cmds)
+    assert "decide_sheet.py make" in cmds[-1] and str(tmp_path) in cmds[-1]
     rep = next(x for x in lines if "exam_report.py" in x)
     assert "--sure 2.2=5,2.3=5" in rep and "circuits_q2" in rep and "choices_q2" in rep
 

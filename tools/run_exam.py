@@ -3,6 +3,10 @@ multiple choice, final values, the drawn circuit's judging) and the report gathe
 part done on the server when a part needs it (only the cut pieces go there, deleted after; the exams stay here).
 
     python tools/run_exam.py exams/moedC.json [--parts table_q1a,choices_q2] [--server-only] [--dry-run]
+    python tools/run_exam.py exams/moedC.json --judge-only [--out <results>] [--apply <the marked sheet>]
+        (everything judged again from what was read before - nothing cut, nothing sent to the server, the circuits not
+         read again, the expressions' readings taken as they were; with --apply, a human's marks on the decisions
+         sheet taken first: a whole Moed brought up to date after the sheet is marked, on this computer alone)
 
 The config (JSON):
     {"exams": "<the scans' folder>", "booklet": "booklet/moedC", "grades": "<the lecturer's sheet>" (optional),
@@ -117,10 +121,23 @@ def main():
     ap.add_argument("config")
     ap.add_argument("--parts", default="", help="only these parts (their names, comma-separated)")
     ap.add_argument("--dry-run", action="store_true", help="the commands printed, none run")
+    ap.add_argument("--judge-only", action="store_true", help="judge again from what was read before: no crops cut, "
+                    "nothing sent to the server (a part's readings: <out>/<part>_crops/readings.json; a part without "
+                    "them skipped), the circuits not read again, the expressions' readings reused")
+    ap.add_argument("--out", default="", help="the results' folder instead of the config's")
+    ap.add_argument("--apply", default="", help="the decisions sheet a human marked: its marks taken into the "
+                    "config's decisions file first (tools/decide_sheet.py apply)")
     a = ap.parse_args()
     cfg = json.load(open(a.config, encoding="utf-8"))
-    out = cfg["out"]
+    out = a.out or cfg["out"]
     os.makedirs(out, exist_ok=True)
+    if a.apply:                                        # (the human's marks first: every part then takes them)
+        print("== the marks on the sheet", flush=True)
+        dec_file = (cfg.get("decisions") or {}).get("file")
+        if not dec_file:
+            raise SystemExit("--apply: the config names no decisions file")
+        run([sys.executable, os.path.join(HERE, "tools", "decide_sheet.py"), "apply", a.apply, "--out", dec_file],
+            a.dry_run)
     want = {x for x in a.parts.split(",") if x}
     folders = []
     for part in cfg["parts"]:
@@ -143,8 +160,19 @@ def main():
         if dec and tool in ("words_box", "value_area", "waveform", "choice_marks", "truth_table", "expr_box",
                             "circuit_key"):    # (a human's marks on what the checks left: kept with
             common["decisions"] = dec                      #  the exams, tools/decide_sheet.py)
+        if a.judge_only and tool == "read_exam_circuits" and os.path.isdir(pout):
+            print("  (read before: kept)", flush=True)     # (hours of reading; its judging is circuit_key's)
+            continue
+        if a.judge_only and tool == "expr_box":       # (Pix2Text's readings as they were: an exam judged before
+            args["reuse"] = pout                       #  takes the marks given since)
         if (part.get("server") or {}).get("share"):     # (read with another part's place: its readings, no reading
             args["second"] = os.path.join(out, part["server"]["share"] + "_crops", "readings.json")   # again)
+        elif part.get("server") and a.judge_only:     # (what was read before)
+            readings = os.path.join(out, name + "_crops", "readings.json")
+            if not os.path.isfile(readings) and not a.dry_run:
+                print(f"  (no readings in {os.path.dirname(readings)}: skipped)", flush=True)
+                continue
+            args["readings" if tool in ("words_box", "truth_table") else "second"] = readings
         elif part.get("server") and cfg.get("server"):
             crops = os.path.join(out, name + "_crops")
             cmd = cli(tool, {**common, **args, "crops_only": crops}, out)
