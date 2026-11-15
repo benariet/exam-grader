@@ -237,10 +237,13 @@ def main():
         else:
             v, wins = judge_pulses(high, x0, edges, drawn, a.after, a.widest)
         how = ""
-        if v == "unsure" and a.decisions:
-            from tools.decide_sheet import decided, load
-            hv, how = decided(load(a.decisions), f"wave:{a.name}", name, "")
-            v = hv or v
+        if v in ("unsure", "empty"):                   # (the plot cut out, for a human: tools/decide_sheet.py --wave)
+            img.crop((max(0, x0 - 30), int(y_vdd - 40), min(img.width, x1 + 10), int(y_zero + 20))).save(
+                os.path.join(a.out, f"{name}_wave.png"))
+            if a.decisions:
+                from tools.decide_sheet import decided, load
+                hv, how = decided(load(a.decisions), f"wave:{a.name}", name, "")
+                v = hv or v
         out = {"exam": name, "name": a.name, "verdict": v, "kind": "wave", "windows": [list(w) for w in wins],
                "high_share": round(float(high.mean()), 3), "known_share": round(float(known.mean()), 3), "drawn": drawn}
         if a.kind == "curve":

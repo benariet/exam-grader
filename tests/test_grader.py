@@ -7913,6 +7913,22 @@ def test_a_printed_truth_tables_cells_are_found_and_read():
         assert r["strength"] == 2, r                  # (rows 1's Vx and 3's Y2: right, read W - the key's S only;
         #                                                row 2's Y1 takes either)
         assert r["wrong"] == 0 and r["unsure"] == 1, r     # (row 2's Y1: the formula reader read the key's 1)
+        assert os_.path.isfile(f"{tmp}/out2/9_table.png") and r["part"] == "table:p1"   # (left to a human: cut out)
+        from tools.decide_sheet import _rows_table
+        (ex, part, _, what, img), = _rows_table(f"{tmp}/out2")
+        assert (ex, part) == ("9", "table:p1") and what.count("חוזק W") == 2 and "לא נקרא בוודאות" in what, what
+        json.dump({"exams": {"table:p1": {"9": "right"}}, "wordings": {}}, open(f"{tmp}/d.json", "w"))
+        rf.FormulaRecognizer = Fake                       # (his mark: the table right as a whole)
+        sys.argv = ["truth_table.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--cols", "2,4,5",
+                    "--key", "100;010;001;000;000;000;000;000", "--out", f"{tmp}/out2",
+                    "--strengths", ";".join(["1S,0W\\S,0S"] * 8), "--decisions", f"{tmp}/d.json"]
+        try:
+            truth_table.main()
+        finally:
+            sys.argv = sys_argv
+            rf.FormulaRecognizer = real
+        r = json.load(open(f"{tmp}/out2/9.table.json"))
+        assert r["human"] == "right" and r["decided"] == "exam" and _rows_table(f"{tmp}/out2") == [], r
         # the cells cut out for the GPU readers, then judged with their readings: two kinds alike decide
         sys.argv = ["truth_table.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--cols", "2,4,5",
                     "--key", "100;010;001;000;000;000;000;000", "--crops-only", f"{tmp}/crops"]
@@ -8112,6 +8128,19 @@ def test_a_multiple_choice_mark_is_found_on_the_printed_options():
         r = json.load(open(f"{tmp}/out/5.choices.json", encoding="utf-8"))
         assert r["items"][0]["verdict"] == "right" and r["items"][0]["chosen"] == "ג", r
         assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
+        blank = tpl.copy().convert("RGB")                # (nothing marked: the options cut out for a human; his mark
+        blank.save(f"{tmp}/6.pdf", resolution=150)       #  decides it - tools/decide_sheet.py)
+        json.dump({"exams": {"choice:2.2": {"6": "wrong"}}, "wordings": {}}, open(f"{tmp}/d.json", "w"))
+        for extra in ([], ["--decisions", f"{tmp}/d.json"]):
+            sys.argv = ["choice_marks.py", tmp, "--booklet", f"{tmp}/booklet", "--item", "2.2:1:1,1,1,1,1,1:ג",
+                        "--out", f"{tmp}/out", "--only", "6"] + extra
+            try:
+                C.main()
+            finally:
+                sys.argv = argv
+            r = json.load(open(f"{tmp}/out/6.choices.json", encoding="utf-8"))["items"][0]
+            assert r["verdict"] == ("wrong" if extra else "none") and bool(r.get("decided")) == bool(extra), r
+            assert __import__("os").path.isfile(f"{tmp}/out/6_2.2_choice.png")
 
 
 def test_a_box_of_words_its_rows_found_and_its_answers_judged_by_keywords():
@@ -8325,6 +8354,9 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert all("--decisions" in x for x in lines if ("words_box.py" in x or "value_area.py" in x) and "--crops-only" not in x)
     sheet = next(x for x in lines if "decide_sheet.py" in x)
     assert "--words" in sheet and "value_q1f" in sheet and "value_q1e" not in sheet
+    assert "--wave" in sheet and "wave_q3_out" in sheet and "--choice" in sheet and "choices_q2" in sheet
+    assert "--table" in sheet and "--expr" in sheet and "exprs_q1a_crops" in sheet
+    assert all("--decisions" in x for x in lines if "choice_marks.py" in x or "waveform.py" in x)
     assert any("expr_box.py" in x and "--crops-only" in x for x in lines)
     i = next(k for k, x in enumerate(lines) if "rm -rf eg-runs/expr/exprs_q1a" in x)
     assert "--second" in lines[i + 1] and "readings.json" in lines[i + 1]       # (deleted there, then judged here)
@@ -8388,6 +8420,73 @@ def test_undecided_answers_are_put_before_a_human_once_and_his_marks_decide(tmp_
     assert D.decided(dec, "words:Y1", "9", "XNOR") == (None, "") and D.decided(dec, "value:1(f)", "4", "")[0] == "right"
 
 
+def test_undecided_drawings_and_choices_go_on_the_sheet_too(tmp_path):
+    """tools/decide_sheet.py --wave / --choice: a drawn waveform the check left unsure (or found none of) and a
+    multiple-choice mark unclear (or not found) on the sheet with the plot / the options cut out; marked, each decides
+    its exam only - the row's text is the check's, the same in every exam, so it decides no other"""
+    import json
+    import sys
+    import openpyxl
+    from PIL import Image
+    from tools import decide_sheet as D
+    wv, ch = tmp_path / "wave", tmp_path / "choices"
+    wv.mkdir()
+    ch.mkdir()
+    for n, v in (("1", "unsure"), ("2", "empty"), ("3", "right"), ("4", "unsure")):
+        json.dump({"exam": n, "name": "3 Out", "verdict": v, "kind": "wave", "windows": []}, open(wv / f"{n}.wave.json", "w"))
+        Image.new("RGB", (400, 120), "white").save(wv / f"{n}_wave.png")
+    json.dump({"exam": "5", "items": [{"item": "2.3", "verdict": "unclear", "chosen": "", "answer": "ד", "ink": [],
+                                       "circled": ["ד", "ה"]},
+                                      {"item": "2.2", "verdict": "right", "chosen": "ג", "answer": "ג", "ink": [],
+                                       "circled": ["ג"]}]}, open(ch / "5.choices.json", "w"), ensure_ascii=False)
+    Image.new("RGB", (500, 300), "white").save(ch / "5_2.3_choice.png")
+    argv = sys.argv
+    sys.argv = ["decide_sheet.py", "make", "--wave", str(wv), "--choice", str(ch), "--out", str(tmp_path / "d.xlsx")]
+    try:
+        D.main()
+    finally:
+        sys.argv = argv
+    wb = openpyxl.load_workbook(tmp_path / "d.xlsx")
+    ws = wb.active
+    got = sorted((r[0], r[6]) for r in ws.iter_rows(min_row=3, values_only=True))
+    assert got == [("1", "wave:3 Out"), ("2", "wave:3 Out"), ("4", "wave:3 Out"), ("5", "choice:2.3")], got
+    assert len(ws._images) == 4
+    for row in ws.iter_rows(min_row=3):                # (1 and 2 right, 5 wrong; 4 left)
+        row[4].value = {"1": "נכון", "2": "נכון", "5": "שגוי"}.get(row[0].value)
+    wb.save(tmp_path / "d.xlsx")
+    sys.argv = ["decide_sheet.py", "apply", str(tmp_path / "d.xlsx"), "--out", str(tmp_path / "d.json")]
+    try:
+        D.main()
+    finally:
+        sys.argv = argv
+    dec = D.load(str(tmp_path / "d.json"))
+    assert dec["exams"] == {"wave:3 Out": {"1": "right", "2": "right"}, "choice:2.3": {"5": "wrong"}}, dec
+    assert dec["wordings"] == {}                       # (the check's own words: no other exam decided by them)
+    assert D.decided(dec, "wave:3 Out", "4", "") == (None, "")
+    from tools.exam_report import details                # (the report: a table a human marked, as he marked it)
+    tb = tmp_path / "tb"
+    tb.mkdir()
+    for n, human in (("1", "right"), ("2", "wrong"), ("3", None)):
+        json.dump({"exam": n, "cells": [], "right": 23, "wrong": 0, "unsure": 1, "empty": 0, "strength": 0,
+                   **({"human": human, "decided": "exam"} if human else {})}, open(tb / f"{n}.table.json", "w"))
+    got = {n: rows[0][2] for n, rows in details([str(tb)], {}).items()}
+    assert got == {"1": "נכון", "2": "שגוי", "3": "לבדיקה ידנית"}, got
+    from tools.expr_box import apply_decisions          # (an expression row: the same way, from expr_box.py's json)
+    ex, crops = tmp_path / "ex", tmp_path / "exc"
+    ex.mkdir()
+    crops.mkdir()
+    rec = {"exam": "7", "rows": [{"name": "Y1", "verdict": "unsure", "read": "A \\oplus B"},
+                                 {"name": "Y2", "verdict": "right", "read": "AB+C"}], "right": 1, "wrong": 0, "unsure": 1,
+           "empty": 0}
+    json.dump(rec, open(ex / "7.exprs.json", "w"))
+    Image.new("RGB", (300, 60), "white").save(crops / "7_Y1.png")
+    (e, part, _, text, img), = D._rows_expr(str(ex), str(crops))
+    assert (e, part, text) == ("7", "expr:Y1", "A \\oplus B") and img.endswith("7_Y1.png")
+    assert apply_decisions(rec, {"exams": {"expr:Y1": {"7": "wrong"}}, "wordings": {}})
+    assert rec["rows"][0]["verdict"] == "wrong" and (rec["wrong"], rec["unsure"]) == (1, 0)
+    assert not apply_decisions(rec, {"exams": {"expr:Y1": {"8": "right"}}, "wordings": {}})
+
+
 def test_a_drawn_waveform_is_checked_by_its_shape():
     """tools/waveform.py: where a drawing on a printed time axis is high, against the solution's - an inverted copy of
     the clock (Z = NOT In, a little later), or low with a short pulse after each rising edge (Out)"""
@@ -8449,6 +8548,18 @@ def test_a_drawn_waveform_is_checked_by_its_shape():
         assert z["1"] == "right" and z["2"] == "wrong" and z["3"] == "empty", z
         assert o["4"] == "right" and o["5"] == "wrong" and o["3"] == "empty" and o["6"] == "right", o
         assert "data:image/png" in open(f"{tmp}/z/review.html", encoding="utf-8").read()
+        import os                                        # (none found: the plot cut out for a human, whose mark
+        assert os.path.isfile(f"{tmp}/z/3_wave.png") and not os.path.isfile(f"{tmp}/z/1_wave.png")   # decides it)
+        json.dump({"exams": {"wave:inverted": {"3": "wrong"}}, "wordings": {}}, open(f"{tmp}/d.json", "w"))
+        sys.argv = ["waveform.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--plot", "216,960,699,962",
+                    "--edges", "374r,527f,680r,833f", "--kind", "inverted", "--name", "inverted", "--out", f"{tmp}/z2",
+                    "--decisions", f"{tmp}/d.json"]
+        try:
+            W.main()
+        finally:
+            sys.argv = argv
+        r = json.load(open(f"{tmp}/z2/3.wave.json"))
+        assert r["verdict"] == "wrong" and r["decided"] == "exam", r
 
 
 def test_the_report_puts_the_checks_against_the_exams_own_points():

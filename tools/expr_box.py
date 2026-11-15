@@ -528,6 +528,23 @@ def _review_figure(img, rows_scan, masks, out, name, off):
             f"<figcaption>{html.escape(chr(10).join(lines))}</figcaption></figure>")
 
 
+def apply_decisions(rec: dict, dec: dict) -> bool:
+    """an exam's rows (<n>.exprs.json) -> a row left unsure or empty decided as a human marked it (tools/decide_sheet.py:
+    part 'expr:<row>'), the counts again; whether any changed"""
+    from tools.decide_sheet import decided
+    changed = False
+    for x in rec["rows"]:
+        if x["verdict"] in ("unsure", "empty") and not x.get("decided"):
+            hv, how = decided(dec, f"expr:{x['name']}", rec["exam"], "")
+            if hv:
+                x["verdict"], x["decided"] = hv, how
+                changed = True
+    if changed:
+        for k in ("right", "wrong", "unsure", "empty"):
+            rec[k] = sum(1 for x in rec["rows"] if x["verdict"] == k)
+    return changed
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("folder", nargs="?", default="")
@@ -557,6 +574,8 @@ def main():
                     "writing coloured by its verdict, with what was read (to look over, on this computer)")
     ap.add_argument("--hires", type=int, default=300, help="the handwriting cut from the page rendered at this "
                     "resolution (the scans' own; 0: at the reading resolution, 150 dpi)")
+    ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a row left "
+                    "unsure or empty decided as a human marked it")
     a = ap.parse_args()
     from recog.formula import FormulaRecognizer
     key = parse_key(a.key)
@@ -582,6 +601,10 @@ def main():
         marks = grades(a.grades)
     if a.out:
         os.makedirs(a.out, exist_ok=True)
+    dec = None
+    if a.decisions:
+        from tools.decide_sheet import load
+        dec = load(a.decisions)
     only = {x for x in a.only.split(",") if x}
     pdfs = sorted((p for p in glob.glob(os.path.join(a.folder, "*.pdf")) if not re.search(r"_checked\.pdf$", p, re.I)),
                   key=lambda p: int(re.sub(r"\D", "", os.path.basename(p)) or 0))
@@ -595,6 +618,8 @@ def main():
         done = os.path.join(a.out or ".", f"{name}.exprs.json")
         if os.path.isfile(done) and not a.crops_only:                       # (resumable: an exam read before is taken as it was)
             r0 = json.load(open(done, encoding="utf-8"))
+            if dec and apply_decisions(r0, dec):           # (a human's marks since: taken)
+                json.dump(r0, open(done, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             table.append(({k: r0[k] for k in ("right", "wrong", "unsure", "empty")},
                           marks.get(name, {}).get(a.question) if marks else None))
             continue
@@ -654,8 +679,12 @@ def main():
                 remarks.append(f"{nm}: נקרא {used} - שונה מהפתרון ({nm} = {want}).")
             if mk is not None and r.get("matches_table") is False and v == "right":
                 remarks.append(f"{nm}: הביטוי נכון, אך עמודת {nm} בטבלת האמת של הסטודנט אינה תואמת אותו.")
-        json.dump({"exam": name, "rows": out, **res}, open(done + ".tmp", "w", encoding="utf-8"), ensure_ascii=False,
-                  indent=1)
+        rec = {"exam": name, "rows": out, **res}
+        if dec and apply_decisions(rec, dec):
+            res = {k: rec[k] for k in res}
+            remarks += [f"{x['name']}: {'נכון' if x['verdict'] == 'right' else 'שגוי'} - לפי החלטת הבודק."
+                        for x in out if x.get("decided")]
+        json.dump(rec, open(done + ".tmp", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         txt = [f"שאלה {a.question}(א) - הביטויים: {res['right']} נכונים, {res['wrong']} שגויים, {res['empty']} ריקים, "
                f"{res['unsure']} לא נקראו בוודאות (לבדיקה ידנית)."] + remarks
         open(os.path.join(a.out, f"{name}_expr_remarks.txt"), "w", encoding="utf-8").write("\n".join(txt) + "\n")

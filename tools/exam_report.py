@@ -96,6 +96,9 @@ def details(folders, sure):
                 read += f"; חוזק שונה מהפתרון ב-{r['strength']} תאים"
             verdict = "שגוי" if r["wrong"] else "לבדיקה ידנית" if r["unsure"] or r["empty"] or r.get("strength") else "נכון"
             why = " ".join(x.strip() for x in lines if x.strip()) or ("כל התאים שנקראו כמו בפתרון" if not r["wrong"] else "")
+            if r.get("human") and not r["wrong"]:      # (tools/decide_sheet.py: a human's mark on the whole table)
+                verdict = "נכון" if r["human"] == "right" else "שגוי"
+                why = "לפי החלטת הבודק. " + why
             out[n].append(("1(א) טבלת האמת", read, verdict, "", why))
         for f in glob.glob(os.path.join(d, "*.exprs.json")):
             r = json.load(open(f, encoding="utf-8"))
@@ -107,6 +110,8 @@ def details(folders, sure):
                        "empty": "לא נמצא כתב בשורה"}.get(x["verdict"], "")
                 if agreed:
                     why += f"; קוראים שהסכימו: {agreed}"
+                if x.get("decided"):                   # (tools/decide_sheet.py: a human's mark)
+                    why = "לפי החלטת הבודק"
                 if x.get("matches_table") is False:
                     why += "; לא תואם לעמודה בטבלת האמת של הסטודנט"
                 out[r["exam"]].append((f"1(א) ביטוי {x['name']}", x.get("read") or "", HEB.get(x["verdict"], x["verdict"]),

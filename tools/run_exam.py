@@ -21,8 +21,10 @@ again for each); "{out}" in a value is the results' folder. A part with "server"
 deleted, then the part judged with them (--second; words_box, truth_table: --readings). Several things asked for on
 one place (value_area: "label_text": "f1=the_function_of_F1;tf1=..."): read once, by the first part; the others say
 "server": {"share": "<that part>"} and their own "reading_id".
-"decisions": what a human marked on tools/decide_sheet.py's sheet (kept with the exams) given to words_box and
-value_area; after the parts, the sheet made anew of what is still undecided (the words parts, the values named).
+"decisions": what a human marked on tools/decide_sheet.py's sheet (kept with the exams) given to words_box,
+value_area, waveform, choice_marks, truth_table and expr_box; after the parts, the sheet made anew of what is still
+undecided (the words parts, the values named, every drawn waveform or curve, multiple-choice mark, truth table and
+expression).
 """
 import argparse
 import glob
@@ -136,7 +138,7 @@ def main():
         if cfg.get("grades") and tool not in ("read_exam_circuits",):
             common["grades"] = cfg["grades"]
         dec = (cfg.get("decisions") or {}).get("file")
-        if dec and tool in ("words_box", "value_area", "waveform"):    # (a human's marks on what the checks left: kept with
+        if dec and tool in ("words_box", "value_area", "waveform", "choice_marks", "truth_table", "expr_box"):    # (a human's marks on what the checks left: kept with
             common["decisions"] = dec                      #  the exams, tools/decide_sheet.py)
         if (part.get("server") or {}).get("share"):     # (read with another part's place: its readings, no reading
             args["second"] = os.path.join(out, part["server"]["share"] + "_crops", "readings.json")   # again)
@@ -165,6 +167,14 @@ def main():
                 cmd += ["--words", f, "--words-crops", crops]
             elif part["tool"] == "value_area" and part["name"] in dec.get("values", []):
                 cmd += ["--value", f, "--value-crops", crops, "--value-readings", os.path.join(crops, "readings.json")]
+            elif part["tool"] == "waveform":
+                cmd += ["--wave", f]
+            elif part["tool"] == "choice_marks":
+                cmd += ["--choice", f]
+            elif part["tool"] == "truth_table":
+                cmd += ["--table", f]
+            elif part["tool"] == "expr_box":
+                cmd += ["--expr", f, "--expr-crops", crops]
         run(cmd + ["--out", dec["sheet"]], a.dry_run)
     rep = cfg.get("report")
     if rep is not None:

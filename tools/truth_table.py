@@ -311,6 +311,9 @@ def main():
     ap.add_argument("--readings", default="", help="the GPU readers' readings of the cells (tools/read_crops.py): a "
                     "cell's value readers of two kinds give, and more of them than the other, decides")
     ap.add_argument("--only", default="")
+    ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a table "
+                    "with no wrong cell but some undecided (unsure, empty, a strength unlike the solution's) decided as "
+                    "a human marked it - right or wrong as a whole")
     ap.add_argument("--review", action="store_true", help="<out>/review.html: each exam's table as scanned, each cell "
                     "read boxed - green right, red wrong, orange unsure, gray empty - with its reading (to look over)")
     a = ap.parse_args()
@@ -403,8 +406,22 @@ def main():
                         remarks.append(f"שורה {r + 1}, עמודה {c + 1}: חוזק {st}, בפתרון {strengths[r][cols.index(c)]} "
                                        "(לבדיקה).")
                 cells_out.append(cell)
-        json.dump({"exam": name, "cells": cells_out, **res}, open(os.path.join(a.out, f"{name}.table.json"), "w",
-                                                                    encoding="utf-8"), ensure_ascii=False, indent=1)
+        rec = {"exam": name, "cells": cells_out, **res, "part": f"table:p{a.page}"}
+        if not res["wrong"] and (res["unsure"] or res["empty"] or res["strength"]):   # (left to a human: the table
+            from recog.printed import fit_map                                          #  cut out for his sheet)
+            M2, b2 = fit_map(template, ink)
+            bx = [to_scan(cells[k], M2, b2) for k in want]
+            img.crop((max(0, min(q[0] for q in bx) - 25), max(0, min(q[1] for q in bx) - 25),
+                      min(img.width, max(q[2] for q in bx) + 25), min(img.height, max(q[3] for q in bx) + 25))).save(
+                os.path.join(a.out, f"{name}_table.png"))
+            if a.decisions:
+                from tools.decide_sheet import decided, load
+                hv, how = decided(load(a.decisions), rec["part"], name, "")
+                if hv:
+                    rec.update(human=hv, decided=how)
+                    remarks.insert(0, f"טבלת האמת: {'נכונה' if hv == 'right' else 'שגויה'} - לפי החלטת הבודק.")
+        json.dump(rec, open(os.path.join(a.out, f"{name}.table.json"), "w", encoding="utf-8"), ensure_ascii=False,
+                  indent=1)
         txt = [f"שאלה {a.question}(א) - טבלת האמת: {res['right']} תאים נכונים, {res['wrong']} שגויים, "
                f"{res['empty']} ריקים, {res['unsure']} לא נקראו בוודאות (לבדיקה ידנית)" +
                (f"; {res['strength']} תאים שבהם החוזק שנקרא שונה מהפתרון (לבדיקה)." if strengths else ".")] + remarks

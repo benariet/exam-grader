@@ -198,15 +198,18 @@ def read_choices(page, template, bands):
     return scores, on_scan, hand, rings
 
 
+def options_box(on_scan, img, pad=20):
+    """the options' bands on the scan -> the box round all of them (x0, y0, x1, y1)"""
+    return (max(0, min(b[0] for b in on_scan) - pad), max(0, min(b[1] for b in on_scan) - pad),
+            min(img.width, max(b[2] for b in on_scan) + pad), min(img.height, max(b[3] for b in on_scan) + pad))
+
+
 def _review_figure(img, on_scan, scores, pick, verdict, item, name):
     import base64
     import html
     import io
     from PIL import ImageDraw
-    x0 = max(0, min(b[0] for b in on_scan) - 20)
-    y0 = max(0, min(b[1] for b in on_scan) - 20)
-    x1 = min(img.width, max(b[2] for b in on_scan) + 20)
-    y1 = min(img.height, max(b[3] for b in on_scan) + 20)
+    x0, y0, x1, y1 = options_box(on_scan, img)
     crop = img.crop((x0, y0, x1, y1)).copy()
     d = ImageDraw.Draw(crop)
     for k, bd in enumerate(on_scan):
@@ -237,6 +240,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--only", default="")
     ap.add_argument("--review", action="store_true")
+    ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a choice "
+                    "left unclear or unmarked decided as a human marked it")
     a = ap.parse_args()
     import pypdfium2 as pdfium
     from PIL import Image
@@ -272,9 +277,20 @@ def main():
             pick, how = choose(scores, rings=rings)
             letter = LETTERS[pick] if pick is not None else ""
             verdict = how if how != "chosen" else ("right" if letter == it["answer"] else "wrong")
-            out.append({"item": it["name"], "verdict": verdict, "chosen": letter, "answer": it["answer"],
-                        "ink": [int(s) for s in scores], "circled": [LETTERS[k] for k, r in enumerate(rings) if r]})
-            remarks.append({"right": f"שאלה {it['name']}: סומנה התשובה הנכונה ({letter}) - יש לבדוק את ההסבר.",
+            row = {"item": it["name"], "verdict": verdict, "chosen": letter, "answer": it["answer"],
+                   "ink": [int(s) for s in scores], "circled": [LETTERS[k] for k, r in enumerate(rings) if r]}
+            if verdict in ("none", "unclear"):         # (the options cut out, for a human: decide_sheet.py --choice)
+                img.crop(options_box(on_scan, img)).save(os.path.join(a.out, f"{name}_{it['name']}_choice.png"))
+                if a.decisions:
+                    from tools.decide_sheet import decided, load
+                    hv, _ = decided(load(a.decisions), f"choice:{it['name']}", name, "")
+                    if hv:
+                        verdict = row["verdict"] = hv
+                        row["decided"] = "exam"
+            out.append(row)
+            remarks.append(f"שאלה {it['name']}: {'נכון' if verdict == 'right' else 'שגוי'} - לפי החלטת הבודק."
+                           if row.get("decided") else
+                           {"right": f"שאלה {it['name']}: סומנה התשובה הנכונה ({letter}) - יש לבדוק את ההסבר.",
                             "wrong": f"שאלה {it['name']}: סומנה תשובה {letter}; בפתרון {it['answer']}.",
                             "none": f"שאלה {it['name']}: לא נמצא סימון על התשובות - לבדיקה ידנית.",
                             "unclear": f"שאלה {it['name']}: לא ברור איזו תשובה סומנה - לבדיקה ידנית."}[verdict])
