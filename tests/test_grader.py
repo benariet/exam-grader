@@ -8345,6 +8345,21 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
             sys.argv = argv
         assert json.load(open(f"{tmp}/out2/8.value.json"))["verdict"] == "unsure"
         assert "data:image/png" in open(f"{tmp}/out2/review.html", encoding="utf-8").read()
+
+        class Fake2(Fake):                               # (all three on 11.5 %: wrong - unless 11.5 % is what another
+            def recognize(self, img, n_best=3, **kw):   #  thing asked on this place is: then maybe its, read here)
+                return [Candidate("11.5 \\%", -1.0, 0.9)]
+        monkeypatch.setattr("recog.formula.FormulaRecognizer", Fake2)
+        for extra, want in (([], "wrong"), (["--sibling-keys", "1.15 V|11.5%"], "unsure")):
+            sys.argv = ["value_area.py", tmp, "--booklet", f"{tmp}/booklet", "--page", "1", "--area",
+                        "80,1500,1100,1608", "--key", "5.75%", "--percent", "--no-local", "--second", f"{tmp}/r.json",
+                        "--out", f"{tmp}/out5"] + extra
+            try:
+                V.main()
+            finally:
+                sys.argv = argv
+            assert json.load(open(f"{tmp}/out5/8.value.json"))["verdict"] == want, extra
+        monkeypatch.setattr("recog.formula.FormulaRecognizer", Fake)
         # several things asked for on one place (read_crops' 'id=what;...'): an answer in words, a value on the way
         json.dump({"8_value~f1": {"vlmwords": [["NOT gate", 0]], "vlmfinal": [["NOT", 0]], "where": [0.5, 0.2, 0.8, 0.8]},
                    "8_value~tf1": {"vlmfinal": [["11.5 ps", 0]]}}, open(f"{tmp}/r3.json", "w"))
@@ -8375,6 +8390,9 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert sum(1 for x in lines if x.startswith("== ")) == 22, out   # (20 parts, the decisions sheet, the report)
     shared = [x for x in lines if "value_area.py" in x and "--reading-id oh" in x]
     assert len(shared) == 1 and "value_q1d_ol_crops" in shared[0] and "--crops-only" not in shared[0]   # (read once)
+    assert '--sibling-keys "0 V"' in shared[0] or "--sibling-keys '0 V'" in shared[0] or "--sibling-keys 0 V" in shared[0], shared[0]
+    ol = [x for x in lines if "value_area.py" in x and "--reading-id ol" in x and "--crops-only" not in x]
+    assert ol and "1.15 V" in ol[0].split("--sibling-keys")[1][:12], ol    # (VOLmin read as VOHmax's 1.15: not wrong)
     assert sum(1 for x in lines if "sbatch" in x) == 9, [x for x in lines if "sbatch" in x]
     assert all("--decisions" in x for x in lines if ("words_box.py" in x or "value_area.py" in x) and "--crops-only" not in x)
     sheet = next(x for x in lines if "decide_sheet.py" in x)

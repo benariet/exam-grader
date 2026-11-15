@@ -151,6 +151,9 @@ def main():
     ap.add_argument("--words-key", default="", help="an answer in words instead ('F1 is a NOT'): JSON, inline or a "
                     "file - {'right': [regex], 'wrong': [regex]} (tools/words_box.py's); the vision model's reading of "
                     "the place it found, cut out, decides - its reading of the whole place may only agree")
+    ap.add_argument("--sibling-keys", default="", help="the keys of the other things read on the same place ('1.15 V|"
+                    "...'): a value read as one of them is not called wrong - it may be the other thing's, read where "
+                    "the place holds both")
     ap.add_argument("--reading-id", default="", help="which of the things read on the place this is (tools/"
                     "read_crops.py --label-text 'id=what;...': the readings' <n>_value~id)")
     ap.add_argument("--step", action="store_true", help="a value on the way, not the answer (V_Tn on the way to "
@@ -192,6 +195,8 @@ def main():
             raise SystemExit(f"the key {a.key!r} is no number (or --words-key)")
         from grader.numeric import parse_numeric
         key_unit = (parse_numeric(a.key).unit or "").strip()
+    siblings = [x for x in (value_of(k, a.percent, key_unit) for k in a.sibling_keys.split("|") if k.strip())
+                if x is not None]
     second = json.load(open(a.second, encoding="utf-8")) if a.second else {}
     from tools.decide_sheet import decided, load
     dec = load(a.decisions) if a.decisions else {}
@@ -281,6 +286,8 @@ def main():
                         readings[name_cut.replace("pix2text", "trocr")] = \
                             [(c.text, 1.0) for c in er.recognize(img_cut, n_best=3, max_new_tokens=32)]
             v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
+            if v == "wrong" and val is not None and any(abs(val - x) <= 0.01 * max(abs(x), 1e-12) for x in siblings):
+                v = "unsure"                           # (another thing asked on this place: maybe read from its line)
         how = ""
         if v in ("unsure", "empty") and dec:           # (a human's mark on this answer, or on its wording elsewhere)
             text = (got.get("vlmwords") or got.get("vlmfinal") or [[used or ""]])[0][0]

@@ -165,6 +165,13 @@ def main():
             continue
         if a.judge_only and tool == "expr_box":       # (Pix2Text's readings as they were: an exam judged before
             args["reuse"] = pout                       #  takes the marks given since)
+        if tool == "value_area" and part.get("server"):   # (several things read on one place: a value read as
+            root = part["server"].get("share") or name     #  another's key is not called wrong)
+            sib = [p_["args"]["key"] for p_ in cfg["parts"] if p_ is not part and p_["tool"] == "value_area" and
+                   "key" in p_.get("args", {}) and ((p_.get("server") or {}).get("share") or p_["name"]) == root and
+                   p_.get("server")]
+            if sib:
+                args["sibling_keys"] = "|".join(sib)
         if (part.get("server") or {}).get("share"):     # (read with another part's place: its readings, no reading
             args["second"] = os.path.join(out, part["server"]["share"] + "_crops", "readings.json")   # again)
         elif part.get("server") and a.judge_only:     # (what was read before)
