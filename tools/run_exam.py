@@ -179,13 +179,13 @@ def main():
             if not os.path.isfile(readings) and not a.dry_run:
                 print(f"  (no readings in {os.path.dirname(readings)}: skipped)", flush=True)
                 continue
-            args["readings" if tool in ("words_box", "truth_table") else "second"] = readings
+            args["readings" if tool in ("words_box", "truth_table", "choice_marks") else "second"] = readings
         elif part.get("server") and cfg.get("server"):
             crops = os.path.join(out, name + "_crops")
             cmd = cli(tool, {**common, **args, "crops_only": crops}, out)
             run(cmd[:2] + head + cmd[2:], a.dry_run)
             readings = server_read(part, crops, cfg, a.dry_run)
-            args["readings" if tool in ("words_box", "truth_table") else "second"] = readings
+            args["readings" if tool in ("words_box", "truth_table", "choice_marks") else "second"] = readings
         if tool in POSITIONAL:                         # (its folder of results another part wrote - and its own)
             where = str(args.pop(POSITIONAL[tool])).replace("{out}", out)
             folders[-1] = where

@@ -105,6 +105,26 @@ def choose(scores, min_mark=MIN_MARK, clear=CLEAR, rings=None):
     return None, "unclear"
 
 
+def vlm_letter(got, n: int):
+    """the vision model's reading of the options cut out (tools/read_crops.py --prompt choice: {"vlm": [[text, logp]]})
+    -> the index of the one letter it named, or None ('?', several, none)"""
+    texts = [c[0] for c in ((got or {}).get("vlm") or []) if c]
+    if not texts:
+        return None
+    found = {LETTERS.index(ch) for ch in texts[0] if ch in LETTERS[:n]}
+    return found.pop() if len(found) == 1 and "?" not in texts[0] else None
+
+
+def second_look(scores, rings, k, min_mark=MIN_MARK):
+    """a choice the marks left unclear or unmarked, and the vision model's letter k -> k when the marks agree with it:
+    the most handwriting is on it (enough to be a mark) and, if any letter is circled, it is one of them; else None"""
+    if k is None or scores[k] < min_mark or scores[k] < max(scores):
+        return None
+    if rings is not None and any(rings) and not rings[k]:
+        return None
+    return k
+
+
 def circled(hand: np.ndarray, box, min_px: int = 12) -> bool:
     """a loop drawn round the letter in box (on the scan): handwriting on all four sides of it, at about one distance
     from its middle (an X's or a tick's strokes run out from it, a ring keeps round it)"""
@@ -237,11 +257,16 @@ def main():
     ap.add_argument("--item", action="append", required=True, help="name:page:lines per option:the solution's letter")
     ap.add_argument("--question", type=int, default=0, help="the items' question, for the lecturer's points off")
     ap.add_argument("--grades", default="")
-    ap.add_argument("--out", required=True)
+    ap.add_argument("--out", default="")
+    ap.add_argument("--crops-only", default="", help="a folder: each item's options cut out there (<n>_<item>.png) for "
+                    "the vision model (tools/read_crops.py --prompt choice), nothing judged")
     ap.add_argument("--only", default="")
     ap.add_argument("--review", action="store_true")
     ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a choice "
                     "left unclear or unmarked decided as a human marked it")
+    ap.add_argument("--readings", default="", help="the vision model's reading of each item's options cut out "
+                    "(tools/read_crops.py --prompt choice; <n>_<item>): a choice the marks left unclear decided when the "
+                    "marks agree with its letter (the most handwriting on it, circled if any is)")
     a = ap.parse_args()
     import pypdfium2 as pdfium
     from PIL import Image
@@ -257,7 +282,10 @@ def main():
     if a.grades:
         from tools.recheck_exams import grades
         marks = grades(a.grades)
-    os.makedirs(a.out, exist_ok=True)
+    if not a.out and not a.crops_only:
+        raise SystemExit("--out is needed (or --crops-only)")
+    os.makedirs(a.crops_only or a.out, exist_ok=True)
+    vlm_reads = json.load(open(a.readings, encoding="utf-8")) if a.readings else {}
     only = {x for x in a.only.split(",") if x}
     pdfs = sorted((p for p in glob.glob(os.path.join(a.folder, "*.pdf")) if not re.search(r"_checked\.pdf$", p, re.I)),
                   key=lambda p: int(re.sub(r"\D", "", os.path.basename(p)) or 0))
@@ -274,11 +302,24 @@ def main():
             img = doc[it["page"] - 1].render(scale=150 / 72).to_pil().convert("RGB")
             page, _ = clean_scan(img, answer_boxes=False)    # (a circle round a letter is no printed box)
             scores, on_scan, _, rings = read_choices(page, it["template"], it["bands"])
+            if a.crops_only:                           # (the options as they are on the scan, marks and all)
+                img.crop(options_box(on_scan, img)).save(os.path.join(a.crops_only, f"{name}_{it['name']}.png"))
+                continue
             pick, how = choose(scores, rings=rings)
+            seen = None
+            if pick is None and vlm_reads:                 # (the vision model's letter, where the marks agree with it)
+                seen = vlm_letter(vlm_reads.get(f"{name}_{it['name']}"), len(scores))
+                k = second_look(scores, rings, seen)
+                if k is not None:
+                    pick, how = k, "chosen"
             letter = LETTERS[pick] if pick is not None else ""
             verdict = how if how != "chosen" else ("right" if letter == it["answer"] else "wrong")
             row = {"item": it["name"], "verdict": verdict, "chosen": letter, "answer": it["answer"],
                    "ink": [int(s) for s in scores], "circled": [LETTERS[k] for k, r in enumerate(rings) if r]}
+            if seen is not None:
+                row["vlm"] = LETTERS[seen]
+                if pick is not None:
+                    row["agreed"] = "vlm"
             if verdict in ("none", "unclear"):         # (the options cut out, for a human: decide_sheet.py --choice)
                 img.crop(options_box(on_scan, img)).save(os.path.join(a.out, f"{name}_{it['name']}_choice.png"))
                 if a.decisions:
@@ -296,6 +337,8 @@ def main():
                             "unclear": f"שאלה {it['name']}: לא ברור איזו תשובה סומנה - לבדיקה ידנית."}[verdict])
             if a.review:
                 review.append(_review_figure(img, on_scan, scores, pick, verdict, it["name"], name))
+        if a.crops_only:
+            continue
         json.dump({"exam": name, "items": out}, open(os.path.join(a.out, f"{name}.choices.json"), "w", encoding="utf-8"),
                   ensure_ascii=False, indent=1)
         open(os.path.join(a.out, f"{name}_choice_remarks.txt"), "w", encoding="utf-8").write("\n".join(remarks) + "\n")
@@ -306,6 +349,9 @@ def main():
              "<style>body{font-family:Arial,sans-serif;margin:16px}figure{margin:12px 0}img{max-width:100%}</style>",
              "<h1>שאלות אמריקאיות - מה סומן</h1><p>ירוק: התשובה שנמצאה מסומנת. בכל שורה: כמות הכתב שעליה.</p>"]
             + review + ["</html>"]))
+    if a.crops_only:
+        print(f"{len(os.listdir(a.crops_only))} pieces cut -> {a.crops_only}")
+        return
     from collections import Counter
     for it in items:
         c = Counter(o["verdict"] for out, _ in table for o in out if o["item"] == it["name"])

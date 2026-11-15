@@ -8132,6 +8132,12 @@ def test_a_multiple_choice_mark_is_found_on_the_printed_options():
         (1, "chosen")                                                                              # underlined
     assert marked(lambda dr: None) == (None, "none")
     assert marked(lambda dr: (circ(0)(dr), circ(3)(dr))) == (None, "unclear")
+    assert C.vlm_letter({"vlm": [["ד", 0]]}, 6) == 3 and C.vlm_letter({"vlm": [["?", 0]]}, 6) is None   # (the vision
+    assert C.vlm_letter({"vlm": [["ב או ד", 0]]}, 6) is None and C.vlm_letter({}, 6) is None          #  model's)
+    sc = np.array([0, 60, 0, 114, 0, 50])                  # (unclear by the marks; its letter where they agree)
+    assert C.second_look(sc, [False] * 6, 3) == 3 and C.second_look(sc, [False] * 6, 1) is None
+    assert C.second_look(sc, [False, True, False, False, False, False], 3) is None    # (another circled)
+    assert C.second_look(np.array([0, 0, 0, 20, 0, 0]), None, 3) is None             # (too little to be a mark)
     with tempfile.TemporaryDirectory() as tmp:         # (the whole run: the booklet, a scan, the key, the review)
         __import__("os").makedirs(f"{tmp}/booklet")
         tpl.save(f"{tmp}/booklet/p1.png")
@@ -8147,6 +8153,13 @@ def test_a_multiple_choice_mark_is_found_on_the_printed_options():
             sys.argv = argv
         r = json.load(open(f"{tmp}/out/5.choices.json", encoding="utf-8"))
         assert r["items"][0]["verdict"] == "right" and r["items"][0]["chosen"] == "ג", r
+        sys.argv = ["choice_marks.py", tmp, "--booklet", f"{tmp}/booklet", "--item", "2.2:1:1,1,1,1,1,1:ג",
+                    "--crops-only", f"{tmp}/crops"]
+        try:
+            C.main()
+        finally:
+            sys.argv = argv
+        assert __import__("os").listdir(f"{tmp}/crops") == ["5_2.2.png"]
         assert open(f"{tmp}/out/review.html", encoding="utf-8").read().count("<figure>") == 1
         blank = tpl.copy().convert("RGB")                # (nothing marked: the options cut out for a human; his mark
         blank.save(f"{tmp}/6.pdf", resolution=150)       #  decides it - tools/decide_sheet.py)
@@ -8393,7 +8406,9 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert '--sibling-keys "0 V"' in shared[0] or "--sibling-keys '0 V'" in shared[0] or "--sibling-keys 0 V" in shared[0], shared[0]
     ol = [x for x in lines if "value_area.py" in x and "--reading-id ol" in x and "--crops-only" not in x]
     assert ol and "1.15 V" in ol[0].split("--sibling-keys")[1][:12], ol    # (VOLmin read as VOHmax's 1.15: not wrong)
-    assert sum(1 for x in lines if "sbatch" in x) == 9, [x for x in lines if "sbatch" in x]
+    assert sum(1 for x in lines if "sbatch" in x) == 10, [x for x in lines if "sbatch" in x]
+    assert any("choice_marks.py" in x and "--crops-only" in x for x in lines)        # (the options to the vision
+    assert any("choice_marks.py" in x and "--readings" in x and "choices_q2_crops/readings.json" in x for x in lines)
     assert all("--decisions" in x for x in lines if ("words_box.py" in x or "value_area.py" in x) and "--crops-only" not in x)
     sheet = next(x for x in lines if "decide_sheet.py" in x)
     assert "--words" in sheet and "value_q1f" in sheet and "value_q1e" in sheet and "value_q3" in sheet

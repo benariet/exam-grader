@@ -216,6 +216,10 @@
     ],
     "question": 2,
     "review": true
+   },
+   "server": {
+    "readers": "vlm",
+    "prompt": "choice"
    }
   },
   {

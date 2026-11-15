@@ -51,6 +51,11 @@ PROMPTS = {
     "cell": ("This image is one handwritten cell of a truth table from a digital logic exam: a logic value, 0 or 1, maybe "
              "followed by its strength - S (strong), W (weak) or W/S. Write exactly what is written (for example 1, 0S, "
              "1W, 0W/S), and nothing else. If it cannot be read, write ? - do not guess."),
+    "choice": ("This image shows the printed answer options of a multiple-choice question from an exam, labelled "
+               "\u05d0, \u05d1, \u05d2, \u05d3, \u05d4, \u05d5 from top to bottom (each letter printed at the right end "
+               "of its option), with a student's handwritten marks. Which ONE option did the student choose - the one "
+               "circled, ticked or underlined, or whose letter the student wrote? Answer with that option's Hebrew "
+               "letter only. If no option is marked, or two are marked and it is not clear which is final, answer ?."),
     "boolean": ("This image is one handwritten Boolean expression from a digital logic exam: variables A, B, C and V_x; "
                 "OR written +, AND written as letters side by side or with a dot, XOR written as a circled plus, NOT as a "
                 "bar over a letter or a group or a prime after it, and brackets. Write exactly what is written, in LaTeX "
