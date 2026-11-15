@@ -8443,6 +8443,11 @@ def test_undecided_answers_are_put_before_a_human_once_and_his_marks_decide(tmp_
     assert dec["wordings"]["words:Y1"] == {"xor": "right"} and "words:Y2" not in dec["wordings"]
     assert D.decided(dec, "words:Y1", "9", "X O R") == ("right", "wording")      # (another exam, the same wording)
     assert D.decided(dec, "words:Y1", "9", "XNOR") == (None, "") and D.decided(dec, "value:1(f)", "4", "")[0] == "right"
+    json.dump({"exam": "5", "name": "1(f)", "verdict": "empty", "read": "", "value": None}, open(v / "5.value.json", "w"))
+    Image.new("RGB", (900, 200), "white").save(v / "5_valueempty.png")    # (nothing found on the place: shown so)
+    got5 = [r for r in D._rows_value(str(v), str(vc), str(tmp_path / "r.json")) if r[0] == "5"]
+    assert len(got5) == 1 and got5[0][1] == "value:1(f)" and got5[0][3] == "" and "לא נמצא כתב" in got5[0][2], got5
+    (v / "5.value.json").unlink()
     json.dump({"4_value~oh": {"vlmfinal": [["1.2 V", 0]], "where": [0.1, 0.1, 0.6, 0.2]}}, open(tmp_path / "r2.json", "w"))
     (_, part, _, text, img), = D._rows_value(str(v), str(vc), str(tmp_path / "r2.json"), "oh")   # (one of several
     assert text == "1.2 V" and img is not None                                                 #  read on one place)

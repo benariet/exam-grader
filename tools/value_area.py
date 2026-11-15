@@ -234,6 +234,9 @@ def main():
         readings = {}
         if crop is None:
             v, used, val = "empty", "", None
+            if not a.step:                             # (the place, nothing found on it, for a human: the answer may be
+                img.crop((max(0, x0 - 20), max(0, y0 - 90), min(img.width, x1 + 20), min(img.height, y1 + 20))).save(
+                    os.path.join(a.out, f"{name}_valueempty.png"))   # just above it - tools/decide_sheet.py)
         elif wkey is not None:                         # (words: the place found, cut out, read as written decides)
             from tools.words_box import judge_row
             row = {"vlm": got.get("vlmwords") or [], "vlmbox": got.get("vlmfinal") or []}
@@ -267,7 +270,7 @@ def main():
                             [(c.text, 1.0) for c in er.recognize(img_cut, n_best=3, max_new_tokens=32)]
             v, used, val = judge_value(readings, key, a.tol, a.percent, key_unit)
         how = ""
-        if v == "unsure" and dec:                      # (a human's mark on this answer, or on its wording elsewhere)
+        if v in ("unsure", "empty") and dec:           # (a human's mark on this answer, or on its wording elsewhere)
             text = (got.get("vlmwords") or got.get("vlmfinal") or [[used or ""]])[0][0]
             hv, how = decided(dec, f"value:{a.name}", name, text)
             if hv:

@@ -78,9 +78,14 @@ def _rows_value(folder, crops, readings, rid=""):
     out = []
     for f in glob.glob(os.path.join(folder, "*.value.json")):
         r = json.load(open(f, encoding="utf-8"))
+        n = r["exam"]
+        empty = os.path.join(folder, f"{n}_valueempty.png")
+        if r["verdict"] == "empty" and not r.get("decided") and os.path.isfile(empty):   # (nothing found on the place:
+            out.append((n, f"value:{r.get('name', '')}", f"{r.get('name', '')} (לא נמצא כתב במקום התשובה)", "",
+                        Image.open(empty).convert("RGB")))     # (it and the lines above it shown; no text: no wording)
+            continue
         if r["verdict"] != "unsure":
             continue
-        n = r["exam"]
         g = got.get(f"{n}_value~{rid}" if rid else f"{n}_value", {})     # (several things read on one place: this
         #                                                                       one's reading)
         text = (g.get("vlmwords") or g.get("vlmfinal") or [[r.get("read") or ""]])[0][0]
