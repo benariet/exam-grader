@@ -8469,6 +8469,13 @@ def test_the_report_puts_the_checks_against_the_exams_own_points():
     q = {(r[0], r[1]): r for r in per_q}
     assert q[("1", 2)][-1].startswith("לבדוק") and q[("1", 3)][-1].startswith("לבדוק")   # (5 lost for sure, yet
     assert q[("2", 1)][-1] == "מתיישב" and abs(cover["1"] - 40 / 50) < 1e-9              #  full; an error, 0 off)
+    assert q[("2", 3)][-1] == "מתיישב"           # (right in the parts checked only: 5 off is no contradiction)
+    det["3"] = [("1(א) טבלת האמת", "", "נכון", "", ""), ("1(ג) הגרף", "", "נכון", "", "")]
+    marks["3"] = {1: 4}                            # (both found right, the lecturer took 4 off: to look at)
+    det["4"] = [("1(א) טבלת האמת", "", "נכון", "", ""), ("1(ג) הגרף", "", "לבדיקה ידנית", "", "")]
+    marks["4"] = {1: 4}                            # (4 off the open part: no contradiction)
+    q = {(r[0], r[1]): r for r in points_view(det, rubric, marks)[1]}
+    assert q[("3", 1)][-1] == "לבדוק: המרצה נתן פחות ממה שהבדיקה אישרה" and q[("4", 1)][-1] == "מתיישב"
 
 
 def test_a_free_answer_sheet_is_joined_per_question():
@@ -8522,14 +8529,26 @@ def test_a_drawn_curve_is_checked_by_its_levels():
     shapes = {"1": [(0.02, 0.3), (0.66, 0.3), (1.0, 0.64)],          # (flat, then rising to V_DD - V_T)
               "2": [(0.02, 0.3), (0.4, 0.3), (1.0, 0.98)],            # (rising to V_DD: the drop missed)
               "3": [(0.02, 0.98), (0.4, 0.95), (0.7, 0.05), (1.0, 0.02)],   # (falling: the inverter's)
-              "4": None}
+              "4": None,
+              "5": [(0.02, 0.3), (0.66, 0.3), (1.0, 0.64)]}           # (1, in a light pencil: a pixel wide, broken)
+
+    def pencil(dr, pts):
+        for (xa, ya), (xb, yb) in zip(pts, pts[1:]):
+            n = int(430 * abs(xb - xa))
+            for i in range(0, n, 6):           # (a 4-pixel stroke, 2 left out)
+                p, q = i / n, min(1.0, (i + 4) / n)
+                dr.line([(185 + (xa + (xb - xa) * p) * 430, 1001 - (ya + (yb - ya) * p) * 427),
+                         (185 + (xa + (xb - xa) * q) * 430, 1001 - (ya + (yb - ya) * q) * 427)], fill=(100, 100, 100),
+                        width=1)
     with tempfile.TemporaryDirectory() as tmp:
         __import__("os").makedirs(f"{tmp}/booklet")
         tpl.save(f"{tmp}/booklet/p1.png")
         for n, pts in shapes.items():
             s = tpl.copy().convert("RGB")
             dr = ImageDraw.Draw(s)
-            if pts:
+            if pts and n == "5":
+                pencil(dr, pts)
+            elif pts:
                 curve(dr, pts)
                 dr.text((420, 640), "|VTp|", fill=ink, font=ImageFont.truetype("DejaVuSans.ttf", 22))
             s.save(f"{tmp}/{n}.pdf", resolution=150)
@@ -8541,7 +8560,7 @@ def test_a_drawn_curve_is_checked_by_its_levels():
         finally:
             sys.argv = argv
         got = {n: json.load(open(f"{tmp}/c/{n}.wave.json"))["verdict"] for n in shapes}
-        assert got == {"1": "right", "2": "wrong", "3": "wrong", "4": "empty"}, got
+        assert got == {"1": "right", "2": "wrong", "3": "wrong", "4": "empty", "5": "right"}, got
 
 
 def test_fermat_check_helpers():

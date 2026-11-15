@@ -127,16 +127,17 @@ def judge_pulses(high, x0, edges, drawn, after, widest):
     return "unsure", wins
 
 
-def curve_of(gray, printed, x0, x1, y_vdd, y_zero, min_width=40):
+def curve_of(gray, printed, x0, x1, y_vdd, y_zero, min_width=40, join=7):
     """a curve drawn on printed axes -> {x share (0..1, by 1 %): y share (0 at the axis, 1 at V_DD)}: the ink that is
     not the print (the print exactly, a pixel round it - a curve crossing the grid's dashes is cut there only), its
-    strokes at least min_width wide once joined across such cuts (a curve, not the numbers and labels written by it),
-    the middle of their ink in each column"""
+    strokes at least min_width wide once joined across such cuts and across a light pencil line's breaks (join pixels:
+    a curve, not the numbers and labels written by it), the middle of their ink in each column. A thin line is kept as
+    it is: a pencil's, a pixel wide and broken, is the curve too (taking out what is under 2x2 took a third of the
+    Moed's curves away - they ended a little after they began)"""
     from scipy import ndimage as ndi
     top, bottom = int(y_vdd - 10), int(y_zero + 4)
     sub = (gray[top:bottom, x0:x1] < 170) & ~ndi.binary_dilation(printed[top:bottom, x0:x1], iterations=1)
-    sub = ndi.binary_opening(sub, structure=np.ones((2, 2)))      # (specks)
-    lab, n = ndi.label(ndi.binary_dilation(sub, iterations=4), structure=np.ones((3, 3)))
+    lab, n = ndi.label(ndi.binary_dilation(sub, iterations=join), structure=np.ones((3, 3)))
     keep = np.zeros_like(sub)
     for k, sl in enumerate(ndi.find_objects(lab)):
         if sl is not None and sl[1].stop - sl[1].start >= min_width:

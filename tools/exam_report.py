@@ -181,7 +181,8 @@ def points_view(det, rubric, marks):
     items, per_q, cover = [], [], {}
     for n in sorted(det, key=lambda x: int(re.sub(r"\D", "", x) or 0)):
         rows = [r for r in det[n] if r[2] not in STEP.values()]
-        byq = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0, 0.0])        # (points, kept, lost, error found, open)
+        byq = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])   # (points, kept, lost, error found, open, kept
+        #                                                                  whole: right in all of it, nothing to check)
         for it in rubric:
             mine = [r for r in rows if re.search(it["match"], r[0])]
             verdicts = [r[2] for r in mine]
@@ -201,6 +202,7 @@ def points_view(det, rubric, marks):
             b[0] += p
             if status.startswith("נכון"):
                 b[1] += p
+                b[5] += p if status == "נכון" else 0.0
             elif status.startswith("שגוי"):
                 b[2] += p
             elif status == "נמצאה טעות":
@@ -210,11 +212,16 @@ def points_view(det, rubric, marks):
             items.append([n, it["q"], it["item"], p, status,
                           "; ".join(f"{r[0]}: {r[2]}" for r in mine) if mine else ""])
         done = 0.0
-        for q, (pts, kept, lost, err, opn) in sorted(byq.items()):
+        for q, (pts, kept, lost, err, opn, whole) in sorted(byq.items()):
             off = (marks.get(n) or {}).get(q)
             got = None if off is None else pts - off
             agrees = "" if got is None else ("לבדוק: המרצה נתן יותר ממה שאפשר" if got > pts - lost + 1e-9 else
-                                             "לבדוק: נמצאה טעות והמרצה לא הוריד" if err and off == 0 else "מתיישב")
+                                             "לבדוק: נמצאה טעות והמרצה לא הוריד" if err and off == 0 else
+                                             "לבדוק: המרצה נתן פחות ממה שהבדיקה אישרה" if got < whole - 1e-9 else
+                                             "מתיישב")      # (the last: an item the checks found right in all of it,
+            #                                 yet the lecturer gave less than those - one of the two is wrong, or the
+            #                                 explanation the lecturer wanted is missing; a partly checked item, or a
+            #                                 choice whose explanation is the lecturer's, not counted)
             per_q.append([n, q, pts, "" if got is None else got, kept, lost, err, opn, agrees])
             done += kept + lost + err
         cover[n] = done / max(1e-9, sum(v[0] for v in byq.values()))
