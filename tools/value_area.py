@@ -36,10 +36,15 @@ SURE_P = 0.5
 def value_of(text, percent=False, unit=""):
     """a reading -> its final value (float) or None; with percent, a bare fraction below 1 is a share (x 100); with
     unit (the key's: 'ns'), a value with a unit of its own put in it ('6.97 \\cdot 10^{-8} s' -> 69.7), one with a
-    unit of another kind None, a bare number taken as in it"""
+    unit of another kind None, a bare number taken as in it - but one with a power of ten as in the key's base unit
+    ('6.97 \\cdot 10^{-8}' -> 69.7 ns), and a prefix whose unit was cut off as the key's ('11.5 p' -> 11.5 ps)"""
     from grader.numeric import Q_, parse_numeric
     if "?" in text:                                    # (a reader's mark for what it could not read)
         return None
+    cut = re.search(r"\d\s*(?:\\mathrm\s*\{\s*)?([pnuµμm])\s*\}?\s*\$?\s*$", text)
+    if unit and unit != "%" and cut:                   # (a prefix with its unit cut off - '11.5 p' for 11.5 ps: the key
+        base = unit[1:] if len(unit) > 1 and unit[0] in "pnuµμmk" else unit   # unit's own, not pico-nothing)
+        text = text[:cut.start(1)] + cut.group(1) + base + text[cut.end(1):]
     if re.search(r"\d\s+\.?\s*\d|\d\s*\.\s+\d", text):    # (Uni-MuMER spaces its tokens: '4 2 . 5 n s' - 42.5 ns)
         text = re.sub(r"(?<=[\d.])\s+(?=[\d.])", "", text)
         text = re.sub(r"(?<=\d)\s+([a-zA-Zµμ])\s+([a-zA-Z])\b", r" \1\2", text)
@@ -71,6 +76,13 @@ def value_of(text, percent=False, unit=""):
             except Exception:                          # noqa: BLE001  (a unit of another kind)
                 continue
         return None
+    if unit and unit != "%" and not u and re.search(r"10\s*\^", text):   # (a power of ten and no unit: written in
+        base = unit[1:] if len(unit) > 1 and unit[0] in "pnuµμmk" else unit   # the base unit - '6.97 \cdot 10^{-8}'
+        if base != unit:                                                     # is seconds, 69.7 ns)
+            try:
+                return float(Q_(v.value, base).to(unit).magnitude)
+            except Exception:                          # noqa: BLE001
+                pass
     return float(v.value)
 
 

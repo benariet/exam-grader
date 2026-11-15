@@ -8290,6 +8290,11 @@ def test_a_final_value_in_its_printed_place_is_read_and_checked(monkeypatch):
                          1.151, 0.03, False, "V")[0] == "unsure"     # (the place found holds another value than the
     #                                                                   vision model's own: maybe not the place)
     assert V.value_of("69.7 ns.", False, "ns") == 69.7 and V.value_of("69.7 ns ?", False, "ns") is None
+    assert V.value_of("t_{F1} = 11.5 p", False, "ps") == 11.5 and V.value_of(r"70 \mathrm{n}", False, "ns") == 70   # (a
+    assert abs(V.value_of("1.62 p", False, "J") - 1.62e-12) < 1e-20          # prefix, its unit cut off: the key's)
+    assert abs(V.value_of(r"t = 6.97 \cdot 10^{-8}", False, "ns") - 69.7) < 1e-9     # (a power of ten, no unit: the
+    assert abs(V.value_of(r"11.5 \cdot 10^{-12}", False, "ps") - 11.5) < 1e-9        #  base unit's - seconds)
+    assert V.value_of("70", False, "ns") == 70 and V.value_of(r"1.15 \cdot 10^{0}", False, "V") == 1.15
     from tools.read_crops import bbox_of, final_crop, value_labels
     assert value_labels("7_value", "the_DUTY_CICLE") == [("7_value", "the DUTY CICLE")]
     assert value_labels("7_value", "f1=the_function_of_F1;tf1=its_delay") == [("7_value~f1", "the function of F1"),
