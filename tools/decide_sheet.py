@@ -226,6 +226,8 @@ def make(a):
     ws.sheet_properties.pageSetUpPr.fitToPage = True
     ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
     ws.print_title_rows = "2:2"
+    ws.freeze_panes = "A3"                             # (the header stays in view while scrolling)
+    ws.auto_filter.ref = f"A2:H{len(rows) + 2}"        # (one part, or one exam, at a time)
     for c, h in enumerate(HEADER, 1):
         cell = ws.cell(row=2, column=c, value=h)
         cell.font = Font(bold=True)
