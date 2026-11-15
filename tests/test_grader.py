@@ -8602,3 +8602,27 @@ def test_value_found_place_cut_several_ways():
     from PIL import Image
     img = Image.new("RGB", (400, 200), "white")
     assert final_crop(img, (0.0, 0.4, 1.0, 0.5)).size[0] == 400
+
+
+def test_fermat_lines_cut_and_match():
+    """FERMAT pages cut into written lines (a synthetic page: four lines of text on ruled paper), and a line's reading
+    matched to the stretch of the solution's text it is (braces aside: '^2' and '^ { 2 }' alike)"""
+    import numpy as np
+    from PIL import Image, ImageDraw, ImageFont
+    from tools.fermat_lines import line_bands, match, tokens
+    img = Image.new("L", (900, 700), 235)
+    d = ImageDraw.Draw(img)
+    for y in range(40, 700, 60):                       # (a ruled notebook's faint lines)
+        d.line([(0, y), (900, y)], fill=205, width=2)
+    try:
+        font = ImageFont.truetype("DejaVuSans.ttf", 34)
+    except OSError:
+        font = ImageFont.load_default()
+    for i, t in enumerate(["Area = pi R^2 = 22/7 x 4.9", "= 75.46 m^2", "Hence the area is 75.46", "x + 5 = 44"]):
+        d.text((60, 70 + 130 * i), t, fill=20, font=font)
+    bands = line_bands(np.asarray(img))
+    assert len(bands) == 4, bands
+    assert tokens(r"\[ 12 \times 5 = \textcolor{red}{65} \]") == ["1", "2", "\\times", "5", "=", "6", "5"]
+    gt = tokens(r"Area \( = \pi R^2 = \frac{22}{7} \times (4.9)^2 \, \text{m}^2 = 75.46 \, \text{m}^2 \)")
+    sc, s, e = match(tokens(r"= \frac { 2 2 } { 7 } \times ( 4 . 9 ) ^ { 2 }"), gt)
+    assert sc >= 95 and " ".join(gt[s:e]).startswith("= \\frac { 2 2 }")

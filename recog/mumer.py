@@ -84,7 +84,7 @@ class MumerReader:
     bfloat16 on newer GPUs and on CPUs that compute it; a float16 copy that overflows is reloaded in float32"""
 
     def __init__(self, model_dir: str | None = None, device: str | None = None, threads: int | None = None,
-                 dtype=None):
+                 dtype=None, adapter_dir: str | None = None):
         import torch
         from transformers import AutoTokenizer, Qwen2VLImageProcessor, Qwen3VLForConditionalGeneration
 
@@ -92,17 +92,23 @@ class MumerReader:
         model_dir = model_dir or ensure_v4_layout()
         if threads:
             torch.set_num_threads(threads)
-        self.torch, self.gpu, self.model_dir = torch, gpu, model_dir
+        self.torch, self.gpu, self.model_dir, self.adapter_dir = torch, gpu, model_dir, adapter_dir
         self.n_b = gpu.params_b(model_dir) or 2.13
         self.device, self.dtype = gpu.pick(self.n_b, device) if dtype is None else (gpu.device(device), dtype)
         self.tok = AutoTokenizer.from_pretrained(model_dir)
         self.imp = Qwen2VLImageProcessor.from_pretrained(model_dir)
         self._cls = Qwen3VLForConditionalGeneration
-        self.parked = False
+        import inspect                                 # (transformers 5 places the image's patches in 2-D only when
+        self._mm = "mm_token_type_ids" in inspect.signature(self._cls.forward).parameters   # told which tokens are
+        self.image_id = self.tok.convert_tokens_to_ids("<|image_pad|>")                    # the image's - else it
+        self.parked = False                            # reads them as a line of text)
         self._load()
 
     def _load(self):
         self.model = self._cls.from_pretrained(self.model_dir, dtype=self.dtype).to(self.device).eval()
+        if self.adapter_dir:                           # (taught more - tools/teach_mumer.py: its LoRA folded in)
+            from peft import PeftModel
+            self.model = PeftModel.from_pretrained(self.model, self.adapter_dir).merge_and_unload().eval()
 
     def _reload_wider(self):
         del self.model
@@ -110,6 +116,10 @@ class MumerReader:
         self.dtype = self.gpu.fallback_dtype(self.n_b)
         print(f"[mumer] fp16 overflowed (NaN) - reloaded in {self.gpu.SHORT.get(self.dtype)}", flush=True)
         self._load()
+
+    def mm_types(self, ids):
+        """which tokens are the image's (1) and which text (0) - what transformers 5 needs to place them"""
+        return (ids == self.image_id).int()
 
     def park(self):
         """free the model's memory for another reader (recog/gpu.py park); the next read brings it back"""
@@ -136,6 +146,8 @@ class MumerReader:
             inputs = {"input_ids": enc["input_ids"].to(self.device), "attention_mask": enc["attention_mask"].to(self.device),
                       "pixel_values": vis["pixel_values"].to(self.device, self.model.dtype),
                       "image_grid_thw": vis["image_grid_thw"].to(self.device)}
+            if self._mm:
+                inputs["mm_token_type_ids"] = self.mm_types(inputs["input_ids"])
             with torch.no_grad():
                 out = self.model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False, num_beams=n_best,
                                           num_return_sequences=n_best, output_scores=True, return_dict_in_generate=True)

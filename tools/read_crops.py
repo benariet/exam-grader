@@ -141,6 +141,8 @@ def main():
                     "for Uni-MuMER: margins (a share of its height) and 'line' (the place's whole width); each its own "
                     "reading (mumerfinal, mumerfinal@1, mumerfinal@line - one family). Moed C: 14 %% -> 20 %% of the "
                     "points decided on its 11 value parts against '0.3' alone")
+    ap.add_argument("--mumer-adapter", default="", help="the formula reader taught more (tools/teach_mumer.py): its "
+                    "adapter's folder")
     ap.add_argument("--n-best", type=int, default=3)
     ap.add_argument("--views", default="", help="each piece read at these scales too: '1|0.75|1.33' (readers "
                     "'mumer@0.75' ...; '|' - Slurm's --export splits at commas)")
@@ -157,7 +159,7 @@ def main():
         t0 = time.time()
         if reader == "mumer":
             from recog.mumer import MumerReader
-            rd = MumerReader()
+            rd = MumerReader(adapter_dir=a.mumer_adapter or None)
             read = lambda img: rd.recognize(img, n_best=a.n_best, max_new_tokens=160)          # noqa: E731
         elif reader == "vlm":
             import torch
