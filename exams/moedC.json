@@ -223,7 +223,7 @@
    "tool": "value_area",
    "args": {
     "page": 25,
-    "area": "80,1500,1100,1608",
+    "area": "80,1395,1100,1608",
     "key": "5.75%",
     "percent": true,
     "name": "שאלה 3 - Duty Cycle",
