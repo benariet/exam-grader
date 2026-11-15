@@ -8384,7 +8384,8 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert "value_q1d_ol_crops" in sheet[i:i + 300], sheet[i:i + 300]
     assert "--wave" in sheet and "wave_q3_out" in sheet and "--choice" in sheet and "choices_q2" in sheet
     assert "--table" in sheet and "--expr" in sheet and "exprs_q1a_crops" in sheet and "--circuit" in sheet
-    assert "--rubric exams/moedC_rubric.json" in sheet
+    assert "--rubric exams/moedC_rubric.json" in sheet and "report/by_exam.xlsx" in sheet
+    assert lines.index(sheet) > lines.index(next(x for x in lines if "exam_report.py" in x))   # (the report first)
     assert any("circuit_key.py" in x and "--exams" in x and "--decisions" in x for x in lines)
     assert all("--decisions" in x for x in lines if "choice_marks.py" in x or "waveform.py" in x)
     assert any("expr_box.py" in x and "--crops-only" in x for x in lines)
@@ -8492,6 +8493,24 @@ def test_undecided_drawings_and_choices_go_on_the_sheet_too(tmp_path):
     got = [(r[0], r[6], r[7]) for r in ws.iter_rows(min_row=3, values_only=True)]
     assert got == [("1", "wave:3 Out", 25), ("4", "wave:3 Out", 25), ("2", "wave:3 Out", 25), ("5", "choice:2.3", 5)], got
     #               (the items worth most first; the same text one under another: the two undecided, then none found)
+    rep = openpyxl.Workbook()                            # (with the report: an answer whose mark alone decides its
+    ws2 = rep.active                                     #  item first - exam 5's 2.3, 4's Out; 1's Out has a
+    ws2.title = "ניקוד לפי סעיף"                         #  second undecided check, 2 is not open)
+    ws2.append(["מבחן", "שאלה", "סעיף", "נקודות", "מצב", "הבדיקות"])
+    ws2.append(["1", 3, "3", 25, "פתוח", "3 Out: לבדיקה ידנית; 3 Z: לבדיקה ידנית; 3 F1: נכון"])
+    ws2.append(["4", 3, "3", 25, "פתוח (חלק נבדק ונכון)", "3 Out: לבדיקה ידנית; 3 Z: נכון"])
+    ws2.append(["2", 3, "3", 25, "נמצאה טעות", "3 Out: אין ציור; 3 Z: שגוי"])
+    ws2.append(["5", 2, "2.3", 5, "פתוח", "2.3 אמריקאית: לא ברור"])
+    rep.save(tmp_path / "rep.xlsx")
+    assert D.alone_items(str(tmp_path / "rep.xlsx")) == {("4", "3 Out"): 25.0, ("5", "2.3 אמריקאית"): 5.0}
+    sys.argv = ["decide_sheet.py", "make", "--wave", str(wv), "--choice", str(ch), "--rubric", str(tmp_path / "rubric.json"),
+                "--report", str(tmp_path / "rep.xlsx"), "--out", str(tmp_path / "d2.xlsx")]
+    try:
+        D.main()
+    finally:
+        sys.argv = argv
+    got = [(r[0], r[8]) for r in openpyxl.load_workbook(tmp_path / "d2.xlsx").active.iter_rows(min_row=3, values_only=True)]
+    assert got == [("4", "כן"), ("5", "כן"), ("1", None), ("2", None)], got
     assert len(ws._images) == 4
     for row in ws.iter_rows(min_row=3):                # (1 and 2 right, 5 wrong; 4 left)
         row[4].value = {"1": "נכון", "2": "נכון", "5": "שגוי"}.get(row[0].value)

@@ -160,6 +160,19 @@ def main():
             cmd = cli(tool, {**common, **args, "out": pout}, out)
             cmd[2:2] = head
         run(cmd, a.dry_run)
+    rep = cfg.get("report")
+    if rep is not None:
+        print("== report", flush=True)
+        cmd = [sys.executable, os.path.join(HERE, "tools", "exam_report.py"), "--runs"] + \
+            [f for f in folders if os.path.isdir(f) or a.dry_run] + ["--out", os.path.join(out, "report")]
+        if cfg.get("grades"):
+            cmd += ["--grades", cfg["grades"]]
+        if rep.get("sure"):
+            cmd += ["--sure", rep["sure"]]
+        if rep.get("rubric"):                          # (the exam's points per item: what is decided of them)
+            cmd += ["--xlsx", "--rubric", rep["rubric"]] + (["--compare", "all", "--points", rep["points"]]
+                                                           if rep.get("points") else [])
+        run(cmd, a.dry_run)
     dec = cfg.get("decisions") or {}
     if dec.get("sheet") and not a.parts:                # (the answers still undecided, for a human to mark once)
         print("== decisions sheet", flush=True)
@@ -183,22 +196,10 @@ def main():
                 cmd += ["--expr", f, "--expr-crops", crops]
             elif part["tool"] == "circuit_key":
                 cmd += ["--circuit", f]
-        if (cfg.get("report") or {}).get("rubric"):    # (the items worth most first)
-            cmd += ["--rubric", cfg["report"]["rubric"]]
+        if (cfg.get("report") or {}).get("rubric"):    # (the items worth most first; an answer deciding its item
+            cmd += ["--rubric", cfg["report"]["rubric"],     #  alone before them - the report's, made just before)
+                    "--report", os.path.join(out, "report", "by_exam.xlsx")]
         run(cmd + ["--out", dec["sheet"]], a.dry_run)
-    rep = cfg.get("report")
-    if rep is not None:
-        print("== report", flush=True)
-        cmd = [sys.executable, os.path.join(HERE, "tools", "exam_report.py"), "--runs"] + \
-            [f for f in folders if os.path.isdir(f) or a.dry_run] + ["--out", os.path.join(out, "report")]
-        if cfg.get("grades"):
-            cmd += ["--grades", cfg["grades"]]
-        if rep.get("sure"):
-            cmd += ["--sure", rep["sure"]]
-        if rep.get("rubric"):                          # (the exam's points per item: what is decided of them)
-            cmd += ["--xlsx", "--rubric", rep["rubric"]] + (["--compare", "all", "--points", rep["points"]]
-                                                           if rep.get("points") else [])
-        run(cmd, a.dry_run)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ decisions hold the students' answers: they stay with the exams, never in the rep
         [--value <value_area's folder> --value-crops <its crops> --value-readings <read_crops' readings.json>] ... \\
         [--wave <waveform's folder>] ... [--choice <choice_marks' folder>] ... [--table <truth_table's folder>] ...
         [--expr <expr_box's folder> --expr-crops <its crops>] ... [--circuit <circuit_key's folder>] ...
-        [--rubric <the exam's rubric.json>] --out <xlsx>
+        [--rubric <the exam's rubric.json>] [--report <the report's by_exam.xlsx>] --out <xlsx>
     python tools/decide_sheet.py apply <xlsx> --out <decisions.json>      (added to what decisions.json holds)
 """
 import argparse
@@ -25,7 +25,25 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 MARKS = {"נכון": "right", "שגוי": "wrong"}
-HEADER = ["מבחן", "סעיף", "מה נקרא", "מה נכתב (התמונה)", "החלטה", "הערה", "part", "נקודות הסעיף"]
+HEADER = ["מבחן", "סעיף", "מה נקרא", "מה נכתב (התמונה)", "החלטה", "הערה", "part", "נקודות הסעיף", "מכריע את הסעיף"]
+
+
+def alone_items(report: str) -> dict:
+    """the report's per-item sheet (exam_report.py's by_exam.xlsx, 'ניקוד לפי סעיף') -> {(exam, check label): the
+    item's points} for each open item with one undecided check only - the answer whose mark decides the item"""
+    import openpyxl
+    out = {}
+    if not report or not os.path.isfile(report):
+        return out
+    ws = openpyxl.load_workbook(report, read_only=True)["ניקוד לפי סעיף"]
+    for r in ws.iter_rows(min_row=2, values_only=True):
+        if not r or len(r) < 6 or not str(r[4] or "").startswith("פתוח"):
+            continue
+        checks = [x.rsplit(": ", 1) for x in str(r[5] or "").split("; ") if ": " in x]
+        open_ = [name for name, v in checks if v != "נכון"]
+        if len(open_) == 1:
+            out[(str(r[0]), open_[0].strip())] = float(r[3] or 0)
+    return out
 
 
 def norm(text: str) -> str:
@@ -211,8 +229,11 @@ def make(a):
     num = lambda n: int(re.sub(r"\D", "", str(n)) or 0)               # noqa: E731
     rubric = json.load(open(a.rubric, encoding="utf-8")) if a.rubric else []
     pts = lambda label: next((float(it["points"]) for it in rubric if re.search(it["match"], label)), 0.0)  # noqa: E731
-    rows.sort(key=lambda t: (-pts(t[2]), t[1], norm(t[3]), num(t[0])))   # (the items worth most first; a part's same
-    #                                                                       wordings one under another)
+    alone = alone_items(a.report)                      # (an answer whose mark alone decides its item: first)
+    base = lambda label: re.sub(r"\s*\(לא נמצא כתב[^)]*\)$", "", label)      # noqa: E731
+    decides = lambda t: alone.get((str(t[0]), base(t[2])), 0.0)          # noqa: E731
+    rows.sort(key=lambda t: (-decides(t), -pts(t[2]), t[1], norm(t[3]), num(t[0])))   # (then the items worth most;
+    #                                                                       a part's same wordings one under another)
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "החלטות"
@@ -227,18 +248,19 @@ def make(a):
     ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
     ws.print_title_rows = "2:2"
     ws.freeze_panes = "A3"                             # (the header stays in view while scrolling)
-    ws.auto_filter.ref = f"A2:H{len(rows) + 2}"        # (one part, or one exam, at a time)
+    ws.auto_filter.ref = f"A2:I{len(rows) + 2}"        # (one part, or one exam, at a time)
     for c, h in enumerate(HEADER, 1):
         cell = ws.cell(row=2, column=c, value=h)
         cell.font = Font(bold=True)
         cell.fill = PatternFill("solid", fgColor="DDEBF7")
     dv = DataValidation(type="list", formula1='"נכון,שגוי,לא ברור"', allow_blank=True)
     ws.add_data_validation(dv)
-    for c, w in zip("ABCDEFGH", (8, 34, 34, 70, 12, 30, 2, 10)):
+    for c, w in zip("ABCDEFGHI", (8, 34, 34, 70, 12, 30, 2, 10, 12)):
         ws.column_dimensions[c].width = w
     ws.column_dimensions["G"].hidden = True             # (the part's id, for apply)
     for i, (exam, part, label, text, img) in enumerate(rows, 3):
-        for c, v in zip("ABCFGH", (str(exam), label, text, "", part, pts(label) or "")):
+        d = decides((exam, part, label, text, img))
+        for c, v in zip("ABCFGHI", (str(exam), label, text, "", part, pts(label) or "", "כן" if d else "")):
             ws[f"{c}{i}"] = v
             ws[f"{c}{i}"].alignment = Alignment(wrap_text=True, vertical="center")
         dv.add(f"E{i}")
@@ -259,6 +281,9 @@ def make(a):
     from collections import Counter
     c = Counter(p for _, p, _, _, _ in rows)
     print(f"{a.out}: {len(rows)} answers - " + ", ".join(f"{k} {v}" for k, v in sorted(c.items())))
+    if alone:
+        first = [decides(t) for t in rows if decides(t)]
+        print(f"  {len(first)} of them decide their item alone ({sum(first):g} points): first on the sheet")
 
 
 def apply(a):
@@ -308,6 +333,8 @@ def main():
                    "drawings left undecided")
     m.add_argument("--rubric", default="", help="the exam's points per item (exams/<exam>_rubric.json): each answer's "
                    "item's points shown, the items worth most first")
+    m.add_argument("--report", default="", help="the report's by_exam.xlsx (tools/exam_report.py --rubric): an answer "
+                   "whose mark alone decides its item marked so, and first")
     m.add_argument("--expr-crops", action="append", default=[], help="its rows cut out (--crops-only)")
     m.add_argument("--out", required=True)
     p = sub.add_parser("apply")
