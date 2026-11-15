@@ -1,7 +1,7 @@
 """Answers the checks could not decide - words the solution's key does not hold (1(b)'s rows), a final value the readers
 did not agree on or written in words (1(f): 'no energy is drawn'), a drawn waveform or curve not decided (or none
 found), a multiple-choice mark unclear or not found, a truth table with cells undecided (marked as a whole), an
-expression not read surely - put before a human once, on this computer: a
+expression not read surely, a drawn circuit not judged - put before a human once, on this computer: a
 workbook, an answer a row (the exam, the part, what was read, the writing itself cut out, a column to mark right or
 wrong). Marked, its decisions go back to the tools (--decisions): each marked answer decides its exam's part, and each
 wording marked alike everywhere decides the same wording in any exam - this Moed's and the next. The workbook and the
@@ -10,7 +10,8 @@ decisions hold the students' answers: they stay with the exams, never in the rep
     python tools/decide_sheet.py make --words <words_box's folder> --words-crops <its crops> \\
         [--value <value_area's folder> --value-crops <its crops> --value-readings <read_crops' readings.json>] ... \\
         [--wave <waveform's folder>] ... [--choice <choice_marks' folder>] ... [--table <truth_table's folder>] ...
-        [--expr <expr_box's folder> --expr-crops <its crops>] ... --out <xlsx>
+        [--expr <expr_box's folder> --expr-crops <its crops>] ... [--circuit <circuit_key's folder>] ...
+        [--rubric <the exam's rubric.json>] --out <xlsx>
     python tools/decide_sheet.py apply <xlsx> --out <decisions.json>      (added to what decisions.json holds)
 """
 import argparse
@@ -24,7 +25,7 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, HERE)
 
 MARKS = {"נכון": "right", "שגוי": "wrong"}
-HEADER = ["מבחן", "סעיף", "מה נקרא", "מה נכתב (התמונה)", "החלטה", "הערה", "part"]
+HEADER = ["מבחן", "סעיף", "מה נקרא", "מה נכתב (התמונה)", "החלטה", "הערה", "part", "נקודות הסעיף"]
 
 
 def norm(text: str) -> str:
@@ -68,7 +69,7 @@ def _rows_words(folder, crops):
     return out
 
 
-def _rows_value(folder, crops, readings):
+def _rows_value(folder, crops, readings, rid=""):
     """value_area's undecided values -> [(exam, part, label, reading, PIL image)]: the place the vision model found cut
     out of the place's picture (the whole place, smaller, where it found none)"""
     from PIL import Image
@@ -80,7 +81,8 @@ def _rows_value(folder, crops, readings):
         if r["verdict"] != "unsure":
             continue
         n = r["exam"]
-        g = got.get(f"{n}_value", {})
+        g = got.get(f"{n}_value~{rid}" if rid else f"{n}_value", {})     # (several things read on one place: this
+        #                                                                       one's reading)
         text = (g.get("vlmwords") or g.get("vlmfinal") or [[r.get("read") or ""]])[0][0]
         box = os.path.join(crops, f"{n}_valuebox.png")
         img = None
@@ -115,7 +117,7 @@ def _rows_choice(folder):
                 seen = ("לא נמצא סימון" if it["verdict"] == "none" else "לא ברור מה סומן") + \
                        (f" (מוקפים: {', '.join(it['circled'])})" if it.get("circled") else "") + \
                        f" - בפתרון {it['answer']}"
-                out.append((r["exam"], f"choice:{it['item']}", f"שאלה {it['item']}", seen,
+                out.append((r["exam"], f"choice:{it['item']}", f"{it['item']} אמריקאית", seen,
                             os.path.join(folder, f"{r['exam']}_{it['item']}_choice.png")))
     return out
 
@@ -154,7 +156,26 @@ def _rows_expr(folder, crops):
     return out
 
 
-NO_WORDING = ("wave:", "choice:", "table", "expr:")                  # (rows whose text is the check's, not the student's: no wording
+def _rows_circuit(folder):
+    """circuit_key.py's drawings left undecided (no function read, another read, none found) -> [(exam, part, label,
+    what was read, image path)]: the drawings cut out (the question's page where none was found)"""
+    out = []
+    key = os.path.join(folder, "circuit_key.json")
+    if not os.path.isfile(key):
+        return out
+    for q, rows in json.load(open(key, encoding="utf-8")).items():
+        for r in rows:
+            if r["verdict"] == "right" or r.get("decided"):
+                continue
+            seen = {"no drawing": "לא נמצא מעגל מצויר", "none": "לא נמצאה פונקציה", "other": "נקראה פונקציה אחרת"}.get(
+                r["verdict"], r["verdict"]) + (f"; {r['transistors']} טרנזיסטורים" if r.get("transistors") else "") + \
+                "".join(f"; {n} = {f}" for n, f in (r.get("functions") or {}).items())
+            out.append((r["exam"], f"circuit:{q}", f"{q}.1 המעגל", seen,
+                        os.path.join(folder, f"{r['exam']}_q{q}_circuit.png")))
+    return out
+
+
+NO_WORDING = ("wave:", "choice:", "table", "expr:", "circuit:")                  # (rows whose text is the check's, not the student's: no wording
 #                                                     to decide other exams by)
 
 
@@ -169,18 +190,24 @@ def make(a):
     rows = []
     for folder, crops in zip(a.words, a.words_crops):
         rows += _rows_words(folder, crops)
-    for folder, crops, rd in zip(a.value, a.value_crops, a.value_readings + [""] * len(a.value)):
-        rows += _rows_value(folder, crops, rd)
+    for folder, crops, rd, rid in zip(a.value, a.value_crops, a.value_readings + [""] * len(a.value),
+                                      a.value_id + [""] * len(a.value)):
+        rows += _rows_value(folder, crops, rd, rid)
     for folder in a.wave:
         rows += _rows_wave(folder)
     for folder in a.choice:
         rows += _rows_choice(folder)
     for folder in a.table:
         rows += _rows_table(folder)
+    for folder in a.circuit:
+        rows += _rows_circuit(folder)
     for folder, crops in zip(a.expr, a.expr_crops + [""] * len(a.expr)):
         rows += _rows_expr(folder, crops)
     num = lambda n: int(re.sub(r"\D", "", str(n)) or 0)               # noqa: E731
-    rows.sort(key=lambda t: (t[1], norm(t[3]), num(t[0])))             # (a part's same wordings one under another)
+    rubric = json.load(open(a.rubric, encoding="utf-8")) if a.rubric else []
+    pts = lambda label: next((float(it["points"]) for it in rubric if re.search(it["match"], label)), 0.0)  # noqa: E731
+    rows.sort(key=lambda t: (-pts(t[2]), t[1], norm(t[3]), num(t[0])))   # (the items worth most first; a part's same
+    #                                                                       wordings one under another)
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "החלטות"
@@ -200,11 +227,11 @@ def make(a):
         cell.fill = PatternFill("solid", fgColor="DDEBF7")
     dv = DataValidation(type="list", formula1='"נכון,שגוי,לא ברור"', allow_blank=True)
     ws.add_data_validation(dv)
-    for c, w in zip("ABCDEFG", (8, 34, 34, 70, 12, 30, 2)):
+    for c, w in zip("ABCDEFGH", (8, 34, 34, 70, 12, 30, 2, 10)):
         ws.column_dimensions[c].width = w
     ws.column_dimensions["G"].hidden = True             # (the part's id, for apply)
     for i, (exam, part, label, text, img) in enumerate(rows, 3):
-        for c, v in zip("ABCFG", (str(exam), label, text, "", part)):
+        for c, v in zip("ABCFGH", (str(exam), label, text, "", part, pts(label) or "")):
             ws[f"{c}{i}"] = v
             ws[f"{c}{i}"].alignment = Alignment(wrap_text=True, vertical="center")
         dv.add(f"E{i}")
@@ -262,12 +289,18 @@ def main():
     m.add_argument("--value", action="append", default=[])
     m.add_argument("--value-crops", action="append", default=[])
     m.add_argument("--value-readings", action="append", default=[])
+    m.add_argument("--value-id", action="append", default=[], help="its --reading-id, when several things were read "
+                   "on one place ('' when not)")
     m.add_argument("--wave", action="append", default=[], help="tools/waveform.py's folder: its undecided drawings")
     m.add_argument("--choice", action="append", default=[], help="tools/choice_marks.py's folder: its undecided "
                    "choices")
     m.add_argument("--table", action="append", default=[], help="tools/truth_table.py's folder: its tables with no "
                    "wrong cell but some undecided")
     m.add_argument("--expr", action="append", default=[], help="tools/expr_box.py's folder: its undecided rows")
+    m.add_argument("--circuit", action="append", default=[], help="tools/circuit_key.py's circuits folder: its "
+                   "drawings left undecided")
+    m.add_argument("--rubric", default="", help="the exam's points per item (exams/<exam>_rubric.json): each answer's "
+                   "item's points shown, the items worth most first")
     m.add_argument("--expr-crops", action="append", default=[], help="its rows cut out (--crops-only)")
     m.add_argument("--out", required=True)
     p = sub.add_parser("apply")

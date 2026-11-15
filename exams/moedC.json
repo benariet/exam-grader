@@ -343,7 +343,11 @@
   "file": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/decisions/moedC_decisions.json",
   "sheet": "C:/Users/benariet/Desktop/EXAM_TEST_FOR_TAL/grader_runs/decisions/moedC_decisions.xlsx",
   "values": [
-   "value_q1f"
+   "value_q1e",
+   "value_q1f",
+   "value_q1d_ol",
+   "value_q1d_oh",
+   "value_q3"
   ]
  }
 }

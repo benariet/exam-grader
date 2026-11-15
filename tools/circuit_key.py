@@ -7,7 +7,8 @@ beside the points the lecturer took off the question.
         key.json: [{"q": 2, "function": "S = A + B + C", "inputs": "ABC", "fewest": 4}]
         -> the counts (how many drawings give the function, how many were read with none ...) and, with --grades,
            the mean points off in each group; <circuits folder>/circuit_key.json per exam (stays with the exams);
-           --remarks: <n>_circuit_remarks.txt per exam, in Hebrew; --per-exam: a line per exam printed too
+           --remarks: <n>_circuit_remarks.txt per exam, in Hebrew; --per-exam: a line per exam printed too;
+           --exams: what is left undecided cut out for tools/decide_sheet.py --circuit, --decisions: its marks taken
 """
 import argparse
 import glob
@@ -28,6 +29,25 @@ def question_of_pages(name, scan, qpages, by_booklet) -> dict:
     if own:
         return {int(p): v.get("question") for p, v in own.items() if v.get("question") is not None}
     return {p["page"]: by_booklet.get(p["booklet"]) for p in scan["pages"] if p.get("booklet") in by_booklet}
+
+
+def save_drawing(exams, name, page, boxes, path, dpi=100):
+    """the drawings on the exam's page cut out (their boxes, read at 150 dpi, with a margin) - the whole page when none
+    - for the human's sheet; nothing when the page is not known"""
+    import pypdfium2 as pdfium
+    pdf = os.path.join(exams, f"{name}.pdf")
+    if page is None or not os.path.isfile(pdf):
+        return
+    doc = pdfium.PdfDocument(pdf)
+    if page > len(doc):
+        return
+    img = doc[page - 1].render(scale=dpi / 72).to_pil().convert("RGB")
+    if boxes:
+        k = dpi / 150
+        x0, y0 = min(b[0] for b in boxes) * k - 30, min(b[1] for b in boxes) * k - 30
+        x1, y1 = max(b[2] for b in boxes) * k + 30, max(b[3] for b in boxes) * k + 30
+        img = img.crop((max(0, int(x0)), max(0, int(y0)), min(img.width, int(x1)), min(img.height, int(y1))))
+    img.save(path)
 
 
 def judge(net, want, inputs):
@@ -53,6 +73,10 @@ def main():
     ap.add_argument("--grades", default="")
     ap.add_argument("--remarks", action="store_true")
     ap.add_argument("--per-exam", action="store_true")
+    ap.add_argument("--decisions", default="", help="tools/decide_sheet.py's decisions (kept with the exams): a drawing "
+                    "left undecided (no function read, another read, none found) decided as a human marked it")
+    ap.add_argument("--exams", default="", help="the exams' PDFs: what is left undecided cut out for the human's sheet "
+                    "(<circuits>/<n>_q<q>_circuit.png - the drawings, or the question's page where none was found)")
     a = ap.parse_args()
     from grader.circuit import Netlist
     from grader.circuit_check import parse_bool
@@ -68,6 +92,10 @@ def main():
     if a.grades:
         from tools.recheck_exams import grades
         marks = grades(a.grades)
+    dec = None
+    if a.decisions:
+        from tools.decide_sheet import decided, load
+        dec = load(a.decisions)
     files = sorted(glob.glob(os.path.join(a.circuits, "*.circuits.json")),
                    key=lambda f: int(re.sub(r"\D", "", os.path.basename(f).split(".")[0]) or 0))
     results, remarks = {}, {}
@@ -97,6 +125,15 @@ def main():
             row = {"exam": name, "q": q, "drawings": n_draw, "verdict": best[1] if best else "no drawing",
                    "transistors": best[2] if best else None, "functions": best[3] if best else {},
                    "page": best[4] if best else None, "off": off, "mapped": bool(qmap)}
+            if row["verdict"] != "right":              # (left to a human: cut out, and his mark taken)
+                if a.exams:
+                    pg = row["page"] or min((p for p, qq in qmap.items() if qq == q), default=None)
+                    boxes = [c["box"] for p in scan["pages"] if p["page"] == pg for c in p["circuits"]]
+                    save_drawing(a.exams, name, pg, boxes, os.path.join(a.circuits, f"{name}_q{q}_circuit.png"))
+                if dec:
+                    hv, how = decided(dec, f"circuit:{q}", name, "")
+                    if hv:
+                        row.update(verdict=hv, decided=how)
             rows.append(row)
             if a.per_exam:
                 print(f"{name}\tq{q}\t{row['verdict']}\t{row['transistors'] or ''}\t{'' if off is None else off}")
@@ -104,7 +141,7 @@ def main():
         cnt = Counter(r["verdict"] for r in rows)
         print(f"question {q} ({k['function']}, inputs {k.get('inputs') or 'as read'}): {len(rows)} exams - "
               + ", ".join(f"{v}: {cnt[v]}" for v in ("right", "other", "none", "no drawing")))
-        right = [r for r in rows if r["verdict"] == "right"]
+        right = [r for r in rows if r["verdict"] == "right" and not r.get("decided")]   # (read so, not marked)
         if right and k.get("fewest"):
             print(f"  of those right: with the fewest transistors ({k['fewest']}): "
                   f"{sum(1 for r in right if r['transistors'] == k['fewest'])}, more: "
@@ -117,6 +154,10 @@ def main():
                           f"none off: {sum(1 for o in offs if o == 0)})")
         if a.remarks:
             for r in rows:
+                if r.get("decided"):
+                    remarks.setdefault(r["exam"], []).append(
+                        f"שאלה {q} - מעגל: {'נכון' if r['verdict'] == 'right' else 'שגוי'} - לפי החלטת הבודק.")
+                    continue
                 txt = {"right": f"המעגל שצויר נותן {k['function']} ({r['transistors']} טרנזיסטורים"
                                 + (", המספר המינימלי)." if r["transistors"] == k.get("fewest") else
                                    f"; בפתרון {k['fewest']})." if k.get("fewest") else ")."),

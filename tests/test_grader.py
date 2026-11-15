@@ -7569,6 +7569,26 @@ def test_a_drawn_circuit_is_judged_against_the_key(tmp_path):
     got = {r["exam"]: r["verdict"] for r in json.load(open(tmp_path / "circuit_key.json"))["2"]}
     assert got == {"1": "right", "2": "none", "3": "no drawing", "4": "no drawing"}
     assert "המינימלי" in open(tmp_path / "1_circuit_remarks.txt", encoding="utf-8").read()
+    from PIL import Image                               # (what is left undecided: cut out for the human's sheet, his
+    ex = tmp_path / "exams"                             #  marks taken)
+    ex.mkdir()
+    for n in "1234":
+        pg = [Image.new("RGB", (1240, 1754), "white") for _ in range(14)]
+        pg[0].save(ex / f"{n}.pdf", save_all=True, append_images=pg[1:], resolution=150)
+    json.dump({"exams": {"circuit:2": {"2": "wrong", "3": "right"}}, "wordings": {}}, open(tmp_path / "d.json", "w"))
+    subprocess.run([sys.executable, "tools/circuit_key.py", str(tmp_path), "--key", str(tmp_path / "key.json"),
+                    "--pages", str(tmp_path / "pages.json"), "--remarks", "--exams", str(ex), "--decisions",
+                    str(tmp_path / "d.json")], capture_output=True, text=True, check=True)
+    got = {r["exam"]: (r["verdict"], r.get("decided")) for r in json.load(open(tmp_path / "circuit_key.json"))["2"]}
+    assert got == {"1": ("right", None), "2": ("wrong", "exam"), "3": ("right", "exam"), "4": ("no drawing", None)}, got
+    import os
+    assert sorted(f for f in os.listdir(tmp_path) if f.endswith("_circuit.png")) == \
+        ["2_q2_circuit.png", "3_q2_circuit.png", "4_q2_circuit.png"]
+    assert Image.open(tmp_path / "2_q2_circuit.png").size[0] < 200      # (the drawing's box; 4's: its whole page)
+    assert Image.open(tmp_path / "4_q2_circuit.png").size[0] == 827
+    from tools.decide_sheet import _rows_circuit
+    assert [(r[0], r[1]) for r in _rows_circuit(str(tmp_path))] == [("4", "circuit:2")]
+    assert "לפי החלטת הבודק" in open(tmp_path / "2_circuit_remarks.txt", encoding="utf-8").read()
 
 
 def test_letters_the_question_names_are_preferred():
@@ -8353,9 +8373,14 @@ def test_an_exams_structured_checks_run_from_its_config(tmp_path):
     assert sum(1 for x in lines if "sbatch" in x) == 9, [x for x in lines if "sbatch" in x]
     assert all("--decisions" in x for x in lines if ("words_box.py" in x or "value_area.py" in x) and "--crops-only" not in x)
     sheet = next(x for x in lines if "decide_sheet.py" in x)
-    assert "--words" in sheet and "value_q1f" in sheet and "value_q1e" not in sheet
+    assert "--words" in sheet and "value_q1f" in sheet and "value_q1e" in sheet and "value_q3" in sheet
+    assert "step_q1e_y20" not in sheet and "--value-id oh" in sheet           # (1(d)'s VOHmax: read on VOLmin's place)
+    i = sheet.index("value_q1d_oh ")
+    assert "value_q1d_ol_crops" in sheet[i:i + 300], sheet[i:i + 300]
     assert "--wave" in sheet and "wave_q3_out" in sheet and "--choice" in sheet and "choices_q2" in sheet
-    assert "--table" in sheet and "--expr" in sheet and "exprs_q1a_crops" in sheet
+    assert "--table" in sheet and "--expr" in sheet and "exprs_q1a_crops" in sheet and "--circuit" in sheet
+    assert "--rubric exams/moedC_rubric.json" in sheet
+    assert any("circuit_key.py" in x and "--exams" in x and "--decisions" in x for x in lines)
     assert all("--decisions" in x for x in lines if "choice_marks.py" in x or "waveform.py" in x)
     assert any("expr_box.py" in x and "--crops-only" in x for x in lines)
     i = next(k for k, x in enumerate(lines) if "rm -rf eg-runs/expr/exprs_q1a" in x)
@@ -8418,6 +8443,9 @@ def test_undecided_answers_are_put_before_a_human_once_and_his_marks_decide(tmp_
     assert dec["wordings"]["words:Y1"] == {"xor": "right"} and "words:Y2" not in dec["wordings"]
     assert D.decided(dec, "words:Y1", "9", "X O R") == ("right", "wording")      # (another exam, the same wording)
     assert D.decided(dec, "words:Y1", "9", "XNOR") == (None, "") and D.decided(dec, "value:1(f)", "4", "")[0] == "right"
+    json.dump({"4_value~oh": {"vlmfinal": [["1.2 V", 0]], "where": [0.1, 0.1, 0.6, 0.2]}}, open(tmp_path / "r2.json", "w"))
+    (_, part, _, text, img), = D._rows_value(str(v), str(vc), str(tmp_path / "r2.json"), "oh")   # (one of several
+    assert text == "1.2 V" and img is not None                                                 #  read on one place)
 
 
 def test_undecided_drawings_and_choices_go_on_the_sheet_too(tmp_path):
@@ -8441,15 +8469,19 @@ def test_undecided_drawings_and_choices_go_on_the_sheet_too(tmp_path):
                                        "circled": ["ג"]}]}, open(ch / "5.choices.json", "w"), ensure_ascii=False)
     Image.new("RGB", (500, 300), "white").save(ch / "5_2.3_choice.png")
     argv = sys.argv
-    sys.argv = ["decide_sheet.py", "make", "--wave", str(wv), "--choice", str(ch), "--out", str(tmp_path / "d.xlsx")]
+    json.dump([{"item": "2.3", "q": 2, "points": 5, "match": "^2\\.3"}, {"item": "3", "q": 3, "points": 25,
+                "match": "^3 "}], open(tmp_path / "rubric.json", "w"))
+    sys.argv = ["decide_sheet.py", "make", "--wave", str(wv), "--choice", str(ch), "--rubric", str(tmp_path / "rubric.json"),
+                "--out", str(tmp_path / "d.xlsx")]
     try:
         D.main()
     finally:
         sys.argv = argv
     wb = openpyxl.load_workbook(tmp_path / "d.xlsx")
     ws = wb.active
-    got = sorted((r[0], r[6]) for r in ws.iter_rows(min_row=3, values_only=True))
-    assert got == [("1", "wave:3 Out"), ("2", "wave:3 Out"), ("4", "wave:3 Out"), ("5", "choice:2.3")], got
+    got = [(r[0], r[6], r[7]) for r in ws.iter_rows(min_row=3, values_only=True)]
+    assert got == [("1", "wave:3 Out", 25), ("4", "wave:3 Out", 25), ("2", "wave:3 Out", 25), ("5", "choice:2.3", 5)], got
+    #               (the items worth most first; the same text one under another: the two undecided, then none found)
     assert len(ws._images) == 4
     for row in ws.iter_rows(min_row=3):                # (1 and 2 right, 5 wrong; 4 left)
         row[4].value = {"1": "נכון", "2": "נכון", "5": "שגוי"}.get(row[0].value)
